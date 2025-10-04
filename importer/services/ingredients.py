@@ -452,17 +452,58 @@ class IngredientService:
             raise
 
     def _infer_forms(self, base: str) -> Tuple[str, str]:
-        singular = base.strip()
-        plural = singular
-        lower = singular.lower()
-        if lower.endswith("e"):
-            plural = singular + "n"
-        elif lower.endswith("el") or lower.endswith("er"):
-            plural = singular
-        elif lower.endswith("s"):
-            plural = singular
+        name = base.strip()
+        if not name:
+            return "", ""
+
+        key = self._forms_key(name)
+        cached = self._forms.get(key)
+        if cached and len(cached) == 2:
+            return cached[0], cached[1]
+
+        normalized = self._normalize(name)
+        for forms in self._forms.values():
+            if len(forms) != 2:
+                continue
+            singular_cached, plural_cached = forms
+            if normalized == self._normalize(singular_cached) or normalized == self._normalize(plural_cached):
+                return singular_cached, plural_cached
+
+        for food in self._foods:
+            singular_cached = food.get("name") or ""
+            plural_cached = food.get("pluralName") or singular_cached
+            if not singular_cached:
+                continue
+            if normalized == self._normalize(singular_cached) or (
+                plural_cached and normalized == self._normalize(plural_cached)
+            ):
+                return singular_cached, plural_cached
+
+        def apply_rules(word: str) -> Tuple[str, str]:
+            lower_word = word.lower()
+            if lower_word.endswith(("chen", "lein")):
+                return word, word
+            if lower_word.endswith("en") and len(word) > 2:
+                return word[:-1], word
+            if lower_word.endswith("n") and len(word) > 1:
+                return word[:-1], word
+            if lower_word.endswith("e"):
+                return word, word + "n"
+            if lower_word.endswith(("er", "el", "s")):
+                return word, word
+            return word, word + "e"
+
+        match = re.search(r"([A-Za-zÄÖÜäöüß]+)$", name)
+        if match:
+            start = match.start(1)
+            prefix = name[:start]
+            stem = match.group(1)
+            singular_stem, plural_stem = apply_rules(stem)
+            singular = f"{prefix}{singular_stem}"
+            plural = f"{prefix}{plural_stem}"
         else:
-            plural = singular + "e"
+            singular, plural = apply_rules(name)
+
         return singular, plural
 
     def _remember_forms(self, name: str, singular: str, plural: str) -> None:

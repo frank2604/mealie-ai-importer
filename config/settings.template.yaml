@@ -1,0 +1,27 @@
+# Copy this file to settings.yaml and adjust values for your environment.
+mealie:
+  base_url: "http://192.168.2.33:9925"
+  token: "REPLACE_WITH_YOUR_TOKEN"
+
+processing:
+  watch_folder: "PDFs"
+  output_folder: "data/parsed"
+  ocr_enabled: false
+  language: "de"
+
+ingredients:
+  fuzzy_threshold: 90
+  cache_dir: "data/cache"
+  default_category: "Sonstiges"
+  default_category_color: "#959595"
+  use_llm_classifier: true
+
+llm:
+  provider: "openai"
+  model: "gpt-4o-mini"
+  temperature: 0.2
+  max_tokens: 4096
+  api_key: "REPLACE_WITH_OPENAI_KEY"
+  base_url: "https://api.openai.com/v1"
+  vision_model: "gpt-5-mini"
+  timeout: 120

@@ -99,10 +99,57 @@ class IngredientService:
         """Force-refresh all cached resources from the API."""
         if not self._client:
             return
+        self.refresh_units(save=False)
+        self.refresh_foods(save=False)
+        self._save_cache()
+
+    def refresh_units(self, *, save: bool = True) -> None:
+        if not self._client:
+            return
         self._units = self._fetch_paginated("/api/units")
+        if save:
+            self._save_cache()
+
+    def refresh_foods(self, *, save: bool = True) -> None:
+        if not self._client:
+            return
         self._foods = self._fetch_paginated("/api/foods")
         self._labels = self._fetch_paginated("/api/groups/labels")
-        self._save_cache()
+        if save:
+            self._save_cache()
+
+    def list_units(self) -> List[Dict[str, Any]]:
+        return list(self._units)
+
+    def list_foods(self) -> List[Dict[str, Any]]:
+        return list(self._foods)
+
+    def list_food_categories(self) -> List[Dict[str, Any]]:
+        return list(self._labels)
+
+    def lookup_unit(self, query: str) -> Optional[UnitResource]:
+        match = self._find_unit(query)
+        if match:
+            return UnitResource(id=str(match.get("id")), raw=match)
+        return None
+
+    def lookup_food(self, query: str) -> Optional[FoodResource]:
+        match = self._find_food(query)
+        if match:
+            return FoodResource(id=str(match.get("id")), raw=match)
+        return None
+
+    def get_unit_by_id(self, unit_id: str) -> Optional[UnitResource]:
+        for item in self._units:
+            if str(item.get("id")) == str(unit_id):
+                return UnitResource(id=str(item.get("id")), raw=item)
+        return None
+
+    def get_food_by_id(self, food_id: str) -> Optional[FoodResource]:
+        for item in self._foods:
+            if str(item.get("id")) == str(food_id):
+                return FoodResource(id=str(item.get("id")), raw=item)
+        return None
 
     def get_or_create_unit(
         self,
@@ -263,7 +310,10 @@ class IngredientService:
         # include aliases as secondary pass
         for food in self._foods:
             for alias in food.get("aliases", []) or []:
-                if self._score(query, alias) >= self._config.fuzzy_threshold:
+                alias_value = alias.get("name") if isinstance(alias, Mapping) else alias
+                if not isinstance(alias_value, str):
+                    continue
+                if self._score(query, alias_value) >= self._config.fuzzy_threshold:
                     return food
         return None
 

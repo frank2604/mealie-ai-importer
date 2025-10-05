@@ -20,7 +20,6 @@ class MealiePayload:
 
 
 def recipe_to_mealie(recipe: Recipe, ingredient_service: Optional[IngredientService] = None) -> MealiePayload:
-    _REFERENCE_COUNTER.clear()
     payload: Dict[str, Any] = {
         "name": recipe.title,
         "description": recipe.description or "",
@@ -45,7 +44,9 @@ def recipe_to_mealie(recipe: Recipe, ingredient_service: Optional[IngredientServ
     if recipe.total_time_minutes:
         payload["totalTime"] = _format_minutes(recipe.total_time_minutes)
     if recipe.metadata.cuisine:
-        payload.setdefault("tags", []).append({"name": recipe.metadata.cuisine})
+        payload.setdefault("tags", []).append(
+            {"name": recipe.metadata.cuisine, "slug": _slugify(recipe.metadata.cuisine)}
+        )
     if recipe.metadata.source:
         payload["orgURL"] = recipe.metadata.source
 
@@ -117,7 +118,6 @@ def _ingredient_to_entry(
         entry["unitId"] = unit_resource.id
         entry["foodId"] = food_resource.id
         entry["display"] = _build_display_string(ingredient)
-        entry["referenceId"] = _reference_id(ingredient)
     else:
         amount = f"{ingredient.quantity:g}" if ingredient.quantity is not None else ""
         unit = ingredient.unit or ""
@@ -134,20 +134,6 @@ def _ingredient_to_entry(
         entry["title"] = section_name
 
     return _clean_nulls(entry)
-
-
-_REFERENCE_COUNTER = {}
-
-
-def _reference_id(ingredient: Ingredient) -> str:
-    key = _normalize_ref(ingredient.name)
-    count = _REFERENCE_COUNTER.get(key, 0) + 1
-    _REFERENCE_COUNTER[key] = count
-    return f"{key}-{count}"
-
-
-def _normalize_ref(name: str) -> str:
-    return re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
 
 
 def _build_display_string(ingredient: Ingredient) -> str:

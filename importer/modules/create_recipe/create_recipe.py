@@ -68,6 +68,14 @@ class CreateRecipeModule:
         slug = _parse_slug_from_response(response)
         logger.info("Rezept erfolgreich importiert (%s)", slug or response.text[:200])
 
+        if slug and not _update_recipe_details(
+            base_url=base_url,
+            token=token,
+            slug=slug,
+            payload=payload,
+        ):
+            logger.warning("Rezeptdetails konnten nicht aktualisiert werden")
+
         if slug and recipe.assets:
             asset = recipe.assets[0]
             try:
@@ -116,6 +124,40 @@ def _parse_slug_from_response(response: httpx.Response) -> Optional[str]:
     if slug:
         return slug.strip().strip('"')
     return None
+
+
+def _update_recipe_details(
+    *,
+    base_url: str,
+    token: str,
+    slug: str,
+    payload: Dict[str, object],
+) -> bool:
+    endpoint = f"{base_url.rstrip('/')}/api/recipes/{slug}"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+    }
+
+    sanitized_payload = dict(payload)
+    sanitized_payload.pop("assets", None)
+
+    try:
+        response = httpx.put(endpoint, headers=headers, json=sanitized_payload, timeout=60)
+    except httpx.HTTPError as exc:
+        logger.error("Update der Rezeptdetails fehlgeschlagen: %s", exc)
+        return False
+
+    if response.status_code >= 300:
+        logger.error(
+            "Update der Rezeptdetails schlug fehl (%s): %s",
+            response.status_code,
+            response.text[:200],
+        )
+        return False
+
+    logger.info("Rezeptdetails aktualisiert")
+    return True
 
 
 def _data_url_to_file(asset: RecipeAsset) -> tuple[str, str, bytes]:

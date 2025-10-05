@@ -36,6 +36,10 @@ class CachePaths:
         return self.root / "MealieFoodsCache.json"
 
     @property
+    def food_categories_cache(self) -> Path:
+        return self.root / "MealieFoodCategoriesCache.json"
+
+    @property
     def units_cache(self) -> Path:
         return self.root / "MealieUnitsCache.json"
 
@@ -126,6 +130,7 @@ class PipelineContext:
         return {
             "recipe_raw": str(self.cache_paths.recipe_raw),
             "foods_cache": str(self.cache_paths.foods_cache),
+            "food_categories_cache": str(self.cache_paths.food_categories_cache),
             "units_cache": str(self.cache_paths.units_cache),
             "timestamp": datetime.utcnow().isoformat(),
         }

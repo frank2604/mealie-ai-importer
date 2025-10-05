@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
 from .models import Ingredient, IngredientSection, InstructionSection, Recipe, RecipeAsset
-from .services.ingredients import IngredientService
+from .services.ingredients import FoodResource, IngredientService, UnitResource
 
 
 @dataclass
@@ -80,21 +80,33 @@ def _ingredient_to_entry(
     recipe: Recipe,
 ) -> Dict[str, Any]:
     if ingredient_service and ingredient.quantity is not None:
-        unit_resource = ingredient_service.get_or_create_unit(
-            name=ingredient.unit or "Stück",
-            plural_name=ingredient.unit or "Stück",
-            abbreviation=ingredient.unit or "",
-            fraction=True,
-        )
+        unit_resource: Optional[UnitResource]
+        if ingredient.mealie_unit_id:
+            unit_resource = ingredient_service.get_unit_by_id(ingredient.mealie_unit_id)
+        else:
+            unit_resource = None
+        if not unit_resource:
+            unit_resource = ingredient_service.get_or_create_unit(
+                name=ingredient.unit or "Stück",
+                plural_name=ingredient.unit or "Stück",
+                abbreviation=ingredient.unit or "",
+                fraction=True,
+            )
 
         category_hint = recipe.metadata.cuisine
         if recipe.metadata.categories:
             category_hint = recipe.metadata.categories[0]
-        food_resource = ingredient_service.get_or_create_food(
-            name=ingredient.name,
-            description=ingredient.note or "",
-            category_hint=category_hint,
-        )
+        food_resource: Optional[FoodResource]
+        if ingredient.mealie_food_id:
+            food_resource = ingredient_service.get_food_by_id(ingredient.mealie_food_id)
+        else:
+            food_resource = None
+        if not food_resource:
+            food_resource = ingredient_service.get_or_create_food(
+                name=ingredient.name,
+                description=ingredient.note or "",
+                category_hint=category_hint,
+            )
 
         entry: Dict[str, Any] = {
             "quantity": ingredient.quantity,

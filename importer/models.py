@@ -11,12 +11,17 @@ class Ingredient(BaseModel):
     quantity: Optional[float] = None
     unit: Optional[str] = None
     note: Optional[str] = None
+    mealie_food_id: Optional[str] = Field(default=None, alias="mealieFoodId")
+    mealie_unit_id: Optional[str] = Field(default=None, alias="mealieUnitId")
 
     @validator("name")
     def name_must_not_be_blank(cls, value: str) -> str:  # noqa: N805 - pydantic validator signature
         if not value.strip():
             raise ValueError("Ingredient name cannot be empty")
         return value
+
+    class Config:
+        allow_population_by_field_name = True
 
 
 class IngredientSection(BaseModel):
@@ -73,3 +78,6 @@ class Recipe(BaseModel):
         if not value.strip():
             raise ValueError("Recipe title cannot be empty")
         return value
+
+    class Config:
+        allow_population_by_field_name = True

@@ -14,8 +14,8 @@ processing:
   ocr_enabled: false
   # ISO language code used for OCR and language-specific processing.
   language: "de"
-  # Skip the AI analysis when a cached RecipeRawDataEnriched.json already exists.
-  skip_ai_if_cached: false
+  # Skip the AI analysis when a cached RecipeRawData.json already exists.
+  skip_ai_if_cached: true
 
 ingredients:
   # Similarity threshold (0-100) for fuzzy ingredient matching.

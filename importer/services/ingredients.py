@@ -296,7 +296,10 @@ class IngredientService:
         # include aliases as secondary pass
         for food in self._foods:
             for alias in food.get("aliases", []) or []:
-                if self._score(query, alias) >= self._config.fuzzy_threshold:
+                alias_value = alias.get("name") if isinstance(alias, Mapping) else alias
+                if not isinstance(alias_value, str):
+                    continue
+                if self._score(query, alias_value) >= self._config.fuzzy_threshold:
                     return food
         return None
 

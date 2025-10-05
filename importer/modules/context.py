@@ -21,15 +21,10 @@ class CachePaths:
 
     def __post_init__(self) -> None:
         self.root.mkdir(parents=True, exist_ok=True)
-        self.recipe_dir.mkdir(parents=True, exist_ok=True)
-
-    @property
-    def recipe_dir(self) -> Path:
-        return self.root / self.recipe_key
 
     @property
     def recipe_raw(self) -> Path:
-        return self.recipe_dir / "RecipeRawData.json"
+        return self.root / "RecipeRawDataEnriched.json"
 
     @property
     def foods_cache(self) -> Path:
@@ -90,7 +85,7 @@ class PipelineContext:
                 data = json.loads(raw)
                 self.recipe = Recipe.parse_obj(data)
             else:
-                raise RuntimeError("Es liegt noch kein RecipeRawData.json vor")
+                raise RuntimeError("Es liegt noch kein RecipeRawDataEnriched.json vor")
         return self.recipe
 
     def save_recipe(self, recipe: Recipe) -> None:

@@ -370,22 +370,48 @@ def _handle_upload_pdf(*, pdf_path: Path, config: AppConfig, dry_run: bool) -> i
         recipe_output_path=output_json,
     )
 
-    modules: List = [
-        PdfInputModule(),
-        AiAnalyserModule(
-            llm_client=llm_client,
-            llm_config=config.llm,
-            output_json=output_json,
-            image_output_dir=output_dir / "images",
-        ),
-        FoodCheckerModule(ingredient_service, llm_client=llm_client),
-        CreateFoodsModule(ingredient_service, dry_run=dry_run),
-        AddFoodIdsModule(),
-        UnitCheckerModule(ingredient_service, llm_client=llm_client),
-        CreateUnitsModule(ingredient_service, dry_run=dry_run),
-        AddUnitIdsModule(),
-        CreateRecipeModule(config=config, ingredient_service=ingredient_service, dry_run=dry_run),
-    ]
+    modules: List = [PdfInputModule()]
+
+    skip_ai = False
+    if config.processing.skip_ai_if_cached and context.cache_paths.recipe_raw.exists():
+        try:
+            context.ensure_recipe()
+        except RuntimeError as exc:
+            logger.warning(
+                "RecipeRawData.json konnte nicht geladen werden (%s) – führe AI-Analyser aus.",
+                exc,
+            )
+        else:
+            skip_ai = True
+            if output_json.exists():
+                context.recipe_output_path = output_json
+            logger.info(
+                "RecipeRawData.json bereits vorhanden – überspringe AI-Analyser gemäß Einstellung."
+            )
+
+    if not skip_ai:
+        modules.append(
+            AiAnalyserModule(
+                llm_client=llm_client,
+                llm_config=config.llm,
+                output_json=output_json,
+                image_output_dir=output_dir / "images",
+            )
+        )
+
+    modules.extend(
+        [
+            FoodCheckerModule(ingredient_service, llm_client=llm_client),
+            CreateFoodsModule(ingredient_service, dry_run=dry_run),
+            AddFoodIdsModule(),
+            UnitCheckerModule(ingredient_service, llm_client=llm_client),
+            CreateUnitsModule(ingredient_service, dry_run=dry_run),
+            AddUnitIdsModule(),
+            CreateRecipeModule(
+                config=config, ingredient_service=ingredient_service, dry_run=dry_run
+            ),
+        ]
+    )
 
     runner = PipelineRunner(modules)
     try:

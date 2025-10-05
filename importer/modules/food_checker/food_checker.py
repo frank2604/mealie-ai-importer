@@ -88,7 +88,7 @@ class FoodCheckerModule:
     # ------------------------------------------------------------------
     def _load_reference_data(self, context: PipelineContext) -> Dict[str, object]:
         if self._service:
-            self._service.refresh()
+            self._service.refresh_foods()
             foods = [
                 _FoodCandidate.from_raw(item)
                 for item in self._service.list_foods()
@@ -112,7 +112,18 @@ class FoodCheckerModule:
                         for item in cached.get("foods", [])
                         if item.get("id")
                     ]
-                    categories = list(cached.get("categories", []))
+
+        if not categories:
+            categories_path = context.cache_paths.food_categories_cache
+            if categories_path.exists():
+                try:
+                    cached_categories = json.loads(categories_path.read_text(encoding="utf-8"))
+                except json.JSONDecodeError:
+                    logger.debug(
+                        "Alte MealieFoodCategoriesCache.json ignoriert – kein gültiges JSON"
+                    )
+                else:
+                    categories = list(cached_categories.get("categories", []))
 
         self._foods = foods
         return {
@@ -129,12 +140,22 @@ class FoodCheckerModule:
         }
 
     def _write_cache(self, snapshot: Dict[str, object], context: PipelineContext) -> None:
-        payload = {
-            "updated_at": datetime.utcnow().isoformat(),
-            **snapshot,
+        timestamp = datetime.utcnow().isoformat()
+        foods_payload = {
+            "updated_at": timestamp,
+            "foods": snapshot.get("foods", []),
         }
         context.cache_paths.foods_cache.write_text(
-            json.dumps(payload, ensure_ascii=False, indent=2),
+            json.dumps(foods_payload, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+
+        categories_payload = {
+            "updated_at": timestamp,
+            "categories": snapshot.get("categories", []),
+        }
+        context.cache_paths.food_categories_cache.write_text(
+            json.dumps(categories_payload, ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
 

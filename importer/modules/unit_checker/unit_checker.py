@@ -90,7 +90,7 @@ class UnitCheckerModule:
     # ------------------------------------------------------------------
     def _load_reference_data(self, context: PipelineContext) -> Dict[str, object]:
         if self._service:
-            self._service.refresh()
+            self._service.refresh_units()
             units = [
                 _UnitCandidate.from_raw(item)
                 for item in self._service.list_units()

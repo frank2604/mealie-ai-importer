@@ -82,7 +82,9 @@ class CreateFoodsModule:
     def _write_updated_cache(self, context: PipelineContext) -> None:
         if not self._service:
             return
-        snapshot = {
+        timestamp = datetime.utcnow().isoformat()
+        foods_payload = {
+            "updated_at": timestamp,
             "foods": [
                 {
                     "id": item.get("id"),
@@ -92,11 +94,18 @@ class CreateFoodsModule:
                 }
                 for item in self._service.list_foods()
             ],
+        }
+        context.cache_paths.foods_cache.write_text(
+            json.dumps(foods_payload, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+
+        categories_payload = {
+            "updated_at": timestamp,
             "categories": list(self._service.list_food_categories()),
         }
-        payload = {"updated_at": datetime.utcnow().isoformat(), **snapshot}
-        context.cache_paths.foods_cache.write_text(
-            json.dumps(payload, ensure_ascii=False, indent=2),
+        context.cache_paths.food_categories_cache.write_text(
+            json.dumps(categories_payload, ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
 

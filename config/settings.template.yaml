@@ -8,6 +8,7 @@ processing:
   output_folder: "data/parsed"
   ocr_enabled: false
   language: "de"
+  skip_ai_if_cached: false
 
 ingredients:
   fuzzy_threshold: 90

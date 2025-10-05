@@ -104,6 +104,39 @@ class IngredientService:
         self._labels = self._fetch_paginated("/api/groups/labels")
         self._save_cache()
 
+    def list_units(self) -> List[Dict[str, Any]]:
+        return list(self._units)
+
+    def list_foods(self) -> List[Dict[str, Any]]:
+        return list(self._foods)
+
+    def list_food_categories(self) -> List[Dict[str, Any]]:
+        return list(self._labels)
+
+    def lookup_unit(self, query: str) -> Optional[UnitResource]:
+        match = self._find_unit(query)
+        if match:
+            return UnitResource(id=str(match.get("id")), raw=match)
+        return None
+
+    def lookup_food(self, query: str) -> Optional[FoodResource]:
+        match = self._find_food(query)
+        if match:
+            return FoodResource(id=str(match.get("id")), raw=match)
+        return None
+
+    def get_unit_by_id(self, unit_id: str) -> Optional[UnitResource]:
+        for item in self._units:
+            if str(item.get("id")) == str(unit_id):
+                return UnitResource(id=str(item.get("id")), raw=item)
+        return None
+
+    def get_food_by_id(self, food_id: str) -> Optional[FoodResource]:
+        for item in self._foods:
+            if str(item.get("id")) == str(food_id):
+                return FoodResource(id=str(item.get("id")), raw=item)
+        return None
+
     def get_or_create_unit(
         self,
         *,

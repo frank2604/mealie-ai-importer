@@ -56,7 +56,10 @@ class AiAnalyserModule:
         self._attach_image_assets(recipe, context)
 
         context.save_recipe(recipe)
-        logger.info("RecipeRawData.json aktualisiert unter %s", context.cache_paths.recipe_raw)
+        logger.info(
+            "RecipeRawDataEnriched.json aktualisiert unter %s",
+            context.cache_paths.recipe_raw,
+        )
 
         if self._output_json:
             self._output_json.parent.mkdir(parents=True, exist_ok=True)
@@ -102,7 +105,7 @@ class AiAnalyserModule:
 
         prepared = prepare_image_asset(
             image_bytes,
-            base_name=context.source_pdf.stem,
+            base_name="image",
             output_dir=self._image_output_dir,
         )
         if not prepared:

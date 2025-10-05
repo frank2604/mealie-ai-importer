@@ -6,6 +6,7 @@ import json
 import logging
 import os
 from pathlib import Path
+import shutil
 from typing import Optional, Dict, Any, List
 
 import httpx
@@ -266,11 +267,23 @@ def _handle_parse_llm(
         logger.error("LLM-Client konnte nicht erstellt werden: %s", exc)
         return 1
 
-    output_json = json_path or default_output_dir / f"{pdf_path.stem}.json"
-    cache_paths = CachePaths(config.ingredients.cache_dir, pdf_path.stem)
+    recipe_key = pdf_path.stem
+    use_default_paths = json_path is None
+    parsed_root = default_output_dir
+
+    if use_default_paths:
+        _prepare_run_dirs(
+            cache_dir=config.ingredients.cache_dir,
+            parsed_root=parsed_root,
+            keep_parsed=config.processing.skip_ai_if_cached,
+        )
+
+    recipe_output_dir = (json_path.parent if json_path else parsed_root / recipe_key)
+    output_json = json_path or recipe_output_dir / "RecipeRawData.json"
+    cache_paths = CachePaths(config.ingredients.cache_dir, recipe_key)
     context = PipelineContext(
         source_pdf=pdf_path,
-        output_dir=default_output_dir,
+        output_dir=recipe_output_dir,
         config=config,
         cache_paths=cache_paths,
         servings_hint=servings_hint,
@@ -283,7 +296,7 @@ def _handle_parse_llm(
             llm_client=client,
             llm_config=llm_config,
             output_json=output_json,
-            image_output_dir=default_output_dir / "images",
+            image_output_dir=recipe_output_dir,
         ),
     ]
 
@@ -335,6 +348,25 @@ def _handle_export_mealie(source: Path, output: Optional[Path], config) -> int:
     return 0
 
 
+def _clear_directory(path: Path) -> None:
+    if not path.exists():
+        return
+    for entry in path.iterdir():
+        if entry.is_dir():
+            shutil.rmtree(entry)
+        else:
+            entry.unlink()
+
+
+def _prepare_run_dirs(*, cache_dir: Path, parsed_root: Path, keep_parsed: bool) -> None:
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    _clear_directory(cache_dir)
+
+    parsed_root.mkdir(parents=True, exist_ok=True)
+    if not keep_parsed:
+        _clear_directory(parsed_root)
+
+
 def _handle_upload(*, source: Path, config: AppConfig, dry_run: bool) -> int:
     if source.suffix.lower() == ".pdf":
         return _handle_upload_pdf(pdf_path=source, config=config, dry_run=dry_run)
@@ -351,6 +383,13 @@ def _handle_upload_pdf(*, pdf_path: Path, config: AppConfig, dry_run: bool) -> i
         logger.error("LLM-Client konnte nicht erstellt werden: %s", exc)
         return 1
 
+    keep_parsed = config.processing.skip_ai_if_cached
+    recipe_key = pdf_path.stem
+    cache_dir = config.ingredients.cache_dir
+    parsed_root = config.processing.output_folder
+
+    _prepare_run_dirs(cache_dir=cache_dir, parsed_root=parsed_root, keep_parsed=keep_parsed)
+
     ingredient_service = IngredientService(
         base_url=config.mealie.base_url,
         token=config.mealie.token,
@@ -358,12 +397,12 @@ def _handle_upload_pdf(*, pdf_path: Path, config: AppConfig, dry_run: bool) -> i
         llm_client=llm_client,
     )
 
-    cache_paths = CachePaths(config.ingredients.cache_dir, pdf_path.stem)
-    output_dir = config.processing.output_folder
-    output_json = output_dir / f"{pdf_path.stem}.json"
+    cache_paths = CachePaths(cache_dir, recipe_key)
+    recipe_output_dir = parsed_root / recipe_key
+    output_json = recipe_output_dir / "RecipeRawData.json"
     context = PipelineContext(
         source_pdf=pdf_path,
-        output_dir=output_dir,
+        output_dir=recipe_output_dir,
         config=config,
         cache_paths=cache_paths,
         servings_hint=None,
@@ -373,12 +412,18 @@ def _handle_upload_pdf(*, pdf_path: Path, config: AppConfig, dry_run: bool) -> i
     modules: List = [PdfInputModule()]
 
     skip_ai = False
-    if config.processing.skip_ai_if_cached and context.cache_paths.recipe_raw.exists():
+    if keep_parsed and output_json.exists():
+        cache_paths.recipe_raw.write_text(
+            output_json.read_text(encoding="utf-8"),
+            encoding="utf-8",
+        )
+
+    if keep_parsed and context.cache_paths.recipe_raw.exists():
         try:
             context.ensure_recipe()
         except RuntimeError as exc:
             logger.warning(
-                "RecipeRawData.json konnte nicht geladen werden (%s) – führe AI-Analyser aus.",
+                "RecipeRawDataEnriched.json konnte nicht geladen werden (%s) – führe AI-Analyser aus.",
                 exc,
             )
         else:
@@ -386,7 +431,7 @@ def _handle_upload_pdf(*, pdf_path: Path, config: AppConfig, dry_run: bool) -> i
             if output_json.exists():
                 context.recipe_output_path = output_json
             logger.info(
-                "RecipeRawData.json bereits vorhanden – überspringe AI-Analyser gemäß Einstellung."
+                "RecipeRawDataEnriched.json bereits vorhanden – überspringe AI-Analyser gemäß Einstellung."
             )
 
     if not skip_ai:
@@ -395,7 +440,7 @@ def _handle_upload_pdf(*, pdf_path: Path, config: AppConfig, dry_run: bool) -> i
                 llm_client=llm_client,
                 llm_config=config.llm,
                 output_json=output_json,
-                image_output_dir=output_dir / "images",
+                image_output_dir=recipe_output_dir,
             )
         )
 

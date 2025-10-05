@@ -53,7 +53,7 @@ class CreateFoodsModule:
             try:
                 resource = self._service.get_or_create_food(
                     name=ingredient.name,
-                    description=ingredient.note or "",
+                    description="",
                     category_hint=self._category_hint(recipe),
                 )
             except Exception as exc:  # pragma: no cover - external API failure

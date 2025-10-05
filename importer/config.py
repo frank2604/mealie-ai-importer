@@ -27,6 +27,7 @@ class ProcessingConfig:
     output_folder: Path
     ocr_enabled: bool = False
     language: str = "de"
+    skip_ai_if_cached: bool = False
 
 
 @dataclass
@@ -86,6 +87,10 @@ def load_config(config_path: Optional[Path] = None) -> AppConfig:
         output_folder=output_folder,
         ocr_enabled=_env_flag("OCR_ENABLED", processing_section.get("ocr_enabled", False)),
         language=_env_or_default("LANGUAGE", processing_section.get("language", "de")),
+        skip_ai_if_cached=_env_flag(
+            "SKIP_AI_IF_CACHED",
+            processing_section.get("skip_ai_if_cached", False),
+        ),
     )
 
     llm = LlmConfig(

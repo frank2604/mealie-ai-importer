@@ -6,16 +6,27 @@ import json
 import logging
 import os
 from pathlib import Path
-from typing import Optional, Dict, Any
+import shutil
+from typing import Optional, Dict, Any, List
 
 import httpx
 
 from .image_utils import prepare_image_asset, select_best_image
 from .mealie_schema import recipe_to_mealie
 from .services.ingredients import IngredientService
-from .models import Recipe, RecipeAsset
+from .models import Recipe
 from .pdf_extractor import PdfExtractionError, extract_text_and_images
 from .simple_parser import parse_recipe
+from .modules import CachePaths, PipelineContext, PipelineRunner
+from .modules.add_food_ids import AddFoodIdsModule
+from .modules.add_unit_ids import AddUnitIdsModule
+from .modules.ai_analyser import AiAnalyserModule
+from .modules.create_foods import CreateFoodsModule
+from .modules.create_recipe import CreateRecipeModule
+from .modules.create_units import CreateUnitsModule
+from .modules.food_checker import FoodCheckerModule
+from .modules.input import PdfInputModule
+from .modules.unit_checker import UnitCheckerModule
 
 _LOG_LEVEL = os.getenv("LOG_LEVEL") or os.getenv("PYTHONLOGLEVEL") or "INFO"
 logging.basicConfig(level=getattr(logging, _LOG_LEVEL.upper(), logging.INFO), format="[%(levelname)s] %(message)s")
@@ -24,31 +35,22 @@ logger = logging.getLogger(__name__)
 DEFAULT_OUTPUT_DIR = Path("data/parsed")
 
 try:
-    from .config import ConfigError, LlmConfig, load_config  # type: ignore
+    from .config import AppConfig, ConfigError, LlmConfig, load_config  # type: ignore
     _CONFIG_IMPORT_ERROR: Optional[Exception] = None
 except ModuleNotFoundError as exc:  # pragma: no cover - optional dependency
     ConfigError = RuntimeError  # type: ignore[assignment]
+    AppConfig = object  # type: ignore[assignment]
     LlmConfig = object  # type: ignore[assignment]
     load_config = None  # type: ignore[assignment]
     _CONFIG_IMPORT_ERROR = exc
 
 try:
-    from .llm_parser import LlmParsingError, OpenAiClient, parse_with_llm  # type: ignore
+    from .llm_parser import OpenAiClient  # type: ignore
 except ModuleNotFoundError as exc:  # pragma: no cover - optional dependency
-    LlmParsingError = RuntimeError  # type: ignore[assignment]
     OpenAiClient = None  # type: ignore[assignment]
-    parse_with_llm = None  # type: ignore[assignment]
     _LLM_IMPORT_ERROR = exc
 else:
     _LLM_IMPORT_ERROR = None
-
-try:
-    from .vision_cropper import crop_image_with_llm  # type: ignore
-except ModuleNotFoundError as exc:  # pragma: no cover - optional dependency
-    crop_image_with_llm = None  # type: ignore[assignment]
-    _VISION_IMPORT_ERROR = exc
-else:
-    _VISION_IMPORT_ERROR = None
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -97,7 +99,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     upload_parser = subparsers.add_parser("upload", help="Rezept nach Mealie übertragen")
-    upload_parser.add_argument("source", type=Path, help="Pfad zur neutralen Rezept-JSON")
+    upload_parser.add_argument("source", type=Path, help="Pfad zur Rezept-JSON oder zur PDF-Datei")
     upload_parser.add_argument(
         "--dry-run",
         action="store_true",
@@ -142,7 +144,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         llm_cfg = config.llm if config is not None else None  # type: ignore[attr-defined]
         return _handle_parse(args.pdf, args.json, output_dir, llm_cfg)
     if args.command == "parse-llm":
-        if parse_with_llm is None or OpenAiClient is None:
+        if OpenAiClient is None:
             logger.error("LLM-Modul konnte nicht geladen werden (%s).", _LLM_IMPORT_ERROR)
             return 1
         assert config is not None  # for type checkers
@@ -151,6 +153,7 @@ def main(argv: Optional[list[str]] = None) -> int:
             json_path=args.json,
             default_output_dir=output_dir,
             llm_config=config.llm,  # type: ignore[arg-type]
+            config=config,
             servings_hint=args.servings,
         )
     if args.command == "export-mealie":
@@ -248,6 +251,7 @@ def _handle_parse_llm(
     json_path: Optional[Path],
     default_output_dir: Path,
     llm_config: LlmConfig,
+    config,
     servings_hint: Optional[str],
 ) -> int:
     if llm_config.provider.lower() != "openai":
@@ -258,105 +262,55 @@ def _handle_parse_llm(
         return 1
 
     try:
-        extraction = extract_text_and_images(pdf_path)
-    except PdfExtractionError as exc:
-        logger.error("PDF konnte nicht gelesen werden: %s", exc)
-        return 2
+        client = _create_openai_client(llm_config)
+    except ValueError as exc:
+        logger.error("LLM-Client konnte nicht erstellt werden: %s", exc)
+        return 1
 
-    if not extraction.text.strip():
-        logger.error("PDF enthielt keinen lesbaren Text. Evtl. OCR nötig.")
-        return 3
+    recipe_key = pdf_path.stem
+    use_default_paths = json_path is None
+    parsed_root = default_output_dir
 
-    client = OpenAiClient(
-        api_key=llm_config.api_key,
-        model=llm_config.model,
-        temperature=llm_config.temperature,
-        max_tokens=llm_config.max_tokens,
-        base_url=llm_config.base_url,
+    if use_default_paths:
+        _prepare_run_dirs(
+            cache_dir=config.ingredients.cache_dir,
+            parsed_root=parsed_root,
+            keep_parsed=config.processing.skip_ai_if_cached,
+        )
+
+    recipe_output_dir = (json_path.parent if json_path else parsed_root / recipe_key)
+    output_json = json_path or recipe_output_dir / "RecipeRawData.json"
+    cache_paths = CachePaths(config.ingredients.cache_dir, recipe_key)
+    context = PipelineContext(
+        source_pdf=pdf_path,
+        output_dir=recipe_output_dir,
+        config=config,
+        cache_paths=cache_paths,
+        servings_hint=servings_hint,
+        recipe_output_path=output_json,
     )
 
-    try:
-        recipe = parse_with_llm(
-            extraction.text,
+    modules = [
+        PdfInputModule(),
+        AiAnalyserModule(
             llm_client=client,
-            source=pdf_path,
-            servings_hint=servings_hint,
-        )
-    except LlmParsingError as exc:
-        logger.error("LLM konnte Rezept nicht verarbeiten: %s", exc)
+            llm_config=llm_config,
+            output_json=output_json,
+            image_output_dir=recipe_output_dir,
+        ),
+    ]
+
+    runner = PipelineRunner(modules)
+    try:
+        runner.run(context)
+    except RuntimeError as exc:
+        logger.error("LLM-Analyse fehlgeschlagen: %s", exc)
         return 4
 
-    _attach_image_assets(
-        recipe,
-        images=extraction.images,
-        pdf_path=pdf_path,
-        output_dir=default_output_dir / "images",
-        llm_config=llm_config,
-    )
-
-    json_path = json_path or default_output_dir / f"{pdf_path.stem}.json"
-    json_path.parent.mkdir(parents=True, exist_ok=True)
-    json_path.write_text(json.dumps(recipe.dict(), ensure_ascii=False, indent=2), encoding="utf-8")
-
-    logger.info("LLM-Rezept nach %s geschrieben", json_path)
-    logger.info("Titel: %s", recipe.title)
+    logger.info("LLM-Rezept nach %s geschrieben", output_json)
+    logger.info("Titel: %s", context.ensure_recipe().title)
 
     return 0
-
-
-def _attach_image_assets(
-    recipe,
-    images,
-    pdf_path: Path,
-    output_dir: Path,
-    llm_config: Optional[LlmConfig],
-) -> None:
-    if not images:
-        return
-
-    best_image = select_best_image(images)
-    if best_image is None:
-        return
-
-    image_bytes = best_image.data
-
-    if (
-        llm_config
-        and llm_config.api_key
-        and crop_image_with_llm is not None
-    ):
-        cropped = crop_image_with_llm(
-            image_bytes,
-            llm_config=llm_config,
-            title=recipe.title or pdf_path.stem,
-        )
-        if cropped:
-            image_bytes = cropped
-        else:
-            logger.debug("Vision-Crop nicht möglich, verwende Originalbild")
-    elif llm_config and llm_config.api_key and crop_image_with_llm is None:
-        logger.warning("Vision-Modul nicht verfügbar (%s) – verwende Originalbild", _VISION_IMPORT_ERROR)
-
-    prepared = prepare_image_asset(
-        image_bytes,
-        base_name=pdf_path.stem,
-        output_dir=output_dir,
-    )
-
-    if not prepared:
-        logger.warning("Bild konnte nicht konvertiert werden (%s)", pdf_path.name)
-        return
-
-    recipe.image_path = str(prepared.file_path)
-    recipe.assets.append(
-        RecipeAsset(
-            file_name=prepared.file_path.name,
-            data=prepared.data_url,
-            title=recipe.title or pdf_path.stem,
-        )
-    )
-
-    logger.info("Bild nach %s geschrieben und als Asset eingebettet", prepared.file_path)
 
 
 def _handle_export_mealie(source: Path, output: Optional[Path], config) -> int:
@@ -394,95 +348,165 @@ def _handle_export_mealie(source: Path, output: Optional[Path], config) -> int:
     return 0
 
 
-def _handle_upload(*, source: Path, config, dry_run: bool) -> int:
+def _clear_directory(path: Path) -> None:
+    if not path.exists():
+        return
+    for entry in path.iterdir():
+        if entry.is_dir():
+            shutil.rmtree(entry)
+        else:
+            entry.unlink()
+
+
+def _prepare_run_dirs(*, cache_dir: Path, parsed_root: Path, keep_parsed: bool) -> None:
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    _clear_directory(cache_dir)
+
+    parsed_root.mkdir(parents=True, exist_ok=True)
+    if not keep_parsed:
+        _clear_directory(parsed_root)
+
+
+def _handle_upload(*, source: Path, config: AppConfig, dry_run: bool) -> int:
+    if source.suffix.lower() == ".pdf":
+        return _handle_upload_pdf(pdf_path=source, config=config, dry_run=dry_run)
+    return _handle_upload_json(source=source, config=config, dry_run=dry_run)
+
+
+def _handle_upload_pdf(*, pdf_path: Path, config: AppConfig, dry_run: bool) -> int:
+    if OpenAiClient is None:
+        logger.error("LLM-Modul konnte nicht geladen werden (%s).", _LLM_IMPORT_ERROR)
+        return 1
+    try:
+        llm_client = _create_openai_client(config.llm)
+    except ValueError as exc:
+        logger.error("LLM-Client konnte nicht erstellt werden: %s", exc)
+        return 1
+
+    keep_parsed = config.processing.skip_ai_if_cached
+    recipe_key = pdf_path.stem
+    cache_dir = config.ingredients.cache_dir
+    parsed_root = config.processing.output_folder
+
+    _prepare_run_dirs(cache_dir=cache_dir, parsed_root=parsed_root, keep_parsed=keep_parsed)
+
+    ingredient_service = IngredientService(
+        base_url=config.mealie.base_url,
+        token=config.mealie.token,
+        config=config.ingredients,
+        llm_client=llm_client,
+    )
+
+    cache_paths = CachePaths(cache_dir, recipe_key)
+    recipe_output_dir = parsed_root / recipe_key
+    output_json = recipe_output_dir / "RecipeRawData.json"
+    context = PipelineContext(
+        source_pdf=pdf_path,
+        output_dir=recipe_output_dir,
+        config=config,
+        cache_paths=cache_paths,
+        servings_hint=None,
+        recipe_output_path=output_json,
+    )
+
+    modules: List = [PdfInputModule()]
+
+    skip_ai = False
+    if keep_parsed and output_json.exists():
+        cache_paths.recipe_raw.write_text(
+            output_json.read_text(encoding="utf-8"),
+            encoding="utf-8",
+        )
+
+    if keep_parsed and context.cache_paths.recipe_raw.exists():
+        try:
+            context.ensure_recipe()
+        except RuntimeError as exc:
+            logger.warning(
+                "RecipeRawDataEnriched.json konnte nicht geladen werden (%s) – führe AI-Analyser aus.",
+                exc,
+            )
+        else:
+            skip_ai = True
+            if output_json.exists():
+                context.recipe_output_path = output_json
+            logger.info(
+                "RecipeRawDataEnriched.json bereits vorhanden – überspringe AI-Analyser gemäß Einstellung."
+            )
+
+    if not skip_ai:
+        modules.append(
+            AiAnalyserModule(
+                llm_client=llm_client,
+                llm_config=config.llm,
+                output_json=output_json,
+                image_output_dir=recipe_output_dir,
+            )
+        )
+
+    modules.extend(
+        [
+            FoodCheckerModule(ingredient_service, llm_client=llm_client),
+            CreateFoodsModule(ingredient_service, dry_run=dry_run),
+            AddFoodIdsModule(),
+            UnitCheckerModule(ingredient_service, llm_client=llm_client),
+            CreateUnitsModule(ingredient_service, dry_run=dry_run),
+            AddUnitIdsModule(),
+            CreateRecipeModule(
+                config=config, ingredient_service=ingredient_service, dry_run=dry_run
+            ),
+        ]
+    )
+
+    runner = PipelineRunner(modules)
+    try:
+        runner.run(context)
+    except RuntimeError as exc:
+        logger.error("Pipeline fehlgeschlagen: %s", exc)
+        return 1
+    finally:
+        ingredient_service.close()
+
+    return 0
+
+
+def _handle_upload_json(*, source: Path, config: AppConfig, dry_run: bool) -> int:
     try:
         recipe = _load_recipe(source)
     except (OSError, ValueError) as exc:
         logger.error("Rezept konnte nicht geladen werden: %s", exc)
         return 1
 
-    if dry_run:
-        mealie_payload = recipe_to_mealie(recipe, None).to_dict()
-        logger.info("Dry-Run aktiviert – Payload wird nicht gesendet")
-        print(json.dumps(mealie_payload, ensure_ascii=False, indent=2))
-        return 0
-
-    ingredient_service: Optional[IngredientService] = None
-    client: Optional[OpenAiClient] = None
-
     try:
-        try:
-            client = _create_openai_client(config.llm)
-        except ValueError:
-            client = None
+        llm_client = _create_openai_client(config.llm)
+    except ValueError:
+        llm_client = None
 
-        ingredient_service = IngredientService(
-            base_url=config.mealie.base_url,
-            token=config.mealie.token,
-            config=config.ingredients,
-            llm_client=client,
-        )
+    ingredient_service = IngredientService(
+        base_url=config.mealie.base_url,
+        token=config.mealie.token,
+        config=config.ingredients,
+        llm_client=llm_client,
+    )
 
-        mealie_payload = recipe_to_mealie(recipe, ingredient_service).to_dict()
+    cache_paths = CachePaths(config.ingredients.cache_dir, source.stem)
+    context = PipelineContext(
+        source_pdf=source,
+        output_dir=config.processing.output_folder,
+        config=config,
+        cache_paths=cache_paths,
+    )
+    context.recipe = recipe
+
+    module = CreateRecipeModule(config=config, ingredient_service=ingredient_service, dry_run=dry_run)
+    try:
+        module.run(context)
+    except RuntimeError as exc:
+        logger.error("Rezept konnte nicht hochgeladen werden: %s", exc)
+        return 1
     finally:
-        if ingredient_service:
-            ingredient_service.close()
+        ingredient_service.close()
 
-    base_url = config.mealie.base_url.rstrip("/")  # type: ignore[union-attr]
-    endpoint = f"{base_url}/api/recipes"
-    headers = {
-        "Authorization": f"Bearer {config.mealie.token}",
-        "Content-Type": "application/json",
-    }
-
-    try:
-        response = httpx.post(endpoint, headers=headers, json=mealie_payload, timeout=60)
-    except httpx.HTTPError as exc:
-        logger.error("HTTP-Anfrage fehlgeschlagen: %s", exc)
-        return 1
-
-    if response.status_code >= 300:
-        logger.error(
-            "Mealie-API meldet Fehler %s: %s",
-            response.status_code,
-            response.text[:500],
-        )
-        return 1
-
-    slug = _parse_slug_from_response(response)
-    logger.info("Rezept erfolgreich importiert (%s)", slug or response.text[:200])
-
-    if slug and recipe.assets:
-        asset = recipe.assets[0]
-        try:
-            file_name, mime_type, file_bytes = _data_url_to_file(asset)
-        except ValueError as exc:
-            logger.warning("Bild konnte nicht verarbeitet werden: %s", exc)
-            return 0
-
-        asset_info = _upload_asset(
-            base_url=base_url,
-            token=config.mealie.token,  # type: ignore[union-attr]
-            slug=slug,
-            file_name=file_name,
-            title=asset.title or recipe.title,
-            mime_type=mime_type,
-            file_bytes=file_bytes,
-        )
-        if asset_info:
-            logger.info("Bild erfolgreich angehängt")
-            extension = file_name.split(".")[-1]
-            if _set_recipe_image_via_upload(
-                base_url=base_url,
-                token=config.mealie.token,  # type: ignore[union-attr]
-                slug=slug,
-                file_bytes=file_bytes,
-                mime_type=mime_type,
-                extension=extension,
-            ):
-                logger.info("Bild als Feature gesetzt")
-        else:
-            logger.warning("Bild konnte nicht als Asset hochgeladen werden")
     return 0
 
 
@@ -506,94 +530,6 @@ def _create_openai_client(llm_config: LlmConfig) -> Optional[OpenAiClient]:
         base_url=llm_config.base_url,
         timeout=llm_config.timeout,
     )
-
-
-def _parse_slug_from_response(response: httpx.Response) -> Optional[str]:
-    slug: Optional[str] = None
-    try:
-        data = response.json()
-    except ValueError:
-        data = response.text
-
-    if isinstance(data, dict):
-        slug = data.get("slug") or data.get("id") or data.get("name")
-    elif isinstance(data, str):
-        slug = data
-
-    if slug:
-        return slug.strip().strip('"')
-    return None
-
-
-def _data_url_to_file(asset: RecipeAsset) -> tuple[str, str, bytes]:
-    if not asset.data.startswith("data:"):
-        raise ValueError("Asset enthält keine data:-URL")
-    header, b64 = asset.data.split(",", 1)
-    if ";base64" not in header:
-        raise ValueError("Asset ist nicht Base64-kodiert")
-    mime = header.split(":", 1)[1].split(";")[0]
-    extension = "jpg"
-    if "/" in mime:
-        extension = mime.split("/", 1)[1]
-    file_name = asset.file_name or f"asset.{extension}"
-    import base64
-
-    file_bytes = base64.b64decode(b64)
-    return file_name, mime, file_bytes
-
-
-def _upload_asset(*, base_url: str, token: str, slug: str, file_name: str, title: str,
-                  mime_type: str, file_bytes: bytes) -> Optional[Dict[str, Any]]:
-    endpoint = f"{base_url.rstrip('/')}/api/recipes/{slug}/assets"
-    files = {
-        "file": (file_name, file_bytes, mime_type),
-    }
-    data = {
-        "name": title,
-        "icon": "mdi-image",
-        "extension": file_name.split(".")[-1],
-    }
-    headers = {
-        "Authorization": f"Bearer {token}",
-    }
-
-    try:
-        response = httpx.post(endpoint, headers=headers, data=data, files=files, timeout=60)
-    except httpx.HTTPError as exc:
-        logger.error("Asset-Upload fehlgeschlagen: %s", exc)
-        return None
-
-    if response.status_code >= 300:
-        logger.error("Asset-Upload Fehler %s: %s", response.status_code, response.text[:200])
-        return None
-
-    try:
-        return response.json()
-    except ValueError:
-        return {"fileName": file_name}
-
-
-def _set_recipe_image_via_upload(*, base_url: str, token: str, slug: str,
-                                 file_bytes: bytes, mime_type: str, extension: str) -> bool:
-    endpoint = f"{base_url.rstrip('/')}/api/recipes/{slug}/image"
-    headers = {
-        "Authorization": f"Bearer {token}",
-    }
-    files = {
-        "image": (f"image.{extension}", file_bytes, mime_type),
-    }
-    data = {"extension": extension}
-
-    try:
-        response = httpx.put(endpoint, headers=headers, data=data, files=files, timeout=60)
-    except httpx.HTTPError as exc:
-        logger.error("Bild-Upload fehlgeschlagen: %s", exc)
-        return False
-
-    if response.status_code >= 300:
-        logger.error("Bild-Upload Fehler %s: %s", response.status_code, response.text[:200])
-        return False
-    return True
 
 
 if __name__ == "__main__":  # pragma: no cover

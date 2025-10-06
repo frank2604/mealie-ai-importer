@@ -80,6 +80,13 @@ class CreateRecipeModule:
                 logger.warning("Rezeptdetails konnten nicht aktualisiert werden: %s", exc)
             else:
                 logger.info("Rezeptdetails aktualisiert")
+        if slug and not _update_recipe_details(
+            base_url=base_url,
+            token=token,
+            slug=slug,
+            payload=payload,
+        ):
+            logger.warning("Rezeptdetails konnten nicht aktualisiert werden")
 
         if slug and recipe.assets:
             asset = recipe.assets[0]
@@ -138,6 +145,12 @@ def _update_recipe_details(
 
     update_payload = _merge_recipe_payload(recipe, payload)
 
+    *,
+    base_url: str,
+    token: str,
+    slug: str,
+    payload: Dict[str, object],
+) -> bool:
     endpoint = f"{base_url.rstrip('/')}/api/recipes/{slug}"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -249,6 +262,74 @@ def _merge_name_slug_list(
             merged_entries.append(dict(item))
 
     return merged_entries
+    sanitized_payload = dict(payload)
+    sanitized_payload.pop("assets", None)
+
+    existing_payload = _fetch_recipe_payload(
+        base_url=base_url,
+        token=token,
+        slug=slug,
+        headers=headers,
+    )
+    if existing_payload is None:
+        logger.error("Vorhandene Rezeptdaten konnten nicht geladen werden")
+        return False
+
+    update_payload: Dict[str, object] = dict(existing_payload)
+    # Kommentare und Assets werden separat gehandhabt
+    update_payload.pop("comments", None)
+    update_payload.pop("assets", None)
+
+    for key, value in sanitized_payload.items():
+        update_payload[key] = value
+
+    try:
+        response = httpx.put(endpoint, headers=headers, json=update_payload, timeout=60)
+    except httpx.HTTPError as exc:
+        logger.error("Update der Rezeptdetails fehlgeschlagen: %s", exc)
+        return False
+
+    if response.status_code >= 300:
+        logger.error(
+            "Update der Rezeptdetails schlug fehl (%s): %s",
+            response.status_code,
+            response.text[:200],
+        )
+        return False
+
+    logger.info("Rezeptdetails aktualisiert")
+    return True
+
+
+def _fetch_recipe_payload(
+    *, base_url: str, token: str, slug: str, headers: Dict[str, str]
+) -> Optional[Dict[str, object]]:
+    endpoint = f"{base_url.rstrip('/')}/api/recipes/{slug}"
+    try:
+        response = httpx.get(endpoint, headers=headers, timeout=60)
+    except httpx.HTTPError as exc:
+        logger.error("Abrufen des bestehenden Rezepts fehlgeschlagen: %s", exc)
+        return None
+
+    if response.status_code >= 300:
+        logger.error(
+            "Abrufen des bestehenden Rezepts schlug fehl (%s): %s",
+            response.status_code,
+            response.text[:200],
+        )
+        return None
+
+    try:
+        data = response.json()
+    except ValueError:
+        logger.error("Unerwartete Antwort beim Abrufen des Rezepts: %s", response.text[:200])
+        return None
+
+    if not isinstance(data, dict):
+        logger.error("Rezeptantwort hat unerwartetes Format")
+        return None
+
+    return data
 
 
 def _data_url_to_file(asset: RecipeAsset) -> tuple[str, str, bytes]:

@@ -121,6 +121,7 @@ def _ingredient_to_entry(
         entry["foodId"] = food_resource.id
         entry["display"] = display_text
         entry["originalText"] = display_text
+        entry["display"] = _build_display_string(ingredient)
     else:
         amount = f"{ingredient.quantity:g}" if ingredient.quantity is not None else ""
         unit = ingredient.unit or ""

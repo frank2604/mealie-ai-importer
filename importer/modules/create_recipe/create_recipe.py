@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import httpx
 
@@ -65,8 +65,23 @@ class CreateRecipeModule:
                 f"Mealie-API meldet Fehler {response.status_code}: {response.text[:500]}"
             )
 
-        slug = _parse_slug_from_response(response)
+        response_data = _parse_recipe_from_response(response)
+        slug = response_data.get("slug") or _parse_slug_from_response(response)
         logger.info("Rezept erfolgreich importiert (%s)", slug or response.text[:200])
+
+        if slug:
+            try:
+                _update_recipe_details(
+                    base_url=base_url,
+                    token=token,
+                    slug=slug,
+                    payload=payload,
+                    created_recipe=response_data,
+                )
+            except RuntimeError as exc:
+                logger.warning("Rezeptdetails konnten nicht aktualisiert werden: %s", exc)
+            else:
+                logger.info("Rezeptdetails aktualisiert")
 
         if slug and recipe.assets:
             asset = recipe.assets[0]
@@ -116,6 +131,164 @@ def _parse_slug_from_response(response: httpx.Response) -> Optional[str]:
     if slug:
         return slug.strip().strip('"')
     return None
+
+
+def _update_recipe_details(
+    base_url: str,
+    token: str,
+    slug: str,
+    payload: Dict[str, object],
+    created_recipe: Optional[Dict[str, Any]] = None,
+) -> None:
+    recipe = created_recipe or _fetch_recipe(base_url=base_url, token=token, slug=slug)
+
+    update_payload = _merge_recipe_payload(recipe, payload, slug)
+
+    _send_recipe_update(
+        base_url=base_url,
+        token=token,
+        slug=slug,
+        update_payload=update_payload,
+    )
+
+
+def _send_recipe_update(
+    base_url: str,
+    token: str,
+    slug: str,
+    update_payload: Dict[str, object],
+) -> None:
+    endpoint = f"{base_url.rstrip('/')}/api/recipes/{slug}"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+    }
+
+    try:
+        response = httpx.put(endpoint, headers=headers, json=update_payload, timeout=60)
+    except httpx.HTTPError as exc:  # pragma: no cover - runtime safeguard
+        raise RuntimeError(f"HTTP-Anfrage fehlgeschlagen: {exc}") from exc
+
+    if response.status_code >= 300:
+        raise RuntimeError(f"{response.status_code}: {response.text[:500]}")
+
+
+def _fetch_recipe(base_url: str, token: str, slug: str) -> Dict[str, object]:
+    endpoint = f"{base_url.rstrip('/')}/api/recipes/{slug}"
+    headers = {
+        "Authorization": f"Bearer {token}",
+    }
+
+    try:
+        response = httpx.get(endpoint, headers=headers, timeout=30)
+    except httpx.HTTPError as exc:  # pragma: no cover - runtime safeguard
+        raise RuntimeError(f"HTTP-Abfrage fehlgeschlagen: {exc}") from exc
+
+    if response.status_code >= 300:
+        raise RuntimeError(f"{response.status_code}: {response.text[:500]}")
+
+    try:
+        data = response.json()
+    except ValueError as exc:  # pragma: no cover - runtime safeguard
+        raise RuntimeError("Antwort konnte nicht gelesen werden") from exc
+
+    if not isinstance(data, dict):
+        raise RuntimeError("Unerwartete Antwort beim Lesen des Rezepts")
+
+    return data
+
+
+def _merge_recipe_payload(
+    existing: Dict[str, object],
+    new_payload: Dict[str, object],
+    slug: Optional[str],
+) -> Dict[str, object]:
+    merged: Dict[str, object] = dict(existing)
+
+    payload_copy = dict(new_payload)
+    payload_copy.pop("assets", None)
+
+    for key in [
+        "name",
+        "description",
+        "recipeServings",
+        "recipeIngredient",
+        "recipeInstructions",
+        "recipeCategory",
+        "tags",
+        "tools",
+        "notes",
+        "totalTime",
+        "orgURL",
+    ]:
+        if key in payload_copy:
+            if key == "tags":
+                merged[key] = _merge_name_slug_list(existing.get(key), payload_copy[key])
+            elif key == "recipeCategory":
+                merged[key] = _merge_name_slug_list(existing.get(key), payload_copy[key])
+            else:
+                merged[key] = payload_copy[key]
+
+    if "settings" in payload_copy:
+        merged_settings: Dict[str, object] = {}
+        existing_settings = existing.get("settings")
+        if isinstance(existing_settings, dict):
+            merged_settings.update(existing_settings)
+        new_settings = payload_copy.get("settings")
+        if isinstance(new_settings, dict):
+            merged_settings.update(new_settings)
+        merged["settings"] = merged_settings
+
+    if slug:
+        merged["slug"] = slug
+    elif existing.get("slug"):
+        merged["slug"] = existing["slug"]
+
+    for key in ("id", "userId", "groupId", "householdId"):
+        if existing.get(key) is not None:
+            merged[key] = existing[key]
+
+    return merged
+
+
+def _parse_recipe_from_response(response: httpx.Response) -> Dict[str, Any]:
+    try:
+        data = response.json()
+    except ValueError:
+        return {}
+
+    if isinstance(data, dict):
+        return data
+    return {}
+
+
+def _merge_name_slug_list(
+    existing: Optional[object], new_entries: Optional[object]
+) -> Optional[List[Dict[str, object]]]:
+    if not isinstance(new_entries, list):
+        return None
+
+    existing_map: Dict[str, Dict[str, object]] = {}
+    if isinstance(existing, list):
+        for item in existing:
+            if isinstance(item, dict):
+                slug = item.get("slug")
+                if isinstance(slug, str):
+                    existing_map[slug] = dict(item)
+
+    merged_entries: List[Dict[str, object]] = []
+    for item in new_entries:
+        if not isinstance(item, dict):
+            continue
+        slug = item.get("slug")
+        if isinstance(slug, str) and slug in existing_map:
+            combined = existing_map[slug]
+            combined.update(item)
+            merged_entries.append(combined)
+        else:
+            merged_entries.append(dict(item))
+
+    return merged_entries
 
 
 def _data_url_to_file(asset: RecipeAsset) -> tuple[str, str, bytes]:

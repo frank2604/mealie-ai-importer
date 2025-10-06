@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
+from uuid import uuid4
 
 from .models import Ingredient, IngredientSection, InstructionSection, Recipe, RecipeAsset
 from .services.ingredients import FoodResource, IngredientService, UnitResource
@@ -109,6 +110,7 @@ def _ingredient_to_entry(
                 category_hint=category_hint,
             )
 
+        display_text = _build_display_string(ingredient)
         entry: Dict[str, Any] = {
             "quantity": ingredient.quantity,
             "note": ingredient.note,
@@ -117,6 +119,8 @@ def _ingredient_to_entry(
         }
         entry["unitId"] = unit_resource.id
         entry["foodId"] = food_resource.id
+        entry["display"] = display_text
+        entry["originalText"] = display_text
         entry["display"] = _build_display_string(ingredient)
     else:
         amount = f"{ingredient.quantity:g}" if ingredient.quantity is not None else ""
@@ -129,10 +133,12 @@ def _ingredient_to_entry(
             "note": display,
             "display": display,
         }
+        entry["originalText"] = display
 
     if section_name and "title" not in entry:
         entry["title"] = section_name
 
+    entry["referenceId"] = str(uuid4())
     return _clean_nulls(entry)
 
 

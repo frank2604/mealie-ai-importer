@@ -65,7 +65,8 @@ class CreateRecipeModule:
                 f"Mealie-API meldet Fehler {response.status_code}: {response.text[:500]}"
             )
 
-        slug = _parse_slug_from_response(response)
+        response_data = _parse_recipe_from_response(response)
+        slug = response_data.get("slug") or _parse_slug_from_response(response)
         logger.info("Rezept erfolgreich importiert (%s)", slug or response.text[:200])
 
         if slug:

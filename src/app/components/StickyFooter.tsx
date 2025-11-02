@@ -16,7 +16,7 @@ export const StickyFooter: React.FC<StickyFooterProps> = ({ isFirstStep, isLastS
 
   return (
     <footer className="border-t border-border bg-panel/95 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-8">
+      <div className={clsx("flex w-full flex-wrap items-center justify-between gap-3 py-4", layoutConfig.spacing.layout.page.x)}>
         <button
           type="button"
           onClick={onCancel}

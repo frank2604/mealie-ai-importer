@@ -204,11 +204,11 @@ export const layoutConfig = {
       _params: {
         /** Spalten-Verhältnis (Flexbox fr-Einheiten) */
         columnRatio: {
-          left: 3,   // 60% der verfügbaren Breite
-          right: 2,  // 40% der verfügbaren Breite
+          left: 2,   // 60% der verfügbaren Breite
+          right: 3,  // 40% der verfügbaren Breite
         },
         /** Abstand zwischen den Spalten */
-        gap: '1.5rem',  // gap-6
+        /** gap: '1.5rem',  // gap-6 */
         /** Breakpoint für zweispaltiges Layout */
         breakpoint: {
           name: 'xl',

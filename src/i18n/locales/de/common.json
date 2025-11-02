@@ -348,9 +348,16 @@
   "settings": {
     "title": "Einstellungen",
     "subtitle": "Passe Darstellung und spätere Automatisierungen an.",
+    "general": {
+      "title": "Allgemein",
+      "description": "Grundlegende Einstellungen für Darstellung und Sprache.",
+      "themeLabel": "Anzeigemodus",
+      "languageLabel": "Sprache"
+    },
     "theme": {
       "title": "Theme",
-      "description": "Vorschau der aktuellen Farbvarianten. Die Auswahl wird im nächsten Sprint gespeichert."
+      "description": "Vorschau der aktuellen Farbvarianten. Die Auswahl wird im nächsten Sprint gespeichert.",
+      "current": "Aktuelles Theme"
     },
     "prompts": {
       "title": "Prompts",

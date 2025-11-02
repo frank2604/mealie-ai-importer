@@ -348,9 +348,16 @@
   "settings": {
     "title": "Settings",
     "subtitle": "Adjust presentation and upcoming automations.",
+    "general": {
+      "title": "General",
+      "description": "Core options for appearance and language.",
+      "themeLabel": "Display mode",
+      "languageLabel": "Language"
+    },
     "theme": {
       "title": "Theme",
-      "description": "Preview of the current color variants. Saving is planned for the next sprint."
+      "description": "Preview of the current color variants. Saving is planned for the next sprint.",
+      "current": "Current theme"
     },
     "prompts": {
       "title": "Prompts",

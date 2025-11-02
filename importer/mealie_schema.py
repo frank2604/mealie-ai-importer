@@ -88,10 +88,9 @@ def _ingredient_to_entry(
         else:
             unit_resource = None
         if not unit_resource:
+            unit_name = ingredient.unit or "Stück"
             unit_resource = ingredient_service.get_or_create_unit(
-                name=ingredient.unit or "Stück",
-                plural_name=ingredient.unit or "Stück",
-                abbreviation=ingredient.unit or "",
+                name=unit_name,
                 fraction=True,
             )
 
@@ -106,7 +105,7 @@ def _ingredient_to_entry(
         if not food_resource:
             food_resource = ingredient_service.get_or_create_food(
                 name=ingredient.name,
-                description=ingredient.note or "",
+                description="",
                 category_hint=category_hint,
             )
 
@@ -159,15 +158,18 @@ def _map_instructions(sections: Iterable[InstructionSection]) -> List[Dict[str, 
             steps.append(
                 _clean_nulls(
                     {
+                        "id": str(uuid4()),
                         "title": section.name or "",
-                        "text": step.instruction,
                         "summary": "",
+                        "text": step.instruction,
+                        "order": step.order,
+                        "ingredientReferences": [],
+                        "timerMinutes": step.timer_minutes,
                     }
                 )
             )
     if not steps:
         return []
-    # Mealie expects at least empty title field
     return steps
 
 

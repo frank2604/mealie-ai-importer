@@ -5,19 +5,19 @@ import logging
 
 from ..context import PipelineContext
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("Add Food IDs")
 
 
 class AddFoodIdsModule:
     """Write the resolved food IDs back into the recipe JSON."""
 
-    name = "Add Food-IDs"
+    name = "Add Food IDs"
 
     def run(self, context: PipelineContext) -> None:
         context.ensure_recipe()
         matches = context.food_matches
         if not matches and not context.created_food_ids:
-            logger.info("Keine Lebensmittel-Zuordnungen zu aktualisieren")
+            logger.info("There are no food assignments to update")
             return
 
         updated = 0
@@ -29,7 +29,6 @@ class AddFoodIdsModule:
 
         if updated:
             context.update_recipe_file()
-            logger.info("%s Zutaten um Mealie-Food-ID ergänzt", updated)
+            logger.info("Added Mealie food IDs to %s ingredient%s", updated, "" if updated == 1 else "s")
         else:
-            logger.info("Lebensmittel-IDs waren bereits gesetzt")
-
+            logger.info("All ingredients already had their food IDs")

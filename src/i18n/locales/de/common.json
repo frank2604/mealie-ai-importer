@@ -1,0 +1,401 @@
+{
+  "app": {
+    "title": "Mealie AI-Importer",
+    "subtitle": "Beschleunige die Übernahme Deiner Rezepte aus PDFs"
+  },
+  "navigation": {
+    "wizard": "Importer",
+    "settings": "Einstellungen"
+  },
+  "language": {
+    "toggle": "Sprache wechseln",
+    "de": "DE",
+    "en": "EN"
+  },
+  "theme": {
+    "toggle": "Theme wechseln",
+    "light": "Hell",
+    "dark": "Dunkel"
+  },
+  "steps": {
+    "select": {
+      "title": "Auswählen",
+      "subtitle": "PDF importieren und vorbereiten"
+    },
+    "analyze": {
+      "title": "Analysieren",
+      "subtitle": "Schritte, Log und AI-Bewertung prüfen"
+    },
+    "review": {
+      "title": "Prüfen",
+      "subtitle": "Zutaten, Mengen und Einheiten feinjustieren"
+    },
+    "transfer": {
+      "title": "Übertragen",
+      "subtitle": "Überblick & abschließende Protokolle"
+    }
+  },
+  "dropzone": {
+    "title": "PDF auswählen",
+    "subtitle": "Ziehe eine PDF-Datei hierher oder nutze den Button, um eine Datei auszuwählen.",
+    "hint": "Unterstützt werden mehrseitige Rezepte. Maximal 20 MB.",
+    "browse": "Datei auswählen"
+  },
+  "select": {
+    "hints": [
+      "Mehrseitige PDFs mit Zutatenliste und Anleitung erzielen die besten Ergebnisse.",
+      "Verwende klare Mengenangaben – AI schlägt bei Unklarheiten Alternativen vor.",
+      "Sensible Daten bleiben lokal. Eine optionale Cloud-Anbindung folgt später."
+    ]
+  },
+  "analyze": {
+    "logTitle": "Analyse-Protokoll",
+    "summary": "Das System extrahiert Rezeptinformationen, schlägt Zuordnungen vor und priorisiert fehlende Elemente.",
+    "metrics": {
+      "ingredients": {
+        "title": "Erkannte Zutaten",
+        "description": "Abgleich mit Deinen Mealie-Lebensmitteln."
+      },
+      "units": {
+        "title": "Erkannte Einheiten",
+        "description": "Automatisch harmonisiert mit Standard-Einheiten."
+      },
+      "confidence": {
+        "title": "AI-Confidence",
+        "description": "Qualität der Zuordnungen im aktuellen Lauf."
+      }
+    },
+    "logEntries": [
+      {
+        "level": "INFO",
+        "message": "Import gestartet – PDF wird vorverarbeitet und Seiten aufgeteilt.",
+        "time": "08:31:12"
+      },
+      {
+        "level": "OK",
+        "message": "Text extrahiert (12 Absätze) und visuelle Layouts erkannt.",
+        "time": "08:31:15"
+      },
+      {
+        "level": "AI",
+        "message": "Ingredient-Parser schlägt Mapping zu \"Lachsfilet\" vor (Confidence 0,92).",
+        "time": "08:31:18"
+      },
+      {
+        "level": "WARN",
+        "message": "Zutat \"Wasabi\" nicht eindeutig – benötige Bestätigung.",
+        "time": "08:31:20"
+      },
+      {
+        "level": "ERROR",
+        "message": "Einheit \"Prise\" nicht in Mealie vorhanden – bitte hinzufügen.",
+        "time": "08:31:22"
+      },
+      {
+        "level": "INFO",
+        "message": "Analyse abgeschlossen. Gehe zu Schritt 3, um Details zu prüfen.",
+        "time": "08:31:25"
+      }
+    ],
+    "checklist": [
+      "OCR + Layout Analyse (100 % abgeschlossen)",
+      "Ingredient Mapping (87 % abgeschlossen)",
+      "Einheiten Normalisierung (65 % – benötigt Review)"
+    ]
+  },
+  "review": {
+    "sections": {
+      "ingredients": "Zutaten, Mengen & Einheiten",
+      "preparation": "Zubereitung",
+      "image": "Bildausschnitt"
+    },
+    "status": {
+      "found": "Gefunden",
+      "new": "Neu",
+      "error": "Fehler",
+      "info": "AI-Hinweis"
+    },
+    "actions": {
+      "view": "Details ansehen",
+      "edit": "Eintrag bearbeiten"
+    },
+    "pdfPlaceholder": {
+      "title": "PDF Vorschau",
+      "description": "Der PDF-Viewer wird hier eingebettet. Bis dahin siehst Du diesen Platzhalter.",
+      "toggleShow": "PDF anzeigen",
+      "toggleHide": "PDF ausblenden",
+      "pager": {
+        "page": "Seite {{current}} / {{total}}",
+        "prev": "Zurück",
+        "next": "Weiter",
+        "zoomIn": "Vergrößern",
+        "zoomOut": "Verkleinern"
+      }
+    },
+    "table": {
+      "headers": {
+        "source": "Gefunden im Rezept",
+        "mapping": "Mapping / Neu"
+      },
+      "labels": {
+        "ingredient": "Zutat",
+        "note": "Notiz"
+      }
+    },
+    "summary": {
+      "title": "Hähnchenbrustfilet im Schinkenmantel",
+      "description": "Zarte Hähnchenbrustfilets werden mit Salbei und Parma-Schinken umwickelt, scharf angebraten und in einer cremigen Champignon-Wermut-Sauce im Ofen vollendet. Serviere das Gericht mit Pellkartoffeln und grünem Salat für ein rundes Hauptgericht.",
+      "meta": [
+        {
+          "leftLabel": "Portion",
+          "leftValue": "4",
+          "rightLabel": "Gesamtzeit",
+          "rightValue": "1 Stunde 30"
+        },
+        {
+          "leftLabel": "Portionsangabe",
+          "leftValue": "1,5",
+          "rightLabel": "Vorbereitungszeit",
+          "rightValue": "30 Min."
+        },
+        {
+          "leftLabel": "Ergibt (Text)",
+          "leftValue": "Liter Suppe",
+          "rightLabel": "Kochzeit",
+          "rightValue": "1 Stunde"
+        }
+      ]
+    },
+    "entries": [
+      {
+        "amount": "2",
+        "unit": "Stück",
+        "unitMapping": "Stück",
+        "unitStatus": "found",
+        "unitMethod": "word-match",
+        "unitConfidence": "0,97",
+        "ingredient": "Rote Zwiebeln",
+        "ingredientMapping": "Zwiebeln (rot)",
+        "ingredientStatus": "found",
+        "ingredientMethod": "fuzzy",
+        "ingredientConfidence": "0,92",
+        "note": "In kleine Würfel schneiden"
+      },
+      {
+        "amount": "1",
+        "unit": "Stück",
+        "unitMapping": "Stück",
+        "unitStatus": "found",
+        "unitMethod": "word-match",
+        "unitConfidence": "0,84",
+        "ingredient": "Lorbeerblatt",
+        "ingredientMapping": "Lorbeerblatt",
+        "ingredientStatus": "new",
+        "ingredientMethod": "ai",
+        "ingredientNew": {
+          "nameSingular": "Lorbeerblatt",
+          "namePlural": "Lorbeerblätter",
+          "category": "Gewürze",
+          "aliases": "Bayleaf; Lorbeer"
+        },
+        "note": "-"
+      },
+      {
+        "amount": "2",
+        "unit": "Liter",
+        "unitMapping": "Liter",
+        "unitStatus": "new",
+        "unitMethod": "ai",
+        "unitNew": {
+          "nameSingular": "Liter",
+          "namePlural": "Liter",
+          "abbreviationSingular": "l",
+          "abbreviationPlural": "l",
+          "useAbbreviation": true,
+          "supportsFraction": false
+        },
+        "ingredient": "Gemüsebrühe",
+        "ingredientMapping": "Gemüsefond",
+        "ingredientStatus": "found",
+        "ingredientMethod": "fuzzy",
+        "ingredientConfidence": "0,88",
+        "note": "Am besten frisch zubereitet"
+      }
+    ],
+    "preparation": {
+      "headers": {
+        "step": "Schritt",
+        "text": "Text"
+      },
+      "labels": {
+        "ingredients": "Verwendete Zutaten"
+      },
+      "selectIngredient": "Zutat hinzufügen...",
+      "removeIngredient": "Zutat entfernen",
+      "rows": [
+        {
+          "step": "1",
+          "text": "Gemüsebrühe zum Kochen bringen"
+        },
+        {
+          "step": "2",
+          "text": "Rote Zwiebeln in feine Würfel schneiden"
+        }
+      ]
+    },
+    "image": {
+      "caption": "Geplanter Bildausschnitt des Originals. Der finale Ausschnitt folgt mit dem PDF-Viewer."
+    },
+    "modal": {
+      "unitFound": {
+        "subtitle": "Die Einheit wurde mit dieser Methode gefunden:"
+      },
+      "ingredientFound": {
+        "subtitle": "Die Zutat wurde mit dieser Methode gefunden:"
+      },
+      "unitNew": {
+        "subtitle": "AI schlägt die Neuanlage der Einheit mit folgenden Parametern vor:",
+        "fields": {
+          "nameSingular": "Name Einzahl",
+          "namePlural": "Name Mehrzahl",
+          "abbreviationSingular": "Abkürzung Einzahl",
+          "abbreviationPlural": "Abkürzung Mehrzahl",
+          "useAbbreviation": "Verwende Abkürzung",
+          "supportsFraction": "Bruchzahl"
+        }
+      },
+      "ingredientNew": {
+        "subtitle": "AI schlägt die Neuanlage der Zutat mit folgenden Parametern vor:",
+        "fields": {
+          "nameSingular": "Name Einzahl",
+          "namePlural": "Name Mehrzahl",
+          "category": "Kategorie",
+          "aliases": "Aliasse"
+        }
+      },
+      "methods": {
+        "word": "Wortübereinstimmung",
+        "fuzzy": "Fuzzy-Suche",
+        "ai": "AI-Matching"
+      },
+      "methodLabel": "Gefundene Methode",
+      "methodUnknown": "Methode nicht verfügbar",
+      "confidenceLabel": "Confidence",
+      "close": "Schließen",
+      "cancel": "Abbrechen",
+      "save": "Übernehmen",
+      "categories": [
+        "Gemüse",
+        "Obst",
+        "Gewürze",
+        "Fleisch",
+        "Fisch",
+        "Getreide",
+        "Milchprodukte",
+        "Saucen"
+      ]
+    }
+  },
+  "transfer": {
+    "logTitle": "Übertragungs-Protokoll",
+    "archive": "Log archivieren",
+    "summary": "Zusammenfassung der übertragenen Elemente. Nutze das Archiv, um die Ergebnisse später nachzuvollziehen.",
+    "logEntries": [
+      {
+        "level": "INFO",
+        "message": "Übertragung vorbereitet und API-Ziele validiert.",
+        "time": "08:34:01"
+      },
+      {
+        "level": "OK",
+        "message": "11 Zutaten mit bestehenden IDs aktualisiert.",
+        "time": "08:34:08"
+      },
+      {
+        "level": "OK",
+        "message": "Neue Einheit \"Prise\" wird erstellt.",
+        "time": "08:34:09"
+      },
+      {
+        "level": "AI",
+        "message": "Empfehlung: Rezept als \"Schnell & leicht\" taggen.",
+        "time": "08:34:11"
+      },
+      {
+        "level": "WARN",
+        "message": "Bild-Upload übersprungen – kein Asset erkannt.",
+        "time": "08:34:12"
+      }
+    ],
+    "summaryItems": [
+      {
+        "title": "Zutaten aktualisiert",
+        "value": "11",
+        "description": "davon 3 neue Lebensmittel"
+      },
+      {
+        "title": "Einheiten erstellt",
+        "value": "1",
+        "description": "Prise"
+      },
+      {
+        "title": "Rezepte synchronisiert",
+        "value": "1",
+        "description": "Asia-Gemüse-Suppe"
+      }
+    ]
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "subtitle": "Passe Darstellung und spätere Automatisierungen an.",
+    "theme": {
+      "title": "Theme",
+      "description": "Vorschau der aktuellen Farbvarianten. Die Auswahl wird im nächsten Sprint gespeichert."
+    },
+    "prompts": {
+      "title": "Prompts",
+      "description": "Platzhalter für die anpassbaren Prompts. Bearbeitung folgt im nächsten Sprint.",
+      "analysis": "Analyse Prompt",
+      "suggestion": "Vervollständigungs-Prompt",
+      "analysisPlaceholder": "system: Analysiere das Rezept, erkenne Zutaten, Mengen und Einheiten...",
+      "suggestionPlaceholder": "user: Erstelle eine strukturierte Antwort im Mealie-Format..."
+    }
+  },
+  "buttons": {
+    "cancel": "Abbrechen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "finish": "Übertragen"
+  },
+  "modals": {
+    "viewDetails": {
+      "title": "Details ansehen",
+      "description": "Hier erscheinen künftig die Details aus dem Originaldokument.",
+      "close": "Schließen"
+    },
+    "editNewItem": {
+      "title": "Neuen Eintrag ergänzen",
+      "description": "Erfasse vorläufige Daten für neue Zutaten. Persistenz folgt im nächsten Sprint.",
+      "placeholder": "Beschreibung des neuen Eintrags...",
+      "save": "Übernehmen",
+      "cancel": "Abbrechen"
+    }
+  },
+  "logViewer": {
+    "ariaLabel": "Protokollliste",
+    "filters": {
+      "all": "Alle",
+      "info": "Info",
+      "ok": "OK",
+      "warn": "Warnung",
+      "error": "Fehler",
+      "ai": "AI"
+    }
+  },
+  "pdf": {
+    "placeholder": "PDF-Rendering wird im nächsten Sprint ergänzt."
+  },
+  "notifications": {
+    "comingSoon": "Funktion in Arbeit – folgt in einer späteren Version."
+  }
+}

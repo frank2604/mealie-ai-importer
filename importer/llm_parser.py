@@ -45,6 +45,7 @@ Regeln:
 6. Fülle "metadata" mit "source" (falls bekannt) und sinnvollen "tags" oder "categories".
 7. Verwende keine Abkürzungen wie "n. B." – schreibe sie aus.
 8. Wenn Informationen fehlen, lasse die Felder auf null oder leeren Listen.
+9. Erstelle im Feld "description" eine appetitanregende Zusammenfassung mit 2-3 vollständigen Sätzen.
 """.strip()
 
 
@@ -222,6 +223,49 @@ class OpenAiClient:
         except (KeyError, IndexError, TypeError):
             return ""
         return content or ""
+
+    def run_json(self, system_prompt: str, user_prompt: str) -> Dict[str, Any]:
+        """Return parsed JSON response using OpenAI's JSON mode."""
+
+        payload: Dict[str, Any] = {
+            "model": self.model,
+            "response_format": {"type": "json_object"},
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+        }
+
+        if self.temperature is not None:
+            payload["temperature"] = self.temperature
+        if self.max_tokens is not None:
+            payload["max_completion_tokens"] = self.max_tokens
+
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+        }
+        endpoint = f"{self.base_url}/chat/completions"
+
+        response = httpx.post(endpoint, headers=headers, json=payload, timeout=self.timeout)
+        response.raise_for_status()
+        data = response.json()
+        try:
+            message = data["choices"][0]["message"]
+        except (KeyError, IndexError, TypeError) as exc:
+            raise LlmParsingError("Ungewöhnliche Antwortstruktur von OpenAI") from exc
+
+        parsed = message.get("parsed")
+        if isinstance(parsed, dict):
+            return parsed
+
+        content = _extract_message_text(message)
+        if not content:
+            raise LlmParsingError("LLM-Antwort enthält kein JSON")
+        try:
+            return json.loads(content)
+        except json.JSONDecodeError as exc:
+            raise LlmParsingError(f"Ungültiges JSON vom LLM: {exc}") from exc
 
 
 def _extract_message_text(message: Dict[str, Any]) -> Optional[str]:

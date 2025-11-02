@@ -1,0 +1,401 @@
+{
+  "app": {
+    "title": "Mealie AI Importer",
+    "subtitle": "Bring your recipe PDFs into Mealie faster"
+  },
+  "navigation": {
+    "wizard": "Importer",
+    "settings": "Settings"
+  },
+  "language": {
+    "toggle": "Switch language",
+    "de": "DE",
+    "en": "EN"
+  },
+  "theme": {
+    "toggle": "Toggle theme",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "steps": {
+    "select": {
+      "title": "Select",
+      "subtitle": "Import and prepare your PDF"
+    },
+    "analyze": {
+      "title": "Analyze",
+      "subtitle": "Check processing steps, logs and AI hints"
+    },
+    "review": {
+      "title": "Review",
+      "subtitle": "Fine-tune ingredients, quantities and units"
+    },
+    "transfer": {
+      "title": "Transfer",
+      "subtitle": "Overview & final handover logs"
+    }
+  },
+  "dropzone": {
+    "title": "Choose PDF",
+    "subtitle": "Drag a recipe PDF here or click the button to pick a file.",
+    "hint": "Supports multi-page recipes up to 20 MB.",
+    "browse": "Browse files"
+  },
+  "select": {
+    "hints": [
+      "Multi-page PDFs with ingredient lists and instructions work best.",
+      "Use clear quantity expressions – the AI suggests alternatives when uncertain.",
+      "Your data stays on this device. Optional cloud sync will arrive later."
+    ]
+  },
+  "analyze": {
+    "logTitle": "Analysis Log",
+    "summary": "We extract recipe insights, propose mappings and highlight gaps that need attention.",
+    "metrics": {
+      "ingredients": {
+        "title": "Detected ingredients",
+        "description": "Matched against your Mealie pantry."
+      },
+      "units": {
+        "title": "Detected units",
+        "description": "Auto-harmonised with standard units."
+      },
+      "confidence": {
+        "title": "AI confidence",
+        "description": "Quality of the mappings for this run."
+      }
+    },
+    "logEntries": [
+      {
+        "level": "INFO",
+        "message": "Import started – preprocessing PDF and splitting pages.",
+        "time": "08:31:12"
+      },
+      {
+        "level": "OK",
+        "message": "Extracted text (12 paragraphs) and detected visual sections.",
+        "time": "08:31:15"
+      },
+      {
+        "level": "AI",
+        "message": "Ingredient parser suggests mapping to \"Salmon fillet\" (confidence 0.92).",
+        "time": "08:31:18"
+      },
+      {
+        "level": "WARN",
+        "message": "Ingredient \"Wasabi\" is ambiguous – manual confirmation required.",
+        "time": "08:31:20"
+      },
+      {
+        "level": "ERROR",
+        "message": "Unit \"Pinch\" missing in Mealie – please create the unit.",
+        "time": "08:31:22"
+      },
+      {
+        "level": "INFO",
+        "message": "Analysis finished. Continue to step 3 for the detailed review.",
+        "time": "08:31:25"
+      }
+    ],
+    "checklist": [
+      "OCR + layout analysis (100% complete)",
+      "Ingredient mapping (87% complete)",
+      "Unit harmonisation (65% – needs review)"
+    ]
+  },
+  "review": {
+    "sections": {
+      "ingredients": "Ingredients, quantities & units",
+      "preparation": "Preparation",
+      "image": "Image crop"
+    },
+    "status": {
+      "found": "Matched",
+      "new": "New",
+      "error": "Issue",
+      "info": "AI Note"
+    },
+    "actions": {
+      "view": "View details",
+      "edit": "Edit entry"
+    },
+    "pdfPlaceholder": {
+      "title": "PDF Preview",
+      "description": "The embedded PDF viewer will appear here in a later sprint.",
+      "toggleShow": "Show PDF",
+      "toggleHide": "Hide PDF",
+      "pager": {
+        "page": "Page {{current}} / {{total}}",
+        "prev": "Previous",
+        "next": "Next",
+        "zoomIn": "Zoom in",
+        "zoomOut": "Zoom out"
+      }
+    },
+    "table": {
+      "headers": {
+        "source": "Detected in recipe",
+        "mapping": "Mapping / new"
+      },
+      "labels": {
+        "ingredient": "Ingredient",
+        "note": "Note"
+      }
+    },
+    "summary": {
+      "title": "Chicken breast wrapped in prosciutto",
+      "description": "Tender chicken breasts wrapped in sage and Parma ham are quickly seared before finishing in a creamy mushroom-vermouth sauce. Serve with boiled potatoes and a crisp salad for a balanced main course.",
+      "meta": [
+        {
+          "leftLabel": "Servings",
+          "leftValue": "4",
+          "rightLabel": "Total time",
+          "rightValue": "1 h 30"
+        },
+        {
+          "leftLabel": "Portion yield",
+          "leftValue": "1.5",
+          "rightLabel": "Prep time",
+          "rightValue": "30 min"
+        },
+        {
+          "leftLabel": "Yield (text)",
+          "leftValue": "Liter soup",
+          "rightLabel": "Cook time",
+          "rightValue": "1 h"
+        }
+      ]
+    },
+    "entries": [
+      {
+        "amount": "2",
+        "unit": "Piece",
+        "unitMapping": "Piece",
+        "unitStatus": "found",
+        "unitMethod": "word-match",
+        "unitConfidence": "0.97",
+        "ingredient": "Red onions",
+        "ingredientMapping": "Onions (red)",
+        "ingredientStatus": "found",
+        "ingredientMethod": "fuzzy",
+        "ingredientConfidence": "0.92",
+        "note": "Dice into small cubes"
+      },
+      {
+        "amount": "1",
+        "unit": "Piece",
+        "unitMapping": "Piece",
+        "unitStatus": "found",
+        "unitMethod": "word-match",
+        "unitConfidence": "0.84",
+        "ingredient": "Bay leaf",
+        "ingredientMapping": "Bay leaf",
+        "ingredientStatus": "new",
+        "ingredientMethod": "ai",
+        "ingredientNew": {
+          "nameSingular": "Bay leaf",
+          "namePlural": "Bay leaves",
+          "category": "Spices",
+          "aliases": "Bayleaf; Laurel"
+        },
+        "note": "-"
+      },
+      {
+        "amount": "2",
+        "unit": "Liter",
+        "unitMapping": "Liter",
+        "unitStatus": "new",
+        "unitMethod": "ai",
+        "unitNew": {
+          "nameSingular": "Liter",
+          "namePlural": "Liters",
+          "abbreviationSingular": "l",
+          "abbreviationPlural": "l",
+          "useAbbreviation": true,
+          "supportsFraction": false
+        },
+        "ingredient": "Vegetable stock",
+        "ingredientMapping": "Vegetable broth",
+        "ingredientStatus": "found",
+        "ingredientMethod": "fuzzy",
+        "ingredientConfidence": "0.88",
+        "note": "Best prepared fresh"
+      }
+    ],
+    "preparation": {
+      "headers": {
+        "step": "Step",
+        "text": "Text"
+      },
+      "labels": {
+        "ingredients": "Ingredients used"
+      },
+      "selectIngredient": "Add ingredient...",
+      "removeIngredient": "Remove ingredient",
+      "rows": [
+        {
+          "step": "1",
+          "text": "Bring vegetable stock to a boil"
+        },
+        {
+          "step": "2",
+          "text": "Dice red onions finely"
+        }
+      ]
+    },
+    "image": {
+      "caption": "Planned crop from the original PDF. The final image arrives with the PDF viewer."
+    },
+    "modal": {
+      "unitFound": {
+        "subtitle": "The unit was detected using this method:"
+      },
+      "ingredientFound": {
+        "subtitle": "The ingredient was detected using this method:"
+      },
+      "unitNew": {
+        "subtitle": "AI suggests creating the unit with the following parameters:",
+        "fields": {
+          "nameSingular": "Name singular",
+          "namePlural": "Name plural",
+          "abbreviationSingular": "Abbreviation singular",
+          "abbreviationPlural": "Abbreviation plural",
+          "useAbbreviation": "Use abbreviation",
+          "supportsFraction": "Supports fraction"
+        }
+      },
+      "ingredientNew": {
+        "subtitle": "AI suggests creating the ingredient with the following parameters:",
+        "fields": {
+          "nameSingular": "Name singular",
+          "namePlural": "Name plural",
+          "category": "Category",
+          "aliases": "Aliases"
+        }
+      },
+      "methods": {
+        "word": "Word match",
+        "fuzzy": "Fuzzy search",
+        "ai": "AI matching"
+      },
+      "methodLabel": "Detection method",
+      "methodUnknown": "Method unavailable",
+      "confidenceLabel": "Confidence",
+      "close": "Close",
+      "cancel": "Cancel",
+      "save": "Apply",
+      "categories": [
+        "Vegetables",
+        "Fruit",
+        "Spices",
+        "Meat",
+        "Fish",
+        "Grains",
+        "Dairy",
+        "Sauces"
+      ]
+    }
+  },
+  "transfer": {
+    "logTitle": "Transfer Log",
+    "archive": "Archive log",
+    "summary": "Summary of all transferred items. Use the archive to revisit the run later.",
+    "logEntries": [
+      {
+        "level": "INFO",
+        "message": "Prepared transfer and validated API targets.",
+        "time": "08:34:01"
+      },
+      {
+        "level": "OK",
+        "message": "Updated 11 ingredients with existing IDs.",
+        "time": "08:34:08"
+      },
+      {
+        "level": "OK",
+        "message": "Created new unit \"Pinch\".",
+        "time": "08:34:09"
+      },
+      {
+        "level": "AI",
+        "message": "Suggestion: Tag recipe as \"Quick & Easy\".",
+        "time": "08:34:11"
+      },
+      {
+        "level": "WARN",
+        "message": "Skipped image upload – no asset detected.",
+        "time": "08:34:12"
+      }
+    ],
+    "summaryItems": [
+      {
+        "title": "Ingredients updated",
+        "value": "11",
+        "description": "including 3 new pantry items"
+      },
+      {
+        "title": "Units created",
+        "value": "1",
+        "description": "Pinch"
+      },
+      {
+        "title": "Recipes synced",
+        "value": "1",
+        "description": "Asian veggie soup"
+      }
+    ]
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Adjust presentation and upcoming automations.",
+    "theme": {
+      "title": "Theme",
+      "description": "Preview of the current color variants. Saving is planned for the next sprint."
+    },
+    "prompts": {
+      "title": "Prompts",
+      "description": "Placeholder for customizable prompts. Editing arrives in the next sprint.",
+      "analysis": "Analysis prompt",
+      "suggestion": "Completion prompt",
+      "analysisPlaceholder": "system: Analyse the recipe, extract ingredients, quantities and units...",
+      "suggestionPlaceholder": "user: Provide a structured response in Mealie format..."
+    }
+  },
+  "buttons": {
+    "cancel": "Cancel",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Transfer"
+  },
+  "modals": {
+    "viewDetails": {
+      "title": "View details",
+      "description": "This dialog will surface the original document excerpts.",
+      "close": "Close"
+    },
+    "editNewItem": {
+      "title": "Add new entry",
+      "description": "Capture interim details for new ingredients. Persistence follows soon.",
+      "placeholder": "Describe the new entry...",
+      "save": "Apply",
+      "cancel": "Cancel"
+    }
+  },
+  "logViewer": {
+    "ariaLabel": "Log entries",
+    "filters": {
+      "all": "All",
+      "info": "Info",
+      "ok": "OK",
+      "warn": "Warning",
+      "error": "Error",
+      "ai": "AI"
+    }
+  },
+  "pdf": {
+    "placeholder": "PDF rendering will be wired up in a later sprint."
+  },
+  "notifications": {
+    "comingSoon": "Feature in progress — stay tuned."
+  }
+}

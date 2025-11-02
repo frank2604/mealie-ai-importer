@@ -12,11 +12,12 @@ from ..context import IngredientRef, PipelineContext
 from ...llm_parser import OpenAiClient
 from ...services.ingredients import IngredientService
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("Unit Checker")
 
 _SYSTEM_PROMPT = (
-    "Du ordnest Einheiten aus einem Rezept vorhandenen Mealie-Einheiten zu. "
-    "Wähle nur dann eine Einheit, wenn sie eindeutig passt und beachte Abkürzungen."
+    "Du ordnest Einheiten aus einem Rezept den vorhandenen Mealie-Einheiten zu. "
+    "Wähle nur eine Einheit, wenn sie eindeutig passt, und antworte ausschließlich im JSON-Format "
+    '{"match": <ID oder null>}."'
 )
 
 
@@ -42,7 +43,7 @@ class _UnitCandidate:
 class UnitCheckerModule:
     """Check ingredient units against Mealie caches."""
 
-    name = "Unit checker"
+    name = "Unit Checker"
 
     def __init__(
         self,
@@ -56,48 +57,208 @@ class UnitCheckerModule:
 
     def run(self, context: PipelineContext) -> None:
         ingredient_refs = [ref for ref in context.iter_ingredients() if ref.ingredient.unit]
-        logger.info("Prüfe %s Einheiten gegen Mealie", len(ingredient_refs))
+        total = len(ingredient_refs)
+        if total == 0:
+            logger.info("No units found on the ingredients, so we skip the unit checker")
+            return
+
+        grouped_refs: Dict[str, List[IngredientRef]] = {}
+        group_order: List[str] = []
+        for ref in ingredient_refs:
+            unit_name = ref.ingredient.unit or ""
+            normalized = self._normalize_unit(unit_name)
+            if normalized not in grouped_refs:
+                grouped_refs[normalized] = []
+                group_order.append(normalized)
+            grouped_refs[normalized].append(ref)
+
+        unique_unit_names = [grouped_refs[key][0].ingredient.unit or "" for key in group_order]
+        unique_total = len(unique_unit_names)
+        logger.info(
+            "Trying to match %s unique unit%s (from %s ingredient entr%s) to existing Mealie units %s",
+            unique_total,
+            "" if unique_total == 1 else "s",
+            total,
+            "y" if total == 1 else "ies",
+            self._format_list(unique_unit_names),
+        )
 
         reference = self._load_reference_data(context)
         self._write_cache(reference, context)
+        units_by_id = self._units_dict()
 
         matches: Dict[str, str] = {}
+        match_details: Dict[str, Dict[str, object]] = {}
+        exact_matches: List[str] = []
+        fuzzy_matches: List[tuple[str, str]] = []
+        ai_matches: List[tuple[str, str]] = []
+        pending_ai_groups: List[tuple[str, List[IngredientRef]]] = []
+
+        for normalized in group_order:
+            refs = grouped_refs[normalized]
+            if not refs:
+                continue
+            preassigned_refs = [ref for ref in refs if ref.ingredient.mealie_unit_id]
+            for ref in preassigned_refs:
+                unit_name = ref.ingredient.unit or ""
+                unit_id = ref.ingredient.mealie_unit_id or ""
+                matches[ref.key] = unit_id
+                match_details[ref.key] = {"strategy": "preassigned"}
+                exact_matches.append(unit_name)
+
+            pending_refs = [ref for ref in refs if not ref.ingredient.mealie_unit_id]
+            if not pending_refs:
+                continue
+
+            sample_unit = pending_refs[0].ingredient.unit or ""
+            candidate_id, strategy, matched_label = self._stage_one_match(sample_unit)
+            if candidate_id:
+                candidate = units_by_id.get(candidate_id)
+                display = matched_label or (candidate.name if candidate else candidate_id)
+                for ref in pending_refs:
+                    unit_name = ref.ingredient.unit or ""
+                    matches[ref.key] = candidate_id
+                    match_details[ref.key] = {"strategy": strategy}
+                    if strategy == "exact":
+                        exact_matches.append(unit_name)
+                    else:
+                        fuzzy_matches.append((unit_name, display))
+                continue
+
+            pending_ai_groups.append((sample_unit, pending_refs))
+
         missing: List[IngredientRef] = []
+        unresolved_units: List[str] = []
+        unresolved_seen: set[str] = set()
 
-        for ref in ingredient_refs:
-            ingredient = ref.ingredient
-            if ingredient.mealie_unit_id:
-                matches[ref.key] = ingredient.mealie_unit_id
-                continue
+        if exact_matches:
+            logger.info(
+                "Matched %s unit%s exact by words: %s",
+                len(exact_matches),
+                "" if len(exact_matches) == 1 else "s",
+                self._format_list(sorted(exact_matches, key=lambda value: value.lower())),
+            )
+        if fuzzy_matches:
+            logger.info(
+                "Matched %s unit%s with Fuzzy-Search: %s",
+                len(fuzzy_matches),
+                "" if len(fuzzy_matches) == 1 else "s",
+                self._format_fuzzy_pairs(fuzzy_matches),
+            )
 
-            candidate_id = self._stage_one_match(ingredient.unit or "")
+        if pending_ai_groups:
+            pending_names = [name for name, _ in pending_ai_groups]
+            logger.info(
+                "Try matching rest of the units %s with AI",
+                self._format_list(pending_names),
+            )
+
+        for display_name, refs in pending_ai_groups:
+            unit_name = display_name
+            logger.info(
+                "Ask AI to find [%s] in existing units in Mealie",
+                unit_name,
+            )
+            candidate_id, candidate_name = self._stage_two_with_llm(unit_name)
             if candidate_id:
-                matches[ref.key] = candidate_id
-                continue
-
-            candidate_id = self._stage_two_with_llm(ingredient.unit or "")
-            if candidate_id:
-                matches[ref.key] = candidate_id
+                for ref in refs:
+                    unit_value = ref.ingredient.unit or ""
+                    matches[ref.key] = candidate_id
+                    match_details[ref.key] = {"strategy": "ai"}
+                    ai_matches.append((unit_value, candidate_name or candidate_id))
+                logger.info(
+                    "AI suggests [%s] from existing units in Mealie",
+                    candidate_name or candidate_id,
+                )
             else:
-                missing.append(ref)
+                logger.info(
+                    "AI could not find a matching unit for [%s] in existing units in Mealie",
+                    unit_name,
+                )
+                missing.extend(refs)
+                if display_name not in unresolved_seen:
+                    unresolved_seen.add(display_name)
+                    unresolved_units.append(display_name)
 
         context.unit_matches = matches
         context.missing_unit_refs = missing
-        logger.info("%s Einheiten gefunden, %s fehlen", len(matches), len(missing))
+
+        logger.info(
+            "Matched %s unit%s so far; %s still need attention",
+            len(matches),
+            "s" if len(matches) != 1 else "",
+            len(missing),
+        )
+        self._log_stats(
+            exact_matches,
+            fuzzy_matches,
+            ai_matches,
+            ingredient_refs,
+            missing,
+            include_stage_one=False,
+        )
+
+        suggestions: Dict[str, Dict[str, object]] = {}
+        if unresolved_units and self._service:
+            logger.info("Will ask AI for naming suggestions for missing units")
+            for name in unresolved_units:
+                logger.info(
+                    "Ask AI for name, plural and abbreviations for unit [%s]",
+                    name,
+                )
+            try:
+                self._service.prepare_unit_forms(
+                    unresolved_units,
+                    debug=context.pipeline_recorder,
+                )
+            except Exception as exc:  # pragma: no cover - external dependency
+                logger.debug("Could not prepare unit-form suggestions: %s", exc)
+            try:
+                suggestions = self._service.unit_form_suggestions(
+                    unresolved_units,
+                    debug=context.pipeline_recorder,
+                )
+            except Exception as exc:  # pragma: no cover - external dependency
+                logger.debug("Could not retrieve unit-form suggestions: %s", exc)
+            for name in unresolved_units:
+                suggestion = suggestions.get(name)
+                if suggestion:
+                    logger.info(
+                        "AI returns this suggestion for unit [%s]: name [%s], plural [%s], abbreviation [%s], plural abbreviation [%s], use abbreviation [%s]",
+                        name,
+                        suggestion.get("name") or "-",
+                        suggestion.get("pluralName") or "-",
+                        suggestion.get("abbreviation") or "-",
+                        suggestion.get("pluralAbbreviation") or "-",
+                        suggestion.get("useAbbreviation"),
+                    )
+                else:
+                    logger.info(
+                        "AI could not generate a unit suggestion for [%s]",
+                        name,
+                    )
+
+        self._write_review(
+            context,
+            ingredient_refs,
+            matches,
+            match_details,
+            missing,
+            suggestions,
+        )
 
     # ------------------------------------------------------------------
     # Reference data handling
     # ------------------------------------------------------------------
     def _load_reference_data(self, context: PipelineContext) -> Dict[str, object]:
+        units: List[_UnitCandidate] = []
+
         if self._service:
-            self._service.refresh_units()
             units = [
                 _UnitCandidate.from_raw(item)
                 for item in self._service.list_units()
                 if item.get("id")
             ]
-        else:
-            units = []
 
         if not units:
             cache_path = context.cache_paths.units_cache
@@ -105,7 +266,7 @@ class UnitCheckerModule:
                 try:
                     cached = json.loads(cache_path.read_text(encoding="utf-8"))
                 except json.JSONDecodeError:
-                    logger.debug("Alte MealieUnitsCache.json ignoriert – kein gültiges JSON")
+                    logger.debug("Ignoring MealieUnitsCache.json because it is not valid JSON")
                 else:
                     units = [
                         _UnitCandidate.from_raw(item)
@@ -137,41 +298,55 @@ class UnitCheckerModule:
     # ------------------------------------------------------------------
     # Matching helpers
     # ------------------------------------------------------------------
-    def _stage_one_match(self, query: str) -> Optional[str]:
+    def _stage_one_match(self, query: str) -> tuple[Optional[str], str, Optional[str]]:
         if not query:
-            return None
-        if self._service:
-            resource = self._service.lookup_unit(query)
-            if resource:
-                return resource.id
-        return self._fuzzy_match_offline(query)
+            return None, "exact", None
+        match_id, match_label = self._exact_match(query)
+        if match_id:
+            return match_id, "exact", match_label
+        fuzzy_id, fuzzy_label = self._fuzzy_match_offline(query)
+        if fuzzy_id:
+            return fuzzy_id, "fuzzy", fuzzy_label
+        return None, "exact", None
 
-    def _fuzzy_match_offline(self, query: str) -> Optional[str]:
+    def _exact_match(self, query: str) -> tuple[Optional[str], Optional[str]]:
+        normalized = query.strip().lower()
+        if not normalized:
+            return None, None
+        for candidate in self._units:
+            for option in self._candidate_names(candidate):
+                if option.strip().lower() == normalized:
+                    return candidate.id, option
+        return None, None
+
+    def _fuzzy_match_offline(self, query: str) -> tuple[Optional[str], Optional[str]]:
         if not self._units:
-            return None
+            return None, None
         best_id: Optional[str] = None
+        best_label: Optional[str] = None
         best_score = 0.0
         normalized_query = query.strip().lower()
         for candidate in self._units:
             for option in self._candidate_names(candidate):
                 normalized_option = option.lower()
                 if normalized_option == normalized_query:
-                    return candidate.id
+                    return candidate.id, option
                 score = SequenceMatcher(None, normalized_query, normalized_option).ratio()
                 if score > best_score:
                     best_score = score
                     best_id = candidate.id
+                    best_label = option
         if best_score >= 0.9:
-            return best_id
-        return None
+            return best_id, best_label
+        return None, None
 
-    def _stage_two_with_llm(self, query: str) -> Optional[str]:
+    def _stage_two_with_llm(self, query: str) -> tuple[Optional[str], Optional[str]]:
         if not self._llm_client or not self._units:
-            return None
+            return None, None
 
         candidates = self._top_candidates(query, limit=8)
         if not candidates:
-            return None
+            return None, None
 
         candidate_lines = []
         for candidate in candidates:
@@ -188,31 +363,202 @@ class UnitCheckerModule:
             f"Einheit: {query}\n"
             "Kandidaten:\n"
             + "\n".join(candidate_lines)
-            + "\nAntwortformat: {\"match\": <ID oder null>}"
+            + '\nAntwortformat: {"match": <ID oder null>}'
         )
 
         try:
             response = self._llm_client.run_text(_SYSTEM_PROMPT, user_prompt)
         except Exception as exc:  # pragma: no cover - external dependency
-            logger.debug("LLM-Einheitenabgleich fehlgeschlagen: %s", exc)
-            return None
+            logger.debug("Assistant unit lookup failed: %s", exc)
+            return None, None
 
         try:
             data = json.loads(response)
         except json.JSONDecodeError:
-            logger.debug("LLM Antwort kein JSON: %s", response[:120])
-            return None
+            logger.debug("Assistant response was not valid JSON: %s", response[:120])
+            return None, None
 
         match_id = data.get("match")
         if not isinstance(match_id, str):
-            return None
+            logger.debug('The assistant could not find a confident unit for "%s"', query)
+            return None, None
 
         known_ids = {candidate.id for candidate in candidates}
         if match_id not in known_ids:
-            logger.debug("LLM schlug unbekannte Einheit %s vor", match_id)
-            return None
-        return match_id
+            logger.debug("The assistant suggested an unknown unit id %s", match_id)
+            return None, None
 
+        unit = self._units_dict().get(match_id)
+        return match_id, (unit.name if unit else None)
+
+    # ------------------------------------------------------------------
+    # Review and reporting
+    # ------------------------------------------------------------------
+    def _log_stats(
+        self,
+        exact_matches: List[str],
+        fuzzy_matches: List[tuple[str, str]],
+        ai_matches: List[tuple[str, str]],
+        ingredient_refs: List[IngredientRef],
+        missing: List[IngredientRef],
+        *,
+        include_stage_one: bool = False,
+    ) -> None:
+        total = len(ingredient_refs)
+        if total == 0:
+            return
+
+        if include_stage_one and exact_matches:
+            logger.info(
+                "Matched %s unit%s exact by words: %s",
+                len(exact_matches),
+                "" if len(exact_matches) == 1 else "s",
+                self._format_list(sorted(exact_matches, key=lambda value: value.lower())),
+            )
+        if include_stage_one and fuzzy_matches:
+            logger.info(
+                "Matched %s unit%s with Fuzzy-Search: %s",
+                len(fuzzy_matches),
+                "" if len(fuzzy_matches) == 1 else "s",
+                self._format_fuzzy_pairs(fuzzy_matches),
+            )
+        if ai_matches:
+            logger.info(
+                "Matched %s unit%s with AI: %s",
+                len(ai_matches),
+                "" if len(ai_matches) == 1 else "s",
+                self._format_ai_pairs(ai_matches),
+            )
+        if missing:
+            unique_missing: Dict[str, str] = {}
+            for ref in missing:
+                unit_name = ref.ingredient.unit or ""
+                normalized = self._normalize_unit(unit_name)
+                if normalized not in unique_missing:
+                    unique_missing[normalized] = unit_name
+            logger.info(
+                "%s unit%s need to be created in Mealie: %s",
+                len(unique_missing),
+                "" if len(unique_missing) == 1 else "s",
+                self._format_list(unique_missing.values()),
+            )
+        else:
+            logger.info("Every unit now has a Mealie match")
+
+    def _write_review(
+        self,
+        context: PipelineContext,
+        ingredient_refs: List[IngredientRef],
+        matches: Dict[str, str],
+        match_details: Dict[str, Dict[str, object]],
+        missing: List[IngredientRef],
+        suggestions: Dict[str, Dict[str, object]],
+    ) -> None:
+        recorder = context.pipeline_recorder
+        if not recorder:
+            logger.debug("No pipeline recorder available, so no units review file was created")
+            return
+
+        recipe = context.ensure_recipe()
+        units_by_id = {item.id: item for item in self._units}
+        missing_keys = {ref.key for ref in missing}
+
+        items: List[Dict[str, object]] = []
+        for ref in ingredient_refs:
+            section_name = ""
+            if 0 <= ref.section_index < len(recipe.ingredients):
+                section = recipe.ingredients[ref.section_index]
+                section_name = section.name or f"Section {ref.section_index + 1}"
+
+            ingredient = ref.ingredient
+            key = ref.key
+            matched_id = matches.get(key)
+            matched_unit = units_by_id.get(matched_id) if matched_id else None
+            suggestion = suggestions.get(ingredient.unit or "")
+            create_defaults = {
+                "name": None,
+                "pluralName": None,
+                "abbreviation": None,
+                "pluralAbbreviation": None,
+                "useAbbreviation": False,
+            }
+            if suggestion:
+                create_defaults.update(
+                    {
+                        "name": suggestion.get("name"),
+                        "pluralName": suggestion.get("pluralName"),
+                        "abbreviation": suggestion.get("abbreviation"),
+                        "pluralAbbreviation": suggestion.get("pluralAbbreviation"),
+                        "useAbbreviation": bool(suggestion.get("useAbbreviation")),
+                    }
+                )
+            candidates = [
+                {
+                    "id": candidate.id,
+                    "name": candidate.name,
+                    "pluralName": candidate.plural,
+                    "abbreviation": candidate.abbreviation,
+                    "pluralAbbreviation": candidate.plural_abbreviation,
+                }
+                for candidate in self._top_candidates(ingredient.unit or "", limit=5)
+            ]
+
+            items.append(
+                {
+                    "key": key,
+                    "sectionIndex": ref.section_index,
+                    "sectionName": section_name,
+                    "ingredientIndex": ref.ingredient_index,
+                    "ingredient": {
+                        "name": ingredient.name,
+                        "quantity": ingredient.quantity,
+                        "unit": ingredient.unit,
+                        "note": ingredient.note,
+                    },
+                    "currentMatch": (
+                        {
+                            "unitId": matched_id,
+                            "name": matched_unit.name if matched_unit else None,
+                            "strategy": match_details.get(key, {}).get("strategy"),
+                        }
+                        if matched_id
+                        else None
+                    ),
+                    "status": "missing" if key in missing_keys else "matched",
+                    "candidates": candidates,
+                    "suggestion": suggestion,
+                    "userDecision": {
+                        "action": "auto",
+                        "useUnitId": None,
+                        "create": create_defaults,
+                        "notes": "",
+                    },
+                }
+            )
+
+        payload = {
+            "generatedAt": datetime.utcnow().isoformat(),
+            "summary": {
+                "totalUnits": len(ingredient_refs),
+                "autoMatched": len(ingredient_refs) - len(missing),
+                "missing": len(missing),
+            },
+            "instructions": (
+                "Adjust 'userDecision' for each unit if you want to override the automatic choice. "
+                "action = 'auto' keeps current behaviour, 'use_existing' expects useUnitId, "
+                "'create' expects details under create, 'skip' ignores the unit."
+            ),
+            "units": items,
+        }
+
+        review_path = recorder.write_json("UnitsReview", payload)
+        context.unit_review_path = review_path
+        context.unit_decisions = {}
+        logger.info("Saved the units review to %s", review_path)
+
+    # ------------------------------------------------------------------
+    # Candidate helpers
+    # ------------------------------------------------------------------
     def _top_candidates(self, query: str, *, limit: int) -> List[_UnitCandidate]:
         scored: List[tuple[float, _UnitCandidate]] = []
         normalized_query = query.strip().lower()
@@ -225,8 +571,9 @@ class UnitCheckerModule:
             if best_score > 0:
                 scored.append((best_score, candidate))
         scored.sort(key=lambda item: item[0], reverse=True)
+
         unique: List[_UnitCandidate] = []
-        seen_ids = set()
+        seen_ids: set[str] = set()
         for _, candidate in scored:
             if candidate.id in seen_ids:
                 continue
@@ -245,3 +592,38 @@ class UnitCheckerModule:
         if candidate.plural_abbreviation:
             yield candidate.plural_abbreviation
 
+    def _units_dict(self) -> Dict[str, _UnitCandidate]:
+        return {item.id: item for item in self._units}
+
+    @staticmethod
+    def _format_list(values: Iterable[str]) -> str:
+        cleaned = [str(value) for value in values if value]
+        if not cleaned:
+            return "[]"
+        return "[" + ", ".join(cleaned) + "]"
+
+    @staticmethod
+    def _normalize_unit(value: str) -> str:
+        return (value or "").strip().lower()
+
+    @staticmethod
+    def _format_fuzzy_pairs(pairs: Iterable[tuple[str, str]]) -> str:
+        entries = [
+            f"[{source}] > [{target}]"
+            for source, target in pairs
+            if source and target
+        ]
+        if not entries:
+            return "[]"
+        return ", ".join(entries)
+
+    @staticmethod
+    def _format_ai_pairs(pairs: Iterable[tuple[str, str]]) -> str:
+        entries = [
+            f"[{source}] -> [{target}]"
+            for source, target in pairs
+            if source and target
+        ]
+        if not entries:
+            return "[]"
+        return ", ".join(entries)

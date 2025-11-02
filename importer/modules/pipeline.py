@@ -6,7 +6,7 @@ from typing import Iterable, Protocol
 
 from .context import PipelineContext
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("Pipeline")
 
 
 class PipelineModule(Protocol):
@@ -25,9 +25,20 @@ class PipelineRunner:
         self._modules = list(modules)
 
     def run(self, context: PipelineContext) -> None:
-        for module in self._modules:
-            module_name = getattr(module, "name", module.__class__.__name__)
-            logger.info("Starte Modul: %s", module_name)
-            module.run(context)
-            logger.info("Modul %s abgeschlossen", module_name)
+        modules = self._modules
+        if not modules:
+            return
 
+        separator = "-----------------------------------------------"
+        logger.info(separator)
+
+        last_index = len(modules) - 1
+        for index, module in enumerate(modules):
+            module_name = getattr(module, "name", module.__class__.__name__)
+            logger.info("Starting module %s", module_name)
+            module.run(context)
+            logger.info("Finished module %s", module_name)
+            if index < last_index:
+                logger.info(separator)
+
+        logger.info(separator)

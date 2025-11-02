@@ -1,0 +1,57 @@
+:root {
+  --primary-rgb: 119 178 85;
+  --accent-rgb: 255 131 96;
+  --secondary-rgb: 242 232 207;
+  --success-rgb: 109 195 109;
+  --info-rgb: 64 164 200;
+  --warning-rgb: 244 197 66;
+  --error-rgb: 232 93 93;
+
+  --panel-rgb: 255 255 255;
+  --background-rgb: 246 247 245;
+  --border-rgb: 203 210 197;
+  --text-rgb: 27 31 22;
+
+  --primary: rgb(var(--primary-rgb));
+  --accent: rgb(var(--accent-rgb));
+  --secondary: rgb(var(--secondary-rgb));
+  --success: rgb(var(--success-rgb));
+  --info: rgb(var(--info-rgb));
+  --warning: rgb(var(--warning-rgb));
+  --error: rgb(var(--error-rgb));
+
+  --panel: rgb(var(--panel-rgb));
+  --background: rgb(var(--background-rgb));
+
+  --on-primary: #0e2204;
+  --on-secondary: #1f1f1f;
+}
+
+:root[data-theme="dark"] {
+  --primary-rgb: 141 212 108;
+  --accent-rgb: 255 155 113;
+  --secondary-rgb: 46 46 46;
+  --success-rgb: 129 199 132;
+  --info-rgb: 79 195 247;
+  --warning-rgb: 255 213 79;
+  --error-rgb: 229 115 115;
+
+  --panel-rgb: 31 31 31;
+  --background-rgb: 22 22 22;
+  --border-rgb: 84 84 84;
+  --text-rgb: 243 245 239;
+
+  --primary: rgb(var(--primary-rgb));
+  --accent: rgb(var(--accent-rgb));
+  --secondary: rgb(var(--secondary-rgb));
+  --success: rgb(var(--success-rgb));
+  --info: rgb(var(--info-rgb));
+  --warning: rgb(var(--warning-rgb));
+  --error: rgb(var(--error-rgb));
+
+  --panel: rgb(var(--panel-rgb));
+  --background: rgb(var(--background-rgb));
+
+  --on-primary: #041203;
+  --on-secondary: #f7f7f3;
+}

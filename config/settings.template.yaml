@@ -5,7 +5,7 @@ mealie:
 
 processing:
   watch_folder: "PDFs"
-  output_folder: "data/parsed"
+  output_folder: "data/pipeline"
   ocr_enabled: false
   language: "de"
   skip_ai_if_cached: false
@@ -16,6 +16,7 @@ ingredients:
   default_category: "Sonstiges"
   default_category_color: "#959595"
   use_llm_classifier: true
+  use_llm_forms: true
 
 llm:
   provider: "openai"

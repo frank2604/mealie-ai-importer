@@ -29,46 +29,48 @@ export const StepTabs: React.FC<StepTabsProps> = ({ steps, currentStepId, onStep
   };
 
   return (
-    <div className="overflow-x-auto">
-      <div role="tablist" aria-label={t("app.title")} className="flex min-w-max gap-3">
-        {steps.map((step, index) => {
-          const isActive = step.id === currentStepId;
-          const status = index < currentIndex ? "completed" : isActive ? "active" : "upcoming";
-          return (
-            <button
-              key={step.id}
-              role="tab"
-              aria-selected={isActive}
-              tabIndex={isActive ? 0 : -1}
-              onKeyDown={(event) => handleKeyDown(event, index)}
-              onClick={() => onStepChange(step)}
+    <div
+      role="tablist"
+      aria-label={t("app.title")}
+      className={clsx("grid w-full grid-cols-1", layoutConfig.spacing.element.gap, "sm:grid-cols-2 lg:grid-cols-4")}
+    >
+      {steps.map((step, index) => {
+        const isActive = step.id === currentStepId;
+        const status = index < currentIndex ? "completed" : isActive ? "active" : "upcoming";
+        return (
+          <button
+            key={step.id}
+            role="tab"
+            aria-selected={isActive}
+            tabIndex={isActive ? 0 : -1}
+            onKeyDown={(event) => handleKeyDown(event, index)}
+            onClick={() => onStepChange(step)}
+            className={clsx(
+              "focus-ring flex h-full w-full items-center gap-3 border px-4 py-3 text-left transition-colors",
+              layoutConfig.borderRadius.medium,
+              status === "completed" && "border-success/70 bg-success/10 text-success hover:border-success",
+              status === "active" && "border-primary bg-primary/10 text-primary hover:border-primary",
+              status === "upcoming" && "border-border bg-panel hover:border-primary/50 hover:text-primary"
+            )}
+          >
+            <span
               className={clsx(
-                "focus-ring flex items-center gap-3 border px-4 py-3 text-left transition-colors",
-                layoutConfig.borderRadius.medium,
-                status === "completed" && "border-success/70 bg-success/10 text-success hover:border-success",
-                status === "active" && "border-primary bg-primary/10 text-primary hover:border-primary",
-                status === "upcoming" && "border-border bg-panel hover:border-primary/50 hover:text-primary"
+                "flex h-8 w-8 items-center justify-center text-sm font-bold",
+                layoutConfig.borderRadius.small,
+                status === "completed" && "bg-success text-on-primary",
+                status === "active" && "bg-primary text-on-primary",
+                status === "upcoming" && "bg-secondary text-on-secondary"
               )}
             >
-              <span
-                className={clsx(
-                  "flex h-8 w-8 items-center justify-center text-sm font-bold",
-                  layoutConfig.borderRadius.small,
-                  status === "completed" && "bg-success text-on-primary",
-                  status === "active" && "bg-primary text-on-primary",
-                  status === "upcoming" && "bg-secondary text-on-secondary"
-                )}
-              >
-                {index + 1}
-              </span>
-              <span className="flex flex-col text-sm">
-                <span className="font-semibold">{t(step.titleKey)}</span>
-                <span className="text-xs text-text/70">{t(step.subtitleKey)}</span>
-              </span>
-            </button>
-          );
-        })}
-      </div>
+              {index + 1}
+            </span>
+            <span className="flex flex-col text-sm">
+              <span className="font-semibold">{t(step.titleKey)}</span>
+              <span className="text-xs text-text/70">{t(step.subtitleKey)}</span>
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 };

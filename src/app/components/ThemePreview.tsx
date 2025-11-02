@@ -6,12 +6,15 @@ import { layoutConfig } from "../../config/layout.config";
 export const ThemePreview: React.FC = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const currentThemeLabel = t(`theme.${theme}`);
 
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 text-sm font-medium text-text/70">
-        <span>{t("theme.toggle")}:</span>
-        <span className={clsx("bg-primary px-3 py-1 text-xs font-semibold text-on-primary capitalize", layoutConfig.borderRadius.small)}>{theme}</span>
+        <span>{t("settings.theme.current")}</span>
+        <span className={clsx("bg-primary px-3 py-1 text-xs font-semibold text-on-primary", layoutConfig.borderRadius.small)}>
+          {currentThemeLabel}
+        </span>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className={clsx("border border-border bg-panel p-4 shadow-sm", layoutConfig.borderRadius.medium)}>

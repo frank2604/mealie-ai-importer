@@ -46,11 +46,23 @@ class InstructionSection(BaseModel):
     steps: List[InstructionStep] = Field(default_factory=list)
 
 
+class OrganizerReference(BaseModel):
+    id: str
+    name: str
+    group_id: Optional[str] = Field(default=None, alias="groupId")
+    slug: Optional[str] = None
+
+    class Config:
+        allow_population_by_field_name = True
+
+
 class RecipeMetadata(BaseModel):
     source: Optional[str] = None
     categories: List[str] = Field(default_factory=list)
     cuisine: Optional[str] = None
     tags: List[str] = Field(default_factory=list)
+    mealie_categories: List[OrganizerReference] = Field(default_factory=list)
+    mealie_tags: List[OrganizerReference] = Field(default_factory=list)
 
 
 class RecipeAsset(BaseModel):

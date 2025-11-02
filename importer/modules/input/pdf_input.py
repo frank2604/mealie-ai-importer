@@ -6,7 +6,7 @@ import logging
 from ..context import PipelineContext
 from ...pdf_extractor import PdfExtractionError, extract_text_and_images
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("PDF Input")
 
 
 class PdfInputModule:
@@ -19,22 +19,21 @@ class PdfInputModule:
 
     def run(self, context: PipelineContext) -> None:
         pdf_path = context.source_pdf
-        logger.info("Lese PDF: %s", pdf_path)
+        logger.info("Reading the recipe PDF from %s", pdf_path)
         try:
             extraction = extract_text_and_images(pdf_path)
         except PdfExtractionError as exc:
-            raise RuntimeError(f"PDF konnte nicht gelesen werden: {exc}") from exc
+            raise RuntimeError(f"The PDF could not be read: {exc}") from exc
 
         if not extraction.text.strip() and not self._allow_empty_text:
             raise RuntimeError(
-                "PDF enthielt keinen Text. Für gescannte Dokumente ist ggf. eine OCR nötig."
+                "The PDF did not contain any text. Please enable OCR for scanned documents."
             )
 
         context.extraction = extraction
         logger.debug(
-            "PDF eingelesen: %s Seiten, %s Zeichen Text, %s Bilder",
+            "Finished reading the PDF: %s pages, %s text characters, %s images",
             extraction.page_count,
             len(extraction.text),
             len(extraction.images),
         )
-

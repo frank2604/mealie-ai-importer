@@ -1,0 +1,24 @@
+{
+  "ingredient": "Salbeiblätter",
+  "response": {
+    "status": 201,
+    "body": {
+      "id": "31eedd6a-c57b-4979-8a9d-b7ff71663acc",
+      "name": "Salbeiblatt",
+      "pluralName": "Salbeiblätter",
+      "description": "",
+      "extras": {},
+      "labelId": "c1e4c9ca-979b-4d58-982e-350f3dd5a5de",
+      "aliases": [],
+      "householdsWithIngredientFood": [],
+      "label": {
+        "name": "Gewürze 🌿",
+        "color": "#9B5E2E",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "id": "c1e4c9ca-979b-4d58-982e-350f3dd5a5de"
+      },
+      "createdAt": "2025-10-25T08:01:57.477967Z",
+      "updatedAt": "2025-10-25T08:01:57.477970Z"
+    }
+  }
+}

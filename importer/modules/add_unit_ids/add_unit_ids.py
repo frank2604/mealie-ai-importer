@@ -5,19 +5,19 @@ import logging
 
 from ..context import PipelineContext
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("Add Unit IDs")
 
 
 class AddUnitIdsModule:
     """Write the resolved unit IDs back into the recipe JSON."""
 
-    name = "Add Unit-IDs"
+    name = "Add Unit IDs"
 
     def run(self, context: PipelineContext) -> None:
         context.ensure_recipe()
         matches = context.unit_matches
         if not matches and not context.created_unit_ids:
-            logger.info("Keine Einheiten-Zuordnungen zu aktualisieren")
+            logger.info("There are no unit assignments to update")
             return
 
         updated = 0
@@ -29,7 +29,6 @@ class AddUnitIdsModule:
 
         if updated:
             context.update_recipe_file()
-            logger.info("%s Zutaten um Mealie-Einheits-ID ergänzt", updated)
+            logger.info("Added Mealie unit IDs to %s ingredient%s", updated, "" if updated == 1 else "s")
         else:
-            logger.info("Einheits-IDs waren bereits gesetzt")
-
+            logger.info("All ingredients already had their unit IDs")

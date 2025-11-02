@@ -8,23 +8,19 @@ from pathlib import Path
 from typing import Dict, Iterable, Iterator, List, Optional
 
 from ..config import AppConfig
+from ..services.run_workspace import PipelineRecorder
 from ..models import Ingredient, Recipe
 from ..pdf_extractor import PdfExtractionResult
 
 
 @dataclass
 class CachePaths:
-    """Commonly used cache locations for a processing run."""
+    """Commonly used cache locations shared across runs."""
 
     root: Path
-    recipe_key: str
 
     def __post_init__(self) -> None:
         self.root.mkdir(parents=True, exist_ok=True)
-
-    @property
-    def recipe_raw(self) -> Path:
-        return self.root / "RecipeRawDataEnriched.json"
 
     @property
     def foods_cache(self) -> Path:
@@ -37,6 +33,18 @@ class CachePaths:
     @property
     def units_cache(self) -> Path:
         return self.root / "MealieUnitsCache.json"
+
+    @property
+    def recipe_categories_cache(self) -> Path:
+        return self.root / "MealieRecipeCategoriesCache.json"
+
+    @property
+    def tags_cache(self) -> Path:
+        return self.root / "MealieTagsCache.json"
+
+    @property
+    def tag_categories_cache(self) -> Path:
+        return self.root / "MealieTagCategoriesCache.json"
 
 
 @dataclass
@@ -62,6 +70,17 @@ class PipelineContext:
     cache_paths: CachePaths
     servings_hint: Optional[str] = None
     recipe_output_path: Optional[Path] = None
+    recipe_data_path: Optional[Path] = None
+    run_id: Optional[str] = None
+    pipeline_recorder: Optional["PipelineRecorder"] = None
+    log_file: Optional[Path] = None
+    requires_user_review: bool = False
+    food_review_path: Optional[Path] = None
+    unit_review_path: Optional[Path] = None
+    metadata_review_path: Optional[Path] = None
+    food_decisions: Dict[str, Dict[str, object]] = field(default_factory=dict)
+    unit_decisions: Dict[str, Dict[str, object]] = field(default_factory=dict)
+    metadata_decision: Dict[str, object] = field(default_factory=dict)
 
     extraction: Optional[PdfExtractionResult] = None
     recipe: Optional[Recipe] = None
@@ -75,26 +94,31 @@ class PipelineContext:
 
     def ensure_extraction(self) -> PdfExtractionResult:
         if not self.extraction:
-            raise RuntimeError("PDF wurde noch nicht eingelesen – Input-Modul zuerst ausführen")
+            raise RuntimeError("The PDF has not been read yet; please run the input module first")
         return self.extraction
 
     def ensure_recipe(self) -> Recipe:
         if self.recipe is None:
-            if self.cache_paths.recipe_raw.exists():
-                raw = self.cache_paths.recipe_raw.read_text(encoding="utf-8")
+            if self.recipe_data_path and self.recipe_data_path.exists():
+                raw = self.recipe_data_path.read_text(encoding="utf-8")
                 data = json.loads(raw)
                 self.recipe = Recipe.parse_obj(data)
             else:
-                raise RuntimeError("Es liegt noch kein RecipeRawDataEnriched.json vor")
+                raise RuntimeError("RecipeRawDataEnriched.json is not available yet")
         return self.recipe
 
-    def save_recipe(self, recipe: Recipe) -> None:
+    def save_recipe(self, recipe: Recipe, *, destination: Optional[Path] = None, overwrite: bool = True) -> None:
         self.recipe = recipe
         payload = recipe.dict(by_alias=True)
-        self.cache_paths.recipe_raw.write_text(
-            json.dumps(payload, ensure_ascii=False, indent=2),
-            encoding="utf-8",
-        )
+        if destination is not None:
+            self.recipe_data_path = destination
+        if not self.recipe_data_path:
+            raise RuntimeError("No save path for RecipeRawDataEnriched.json has been configured")
+        if overwrite:
+            self.recipe_data_path.write_text(
+                json.dumps(payload, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
 
     def update_recipe_file(self) -> None:
         if self.recipe is None:
@@ -123,10 +147,11 @@ class PipelineContext:
 
     def cache_snapshot(self) -> Dict[str, str]:  # pragma: no cover - debug helper
         return {
-            "recipe_raw": str(self.cache_paths.recipe_raw),
             "foods_cache": str(self.cache_paths.foods_cache),
             "food_categories_cache": str(self.cache_paths.food_categories_cache),
             "units_cache": str(self.cache_paths.units_cache),
+            "recipe_categories_cache": str(self.cache_paths.recipe_categories_cache),
+            "tags_cache": str(self.cache_paths.tags_cache),
+            "tag_categories_cache": str(self.cache_paths.tag_categories_cache),
             "timestamp": datetime.utcnow().isoformat(),
         }
-

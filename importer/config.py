@@ -5,7 +5,7 @@ import logging
 import os
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 
 import yaml
 from dotenv import load_dotenv
@@ -19,6 +19,13 @@ _DEFAULT_CONFIG_PATH = Path("config/settings.yaml")
 class MealieConfig:
     base_url: Optional[str]
     token: Optional[str]
+    verify_ssl: bool = True
+    ca_bundle: Optional[Path] = None
+
+    def verify_option(self) -> Union[bool, str]:
+        if self.ca_bundle:
+            return str(self.ca_bundle)
+        return self.verify_ssl
 
 
 @dataclass
@@ -49,6 +56,7 @@ class IngredientConfig:
     default_category: str = "Sonstiges"
     default_category_color: str = "#959595"
     use_llm_classifier: bool = True
+    use_llm_forms: bool = True
 
 
 @dataclass
@@ -76,11 +84,16 @@ def load_config(config_path: Optional[Path] = None) -> AppConfig:
 
     base_url = _env_or_default("MEALIE_BASE_URL", mealie_section.get("base_url"))
     token = _env_or_default("MEALIE_TOKEN", mealie_section.get("token"))
+    verify_ssl = _env_flag("MEALIE_VERIFY_SSL", mealie_section.get("verify_ssl", True))
+    ca_bundle_raw = _env_or_default("MEALIE_CA_BUNDLE", mealie_section.get("ca_bundle"))
+    ca_bundle = Path(ca_bundle_raw).expanduser() if ca_bundle_raw else None
 
-    mealie = MealieConfig(base_url=base_url, token=token)
+    mealie = MealieConfig(base_url=base_url, token=token, verify_ssl=verify_ssl, ca_bundle=ca_bundle)
 
     watch_folder = Path(_env_or_default("WATCH_FOLDER", processing_section.get("watch_folder", "PDFs")))
-    output_folder = Path(_env_or_default("OUTPUT_FOLDER", processing_section.get("output_folder", "data/parsed")))
+    output_folder = Path(
+        _env_or_default("OUTPUT_FOLDER", processing_section.get("output_folder", "data/pipeline"))
+    )
 
     processing = ProcessingConfig(
         watch_folder=watch_folder,
@@ -111,6 +124,7 @@ def load_config(config_path: Optional[Path] = None) -> AppConfig:
         default_category=_env_or_default("INGREDIENT_DEFAULT_CATEGORY", ingredient_section.get("default_category", "Sonstiges")),
         default_category_color=_env_or_default("INGREDIENT_DEFAULT_CATEGORY_COLOR", ingredient_section.get("default_category_color", "#959595")),
         use_llm_classifier=_env_flag("INGREDIENT_USE_LLM_CLASSIFIER", ingredient_section.get("use_llm_classifier", True)),
+        use_llm_forms=_env_flag("INGREDIENT_USE_LLM_FORMS", ingredient_section.get("use_llm_forms", True)),
     )
 
     if mealie.base_url is None or mealie.token is None:

@@ -1,0 +1,362 @@
+import { Fragment, useEffect, useMemo, useState } from "react";
+import clsx from "clsx";
+import { MagnifyingGlassIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+import { useTranslation } from "react-i18next";
+import { PdfViewerPlaceholder } from "../components/PdfViewerPlaceholder";
+import { ReviewModal } from "../components/Modals/ReviewModal";
+
+
+type ReviewStatus = "found" | "new" | "error" | "info";
+
+interface SummaryMetaRow {
+  leftLabel: string;
+  leftValue: string;
+  rightLabel: string;
+  rightValue: string;
+}
+
+interface SummaryData {
+  title: string;
+  description: string;
+  meta: SummaryMetaRow[];
+}
+
+interface SuggestedUnit {
+  nameSingular: string;
+  namePlural: string;
+  abbreviationSingular: string;
+  abbreviationPlural: string;
+  useAbbreviation: boolean;
+  supportsFraction: boolean;
+}
+
+interface SuggestedIngredient {
+  nameSingular: string;
+  namePlural: string;
+  category: string;
+  aliases: string;
+}
+
+interface IngredientReviewEntry {
+  id: string;
+  amount: string;
+  unit: string;
+  unitMapping: string;
+  unitStatus: ReviewStatus;
+  unitMethod?: string;
+  unitConfidence?: string;
+  unitNew?: SuggestedUnit;
+  ingredient: string;
+  ingredientMapping: string;
+  ingredientStatus: ReviewStatus;
+  ingredientMethod?: string;
+  ingredientConfidence?: string;
+  ingredientNew?: SuggestedIngredient;
+  note: string;
+}
+
+interface PreparationRow {
+  step: string;
+  text: string;
+}
+
+interface ModalContext {
+  entry: IngredientReviewEntry;
+  target: "unit" | "ingredient";
+}
+
+const statusStyles: Record<ReviewStatus, string> = {
+  found: "bg-success/15 text-success border-success/40",
+  new: "bg-warning/15 text-warning border-warning/40",
+  error: "bg-error/15 text-error border-error/40",
+  info: "bg-info/15 text-info border-info/40"
+};
+
+export const Step3Review: React.FC = () => {
+  const { t, i18n } = useTranslation();
+  const [modalContext, setModalContext] = useState<ModalContext | null>(null);
+  const [notes, setNotes] = useState<Record<string, string>>({});
+  const [summary, setSummary] = useState<SummaryData>(() =>
+    t("review.summary", { returnObjects: true }) as SummaryData
+  );
+
+  const entries = useMemo(
+    () =>
+      (t("review.entries", { returnObjects: true }) as Omit<IngredientReviewEntry, "id">[]).map((entry, index) => ({
+        ...entry,
+        id: `entry-${index}`
+      })),
+    [t, i18n.resolvedLanguage]
+  );
+
+  const preparationRows = useMemo(
+    () => t("review.preparation.rows", { returnObjects: true }) as PreparationRow[],
+    [t, i18n.resolvedLanguage]
+  );
+
+  useEffect(() => {
+    const data = t("review.summary", { returnObjects: true }) as SummaryData;
+    setSummary(data);
+  }, [t, i18n.resolvedLanguage]);
+
+  useEffect(() => {
+    const initialNotes: Record<string, string> = {};
+    entries.forEach((entry) => {
+      initialNotes[entry.id] = entry.note ?? "";
+    });
+    setNotes(initialNotes);
+  }, [entries]);
+
+  const handleMetaChange = (index: number, key: "leftValue" | "rightValue", value: string) => {
+    setSummary((prev) => ({
+      ...prev,
+      meta: prev.meta.map((row, rowIndex) =>
+        rowIndex === index
+          ? {
+              ...row,
+              [key]: value
+            }
+          : row
+      )
+    }));
+  };
+
+  return (
+    <div className="flex min-h-0 flex-1 gap-6">
+      {/* Linke Spalte: Rezeptdaten */}
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl border border-border bg-panel shadow-sm">
+        <div className="scrollbar-rounded min-h-0 flex-1 overflow-y-auto px-6 py-6" style={{ scrollbarGutter: 'stable' }}>
+          <div className="space-y-6 pb-6">
+              <div className="overflow-hidden rounded-2xl border border-border bg-background shadow-sm">
+                <div className="border-b border-border px-6 py-5">
+                  <input
+                    value={summary.title}
+                    onChange={(event) =>
+                      setSummary((prev) => ({
+                        ...prev,
+                        title: event.target.value
+                      }))
+                    }
+                    className="focus-ring w-full rounded-2xl border border-border bg-background px-4 py-3 text-xl font-semibold text-primary"
+                  />
+                  <textarea
+                    value={summary.description}
+                    onChange={(event) =>
+                      setSummary((prev) => ({
+                        ...prev,
+                        description: event.target.value
+                      }))
+                    }
+                    rows={3}
+                    className="focus-ring mt-4 w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm leading-relaxed text-text/75"
+                  />
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full border-t border-border text-sm">
+                    <tbody>
+                      {summary.meta.map((row, index) => (
+                        <tr key={`${row.leftLabel}-${index}`} className={index % 2 === 1 ? "bg-background/40" : ""}>
+                          <td className="border-t border-border px-4 py-3 text-xs font-semibold uppercase tracking-wide text-text/60">
+                            {row.leftLabel}
+                          </td>
+                          <td className="border-t border-border px-4 py-3">
+                            <input
+                              value={row.leftValue}
+                              onChange={(event) => handleMetaChange(index, "leftValue", event.target.value)}
+                              className="focus-ring w-full rounded-full border border-border bg-background px-3 py-2 text-sm font-semibold text-text/85"
+                            />
+                          </td>
+                          <td className="border-t border-border px-4 py-3 text-xs font-semibold uppercase tracking-wide text-text/60">
+                            {row.rightLabel}
+                          </td>
+                          <td className="border-t border-border px-4 py-3">
+                            <input
+                              value={row.rightValue}
+                              onChange={(event) => handleMetaChange(index, "rightValue", event.target.value)}
+                              className="focus-ring w-full rounded-full border border-border bg-background px-3 py-2 text-sm font-semibold text-text/85"
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div className="space-y-4 rounded-2xl border border-border bg-background p-6 shadow-sm">
+                <header>
+                  <h3 className="text-lg font-semibold">{t("review.sections.ingredients")}</h3>
+                </header>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full border border-border text-sm">
+                    <thead className="bg-primary text-left text-xs font-semibold uppercase tracking-wide text-on-primary">
+                      <tr>
+                        <th className="px-4 py-3">{t("review.table.headers.source")}</th>
+                        <th className="px-4 py-3">{t("review.table.headers.mapping")}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {entries.map((entry, index) => {
+                        const isLast = index === entries.length - 1;
+                        const baseRowBorder = isLast ? "" : "border-b border-border";
+                        const blockDivider = isLast ? "" : "border-b-4 border-border/40";
+
+                        const unitActionIcon =
+                          entry.unitStatus === "found" ? (
+                            <MagnifyingGlassIcon className="h-4 w-4" aria-hidden="true" />
+                          ) : (
+                            <PencilSquareIcon className="h-4 w-4" aria-hidden="true" />
+                          );
+
+                        const ingredientActionIcon =
+                          entry.ingredientStatus === "found" ? (
+                            <MagnifyingGlassIcon className="h-4 w-4" aria-hidden="true" />
+                          ) : (
+                            <PencilSquareIcon className="h-4 w-4" aria-hidden="true" />
+                          );
+
+                        return (
+                          <Fragment key={entry.id}>
+                            <tr className={clsx(baseRowBorder, "bg-background/30")}
+                            >
+                              <td className="px-4 py-3 align-top">
+                                <div className="flex items-baseline gap-2">
+                                  <span className="text-lg font-semibold text-text">{entry.amount}</span>
+                                  <span className="text-sm text-text/80">{entry.unit}</span>
+                                </div>
+                              </td>
+                              <td className="px-4 py-3">
+                                <div className="flex items-center justify-between gap-3">
+                                  <div className="flex items-center gap-2">
+                                    <span
+                                      className={clsx(
+                                        "inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold uppercase",
+                                        statusStyles[entry.unitStatus]
+                                      )}
+                                    >
+                                      {t(`review.status.${entry.unitStatus}`)}
+                                    </span>
+                                    <span className="font-medium text-text/85">{entry.unitMapping}</span>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => setModalContext({ entry, target: "unit" })}
+                                    className="focus-ring inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background hover:border-primary/60 hover:text-primary"
+                                    aria-label={
+                                      entry.unitStatus === "found"
+                                        ? t("review.actions.view")
+                                        : t("review.actions.edit")
+                                    }
+                                  >
+                                    {unitActionIcon}
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr className={clsx(baseRowBorder, "bg-panel")}
+                            >
+                              <td className="px-4 py-3 align-top">
+                                <div className="text-xs uppercase text-text/60">{t("review.table.labels.ingredient")}</div>
+                                <div className="mt-1 font-semibold text-text">{entry.ingredient}</div>
+                              </td>
+                              <td className="px-4 py-3">
+                                <div className="flex items-center justify-between gap-3">
+                                  <div className="flex items-center gap-2">
+                                    <span
+                                      className={clsx(
+                                        "inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold uppercase",
+                                        statusStyles[entry.ingredientStatus]
+                                      )}
+                                    >
+                                      {t(`review.status.${entry.ingredientStatus}`)}
+                                    </span>
+                                    <span className="font-medium text-text/85">{entry.ingredientMapping}</span>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => setModalContext({ entry, target: "ingredient" })}
+                                    className="focus-ring inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background hover:border-primary/60 hover:text-primary"
+                                    aria-label={
+                                      entry.ingredientStatus === "found"
+                                        ? t("review.actions.view")
+                                        : t("review.actions.edit")
+                                    }
+                                  >
+                                    {ingredientActionIcon}
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr className={clsx(blockDivider, "bg-background/40")}
+                            >
+                              <td className="px-4 py-4" colSpan={2}>
+                                <div className="text-xs uppercase text-text/60">{t("review.table.labels.note")}</div>
+                                <textarea
+                                  value={notes[entry.id] ?? ""}
+                                  onChange={(event) =>
+                                    setNotes((prev) => ({
+                                      ...prev,
+                                      [entry.id]: event.target.value
+                                    }))
+                                  }
+                                  rows={1}
+                                  className="focus-ring mt-2 w-full resize-y rounded-2xl border border-border bg-panel px-4 py-2 text-sm text-text/80"
+                                />
+                              </td>
+                            </tr>
+                          </Fragment>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div className="space-y-4 rounded-2xl border border-border bg-background p-6 shadow-sm">
+                <header>
+                  <h3 className="text-lg font-semibold">{t("review.sections.preparation")}</h3>
+                </header>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full border border-border text-sm">
+                    <thead className="bg-primary text-left text-xs font-semibold uppercase tracking-wide text-on-primary">
+                      <tr>
+                        <th className="px-4 py-3">{t("review.preparation.headers.step")}</th>
+                        <th className="px-4 py-3">{t("review.preparation.headers.text")}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {preparationRows.map((row, index) => (
+                        <tr key={`${row.step}-${index}`} className="border-t border-border">
+                          <td className="px-4 py-3 font-semibold text-text/80">{row.step}</td>
+                          <td className="px-4 py-3 text-text/80">{row.text}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div className="space-y-4 rounded-2xl border border-border bg-background p-6 shadow-sm">
+                <header>
+                  <h3 className="text-lg font-semibold">{t("review.sections.image")}</h3>
+                </header>
+                <div className="overflow-hidden rounded-2xl border border-border bg-background">
+                  <div className="aspect-[4/3] w-full bg-secondary/40" aria-hidden="true" />
+                  <p className="px-4 py-3 text-sm text-text/70">{t("review.image.caption")}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      {/* Rechte Spalte: PDF-Viewer */}
+      <aside className="hidden min-h-0 w-[420px] xl:block">
+        <div className="flex h-full flex-col">
+          <PdfViewerPlaceholder />
+        </div>
+      </aside>
+
+      <ReviewModal context={modalContext} onClose={() => setModalContext(null)} />
+    </div>
+  );
+};

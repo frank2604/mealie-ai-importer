@@ -43,7 +43,7 @@ python -m importer export-mealie data/fruehling-llm.json --output data/mealie/fr
 python -m importer upload data/fruehling-llm.json
 ```
 
-`parse-llm` benötigt eine gültige Konfiguration und einen OpenAI-Key. Beide Parser versuchen, das größte PDF-Bild als JPEG unter `data/parsed/images/` abzulegen und ergänzen das JSON um ein Base64-Asset (`assets[*].data`). Wenn ein Vision-Modell (`LLM_VISION_MODEL`) konfiguriert ist, wird der Bildausschnitt automatisch auf das Gericht zugeschnitten. Beim Upload werden Einheiten, Lebensmittel und Kategorien in Mealie angelegt (inkl. 90 %-Fuzzy-Matching) und als Smart Ingredients mit Mengen hinterlegt; das Bild wird als Asset geladen und als Feature gesetzt.
+`parse-llm` benötigt eine gültige Konfiguration und einen OpenAI-Key. Beide Parser versuchen, das größte PDF-Bild als JPEG unter `data/pipeline/` abzulegen und ergänzen das JSON um ein Base64-Asset (`assets[*].data`). Wenn ein Vision-Modell (`LLM_VISION_MODEL`) konfiguriert ist, wird der Bildausschnitt automatisch auf das Gericht zugeschnitten. Beim Upload werden Einheiten, Lebensmittel und Kategorien in Mealie angelegt (inkl. 90 %-Fuzzy-Matching) und als Smart Ingredients mit Mengen hinterlegt; das Bild wird als Asset geladen und als Feature gesetzt.
 
 ## Status & nächste Schritte
 - LLM-Pipeline liefert strukturierte Rezepte (Smart Ingredients, Schritte, Metadaten).
@@ -61,3 +61,40 @@ importer/
   models.py          # Datenmodelle
 config/settings.template.yaml
 ```
+
+---
+
+## Mealie AI-Importer UI (Vite + React)
+
+Das neue UI-Frontend liegt im Repository-Wurzelverzeichnis und kann unabhängig vom Python-Importer betrieben werden.
+
+### Entwicklung starten
+```bash
+npm install
+npm run dev
+```
+Der Dev-Server läuft standardmäßig auf `http://localhost:5173` und bietet Hot Module Reloading. Die Sprache kann oben rechts zwischen Deutsch und Englisch gewechselt werden; Themes werden per CSS-Variablen umgesetzt.
+
+### Production-Build
+```bash
+npm run build
+npm run preview
+```
+Der Build landet unter `dist/` und kann via `npm run preview` lokal geprüft werden.
+
+### Docker
+```bash
+docker build -t mealie-ai-importer-ui .
+docker run -p 8080:80 mealie-ai-importer-ui
+```
+Alternativ steht ein einfaches `docker-compose.yml` bereit:
+```bash
+docker compose up --build
+```
+Die bereitgestellte `nginx.conf` aktiviert Gzip und setzt CORS-Header ausschließlich für statische Assets (`/assets/`).
+
+### Architektur & i18n
+- React Router steuert den Vier-Schritte-Wizard (`/`, `/analyze`, `/review`, `/transfer`) sowie `/settings`.
+- Tailwind nutzt ausschließlich CSS-Variablen aus `src/theme/theme.css`, womit Light/Dark Themes abgebildet werden.
+- Sämtliche UI-Texte liegen in `src/i18n/locales/{de,en}/common.json` und werden via `i18next` geladen.
+- Dummy-Daten (Logs, Tabellen, Platzhalter) sind internationalisiert und folgen den Mockups im Ordner `docs/`.

@@ -1,0 +1,51 @@
+@import "../theme/theme.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  [data-theme="dark"] {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background text-text font-sans;
+  }
+}
+
+@layer utilities {
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary focus-visible:ring-offset-background;
+  }
+
+  /* Scrollbar-Styles mit abgerundeten Enden */
+  .scrollbar-rounded {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--border-rgb), 0.5) transparent;
+  }
+
+  .scrollbar-rounded::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .scrollbar-rounded::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 1rem 0; /* Abstand zu den runden Ecken des Containers */
+  }
+
+  .scrollbar-rounded::-webkit-scrollbar-thumb {
+    background-color: rgba(var(--border-rgb), 0.5);
+    border-radius: 9999px; /* Vollständig abgerundet (Halbkreis-Caps) */
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  .scrollbar-rounded::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(var(--border-rgb), 0.7);
+  }
+}

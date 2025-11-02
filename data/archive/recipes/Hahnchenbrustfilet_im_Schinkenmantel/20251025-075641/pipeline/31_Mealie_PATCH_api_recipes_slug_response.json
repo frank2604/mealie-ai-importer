@@ -1,0 +1,543 @@
+{
+  "status": 200,
+  "body": {
+    "id": "58a3cc12-fef5-4213-a57b-953e8988d978",
+    "userId": "48ff7261-817a-43a9-89de-63ee69dd4a3e",
+    "householdId": "68c99137-3b89-4a63-b504-97c353531455",
+    "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+    "name": "Hähnchenbrustfilet im Schinkenmantel",
+    "slug": "hahnchenbrustfilet-im-schinkenmantel",
+    "image": null,
+    "recipeServings": 0.0,
+    "recipeYieldQuantity": 0.0,
+    "recipeYield": null,
+    "totalTime": "40 Minuten",
+    "prepTime": null,
+    "cookTime": null,
+    "performTime": null,
+    "description": "Zarte Hähnchenbrustfilets werden mit Salbei und Parma-Schinken umwickelt und scharf angebraten, bevor sie in einer cremigen Champignon-Wermut-Sauce im Ofen fertig garen. Die Kombination aus Pilzen, Wermut und süßer Sahne ergibt eine aromatische, sämige Sauce. Servieren Sie das Gericht mit Pellkartoffeln und grünem Salat für ein rundes Hauptgericht.",
+    "recipeCategory": [],
+    "tags": [],
+    "tools": [],
+    "rating": null,
+    "orgURL": "PDFs/Hähnchenbrustfilet im Schinkenmantel.pdf",
+    "dateAdded": "2025-10-25",
+    "dateUpdated": "2025-10-25T08:02:23.026964Z",
+    "createdAt": "2025-10-25T08:02:02.582886Z",
+    "updatedAt": "2025-10-25T08:02:23.028458Z",
+    "lastMade": null,
+    "recipeIngredient": [
+      {
+        "quantity": 4.0,
+        "unit": {
+          "id": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+          "name": "Stück",
+          "pluralName": "Stücke",
+          "description": "",
+          "extras": {},
+          "fraction": true,
+          "abbreviation": "Stk.",
+          "pluralAbbreviation": "",
+          "useAbbreviation": true,
+          "aliases": [],
+          "createdAt": "2025-10-12T16:02:35.010417Z",
+          "updatedAt": "2025-10-12T16:03:02.113473Z"
+        },
+        "food": {
+          "id": "56d8f876-0110-410f-951e-7a4b365437ce",
+          "name": "Hähnchenbrustfilet",
+          "pluralName": "Hähnchenbrustfilets",
+          "description": "",
+          "extras": {},
+          "labelId": "d544476e-8baa-434b-87d3-66cb979cea2d",
+          "aliases": [
+            {
+              "name": "hähnchen-brustfilet"
+            },
+            {
+              "name": "hähnchenbrust-filet"
+            },
+            {
+              "name": "haehnchenbrustfilet"
+            },
+            {
+              "name": "haehnchenbrustfilets"
+            }
+          ],
+          "householdsWithIngredientFood": [],
+          "label": {
+            "name": "Fleisch 🥩",
+            "color": "#C14953",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "id": "d544476e-8baa-434b-87d3-66cb979cea2d"
+          },
+          "createdAt": "2025-10-20T18:08:20.518036Z",
+          "updatedAt": "2025-10-20T18:08:20.518039Z"
+        },
+        "note": "",
+        "display": "4 Stk. Hähnchenbrustfilets",
+        "title": null,
+        "originalText": null,
+        "referenceId": "f759ac45-be9a-401a-afd1-c4e09789b41c"
+      },
+      {
+        "quantity": 6.0,
+        "unit": {
+          "id": "cb399cf8-d436-4110-901f-7808ea38165c",
+          "name": "Scheibe",
+          "pluralName": "Scheiben",
+          "description": "",
+          "extras": {},
+          "fraction": true,
+          "abbreviation": "",
+          "pluralAbbreviation": "",
+          "useAbbreviation": false,
+          "aliases": [],
+          "createdAt": "2025-10-25T07:16:29.162571Z",
+          "updatedAt": "2025-10-25T07:16:29.162574Z"
+        },
+        "food": {
+          "id": "2092d72d-0375-4ce9-b524-830a98107cf4",
+          "name": "Parma-Schinken",
+          "pluralName": "Parma-Schinken",
+          "description": "",
+          "extras": {},
+          "labelId": "cf095fa9-128c-4699-946e-4da8c4d87d7b",
+          "aliases": [
+            {
+              "name": "parma schinken"
+            },
+            {
+              "name": "parmaschinken"
+            }
+          ],
+          "householdsWithIngredientFood": [],
+          "label": {
+            "name": "Wurstwaren 🥓",
+            "color": "#D36B5F",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "id": "cf095fa9-128c-4699-946e-4da8c4d87d7b"
+          },
+          "createdAt": "2025-10-19T08:47:13.606451Z",
+          "updatedAt": "2025-10-19T08:47:13.606457Z"
+        },
+        "note": "",
+        "display": "6 Scheiben Parma-Schinken",
+        "title": null,
+        "originalText": null,
+        "referenceId": "967a28ff-6168-4ad3-a541-c895eedba5b1"
+      },
+      {
+        "quantity": 500.0,
+        "unit": {
+          "id": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
+          "name": "Gramm",
+          "pluralName": "Gramm",
+          "description": "",
+          "extras": {},
+          "fraction": true,
+          "abbreviation": "g",
+          "pluralAbbreviation": null,
+          "useAbbreviation": true,
+          "aliases": [],
+          "createdAt": "2025-10-11T08:26:17.020474Z",
+          "updatedAt": "2025-10-12T16:03:16.881034Z"
+        },
+        "food": {
+          "id": "60554611-f601-4d7f-b7dc-ce21c3462067",
+          "name": "Champignon",
+          "pluralName": "Champignons",
+          "description": "",
+          "extras": {},
+          "labelId": "d1cd4704-d9b1-4019-906f-4e3fc67e040a",
+          "aliases": [],
+          "householdsWithIngredientFood": [],
+          "label": {
+            "name": "Obst & Gemüse 🍎",
+            "color": "#7BB661",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "id": "d1cd4704-d9b1-4019-906f-4e3fc67e040a"
+          },
+          "createdAt": "2025-10-19T08:47:17.426431Z",
+          "updatedAt": "2025-10-19T08:47:17.426439Z"
+        },
+        "note": "geputzt und geviertelt",
+        "display": "500 g Champignons geputzt und geviertelt",
+        "title": null,
+        "originalText": null,
+        "referenceId": "95ef8ed1-53d2-4833-aea9-889ce8e9a1aa"
+      },
+      {
+        "quantity": 3.0,
+        "unit": {
+          "id": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+          "name": "Stück",
+          "pluralName": "Stücke",
+          "description": "",
+          "extras": {},
+          "fraction": true,
+          "abbreviation": "Stk.",
+          "pluralAbbreviation": "",
+          "useAbbreviation": true,
+          "aliases": [],
+          "createdAt": "2025-10-12T16:02:35.010417Z",
+          "updatedAt": "2025-10-12T16:03:02.113473Z"
+        },
+        "food": {
+          "id": "faec60df-abda-4f65-bed0-b81d47121a55",
+          "name": "Rote Zwiebel",
+          "pluralName": "Rote Zwiebeln",
+          "description": "",
+          "extras": {},
+          "labelId": "d1cd4704-d9b1-4019-906f-4e3fc67e040a",
+          "aliases": [],
+          "householdsWithIngredientFood": [],
+          "label": {
+            "name": "Obst & Gemüse 🍎",
+            "color": "#7BB661",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "id": "d1cd4704-d9b1-4019-906f-4e3fc67e040a"
+          },
+          "createdAt": "2025-10-25T08:01:57.442962Z",
+          "updatedAt": "2025-10-25T08:01:57.442965Z"
+        },
+        "note": "geschält und klein gehackt",
+        "display": "3 Stk. Rote Zwiebeln geschält und klein gehackt",
+        "title": null,
+        "originalText": null,
+        "referenceId": "51a3a58a-003f-4ae7-af7b-d82a14a82f65"
+      },
+      {
+        "quantity": 100.0,
+        "unit": {
+          "id": "3b04677f-506d-4519-8b16-be376e35a159",
+          "name": "Liter",
+          "pluralName": "Liter",
+          "description": "",
+          "extras": {},
+          "fraction": true,
+          "abbreviation": "L",
+          "pluralAbbreviation": null,
+          "useAbbreviation": true,
+          "aliases": [],
+          "createdAt": "2025-10-11T08:26:16.993982Z",
+          "updatedAt": "2025-10-12T16:03:34.949883Z"
+        },
+        "food": {
+          "id": "fd855a06-9787-4083-8122-8f738ff90e5d",
+          "name": "Trockener Wermut",
+          "pluralName": "Trockener Wermut",
+          "description": "",
+          "extras": {},
+          "labelId": "7c260419-4a87-440b-8b4d-cec090a65078",
+          "aliases": [],
+          "householdsWithIngredientFood": [],
+          "label": {
+            "name": "Alkohol 🍻",
+            "color": "#B5651D",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "id": "7c260419-4a87-440b-8b4d-cec090a65078"
+          },
+          "createdAt": "2025-10-25T07:16:29.049038Z",
+          "updatedAt": "2025-10-25T07:16:29.049041Z"
+        },
+        "note": "",
+        "display": "100 L Trockener Wermut",
+        "title": null,
+        "originalText": null,
+        "referenceId": "0a02fe00-4114-4619-9067-6a605c3c3b27"
+      },
+      {
+        "quantity": 200.0,
+        "unit": {
+          "id": "b558643c-bb92-479d-97ea-1337edc49d3b",
+          "name": "Milliliter",
+          "pluralName": "Milliliter",
+          "description": "",
+          "extras": {},
+          "fraction": true,
+          "abbreviation": "ml",
+          "pluralAbbreviation": "ml",
+          "useAbbreviation": true,
+          "aliases": [],
+          "createdAt": "2025-10-25T08:01:57.515934Z",
+          "updatedAt": "2025-10-25T08:01:57.515937Z"
+        },
+        "food": {
+          "id": "ce7b4e53-b248-490e-953f-c4548bfb941a",
+          "name": "Süße Sahne",
+          "pluralName": "Süße Sahne",
+          "description": "",
+          "extras": {},
+          "labelId": "033fbe17-9b70-459f-868e-3f4f8fa34b1e",
+          "aliases": [
+            {
+              "name": "suesse sahne"
+            }
+          ],
+          "householdsWithIngredientFood": [],
+          "label": {
+            "name": "Milchprodukte 🥛",
+            "color": "#AEE1F9",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "id": "033fbe17-9b70-459f-868e-3f4f8fa34b1e"
+          },
+          "createdAt": "2025-10-19T08:47:21.162733Z",
+          "updatedAt": "2025-10-19T08:47:21.162740Z"
+        },
+        "note": "",
+        "display": "200 ml Süße Sahne",
+        "title": null,
+        "originalText": null,
+        "referenceId": "bd4fa24f-571f-4b5a-a2bd-5d0177606e96"
+      },
+      {
+        "quantity": 1.0,
+        "unit": {
+          "id": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+          "name": "Esslöffel",
+          "pluralName": "Esslöffel",
+          "description": "",
+          "extras": {},
+          "fraction": true,
+          "abbreviation": "EL",
+          "pluralAbbreviation": null,
+          "useAbbreviation": true,
+          "aliases": [],
+          "createdAt": "2025-10-11T08:26:16.902184Z",
+          "updatedAt": "2025-10-12T16:04:03.207933Z"
+        },
+        "food": {
+          "id": "49ad74f8-8303-4fa3-8e31-0e5b0d55e12d",
+          "name": "Mehl",
+          "pluralName": "Mehl",
+          "description": "",
+          "extras": {},
+          "labelId": "5c0671c9-16ee-40fb-b721-0401e9b2267f",
+          "aliases": [],
+          "householdsWithIngredientFood": [
+            "family"
+          ],
+          "label": {
+            "name": "Backzutaten 🧁",
+            "color": "#E0BBE4",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "id": "5c0671c9-16ee-40fb-b721-0401e9b2267f"
+          },
+          "createdAt": "2025-10-12T15:23:58.595440Z",
+          "updatedAt": "2025-10-12T15:23:58.595443Z"
+        },
+        "note": "zum Bestäuben",
+        "display": "1 EL Mehl zum Bestäuben",
+        "title": null,
+        "originalText": null,
+        "referenceId": "edfcd528-10a5-4daa-a47f-f89576cc214a"
+      },
+      {
+        "quantity": 1.0,
+        "unit": {
+          "id": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+          "name": "Esslöffel",
+          "pluralName": "Esslöffel",
+          "description": "",
+          "extras": {},
+          "fraction": true,
+          "abbreviation": "EL",
+          "pluralAbbreviation": null,
+          "useAbbreviation": true,
+          "aliases": [],
+          "createdAt": "2025-10-11T08:26:16.902184Z",
+          "updatedAt": "2025-10-12T16:04:03.207933Z"
+        },
+        "food": {
+          "id": "16018665-3023-4213-aeb2-c8445dd699b6",
+          "name": "Heller Soßenbinder",
+          "pluralName": "Heller Soßenbinder",
+          "description": "",
+          "extras": {},
+          "labelId": "36be9b8c-4dd6-4f59-abc0-4715a742566d",
+          "aliases": [],
+          "householdsWithIngredientFood": [],
+          "label": {
+            "name": "Würzmittel, Brühen & Soßen🧂",
+            "color": "#C58C85",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "id": "36be9b8c-4dd6-4f59-abc0-4715a742566d"
+          },
+          "createdAt": "2025-10-25T07:16:29.076129Z",
+          "updatedAt": "2025-10-25T07:16:29.076132Z"
+        },
+        "note": "",
+        "display": "1 EL Heller Soßenbinder",
+        "title": null,
+        "originalText": null,
+        "referenceId": "843b4514-dede-4896-adc8-6f1eb14298f6"
+      },
+      {
+        "quantity": 0.0,
+        "unit": null,
+        "food": null,
+        "note": "Fett zum Braten",
+        "display": "Fett zum Braten",
+        "title": null,
+        "originalText": null,
+        "referenceId": "72586f0b-5db3-4300-8922-50e18d144a44"
+      },
+      {
+        "quantity": 6.0,
+        "unit": {
+          "id": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+          "name": "Stück",
+          "pluralName": "Stücke",
+          "description": "",
+          "extras": {},
+          "fraction": true,
+          "abbreviation": "Stk.",
+          "pluralAbbreviation": "",
+          "useAbbreviation": true,
+          "aliases": [],
+          "createdAt": "2025-10-12T16:02:35.010417Z",
+          "updatedAt": "2025-10-12T16:03:02.113473Z"
+        },
+        "food": {
+          "id": "31eedd6a-c57b-4979-8a9d-b7ff71663acc",
+          "name": "Salbeiblatt",
+          "pluralName": "Salbeiblätter",
+          "description": "",
+          "extras": {},
+          "labelId": "c1e4c9ca-979b-4d58-982e-350f3dd5a5de",
+          "aliases": [],
+          "householdsWithIngredientFood": [],
+          "label": {
+            "name": "Gewürze 🌿",
+            "color": "#9B5E2E",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "id": "c1e4c9ca-979b-4d58-982e-350f3dd5a5de"
+          },
+          "createdAt": "2025-10-25T08:01:57.477967Z",
+          "updatedAt": "2025-10-25T08:01:57.477970Z"
+        },
+        "note": "",
+        "display": "6 Stk. Salbeiblätter",
+        "title": null,
+        "originalText": null,
+        "referenceId": "3dcf6ae2-ca0b-47d1-9540-d9bf840ffa4f"
+      },
+      {
+        "quantity": 0.0,
+        "unit": null,
+        "food": null,
+        "note": "Salz",
+        "display": "Salz",
+        "title": null,
+        "originalText": null,
+        "referenceId": "8dcf4689-5128-44f5-886b-03d4c1f4ca1c"
+      },
+      {
+        "quantity": 0.0,
+        "unit": null,
+        "food": null,
+        "note": "Pfeffer",
+        "display": "Pfeffer",
+        "title": null,
+        "originalText": null,
+        "referenceId": "950f5f05-7164-4096-b9e5-376afdedde76"
+      }
+    ],
+    "recipeInstructions": [
+      {
+        "id": "2efb024a-6b14-4ddc-a615-14fae07422eb",
+        "title": null,
+        "summary": null,
+        "text": "Hähnchenbrustfilets mit Pfeffer würzen.",
+        "ingredientReferences": []
+      },
+      {
+        "id": "065cd336-8585-4e27-ad1d-616b63361bc3",
+        "title": null,
+        "summary": null,
+        "text": "Jeweils ein Salbeiblatt auf die Filets legen und die Filets mit Parma-Schinken umwickeln.",
+        "ingredientReferences": []
+      },
+      {
+        "id": "df385826-02c8-4e83-b09c-2fd07cd08740",
+        "title": null,
+        "summary": null,
+        "text": "Fett in einer Pfanne erhitzen, die Filets leicht mit Mehl bestäuben und rundherum anbraten, bis sie Farbe bekommen.",
+        "ingredientReferences": []
+      },
+      {
+        "id": "0a22e3a9-639d-4f07-9da2-7c395ec1a8b6",
+        "title": null,
+        "summary": null,
+        "text": "Die angebratenen Filets herausnehmen und in eine feuerfeste Form legen.",
+        "ingredientReferences": []
+      },
+      {
+        "id": "5a13f487-c4f3-4727-a0a2-d853f2069661",
+        "title": null,
+        "summary": null,
+        "text": "Zwiebeln schälen und klein hacken, Champignons putzen und vierteln. Beides in der Pfanne anbraten.",
+        "ingredientReferences": []
+      },
+      {
+        "id": "9da56a65-0cfa-415e-a848-f330f318c201",
+        "title": null,
+        "summary": null,
+        "text": "Mit Wermut ablöschen, etwas einkochen lassen und dann die süße Sahne angießen.",
+        "ingredientReferences": []
+      },
+      {
+        "id": "b9fce22f-f433-42aa-914d-ed73b68f5c69",
+        "title": null,
+        "summary": null,
+        "text": "Den hellen Soßenbinder einrühren, die Sauce kurz aufkochen lassen und mit Salz und Pfeffer abschmecken.",
+        "ingredientReferences": []
+      },
+      {
+        "id": "11cb1866-9a4c-431e-92ca-81a2f64d68ac",
+        "title": null,
+        "summary": null,
+        "text": "Die Sauce über die Filets in der Form gießen und alles im vorgeheizten Ofen bei 200 °C etwa 20 Minuten garen lassen.",
+        "ingredientReferences": []
+      },
+      {
+        "id": "cbb2233c-b4ec-4a3c-a1d1-4d5cec2c7e5f",
+        "title": null,
+        "summary": null,
+        "text": "Aus dem Ofen nehmen und kurz ruhen lassen.",
+        "ingredientReferences": []
+      }
+    ],
+    "nutrition": {
+      "calories": null,
+      "carbohydrateContent": null,
+      "cholesterolContent": null,
+      "fatContent": null,
+      "fiberContent": null,
+      "proteinContent": null,
+      "saturatedFatContent": null,
+      "sodiumContent": null,
+      "sugarContent": null,
+      "transFatContent": null,
+      "unsaturatedFatContent": null
+    },
+    "settings": {
+      "public": false,
+      "showNutrition": false,
+      "showAssets": true,
+      "landscapeView": false,
+      "disableComments": false,
+      "locked": false
+    },
+    "assets": [],
+    "notes": [
+      {
+        "title": "Hinweis",
+        "text": "Als Beilage passen Pellkartoffeln und grüner Salat sehr gut."
+      }
+    ],
+    "extras": {},
+    "comments": []
+  }
+}

@@ -1,15 +1,19 @@
 # Configuration for the Mealie Importer. Keep secrets in the .env file only.
 mealie:
   # Base URL of your Mealie instance, including protocol and port.
-  base_url: "http://192.168.2.33:9925"
+  base_url: "https://mealie.local"
   # Token is read from the MEALIE_TOKEN environment variable; leave empty here.
   token: ""
+  # Set to false to skip TLS certificate verification (e.g. self-signed certs).
+  verify_ssl: false
+  # Optional path to a custom CA bundle for TLS verification.
+  ca_bundle:
 
 processing:
   # Folder that is watched for new PDF input files.
   watch_folder: "PDFs"
-  # Folder where parsed recipe data is stored.
-  output_folder: "data/parsed"
+  # Working directory for pipeline Artefakte (z. B. nummerierte JSONs, Payloads).
+  output_folder: "data/pipeline"
   # Enable to run OCR on scanned documents before parsing.
   ocr_enabled: false
   # ISO language code used for OCR and language-specific processing.
@@ -28,6 +32,8 @@ ingredients:
   default_category_color: "#959595"
   # When true, ask the LLM to classify ingredients that are unclear.
   use_llm_classifier: true
+  # When true, use the LLM to infer singular/plural forms and aliases for missing foods.
+  use_llm_forms: true
 
 llm:
   # Provider identifier used to select the language model backend.

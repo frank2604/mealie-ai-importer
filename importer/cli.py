@@ -6,7 +6,6 @@ import json
 import logging
 import os
 from pathlib import Path
-import shutil
 from typing import Optional, Dict, Any, List
 
 import httpx
@@ -14,10 +13,19 @@ import httpx
 from .image_utils import prepare_image_asset, select_best_image
 from .mealie_schema import recipe_to_mealie
 from .services.ingredients import IngredientService
+from .services.run_workspace import PipelineRecorder, RunWorkspace
 from .models import Recipe
 from .pdf_extractor import PdfExtractionError, extract_text_and_images
 from .simple_parser import parse_recipe
-from .modules import CachePaths, PipelineContext, PipelineRunner
+from .exceptions import UserAbort
+from .modules import (
+    AssignMetadataModule,
+    CachePaths,
+    PipelineContext,
+    PipelineRunner,
+    ReviewPromptModule,
+    ApplyUserDecisionsModule,
+)
 from .modules.add_food_ids import AddFoodIdsModule
 from .modules.add_unit_ids import AddUnitIdsModule
 from .modules.ai_analyser import AiAnalyserModule
@@ -26,13 +34,52 @@ from .modules.create_recipe import CreateRecipeModule
 from .modules.create_units import CreateUnitsModule
 from .modules.food_checker import FoodCheckerModule
 from .modules.input import PdfInputModule
+from .modules.refresh_caches import RefreshCachesModule
 from .modules.unit_checker import UnitCheckerModule
 
 _LOG_LEVEL = os.getenv("LOG_LEVEL") or os.getenv("PYTHONLOGLEVEL") or "INFO"
-logging.basicConfig(level=getattr(logging, _LOG_LEVEL.upper(), logging.INFO), format="[%(levelname)s] %(message)s")
+
+
+def configure_logging(*, log_file: Optional[Path] = None, reset: bool = False) -> None:
+    """Configure console/file logging for the CLI."""
+    level = getattr(logging, _LOG_LEVEL.upper(), logging.INFO)
+    root = logging.getLogger()
+    if reset or not root.handlers:
+        for handler in list(root.handlers):
+            root.removeHandler(handler)
+        console_handler = logging.StreamHandler()
+        console_handler.setFormatter(logging.Formatter("[%(levelname)s] %(message)s"))
+        root.addHandler(console_handler)
+    if log_file:
+        log_file.parent.mkdir(parents=True, exist_ok=True)
+        for handler in list(root.handlers):
+            if isinstance(handler, logging.FileHandler):
+                root.removeHandler(handler)
+        file_handler = logging.FileHandler(log_file, encoding="utf-8")
+        file_handler.setFormatter(
+            logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s", "%Y-%m-%d %H:%M:%S")
+        )
+        root.addHandler(file_handler)
+    root.setLevel(level)
+
+
+configure_logging(reset=True)
 logger = logging.getLogger(__name__)
 
-DEFAULT_OUTPUT_DIR = Path("data/parsed")
+DEFAULT_OUTPUT_DIR = Path("data/pipeline")
+
+
+def _prompt_yes_no(message: str, *, default: bool = False) -> bool:
+    suffix = "Y/n" if default else "y/N"
+    while True:
+        answer = input(f"{message} [{suffix}]: ").strip().lower()
+        if not answer:
+            return default
+        if answer in {"y", "yes"}:
+            return True
+        if answer in {"n", "no"}:
+            return False
+        print("Bitte mit y oder n antworten.")
 
 try:
     from .config import AppConfig, ConfigError, LlmConfig, load_config  # type: ignore
@@ -64,7 +111,7 @@ def build_parser() -> argparse.ArgumentParser:
     extract_parser.add_argument(
         "--output",
         type=Path,
-        help="Pfad für die Textausgabe (Standard: data/parsed/<name>.txt)",
+        help="Pfad für die Textausgabe (Standard: data/pipeline/<name>.txt)",
     )
 
     parse_parser = subparsers.add_parser("parse", help="PDF in Rezept-Struktur überführen (heuristisch)")
@@ -80,7 +127,7 @@ def build_parser() -> argparse.ArgumentParser:
     parse_llm_parser.add_argument(
         "--json",
         type=Path,
-        help="Pfad für die Ausgabe als JSON (Standard: data/parsed/<name>.json)",
+        help="Pfad für die Ausgabe als JSON (Standard: data/pipeline/<name>.json)",
     )
     parse_llm_parser.add_argument(
         "--servings",
@@ -271,23 +318,19 @@ def _handle_parse_llm(
     use_default_paths = json_path is None
     parsed_root = default_output_dir
 
-    if use_default_paths:
-        _prepare_run_dirs(
-            cache_dir=config.ingredients.cache_dir,
-            parsed_root=parsed_root,
-            keep_parsed=config.processing.skip_ai_if_cached,
-        )
-
     recipe_output_dir = (json_path.parent if json_path else parsed_root / recipe_key)
-    output_json = json_path or recipe_output_dir / "RecipeRawData.json"
-    cache_paths = CachePaths(config.ingredients.cache_dir, recipe_key)
+    recipe_output_dir.mkdir(parents=True, exist_ok=True)
+    cache_paths = CachePaths(Path(config.ingredients.cache_dir))
+    recorder = PipelineRecorder(recipe_output_dir)
+    recorder.copy_file(pdf_path, label=recipe_key)
     context = PipelineContext(
         source_pdf=pdf_path,
         output_dir=recipe_output_dir,
         config=config,
         cache_paths=cache_paths,
         servings_hint=servings_hint,
-        recipe_output_path=output_json,
+        recipe_output_path=json_path,
+        pipeline_recorder=recorder,
     )
 
     modules = [
@@ -295,7 +338,6 @@ def _handle_parse_llm(
         AiAnalyserModule(
             llm_client=client,
             llm_config=llm_config,
-            output_json=output_json,
             image_output_dir=recipe_output_dir,
         ),
     ]
@@ -303,11 +345,15 @@ def _handle_parse_llm(
     runner = PipelineRunner(modules)
     try:
         runner.run(context)
+    except UserAbort as exc:
+        logger.info("Abgebrochen: %s", exc)
+        return 0
     except RuntimeError as exc:
         logger.error("LLM-Analyse fehlgeschlagen: %s", exc)
         return 4
 
-    logger.info("LLM-Rezept nach %s geschrieben", output_json)
+    if context.recipe_output_path:
+        logger.info("LLM-Rezept nach %s geschrieben", context.recipe_output_path)
     logger.info("Titel: %s", context.ensure_recipe().title)
 
     return 0
@@ -332,6 +378,7 @@ def _handle_export_mealie(source: Path, output: Optional[Path], config) -> int:
             token=config.mealie.token,
             config=config.ingredients,
             llm_client=client,
+            verify=config.mealie.verify_option(),
         )
 
     try:
@@ -346,25 +393,6 @@ def _handle_export_mealie(source: Path, output: Optional[Path], config) -> int:
 
     logger.info("Mealie-JSON nach %s geschrieben", destination)
     return 0
-
-
-def _clear_directory(path: Path) -> None:
-    if not path.exists():
-        return
-    for entry in path.iterdir():
-        if entry.is_dir():
-            shutil.rmtree(entry)
-        else:
-            entry.unlink()
-
-
-def _prepare_run_dirs(*, cache_dir: Path, parsed_root: Path, keep_parsed: bool) -> None:
-    cache_dir.mkdir(parents=True, exist_ok=True)
-    _clear_directory(cache_dir)
-
-    parsed_root.mkdir(parents=True, exist_ok=True)
-    if not keep_parsed:
-        _clear_directory(parsed_root)
 
 
 def _handle_upload(*, source: Path, config: AppConfig, dry_run: bool) -> int:
@@ -383,89 +411,102 @@ def _handle_upload_pdf(*, pdf_path: Path, config: AppConfig, dry_run: bool) -> i
         logger.error("LLM-Client konnte nicht erstellt werden: %s", exc)
         return 1
 
-    keep_parsed = config.processing.skip_ai_if_cached
     recipe_key = pdf_path.stem
-    cache_dir = config.ingredients.cache_dir
-    parsed_root = config.processing.output_folder
+    cache_dir = Path(config.ingredients.cache_dir)
+    pipeline_dir = Path(config.processing.output_folder)
+    data_root = pipeline_dir.parent if pipeline_dir.parent != pipeline_dir else Path("data")
 
-    _prepare_run_dirs(cache_dir=cache_dir, parsed_root=parsed_root, keep_parsed=keep_parsed)
+    workspace = RunWorkspace(
+        pipeline_dir=pipeline_dir,
+        cache_dir=cache_dir,
+        log_dir=data_root / "log",
+        archive_dir=data_root / "archive",
+    )
+    run_info = workspace.start_run(recipe_name=recipe_key, source_pdf=pdf_path)
+    log_file = Path(run_info.log_file) if run_info.log_file else workspace.log_dir / f"{run_info.run_id}.log"
+    configure_logging(log_file=log_file)
+    logger.info("Starte Importlauf %s – Log-Datei: %s", run_info.run_id, log_file)
+
+    recorder = PipelineRecorder(workspace.pipeline_dir)
+    recorder.copy_file(pdf_path, label=recipe_key)
 
     ingredient_service = IngredientService(
         base_url=config.mealie.base_url,
         token=config.mealie.token,
         config=config.ingredients,
         llm_client=llm_client,
+        verify=config.mealie.verify_option(),
+        auto_seed=False,
     )
-
-    cache_paths = CachePaths(cache_dir, recipe_key)
-    recipe_output_dir = parsed_root / recipe_key
-    output_json = recipe_output_dir / "RecipeRawData.json"
+    cache_paths = CachePaths(cache_dir)
     context = PipelineContext(
         source_pdf=pdf_path,
-        output_dir=recipe_output_dir,
+        output_dir=pipeline_dir,
         config=config,
         cache_paths=cache_paths,
         servings_hint=None,
-        recipe_output_path=output_json,
+        recipe_output_path=None,
+        run_id=run_info.run_id,
+        pipeline_recorder=recorder,
+        log_file=log_file,
     )
+    context.requires_user_review = True
 
-    modules: List = [PdfInputModule()]
-
-    skip_ai = False
-    if keep_parsed and output_json.exists():
-        cache_paths.recipe_raw.write_text(
-            output_json.read_text(encoding="utf-8"),
-            encoding="utf-8",
+    def _confirm_duplicate(slug: str, title: str) -> bool:
+        display_title = title or recipe_key
+        message = (
+            f"Rezept '{display_title}' scheint bereits zu existieren (Slug: {slug}). "
+            "Trotzdem importieren?"
         )
+        return _prompt_yes_no(message, default=False)
 
-    if keep_parsed and context.cache_paths.recipe_raw.exists():
-        try:
-            context.ensure_recipe()
-        except RuntimeError as exc:
-            logger.warning(
-                "RecipeRawDataEnriched.json konnte nicht geladen werden (%s) – führe AI-Analyser aus.",
-                exc,
-            )
-        else:
-            skip_ai = True
-            if output_json.exists():
-                context.recipe_output_path = output_json
-            logger.info(
-                "RecipeRawDataEnriched.json bereits vorhanden – überspringe AI-Analyser gemäß Einstellung."
-            )
-
-    if not skip_ai:
-        modules.append(
-            AiAnalyserModule(
-                llm_client=llm_client,
-                llm_config=config.llm,
-                output_json=output_json,
-                image_output_dir=recipe_output_dir,
-            )
-        )
-
-    modules.extend(
-        [
-            FoodCheckerModule(ingredient_service, llm_client=llm_client),
-            CreateFoodsModule(ingredient_service, dry_run=dry_run),
-            AddFoodIdsModule(),
-            UnitCheckerModule(ingredient_service, llm_client=llm_client),
-            CreateUnitsModule(ingredient_service, dry_run=dry_run),
-            AddUnitIdsModule(),
-            CreateRecipeModule(
-                config=config, ingredient_service=ingredient_service, dry_run=dry_run
-            ),
-        ]
-    )
+    modules: List = [
+        RefreshCachesModule(ingredient_service),
+        PdfInputModule(),
+        AiAnalyserModule(
+            llm_client=llm_client,
+            llm_config=config.llm,
+        ),
+        FoodCheckerModule(ingredient_service, llm_client=llm_client),
+        UnitCheckerModule(ingredient_service, llm_client=llm_client),
+        AssignMetadataModule(ingredient_service, llm_client=llm_client),
+        ReviewPromptModule(),
+        ApplyUserDecisionsModule(),
+        CreateFoodsModule(ingredient_service, dry_run=dry_run),
+        AddFoodIdsModule(),
+        CreateUnitsModule(ingredient_service, dry_run=dry_run),
+        AddUnitIdsModule(),
+        CreateRecipeModule(
+            config=config,
+            ingredient_service=ingredient_service,
+            dry_run=dry_run,
+            on_duplicate=_confirm_duplicate,
+        ),
+    ]
 
     runner = PipelineRunner(modules)
     try:
         runner.run(context)
+    except UserAbort as exc:
+        logger.info("Abgebrochen: %s", exc)
+        run_info.mark_completed(status="aborted")
+        workspace.save_run_info(run_info)
+        return 0
     except RuntimeError as exc:
         logger.error("Pipeline fehlgeschlagen: %s", exc)
+        run_info.mark_completed(status="failed")
+        workspace.save_run_info(run_info)
         return 1
     finally:
         ingredient_service.close()
+    run_info.mark_completed(status="completed")
+    workspace.save_run_info(run_info)
+
+    if _prompt_yes_no("Aktuellen Lauf sofort archivieren?", default=False):
+        archive_path = workspace.archive_current_run(run_info)
+        logger.info("Lauf nach %s archiviert", archive_path)
+    else:
+        logger.info("Lauf bleibt vorerst im Arbeitsverzeichnis. Archivierung erfolgt beim nächsten Start.")
 
     return 0
 
@@ -487,9 +528,11 @@ def _handle_upload_json(*, source: Path, config: AppConfig, dry_run: bool) -> in
         token=config.mealie.token,
         config=config.ingredients,
         llm_client=llm_client,
+        verify=config.mealie.verify_option(),
+        auto_seed=False,
     )
 
-    cache_paths = CachePaths(config.ingredients.cache_dir, source.stem)
+    cache_paths = CachePaths(Path(config.ingredients.cache_dir))
     context = PipelineContext(
         source_pdf=source,
         output_dir=config.processing.output_folder,
@@ -497,8 +540,38 @@ def _handle_upload_json(*, source: Path, config: AppConfig, dry_run: bool) -> in
         cache_paths=cache_paths,
     )
     context.recipe = recipe
+    context.requires_user_review = True
 
-    module = CreateRecipeModule(config=config, ingredient_service=ingredient_service, dry_run=dry_run)
+    def _confirm_duplicate(slug: str, title: str) -> bool:
+        display_title = title or recipe.title or source.stem
+        message = (
+            f"Rezept '{display_title}' scheint bereits zu existieren (Slug: {slug}). "
+            "Trotzdem importieren?"
+        )
+        return _prompt_yes_no(message, default=False)
+
+    refresh_module = RefreshCachesModule(ingredient_service)
+    metadata_module = AssignMetadataModule(ingredient_service, llm_client=llm_client)
+    try:
+        refresh_module.run(context)
+        metadata_module.run(context)
+    except RuntimeError as exc:
+        logger.error("Metadaten konnten nicht zugewiesen werden: %s", exc)
+
+    try:
+        ReviewPromptModule().run(context)
+        ApplyUserDecisionsModule().run(context)
+    except UserAbort as exc:
+        logger.info("Abgebrochen: %s", exc)
+        ingredient_service.close()
+        return 0
+
+    module = CreateRecipeModule(
+        config=config,
+        ingredient_service=ingredient_service,
+        dry_run=dry_run,
+        on_duplicate=_confirm_duplicate,
+    )
     try:
         module.run(context)
     except RuntimeError as exc:

@@ -1,0 +1,14 @@
+2025-11-02 17:52:04 [INFO] Pipeline: -----------------------------------------------
+2025-11-02 17:52:04 [INFO] Pipeline: Starting module Input
+2025-11-02 17:52:04 [INFO] PDF Input: Reading the recipe PDF from data/uploads/3f7cfd31862a48039c57936bc12270bb.pdf
+2025-11-02 17:52:04 [INFO] Pipeline: Finished module Input
+2025-11-02 17:52:04 [INFO] Pipeline: -----------------------------------------------
+2025-11-02 17:52:04 [INFO] Pipeline: Starting module AI Analyser
+2025-11-02 17:52:04 [INFO] AI Analyser: Starting the AI analysis with 987 characters of recipe text
+2025-11-02 17:52:39 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-02 17:52:52 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-02 17:52:52 [INFO] AI Analyser: Stored the selected image at data/pipeline/02_RecipeImage.jpg
+2025-11-02 17:52:52 [INFO] AI Analyser: Saved the structured recipe to data/pipeline/03_RecipeRawData.json
+2025-11-02 17:52:52 [INFO] AI Analyser: Updated RecipeRawDataEnriched.json at data/pipeline/04_RecipeRawDataEnriched.json
+2025-11-02 17:52:52 [INFO] Pipeline: Finished module AI Analyser
+2025-11-02 17:52:52 [INFO] Pipeline: -----------------------------------------------

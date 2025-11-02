@@ -6,12 +6,20 @@ import { layoutConfig } from "../../config/layout.config";
 interface StickyFooterProps {
   isFirstStep: boolean;
   isLastStep: boolean;
+  isNextDisabled?: boolean;
   onBack: () => void;
   onNext: () => void;
   onCancel: () => void;
 }
 
-export const StickyFooter: React.FC<StickyFooterProps> = ({ isFirstStep, isLastStep, onBack, onNext, onCancel }) => {
+export const StickyFooter: React.FC<StickyFooterProps> = ({
+  isFirstStep,
+  isLastStep,
+  isNextDisabled = false,
+  onBack,
+  onNext,
+  onCancel
+}) => {
   const { t } = useTranslation();
 
   return (
@@ -44,7 +52,11 @@ export const StickyFooter: React.FC<StickyFooterProps> = ({ isFirstStep, isLastS
           <button
             type="button"
             onClick={onNext}
-            className={clsx("focus-ring inline-flex items-center gap-2 bg-primary px-5 py-2 text-sm font-semibold text-on-primary hover:bg-primary/90", layoutConfig.borderRadius.small)}
+            disabled={isNextDisabled}
+            className={clsx(
+              "focus-ring inline-flex items-center gap-2 bg-primary px-5 py-2 text-sm font-semibold text-on-primary hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50",
+              layoutConfig.borderRadius.small
+            )}
           >
             {isLastStep ? t("buttons.finish") : t("buttons.next")}
             <ArrowRightIcon className="h-4 w-4" aria-hidden="true" />

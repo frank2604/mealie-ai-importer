@@ -1,3 +1,4 @@
+import { createContext, useContext, useMemo, useRef, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import clsx from "clsx";
@@ -6,13 +7,33 @@ import { StepTabs } from "./components/StepTabs";
 import { StickyFooter } from "./components/StickyFooter";
 import { getStepByPath, stepDefinitions } from "./stepConfig";
 import { layoutConfig } from "../config/layout.config";
+import { ImportFlowProvider } from "./context/ImportFlowContext";
 
 const settingsPath = "/settings";
+
+type StepNextHandler = () => boolean | Promise<boolean>;
+
+interface StepNavigationContextValue {
+  setNextHandler: (handler: StepNextHandler | null) => void;
+  setNextDisabled: (disabled: boolean) => void;
+}
+
+const StepNavigationContext = createContext<StepNavigationContextValue | undefined>(undefined);
+
+export const useStepNavigation = (): StepNavigationContextValue => {
+  const context = useContext(StepNavigationContext);
+  if (!context) {
+    throw new Error("useStepNavigation muss innerhalb des StepNavigationContext verwendet werden.");
+  }
+  return context;
+};
 
 export const App: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const nextHandlerRef = useRef<StepNextHandler | null>(null);
+  const [isNextDisabled, setIsNextDisabled] = useState(false);
 
   const currentPath = location.pathname;
   const isOnSettings = currentPath.startsWith(settingsPath);
@@ -23,6 +44,17 @@ export const App: React.FC = () => {
   const isLastStep = currentStepIndex === stepDefinitions.length - 1;
   const settingsBackTarget =
     (location.state as { from?: string } | undefined)?.from ?? stepDefinitions[0].path;
+  const navigationContextValue = useMemo(
+    () => ({
+      setNextHandler: (handler: StepNextHandler | null) => {
+        nextHandlerRef.current = handler;
+      },
+      setNextDisabled: (disabled: boolean) => {
+        setIsNextDisabled(disabled);
+      },
+    }),
+    []
+  );
 
   const handleBack = () => {
     if (isFirstStep) {
@@ -36,8 +68,20 @@ export const App: React.FC = () => {
     if (isLastStep) {
       return;
     }
-    const nextStep = stepDefinitions[currentStepIndex + 1];
-    navigate(nextStep.path);
+    const maybeHandler = nextHandlerRef.current;
+    const result = maybeHandler ? maybeHandler() : true;
+    Promise.resolve(result)
+      .then((shouldContinue) => {
+        if (shouldContinue === false) {
+          return;
+        }
+        const nextStep = stepDefinitions[currentStepIndex + 1];
+        navigate(nextStep.path);
+      })
+      .catch((error) => {
+        // eslint-disable-next-line no-console
+        console.error("Navigation zum nächsten Schritt fehlgeschlagen:", error);
+      });
   };
 
   const handleCancel = () => {
@@ -97,7 +141,10 @@ export const App: React.FC = () => {
                   <StepTabs
                     currentStepId={currentStep.id}
                     steps={stepDefinitions}
-                    onStepChange={(step) => navigate(step.path)}
+                    onStepChange={(step) => {
+                      nextHandlerRef.current = null;
+                      navigate(step.path);
+                    }}
                   />
                 </div>
               </div>
@@ -105,17 +152,22 @@ export const App: React.FC = () => {
           )}
         </div>
 
-        <main className={clsx("flex w-full flex-1 flex-col overflow-hidden", layoutConfig.spacing.layout.page.x, layoutConfig.spacing.layout.page.y)}>
-          <div className="flex min-h-0 flex-1 flex-col">
-            <Outlet />
-          </div>
-        </main>
+        <StepNavigationContext.Provider value={navigationContextValue}>
+          <ImportFlowProvider>
+            <main className={clsx("flex w-full flex-1 flex-col overflow-hidden", layoutConfig.spacing.layout.page.x, layoutConfig.spacing.layout.page.y)}>
+              <div className="flex min-h-0 flex-1 flex-col">
+                <Outlet />
+              </div>
+            </main>
+          </ImportFlowProvider>
+        </StepNavigationContext.Provider>
       </div>
 
       {!isOnSettings && (
         <StickyFooter
           isFirstStep={isFirstStep}
           isLastStep={isLastStep}
+          isNextDisabled={isNextDisabled}
           onBack={handleBack}
           onNext={handleNext}
           onCancel={handleCancel}

@@ -46,11 +46,39 @@
       "Multi-page PDFs with ingredient lists and instructions work best.",
       "Use clear quantity expressions – the AI suggests alternatives when uncertain.",
       "Your data stays on this device. Optional cloud sync will arrive later."
-    ]
+    ],
+    "selectedFile": "Selected file: {{fileName}}",
+    "recipeName": "Resolved recipe title: {{recipeName}}",
+    "noFileSelected": "No file selected yet.",
+    "status": {
+      "uploading": "Uploading file …",
+      "uploaded": "Upload complete. Click \"Next\" to start the analysis.",
+      "starting": "Analysis is starting …",
+      "analyzing": "Analysis in progress. Logs will appear shortly.",
+      "completed": "Analysis finished. Continue to step 3 to review the results.",
+      "failed": "Analysis failed. Check the log and try again.",
+      "aborted": "Analysis aborted."
+    },
+    "errors": {
+      "unsupportedType": "Please pick a PDF file.",
+      "uploadFailed": "Upload failed. Please try again.",
+      "analysisFailed": "Unable to start the analysis.",
+      "noUpload": "Upload a PDF file before continuing."
+    }
   },
   "analyze": {
     "logTitle": "Analysis Log",
     "summary": "We extract recipe insights, propose mappings and highlight gaps that need attention.",
+    "status": {
+      "idle": "Ready and waiting.",
+      "starting": "Preparing the analysis …",
+      "running": "Analysis running …",
+      "completed": "Analysis completed.",
+      "failed": "Analysis failed.",
+      "aborted": "Analysis aborted.",
+      "polling": "Receiving live log data …",
+      "noRun": "No run has started yet. Please return to step 1."
+    },
     "metrics": {
       "ingredients": {
         "title": "Detected ingredients",

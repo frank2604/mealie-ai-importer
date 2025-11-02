@@ -46,11 +46,39 @@
       "Mehrseitige PDFs mit Zutatenliste und Anleitung erzielen die besten Ergebnisse.",
       "Verwende klare Mengenangaben – AI schlägt bei Unklarheiten Alternativen vor.",
       "Sensible Daten bleiben lokal. Eine optionale Cloud-Anbindung folgt später."
-    ]
+    ],
+    "selectedFile": "Ausgewählte Datei: {{fileName}}",
+    "recipeName": "Ermittelter Rezeptname: {{recipeName}}",
+    "noFileSelected": "Noch keine Datei ausgewählt.",
+    "status": {
+      "uploading": "Datei wird hochgeladen …",
+      "uploaded": "Upload erfolgreich. Du kannst mit \"Weiter\" zur Analyse wechseln.",
+      "starting": "Analyse wird gestartet …",
+      "analyzing": "Analyse läuft. Logs erscheinen gleich hier.",
+      "completed": "Analyse abgeschlossen. Wechsle zu Schritt 3, um die Ergebnisse zu prüfen.",
+      "failed": "Analyse fehlgeschlagen. Bitte prüfe das Log und versuche es erneut.",
+      "aborted": "Analyse abgebrochen."
+    },
+    "errors": {
+      "unsupportedType": "Bitte wähle eine PDF-Datei aus.",
+      "uploadFailed": "Upload fehlgeschlagen. Bitte versuche es erneut.",
+      "analysisFailed": "Analyse konnte nicht gestartet werden.",
+      "noUpload": "Bitte lade zuerst eine PDF-Datei hoch."
+    }
   },
   "analyze": {
     "logTitle": "Analyse-Protokoll",
     "summary": "Das System extrahiert Rezeptinformationen, schlägt Zuordnungen vor und priorisiert fehlende Elemente.",
+    "status": {
+      "idle": "Bereit für den Start.",
+      "starting": "Analyse wird vorbereitet …",
+      "running": "Analyse läuft …",
+      "completed": "Analyse abgeschlossen.",
+      "failed": "Analyse fehlgeschlagen.",
+      "aborted": "Analyse abgebrochen.",
+      "polling": "Empfange Live-Log-Daten …",
+      "noRun": "Noch kein Lauf gestartet. Bitte gehe zurück zu Schritt 1."
+    },
     "metrics": {
       "ingredients": {
         "title": "Erkannte Zutaten",

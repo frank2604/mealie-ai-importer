@@ -1,8 +1,11 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LogViewer, LogEntry } from "../components/LogViewer";
 import clsx from "clsx";
 import { layoutConfig } from "../../config/layout.config";
+import { useImportFlow } from "../context/ImportFlowContext";
+import { useStepNavigation } from "../App";
+import { fetchRunLogs, fetchRunStatus, mapApiLogEntries } from "../api/imports";
 
 interface MetricItem {
   id: string;
@@ -12,28 +15,107 @@ interface MetricItem {
 }
 
 export const Step2Analyze: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const { runId, status, error, logs, logCursor, appendLogs, setStatus, setError } = useImportFlow();
+  const { setNextHandler, setNextDisabled } = useStepNavigation();
+  const [isPolling, setIsPolling] = useState(false);
 
-  const logEntries = useMemo(() => {
-    const entries = t("analyze.logEntries", { returnObjects: true }) as Array<{
-      level: LogEntry["level"];
-      message: string;
-      time: string;
-    }>;
-
-    return entries.map((entry, index) => ({
-      id: `log-${index}`,
-      level: entry.level,
-      message: entry.message,
-      timestamp: entry.time
-    }));
-  }, [t, i18n.resolvedLanguage]);
+  const logEntries = useMemo<LogEntry[]>(() => logs, [logs]);
 
   const metrics: MetricItem[] = [
     { id: "ingredients", value: "18", delta: "+3", status: "up" },
     { id: "units", value: "7", delta: "+1", status: "up" },
     { id: "confidence", value: "86%", delta: "+4%", status: "neutral" }
   ];
+
+  useEffect(() => {
+    setNextHandler(null);
+    if (!runId) {
+      setNextDisabled(true);
+      return () => {
+        setNextDisabled(false);
+      };
+    }
+    setNextDisabled(status !== "completed");
+    return () => {
+      setNextDisabled(false);
+    };
+  }, [runId, setNextDisabled, setNextHandler, status]);
+
+  useEffect(() => {
+    if (!runId) {
+      return;
+    }
+    let active = true;
+    let timeoutId: number | undefined;
+
+    const poll = async () => {
+      setIsPolling(true);
+      try {
+        const [statusResult, logResult] = await Promise.all([fetchRunStatus(runId), fetchRunLogs(runId, logCursor)]);
+        if (!active) {
+          return;
+        }
+        if (statusResult.status === "running") {
+          setStatus("analyzing");
+        } else if (statusResult.status === "starting") {
+          setStatus("starting");
+        } else if (statusResult.status === "completed") {
+          setStatus("completed");
+        } else if (statusResult.status === "failed") {
+          setStatus("failed");
+        } else if (statusResult.status === "aborted") {
+          setStatus("aborted");
+        }
+        if (statusResult.error) {
+          setError(statusResult.error);
+        }
+        if (logResult.entries.length) {
+          appendLogs(mapApiLogEntries(logResult.entries), logResult.nextCursor);
+        }
+        if (["completed", "failed", "aborted"].includes(statusResult.status)) {
+          setNextDisabled(statusResult.status !== "completed");
+          setIsPolling(false);
+          return;
+        }
+        timeoutId = window.setTimeout(poll, 2000);
+      } catch (pollError) {
+        if (!active) {
+          return;
+        }
+        const message = pollError instanceof Error ? pollError.message : String(pollError);
+        setError(message);
+        timeoutId = window.setTimeout(poll, 5000);
+      }
+    };
+
+    poll();
+
+    return () => {
+      active = false;
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+      }
+      setIsPolling(false);
+    };
+  }, [appendLogs, logCursor, runId, setError, setNextDisabled, setStatus]);
+
+  const statusLabel = useMemo(() => {
+    switch (status) {
+      case "starting":
+        return t("analyze.status.starting");
+      case "analyzing":
+        return t("analyze.status.running");
+      case "completed":
+        return t("analyze.status.completed");
+      case "failed":
+        return t("analyze.status.failed");
+      case "aborted":
+        return t("analyze.status.aborted");
+      default:
+        return t("analyze.status.idle");
+    }
+  }, [status, t]);
 
   return (
     <div className="flex-1 overflow-y-auto">
@@ -69,6 +151,16 @@ export const Step2Analyze: React.FC = () => {
           <section>
             <h3 className="text-lg font-semibold text-primary">{t("steps.analyze.title")}</h3>
             <p className="mt-2 text-sm text-text/70">{t("steps.analyze.subtitle")}</p>
+            <div className="mt-4 rounded border border-border/70 bg-background/70 px-4 py-3 text-sm">
+              <div className="font-semibold text-primary">{statusLabel}</div>
+              {isPolling ? <div className="mt-2 text-xs text-text/60">{t("analyze.status.polling")}</div> : null}
+              {error ? (
+                <div className="mt-2 rounded border border-error/40 bg-error/10 px-3 py-2 text-xs text-error">
+                  {error}
+                </div>
+              ) : null}
+              {!runId ? <div className="mt-2 text-xs text-text/60">{t("analyze.status.noRun")}</div> : null}
+            </div>
           </section>
           <section className={clsx("text-sm text-text/80", layoutConfig.spacing.element.vertical)}>
             {(t("analyze.checklist", { returnObjects: true }) as string[]).map((item) => (

@@ -25,8 +25,13 @@ from .config import AppConfig, ConfigError, load_config
 from .exceptions import UserAbort
 from .modules import CachePaths, PipelineContext, PipelineRunner
 from .modules.ai_analyser import AiAnalyserModule
+from .modules.assign_metadata import AssignMetadataModule
+from .modules.food_checker import FoodCheckerModule
 from .modules.input import PdfInputModule
+from .modules.refresh_caches import RefreshCachesModule
+from .modules.unit_checker import UnitCheckerModule
 from .services.run_workspace import PipelineRecorder, RunInfo, RunWorkspace
+from .services.ingredients import IngredientService
 
 logger = logging.getLogger(__name__)
 
@@ -207,8 +212,30 @@ def _run_analysis(run_state: RunState, pending: PendingUpload, config: AppConfig
         llm_client = _create_openai_client(config.llm)
     except ValueError as exc:
         logger.error("LLM-Konfiguration fehlerhaft: %s", exc)
-        _update_run_state(run_state.run_id, status="failed", error=str(exc), completed_at=_now_utc())
+        run_info.mark_completed(status="failed")
+        workspace.save_run_info(run_info)
+        _update_run_state(run_state.run_id, status="failed", error=str(exc), completed_at=run_info.completed_at or _now_utc())
         return
+
+    ingredient_service: Optional[IngredientService] = None
+    if config.mealie.base_url and config.mealie.token:
+        try:
+            ingredient_service = IngredientService(
+                base_url=config.mealie.base_url,
+                token=config.mealie.token,
+                config=config.ingredients,
+                llm_client=llm_client,
+                verify=config.mealie.verify_option(),
+                auto_seed=False,
+            )
+        except Exception as exc:  # pragma: no cover - defensive
+            logger.error("IngredientService konnte nicht initialisiert werden: %s", exc)
+            run_info.mark_completed(status="failed")
+            workspace.save_run_info(run_info)
+            _update_run_state(run_state.run_id, status="failed", error=str(exc), completed_at=run_info.completed_at or _now_utc())
+            return
+    else:
+        logger.info("Keine Mealie-Verbindungsdaten vorhanden – wir überspringen API-gestützte Schritte.")
 
     log_file = Path(run_info.log_file) if run_info.log_file else run_state.log_file
     log_file.parent.mkdir(parents=True, exist_ok=True)
@@ -234,14 +261,19 @@ def _run_analysis(run_state: RunState, pending: PendingUpload, config: AppConfig
             run_id=run_state.run_id,
             log_file=log_file,
         )
+        context.requires_user_review = True
 
         modules = [
+            RefreshCachesModule(ingredient_service),
             PdfInputModule(),
             AiAnalyserModule(
                 llm_client=llm_client,
                 llm_config=config.llm,
                 image_output_dir=workspace.pipeline_dir,
             ),
+            FoodCheckerModule(ingredient_service, llm_client=llm_client),
+            UnitCheckerModule(ingredient_service, llm_client=llm_client),
+            AssignMetadataModule(ingredient_service, llm_client=llm_client),
         ]
 
         runner = PipelineRunner(modules)
@@ -259,8 +291,12 @@ def _run_analysis(run_state: RunState, pending: PendingUpload, config: AppConfig
         _update_run_state(run_state.run_id, status="completed", completed_at=run_info.completed_at or _now_utc())
     except Exception as exc:  # pragma: no cover - defensive
         logger.exception("Analyse fehlgeschlagen: %s", exc)
-        _update_run_state(run_state.run_id, status="failed", error=str(exc), completed_at=_now_utc())
+        run_info.mark_completed(status="failed")
+        workspace.save_run_info(run_info)
+        _update_run_state(run_state.run_id, status="failed", error=str(exc), completed_at=run_info.completed_at or _now_utc())
     finally:
+        if ingredient_service:
+            ingredient_service.close()
         root_logger.removeHandler(file_handler)
         file_handler.close()
         try:

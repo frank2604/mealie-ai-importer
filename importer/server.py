@@ -26,6 +26,8 @@ from .cli import _create_openai_client  # pylint: disable=protected-access
 from .config import AppConfig, ConfigError, load_config
 from .exceptions import UserAbort
 from .modules import CachePaths, PipelineContext, PipelineRunner
+from .modules.context import build_recipe_data_payload, normalize_recipe_payload
+from .models import Recipe
 from .modules.ai_analyser import AiAnalyserModule
 from .modules.assign_metadata import AssignMetadataModule
 from .modules.food_checker import FoodCheckerModule
@@ -137,6 +139,20 @@ class FoodSuggestion(BaseModel):
     categoryName: Optional[str] = None
 
 
+class FoodSelection(BaseModel):
+    mealieFoodId: Optional[str] = None
+    name: Optional[str] = None
+    badgeId: Optional[str] = None
+    status: Optional[str] = None
+
+
+class UnitSelection(BaseModel):
+    mealieUnitId: Optional[str] = None
+    name: Optional[str] = None
+    badgeId: Optional[str] = None
+    status: Optional[str] = None
+
+
 class ReviewIngredient(BaseModel):
     id: str
     sectionIndex: int
@@ -145,7 +161,9 @@ class ReviewIngredient(BaseModel):
     amount: Optional[float] = None
     amountText: Optional[str] = None
     unit: Optional[str] = None
+    unitOriginalName: Optional[str] = None
     name: str
+    foodOriginalName: Optional[str] = None
     note: Optional[str] = None
     notes: Optional[str] = None
     foodStatus: str
@@ -158,6 +176,8 @@ class ReviewIngredient(BaseModel):
     unitCandidates: List[CandidateOption] = Field(default_factory=list)
     unitSuggestion: Optional[UnitSuggestion] = None
     unitDecision: Dict[str, Any] = Field(default_factory=dict)
+    foodSelection: Optional[FoodSelection] = None
+    unitSelection: Optional[UnitSelection] = None
 
 
 class ReviewInstruction(BaseModel):
@@ -172,6 +192,11 @@ class ReviewInstruction(BaseModel):
 class ReviewAssets(BaseModel):
     pdfUrl: Optional[str] = None
     imageUrl: Optional[str] = None
+
+
+class ReviewOptions(BaseModel):
+    foods: List[CandidateOption] = Field(default_factory=list)
+    units: List[CandidateOption] = Field(default_factory=list)
 
 
 class ReviewSummary(BaseModel):
@@ -191,6 +216,7 @@ class ReviewDataResponse(BaseModel):
     ingredients: List[ReviewIngredient] = Field(default_factory=list)
     instructions: List[ReviewInstruction] = Field(default_factory=list)
     assets: ReviewAssets
+    options: ReviewOptions = Field(default_factory=ReviewOptions)
 
 
 class ReviewSummaryUpdate(BaseModel):
@@ -207,6 +233,8 @@ class ReviewIngredientUpdate(BaseModel):
     notes: Optional[str] = None
     foodDecision: Dict[str, Any] = Field(default_factory=dict)
     unitDecision: Dict[str, Any] = Field(default_factory=dict)
+    foodSelection: Optional[FoodSelection] = None
+    unitSelection: Optional[UnitSelection] = None
 
 
 class ReviewInstructionUpdate(BaseModel):
@@ -365,6 +393,12 @@ _STATUS_MAP = {
     "missing": "new",
     "conflict": "error",
     "error": "error",
+    "found": "found",
+    "found_word": "found",
+    "found_fuzzy": "found",
+    "found_ai": "found",
+    "manual": "manual",
+    "none": "none",
 }
 
 _STRATEGY_MAP = {
@@ -409,6 +443,32 @@ def _write_json_file(path: Path, payload: Dict[str, Any]) -> None:
         json.dump(payload, handle, ensure_ascii=False, indent=2)
 
 
+def _load_candidate_options(path: Path, key: str) -> List[CandidateOption]:
+    if not path.exists():
+        return []
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return []
+    items = payload.get(key)
+    if not isinstance(items, list):
+        return []
+    options: List[CandidateOption] = []
+    for item in items:
+        if not isinstance(item, dict) or not item.get("id"):
+            continue
+        options.append(
+            CandidateOption(
+                id=str(item.get("id")),
+                name=item.get("name"),
+                pluralName=item.get("pluralName"),
+                abbreviation=item.get("abbreviation"),
+                pluralAbbreviation=item.get("pluralAbbreviation"),
+            )
+        )
+    return options
+
+
 def _resolve_review_context(config: AppConfig, run_id: str) -> ReviewContext:
     workspace = _build_workspace(config)
     run_info = workspace.load_run_info()
@@ -449,8 +509,11 @@ def _resolve_review_context(config: AppConfig, run_id: str) -> ReviewContext:
 
 def _map_status(value: Optional[str]) -> str:
     if not value:
-        return "info"
-    return _STATUS_MAP.get(value.lower(), "info")
+        return "none"
+    normalized = value.lower()
+    if normalized in _STATUS_MAP:
+        return _STATUS_MAP[normalized]
+    return normalized
 
 
 def _map_strategy(value: Optional[str]) -> Optional[str]:
@@ -472,10 +535,18 @@ def _format_quantity(value: Any) -> Optional[str]:
 def _build_review_payload(run_id: str, config: AppConfig) -> ReviewDataResponse:
     context = _resolve_review_context(config, run_id)
 
-    recipe_data = _load_json_file(context.recipe_path)
+    recipe_data = normalize_recipe_payload(_load_json_file(context.recipe_path))
     foods_review = _load_json_file(context.foods_path)
     units_review = _load_json_file(context.units_path)
     metadata_review = _load_json_file(context.metadata_path)
+
+    recipe_sections = recipe_data.get("ingredients") or []
+    recipe_ingredient_map: Dict[str, Dict[str, Any]] = {}
+    for section_index, section in enumerate(recipe_sections):
+        items = section.get("ingredients") or []
+        for ingredient_index, ingredient in enumerate(items):
+            key = f"{section_index}:{ingredient_index}"
+            recipe_ingredient_map[key] = ingredient
 
     foods_map = {
         str(item.get("key")): item for item in foods_review.get("ingredients", []) if isinstance(item, dict)
@@ -493,12 +564,32 @@ def _build_review_payload(run_id: str, config: AppConfig) -> ReviewDataResponse:
             key = f"{section_index}:{ingredient_index}"
             food_entry = foods_map.get(key, {})
             unit_entry = units_map.get(key, {})
+            recipe_entry = recipe_ingredient_map.get(key, {})
 
-            food_status = _map_status(food_entry.get("status"))
-            unit_status = _map_status(unit_entry.get("status"))
+            food_status = _map_status(
+                recipe_entry.get("foodBadgeId") or food_entry.get("status")
+            )
+            unit_status = _map_status(
+                recipe_entry.get("unitBadgeId") or unit_entry.get("status")
+            )
 
             food_match = food_entry.get("currentMatch") or {}
             unit_match = unit_entry.get("currentMatch") or {}
+            recipe_food_id = recipe_entry.get("mealieFoodId")
+            recipe_unit_id = recipe_entry.get("mealieUnitId")
+
+            if recipe_food_id:
+                food_match = {
+                    "foodId": recipe_food_id,
+                    "name": recipe_entry.get("name") or food_match.get("name"),
+                    "strategy": food_match.get("strategy") or food_status,
+                }
+            if recipe_unit_id:
+                unit_match = {
+                    "unitId": recipe_unit_id,
+                    "name": recipe_entry.get("unit") or unit_match.get("name"),
+                    "strategy": unit_match.get("strategy") or unit_status,
+                }
 
             food_candidates = [
                 CandidateOption(
@@ -524,6 +615,18 @@ def _build_review_payload(run_id: str, config: AppConfig) -> ReviewDataResponse:
 
             food_decision = dict(food_entry.get("userDecision") or {})
             unit_decision = dict(unit_entry.get("userDecision") or {})
+            food_selection = FoodSelection(
+                mealieFoodId=recipe_food_id,
+                name=recipe_entry.get("name"),
+                badgeId=recipe_entry.get("foodBadgeId"),
+                status=food_status,
+            )
+            unit_selection = UnitSelection(
+                mealieUnitId=recipe_unit_id,
+                name=recipe_entry.get("unit"),
+                badgeId=recipe_entry.get("unitBadgeId"),
+                status=unit_status,
+            )
 
             notes_value = None
             if "notes" in food_decision:
@@ -543,7 +646,9 @@ def _build_review_payload(run_id: str, config: AppConfig) -> ReviewDataResponse:
                 amount=ingredient.get("quantity"),
                 amountText=_format_quantity(ingredient.get("quantity")),
                 unit=ingredient.get("unit"),
+                unitOriginalName=ingredient.get("unitOriginalName"),
                 name=str(ingredient.get("name") or ""),
+                foodOriginalName=ingredient.get("foodOriginalName"),
                 note=ingredient.get("note"),
                 notes=notes_value or "",
                 foodStatus=food_status,
@@ -584,6 +689,8 @@ def _build_review_payload(run_id: str, config: AppConfig) -> ReviewDataResponse:
                 if unit_entry.get("suggestion")
                 else None,
                 unitDecision=unit_decision,
+                foodSelection=food_selection,
+                unitSelection=unit_selection,
             )
             ingredients_payload.append(ingredient_payload)
 
@@ -653,20 +760,25 @@ def _build_review_payload(run_id: str, config: AppConfig) -> ReviewDataResponse:
         imageUrl=f"/api/imports/{run_id}/image" if context.image_path else None,
     )
 
+    cache_root = Path(config.ingredients.cache_dir)
+    foods_options = _load_candidate_options(cache_root / "MealieFoodsCache.json", "foods")
+    units_options = _load_candidate_options(cache_root / "MealieUnitsCache.json", "units")
+
     return ReviewDataResponse(
         runId=run_id,
         summary=summary,
         ingredients=ingredients_payload,
         instructions=instructions_payload,
         assets=assets,
+        options=ReviewOptions(foods=foods_options, units=units_options),
     )
 
 
 def _apply_review_update(run_id: str, config: AppConfig, payload: ReviewUpdateRequest) -> None:
     context = _resolve_review_context(config, run_id)
 
-    raw_snapshot = _load_json_file(context.raw_path)
-    recipe_data = _load_json_file(context.recipe_path)
+    raw_snapshot = normalize_recipe_payload(_load_json_file(context.raw_path))
+    recipe_data = normalize_recipe_payload(_load_json_file(context.recipe_path))
     foods_review = _load_json_file(context.foods_path)
     units_review = _load_json_file(context.units_path)
     metadata_review = _load_json_file(context.metadata_path)
@@ -712,21 +824,27 @@ def _apply_review_update(run_id: str, config: AppConfig, payload: ReviewUpdateRe
         str(entry.get("key")): entry for entry in units_entries if isinstance(entry, dict)
     }
 
-    def _set_ingredient_note(target: Dict[str, Any], key: str, value: Optional[str]) -> None:
+    def _locate_ingredient(target: Dict[str, Any], key: str) -> Optional[Dict[str, Any]]:
         try:
             section_index_str, ingredient_index_str = key.split(":", 1)
             section_index = int(section_index_str)
             ingredient_index = int(ingredient_index_str)
         except (ValueError, AttributeError):
-            return
+            return None
         sections = target.setdefault("ingredients", [])
         if not (0 <= section_index < len(sections)):
-            return
+            return None
         section = sections[section_index]
         items = section.setdefault("ingredients", [])
         if not (0 <= ingredient_index < len(items)):
+            return None
+        return items[ingredient_index]
+
+    def _set_ingredient_note(target: Dict[str, Any], key: str, value: Optional[str]) -> None:
+        entry = _locate_ingredient(target, key)
+        if entry is None:
             return
-        items[ingredient_index]["note"] = value or None
+        entry["note"] = value or None
 
     for ingredient_update in payload.ingredients:
         key = ingredient_update.id
@@ -745,6 +863,19 @@ def _apply_review_update(run_id: str, config: AppConfig, payload: ReviewUpdateRe
             units_map[key]["userDecision"] = decision
 
         _set_ingredient_note(recipe_data, key, notes_value)
+        entry = _locate_ingredient(recipe_data, key)
+        if entry and ingredient_update.foodSelection:
+            selection = ingredient_update.foodSelection
+            entry["mealieFoodId"] = selection.mealieFoodId
+            if selection.name is not None:
+                entry["name"] = selection.name
+            entry["foodBadgeId"] = selection.badgeId
+        if entry and ingredient_update.unitSelection:
+            selection = ingredient_update.unitSelection
+            entry["mealieUnitId"] = selection.mealieUnitId
+            if selection.name is not None:
+                entry["unit"] = selection.name
+            entry["unitBadgeId"] = selection.badgeId
 
     # Update instructions
     instructions_sections = recipe_data.setdefault("instructions", [])
@@ -769,7 +900,8 @@ def _apply_review_update(run_id: str, config: AppConfig, payload: ReviewUpdateRe
             step["timer_minutes"] = instruction_update.timerMinutes
 
     # Persist files
-    _write_json_file(context.recipe_path, recipe_data)
+    recipe_model = Recipe.parse_obj(recipe_data)
+    _write_json_file(context.recipe_path, build_recipe_data_payload(recipe_model))
     if context.foods_path:
         _write_json_file(context.foods_path, foods_review)
     if context.units_path:

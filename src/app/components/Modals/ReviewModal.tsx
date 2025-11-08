@@ -3,9 +3,9 @@ import clsx from "clsx";
 import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { layoutConfig } from "../../../config/layout.config";
+import { BadgeId } from "../../../config/badges.config";
 import { ReviewIngredient } from "../../api/review";
-
-type ReviewStatus = "found" | "new" | "error" | "info";
+import { BadgePill } from "../BadgePill";
 
 export interface ModalContext {
   entry: ReviewIngredient;
@@ -17,11 +17,23 @@ interface ReviewModalProps {
   onClose: () => void;
 }
 
-const statusStyles: Record<ReviewStatus, string> = {
-  found: "bg-success/10 text-success border-success/30",
-  new: "bg-warning/10 text-warning border-warning/30",
-  error: "bg-error/10 text-error border-error/30",
-  info: "bg-info/10 text-info border-info/30"
+const mapStatusToBadgeId = (status?: string | null): BadgeId | null => {
+  switch (status) {
+    case "found_word":
+    case "found_fuzzy":
+    case "found_ai":
+      return status as BadgeId;
+    case "found":
+      return "found_word";
+    case "new":
+      return "new";
+    case "manual":
+      return "manual";
+    case "none":
+      return "none";
+    default:
+      return null;
+  }
 };
 
 export const ReviewModal: React.FC<ReviewModalProps> = ({ context, onClose }) => {
@@ -33,7 +45,12 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({ context, onClose }) =>
 
   const { entry, target } = context;
   const isUnit = target === "unit";
-  const status = (isUnit ? entry.unitStatus : entry.foodStatus) as ReviewStatus;
+  const selectionBadgeId = (isUnit ? entry.unitSelection?.badgeId : entry.foodSelection?.badgeId) as
+    | BadgeId
+    | undefined;
+  const rawStatus = isUnit ? entry.unitStatus : entry.foodStatus;
+  const badgeId = selectionBadgeId ?? mapStatusToBadgeId(rawStatus);
+  const fallbackStatus = isUnit ? "none" : "new";
   const match = isUnit ? entry.unitMatch : entry.foodMatch;
   const candidates = isUnit ? entry.unitCandidates : entry.foodCandidates;
   const suggestion = isUnit ? entry.unitSuggestion : entry.foodSuggestion;
@@ -74,14 +91,8 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({ context, onClose }) =>
                 <Dialog.Title as="h3" className="text-xl font-semibold text-primary">
                   {title}
                 </Dialog.Title>
-                <div
-                  className={clsx(
-                    "mt-4 inline-flex items-center border px-3 py-1 text-xs font-semibold uppercase tracking-wide",
-                    layoutConfig.borderRadius.small,
-                    statusStyles[status]
-                  )}
-                >
-                  {t(`review.status.${status}`)}
+                <div className="mt-4 inline-flex">
+                  <BadgePill badgeId={badgeId ?? null} fallbackStatus={fallbackStatus} />
                 </div>
 
                 <div className="mt-6 space-y-6 text-sm text-text/80">

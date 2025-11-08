@@ -2,15 +2,122 @@
 from __future__ import annotations
 
 import json
+from copy import deepcopy
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Iterable, Iterator, List, Optional
+from typing import Any, Dict, Iterable, Iterator, List, Optional
 
 from ..config import AppConfig
 from ..services.run_workspace import PipelineRecorder
 from ..models import Ingredient, Recipe
 from ..pdf_extractor import PdfExtractionResult
+
+
+def normalize_recipe_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
+    """Return *payload* with legacy ingredient fields populated from enriched structures."""
+    if not isinstance(payload, dict):
+        return payload
+    data = deepcopy(payload)
+    sections = data.get("ingredients")
+    if not isinstance(sections, list):
+        return data
+    for section in sections:
+        items = section.get("ingredients")
+        if not isinstance(items, list):
+            continue
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            legacy_food_status = item.pop("foodStatus", None)
+            legacy_unit_status = item.pop("unitStatus", None)
+            if legacy_food_status and "foodBadgeId" not in item:
+                item["foodBadgeId"] = legacy_food_status
+            if legacy_unit_status and "unitBadgeId" not in item:
+                item["unitBadgeId"] = legacy_unit_status
+            food_block = item.pop("food", None)
+            if isinstance(food_block, dict):
+                name = food_block.get("name") or food_block.get("originalName")
+                if name:
+                    item.setdefault("name", name)
+                original_name = food_block.get("originalName") or name
+                if original_name:
+                    item.setdefault("foodOriginalName", original_name)
+                mealie_food_id = food_block.get("mealieFoodId")
+                if mealie_food_id is not None:
+                    item["mealieFoodId"] = mealie_food_id
+                badge_id = food_block.get("badgeId")
+                if badge_id is not None:
+                    item["foodBadgeId"] = badge_id
+            unit_block = item.pop("unit", None)
+            if isinstance(unit_block, dict):
+                unit_name = unit_block.get("name") or unit_block.get("originalName")
+                if unit_name:
+                    item.setdefault("unit", unit_name)
+                original_unit = unit_block.get("originalName") or unit_name
+                if original_unit:
+                    item.setdefault("unitOriginalName", original_unit)
+                mealie_unit_id = unit_block.get("mealieUnitId")
+                if mealie_unit_id is not None:
+                    item["mealieUnitId"] = mealie_unit_id
+                badge_id = unit_block.get("badgeId")
+                if badge_id is not None:
+                    item["unitBadgeId"] = badge_id
+    return data
+
+
+def build_recipe_data_payload(recipe: Recipe) -> Dict[str, Any]:
+    """Return enriched RecipeData payload with nested food/unit structures."""
+    payload = recipe.dict(by_alias=True)
+    data = deepcopy(payload)
+    sections = data.get("ingredients")
+    if not isinstance(sections, list):
+        return data
+    for section in sections:
+        items = section.get("ingredients")
+        if not isinstance(items, list):
+            continue
+        for idx, item in enumerate(list(items)):
+            if not isinstance(item, dict):
+                continue
+            name = item.get("name")
+            unit_text = item.get("unit")
+            mealie_food_id = item.get("mealieFoodId")
+            mealie_unit_id = item.get("mealieUnitId")
+            food_badge = item.get("foodBadgeId")
+            unit_badge = item.get("unitBadgeId")
+            original_food = item.get("foodOriginalName") or name
+            original_unit = item.get("unitOriginalName") or unit_text
+            food_block = {
+                "name": name,
+                "originalName": original_food,
+            }
+            if mealie_food_id is not None:
+                food_block["mealieFoodId"] = mealie_food_id
+            if food_badge is not None:
+                food_block["badgeId"] = food_badge
+            unit_block = {
+                "name": unit_text,
+                "originalName": original_unit,
+            }
+            if mealie_unit_id is not None:
+                unit_block["mealieUnitId"] = mealie_unit_id
+            if unit_badge is not None:
+                unit_block["badgeId"] = unit_badge
+            new_item = {k: v for k, v in item.items() if k not in {
+                "name",
+                "unit",
+                "mealieFoodId",
+                "mealieUnitId",
+                "foodBadgeId",
+                "unitBadgeId",
+                "foodOriginalName",
+                "unitOriginalName",
+            }}
+            new_item["food"] = food_block
+            new_item["unit"] = unit_block
+            items[idx] = new_item
+    return data
 
 
 @dataclass
@@ -102,7 +209,8 @@ class PipelineContext:
             if self.recipe_data_path and self.recipe_data_path.exists():
                 raw = self.recipe_data_path.read_text(encoding="utf-8")
                 data = json.loads(raw)
-                self.recipe = Recipe.parse_obj(data)
+                normalized = normalize_recipe_payload(data)
+                self.recipe = Recipe.parse_obj(normalized)
                 self._hydrate_recipe_assets()
             else:
                 raise RuntimeError("RecipeData.json is not available yet")
@@ -110,7 +218,7 @@ class PipelineContext:
 
     def save_recipe(self, recipe: Recipe, *, destination: Optional[Path] = None, overwrite: bool = True) -> None:
         self.recipe = recipe
-        payload = recipe.dict(by_alias=True)
+        payload = build_recipe_data_payload(recipe)
         if destination is not None:
             self.recipe_data_path = destination
         if not self.recipe_data_path:

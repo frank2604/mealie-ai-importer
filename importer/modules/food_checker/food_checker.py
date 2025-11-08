@@ -14,6 +14,12 @@ from ...services.ingredients import IngredientService
 
 logger = logging.getLogger("Food Checker")
 
+STATUS_FOUND_WORD = "found_word"
+STATUS_FOUND_FUZZY = "found_fuzzy"
+STATUS_FOUND_AI = "found_ai"
+STATUS_NEW = "new"
+STATUS_NONE = "none"
+
 _SYSTEM_PROMPT = ("""
     Du vergleichst Zutaten aus einem Rezept mit den vorhandenen Lebensmitteln in Mealie.
     Wähle nur dann ein Lebensmittel, wenn es inhaltlich exakt passt – nicht nur teilweise.
@@ -156,6 +162,7 @@ class FoodCheckerModule:
 
         context.food_matches = matches
         context.missing_food_refs = missing
+        self._update_recipe_matches(context, ingredient_refs, matches, match_details, missing)
 
         logger.info(
             "Matched %s ingredient%s so far; %s still need attention",
@@ -552,6 +559,39 @@ class FoodCheckerModule:
         context.food_review_path = review_path
         context.food_decisions = {}
         logger.info("Saved the foods review to %s", review_path)
+
+    def _update_recipe_matches(
+        self,
+        context: PipelineContext,
+        ingredient_refs: List[IngredientRef],
+        matches: Dict[str, str],
+        match_details: Dict[str, Dict[str, object]],
+        missing: List[IngredientRef],
+    ) -> None:
+        recipe = context.ensure_recipe()
+        missing_keys = {ref.key for ref in missing}
+        for ref in ingredient_refs:
+            ingredient = ref.ingredient
+            match_id = matches.get(ref.key)
+            ingredient.mealie_food_id = match_id
+            if match_id:
+                strategy = (match_details.get(ref.key) or {}).get("strategy")
+                ingredient.food_badge_id = self._badge_for_strategy(strategy)
+            elif ref.key in missing_keys:
+                ingredient.food_badge_id = STATUS_NEW
+            else:
+                ingredient.food_badge_id = STATUS_NONE
+        context.update_recipe_file()
+
+    @staticmethod
+    def _badge_for_strategy(strategy: Optional[object]) -> str:
+        if strategy == "exact" or strategy == "preassigned":
+            return STATUS_FOUND_WORD
+        if strategy == "fuzzy":
+            return STATUS_FOUND_FUZZY
+        if strategy == "ai":
+            return STATUS_FOUND_AI
+        return STATUS_FOUND_WORD
 
     # ------------------------------------------------------------------
     # Candidate helpers

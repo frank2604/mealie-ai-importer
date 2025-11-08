@@ -13,6 +13,10 @@ class Ingredient(BaseModel):
     note: Optional[str] = None
     mealie_food_id: Optional[str] = Field(default=None, alias="mealieFoodId")
     mealie_unit_id: Optional[str] = Field(default=None, alias="mealieUnitId")
+    food_badge_id: Optional[str] = Field(default=None, alias="foodBadgeId")
+    unit_badge_id: Optional[str] = Field(default=None, alias="unitBadgeId")
+    food_original_name: Optional[str] = Field(default=None, alias="foodOriginalName")
+    unit_original_name: Optional[str] = Field(default=None, alias="unitOriginalName")
     model_config = ConfigDict(populate_by_name=True)
 
     @validator("name")

@@ -6,7 +6,7 @@ import logging
 import time
 from pathlib import Path
 from typing import Optional
-from ..context import PipelineContext
+from ..context import PipelineContext, build_recipe_data_payload
 from ...config import LlmConfig
 from ...image_utils import prepare_image_asset, select_best_image
 from ...llm_parser import LlmParsingError, OpenAiClient, parse_with_llm
@@ -49,30 +49,32 @@ class AiAnalyserModule:
 
         recorder = context.pipeline_recorder
         requested_output = context.recipe_output_path
-        payload = recipe.dict(by_alias=True)
-        payload_text = json.dumps(payload, ensure_ascii=False, indent=2)
+        raw_payload = recipe.dict(by_alias=True, exclude_none=True)
+        recipe_payload = build_recipe_data_payload(recipe)
+        raw_payload_text = json.dumps(raw_payload, ensure_ascii=False, indent=2)
+        recipe_payload_text = json.dumps(recipe_payload, ensure_ascii=False, indent=2)
         raw_path: Optional[Path] = None
         recipe_path: Optional[Path] = None
 
         if recorder:
-            raw_path = recorder.write_json("RecipeRawData", payload)
-            recipe_path = recorder.write_json("RecipeData", payload)
+            raw_path = recorder.write_json("RecipeRawData", raw_payload)
+            recipe_path = recorder.write_json("RecipeData", recipe_payload)
             context.save_recipe(recipe, destination=recipe_path, overwrite=False)
         else:
             raw_path = context.output_dir / "RecipeRawData.json"
             raw_path.parent.mkdir(parents=True, exist_ok=True)
-            raw_path.write_text(payload_text, encoding="utf-8")
+            raw_path.write_text(raw_payload_text, encoding="utf-8")
 
             recipe_target = requested_output or (context.output_dir / "RecipeData.json")
             recipe_target.parent.mkdir(parents=True, exist_ok=True)
-            recipe_target.write_text(payload_text, encoding="utf-8")
+            recipe_target.write_text(recipe_payload_text, encoding="utf-8")
             recipe_path = recipe_target
             context.save_recipe(recipe, destination=recipe_path, overwrite=False)
 
         final_output = recipe_path
         if requested_output and recipe_path and requested_output != recipe_path:
             requested_output.parent.mkdir(parents=True, exist_ok=True)
-            requested_output.write_text(payload_text, encoding="utf-8")
+            requested_output.write_text(recipe_payload_text, encoding="utf-8")
             final_output = requested_output
         elif not final_output:
             final_output = recipe_path

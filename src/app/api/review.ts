@@ -42,6 +42,25 @@ export interface FoodSuggestion {
   categoryName?: string | null;
 }
 
+export interface ReviewOptions {
+  foods: CandidateOption[];
+  units: CandidateOption[];
+}
+
+export interface FoodSelectionPayload {
+  mealieFoodId?: string | null;
+  name?: string | null;
+  badgeId?: string | null;
+  status?: string | null;
+}
+
+export interface UnitSelectionPayload {
+  mealieUnitId?: string | null;
+  name?: string | null;
+  badgeId?: string | null;
+  status?: string | null;
+}
+
 export interface ReviewIngredient {
   id: string;
   sectionIndex: number;
@@ -50,7 +69,9 @@ export interface ReviewIngredient {
   amount?: number | null;
   amountText?: string | null;
   unit?: string | null;
+  unitOriginalName?: string | null;
   name: string;
+  foodOriginalName?: string | null;
   note?: string | null;
   notes?: string | null;
   foodStatus: string;
@@ -63,6 +84,8 @@ export interface ReviewIngredient {
   unitCandidates: CandidateOption[];
   unitSuggestion?: UnitSuggestion | null;
   unitDecision: Record<string, unknown>;
+  foodSelection?: FoodSelectionPayload;
+  unitSelection?: UnitSelectionPayload;
 }
 
 export interface ReviewInstruction {
@@ -96,6 +119,7 @@ export interface ReviewData {
   ingredients: ReviewIngredient[];
   instructions: ReviewInstruction[];
   assets: ReviewAssets;
+  options: ReviewOptions;
 }
 
 export interface ReviewSummaryUpdatePayload {
@@ -112,6 +136,8 @@ export interface ReviewIngredientUpdatePayload {
   notes?: string | null;
   foodDecision: Record<string, unknown>;
   unitDecision: Record<string, unknown>;
+  foodSelection?: FoodSelectionPayload;
+  unitSelection?: UnitSelectionPayload;
 }
 
 export interface ReviewInstructionUpdatePayload {

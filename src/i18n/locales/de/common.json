@@ -144,12 +144,27 @@
     "status": {
       "found": "Gefunden",
       "new": "Neu",
+      "manual": "Manuell",
+      "none": "Keine Einheit",
       "error": "Fehler",
       "info": "AI-Hinweis"
     },
     "actions": {
       "view": "Details ansehen",
       "edit": "Eintrag bearbeiten"
+    },
+    "selection": {
+      "foodPlaceholder": "Zutat auswählen …",
+      "unitPlaceholder": "Einheit auswählen …",
+      "clear": "Auswahl entfernen"
+    },
+    "badges": {
+      "foundWord": "Gefunden: direkte Wort-Übereinstimmung",
+      "foundFuzzy": "Gefunden: Fuzzy-Suche",
+      "foundAi": "Gefunden: AI-Vorschlag",
+      "new": "Neuer Eintrag erforderlich",
+      "manual": "Manuell ausgewählt",
+      "none": "Keine Einheit vorhanden"
     },
     "table": {
       "headers": {

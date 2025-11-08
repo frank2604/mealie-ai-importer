@@ -1,5 +1,5 @@
 {
-  "updated_at": "2025-11-08T13:47:53.520404",
+  "updated_at": "2025-11-08T16:14:28.666466",
   "units": [
     {
       "id": "b558643c-bb92-479d-97ea-1337edc49d3b",
@@ -7,13 +7,6 @@
       "pluralName": "Milliliter",
       "abbreviation": "ml",
       "pluralAbbreviation": "ml"
-    },
-    {
-      "id": "cb399cf8-d436-4110-901f-7808ea38165c",
-      "name": "Scheibe",
-      "pluralName": "Scheiben",
-      "abbreviation": "",
-      "pluralAbbreviation": ""
     },
     {
       "id": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",

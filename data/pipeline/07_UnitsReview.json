@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2025-11-08T13:47:53.526338",
+  "generatedAt": "2025-11-08T16:14:44.347935",
   "summary": {
     "totalUnits": 9,
-    "autoMatched": 9,
-    "missing": 0
+    "autoMatched": 8,
+    "missing": 1
   },
   "instructions": "Adjust 'userDecision' for each unit if you want to override the automatic choice. action = 'auto' keeps current behaviour, 'use_existing' expects useUnitId, 'create' expects details under create, 'skip' ignores the unit.",
   "units": [
@@ -18,6 +18,7 @@
         "unit": "Stück",
         "note": null
       },
+      "newId": null,
       "currentMatch": {
         "unitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
         "name": "Stück",
@@ -40,13 +41,6 @@
           "pluralAbbreviation": ""
         },
         {
-          "id": "cb399cf8-d436-4110-901f-7808ea38165c",
-          "name": "Scheibe",
-          "pluralName": "Scheiben",
-          "abbreviation": "",
-          "pluralAbbreviation": ""
-        },
-        {
           "id": "39f5c698-554c-4be9-84b6-83e53bde8086",
           "name": "Packung",
           "pluralName": "Packungen",
@@ -58,6 +52,13 @@
           "name": "Tasse",
           "pluralName": "Tassen",
           "abbreviation": "c",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "03f9677e-a261-47ee-84e2-83f2d6fac9c5",
+          "name": "Spritzer",
+          "pluralName": "Spritzer",
+          "abbreviation": "",
           "pluralAbbreviation": ""
         }
       ],
@@ -86,20 +87,14 @@
         "unit": "Scheiben",
         "note": null
       },
+      "newId": null,
       "currentMatch": {
-        "unitId": "cb399cf8-d436-4110-901f-7808ea38165c",
-        "name": "Scheibe",
-        "strategy": "exact"
+        "unitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+        "name": "Stück",
+        "strategy": "ai"
       },
       "status": "matched",
       "candidates": [
-        {
-          "id": "cb399cf8-d436-4110-901f-7808ea38165c",
-          "name": "Scheibe",
-          "pluralName": "Scheiben",
-          "abbreviation": "",
-          "pluralAbbreviation": ""
-        },
         {
           "id": "2ecfc79c-9348-42d4-8e15-8e329ed1f7aa",
           "name": "Dose",
@@ -125,6 +120,13 @@
           "id": "8867a997-b6df-4012-baf2-c4f6987208b7",
           "name": "Prise",
           "pluralName": "Prisen",
+          "abbreviation": "",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "17a89f14-fa36-43ad-a56b-8a096325ec25",
+          "name": "Schuss",
+          "pluralName": "Schuss",
           "abbreviation": "",
           "pluralAbbreviation": ""
         }
@@ -154,6 +156,7 @@
         "unit": "g",
         "note": "geputzt, geviertelt"
       },
+      "newId": null,
       "currentMatch": {
         "unitId": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
         "name": "Gramm",
@@ -220,8 +223,9 @@
         "name": "rote Zwiebeln",
         "quantity": 3.0,
         "unit": "Stück",
-        "note": "geschält und klein gehackt"
+        "note": "geschält und kleingehackt"
       },
+      "newId": null,
       "currentMatch": {
         "unitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
         "name": "Stück",
@@ -244,13 +248,6 @@
           "pluralAbbreviation": ""
         },
         {
-          "id": "cb399cf8-d436-4110-901f-7808ea38165c",
-          "name": "Scheibe",
-          "pluralName": "Scheiben",
-          "abbreviation": "",
-          "pluralAbbreviation": ""
-        },
-        {
           "id": "39f5c698-554c-4be9-84b6-83e53bde8086",
           "name": "Packung",
           "pluralName": "Packungen",
@@ -262,6 +259,13 @@
           "name": "Tasse",
           "pluralName": "Tassen",
           "abbreviation": "c",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "03f9677e-a261-47ee-84e2-83f2d6fac9c5",
+          "name": "Spritzer",
+          "pluralName": "Spritzer",
+          "abbreviation": "",
           "pluralAbbreviation": ""
         }
       ],
@@ -276,7 +280,7 @@
           "pluralAbbreviation": null,
           "useAbbreviation": false
         },
-        "notes": "geschält und klein gehackt"
+        "notes": "geschält und kleingehackt"
       }
     },
     {
@@ -285,11 +289,12 @@
       "sectionName": "Section 1",
       "ingredientIndex": 4,
       "ingredient": {
-        "name": "Wermut (trocken)",
+        "name": "trockener Wermut",
         "quantity": 100.0,
         "unit": "ml",
         "note": null
       },
+      "newId": null,
       "currentMatch": {
         "unitId": "b558643c-bb92-479d-97ea-1337edc49d3b",
         "name": "Milliliter",
@@ -358,6 +363,7 @@
         "unit": "ml",
         "note": null
       },
+      "newId": null,
       "currentMatch": {
         "unitId": "b558643c-bb92-479d-97ea-1337edc49d3b",
         "name": "Milliliter",
@@ -424,8 +430,9 @@
         "name": "Mehl",
         "quantity": 1.0,
         "unit": "Esslöffel",
-        "note": "zum Bestäuben"
+        "note": null
       },
+      "newId": null,
       "currentMatch": {
         "unitId": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
         "name": "Esslöffel",
@@ -480,7 +487,7 @@
           "pluralAbbreviation": null,
           "useAbbreviation": false
         },
-        "notes": "zum Bestäuben"
+        "notes": ""
       }
     },
     {
@@ -494,6 +501,7 @@
         "unit": "Esslöffel",
         "note": null
       },
+      "newId": null,
       "currentMatch": {
         "unitId": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
         "name": "Esslöffel",
@@ -559,59 +567,62 @@
       "ingredient": {
         "name": "Salbeiblätter",
         "quantity": 6.0,
-        "unit": "Stück",
+        "unit": "Blatt",
         "note": null
       },
-      "currentMatch": {
-        "unitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
-        "name": "Stück",
-        "strategy": "exact"
-      },
-      "status": "matched",
+      "newId": "unit-new-0-9",
+      "currentMatch": null,
+      "status": "missing",
       "candidates": [
         {
-          "id": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
-          "name": "Stück",
-          "pluralName": "Stücke",
-          "abbreviation": "Stk.",
+          "id": "3b04677f-506d-4519-8b16-be376e35a159",
+          "name": "Liter",
+          "pluralName": "Liter",
+          "abbreviation": "L",
           "pluralAbbreviation": ""
         },
         {
-          "id": "17a89f14-fa36-43ad-a56b-8a096325ec25",
-          "name": "Schuss",
-          "pluralName": "Schuss",
-          "abbreviation": "",
+          "id": "13736d8c-269c-4045-8453-474d109d4f5d",
+          "name": "Quart",
+          "pluralName": "Quarts",
+          "abbreviation": "qt",
           "pluralAbbreviation": ""
         },
         {
-          "id": "cb399cf8-d436-4110-901f-7808ea38165c",
-          "name": "Scheibe",
-          "pluralName": "Scheiben",
-          "abbreviation": "",
+          "id": "b558643c-bb92-479d-97ea-1337edc49d3b",
+          "name": "Milliliter",
+          "pluralName": "Milliliter",
+          "abbreviation": "ml",
+          "pluralAbbreviation": "ml"
+        },
+        {
+          "id": "cdcbfa6e-9a7d-4cc3-bf8b-4a007dda1737",
+          "name": "Kilogramm",
+          "pluralName": "Kilogramm",
+          "abbreviation": "kg",
           "pluralAbbreviation": ""
         },
         {
-          "id": "39f5c698-554c-4be9-84b6-83e53bde8086",
-          "name": "Packung",
-          "pluralName": "Packungen",
-          "abbreviation": "",
-          "pluralAbbreviation": ""
-        },
-        {
-          "id": "e6711358-ba95-4a63-8824-a784977fba14",
-          "name": "Tasse",
-          "pluralName": "Tassen",
-          "abbreviation": "c",
+          "id": "28ea4d64-6942-4713-ac19-1f223bca5da0",
+          "name": "Pint",
+          "pluralName": "Pints",
+          "abbreviation": "pt",
           "pluralAbbreviation": ""
         }
       ],
-      "suggestion": null,
+      "suggestion": {
+        "name": "Blatt",
+        "pluralName": "Blätter",
+        "abbreviation": null,
+        "pluralAbbreviation": null,
+        "useAbbreviation": false
+      },
       "userDecision": {
         "action": "auto",
         "useUnitId": null,
         "create": {
-          "name": null,
-          "pluralName": null,
+          "name": "Blatt",
+          "pluralName": "Blätter",
           "abbreviation": null,
           "pluralAbbreviation": null,
           "useAbbreviation": false

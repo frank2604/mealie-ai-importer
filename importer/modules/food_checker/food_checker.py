@@ -162,7 +162,8 @@ class FoodCheckerModule:
 
         context.food_matches = matches
         context.missing_food_refs = missing
-        self._update_recipe_matches(context, ingredient_refs, matches, match_details, missing)
+        new_ids = {ref.key: self._build_new_id("food", ref) for ref in missing}
+        self._update_recipe_matches(context, ingredient_refs, matches, match_details, missing, new_ids)
 
         logger.info(
             "Matched %s ingredient%s so far; %s still need attention",
@@ -229,6 +230,7 @@ class FoodCheckerModule:
             missing,
             suggestions,
             categories,
+            new_ids,
         )
 
     # ------------------------------------------------------------------
@@ -457,6 +459,7 @@ class FoodCheckerModule:
         missing: List[IngredientRef],
         suggestions: Dict[str, Dict[str, object]],
         categories: List[Dict[str, object]],
+        new_ids: Dict[str, str],
     ) -> None:
         recorder = context.pipeline_recorder
         if not recorder:
@@ -518,6 +521,7 @@ class FoodCheckerModule:
                         "unit": ingredient.unit,
                         "note": ingredient.note,
                     },
+                    "newId": new_ids.get(key),
                     "currentMatch": (
                         {
                             "foodId": matched_id,
@@ -567,6 +571,7 @@ class FoodCheckerModule:
         matches: Dict[str, str],
         match_details: Dict[str, Dict[str, object]],
         missing: List[IngredientRef],
+        new_ids: Dict[str, str],
     ) -> None:
         recipe = context.ensure_recipe()
         missing_keys = {ref.key for ref in missing}
@@ -577,10 +582,14 @@ class FoodCheckerModule:
             if match_id:
                 strategy = (match_details.get(ref.key) or {}).get("strategy")
                 ingredient.food_badge_id = self._badge_for_strategy(strategy)
+                ingredient.food_new_id = None
             elif ref.key in missing_keys:
                 ingredient.food_badge_id = STATUS_NEW
+                ingredient.food_new_id = new_ids.get(ref.key)
+                ingredient.mealie_food_id = None
             else:
                 ingredient.food_badge_id = STATUS_NONE
+                ingredient.food_new_id = None
         context.update_recipe_file()
 
     @staticmethod
@@ -592,6 +601,11 @@ class FoodCheckerModule:
         if strategy == "ai":
             return STATUS_FOUND_AI
         return STATUS_FOUND_WORD
+
+    @staticmethod
+    def _build_new_id(kind: str, ref: IngredientRef) -> str:
+        safe_key = ref.key.replace(":", "-")
+        return f"{kind}-new-{safe_key}"
 
     # ------------------------------------------------------------------
     # Candidate helpers

@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import clsx from "clsx";
-import { ChevronUpDownIcon, MagnifyingGlassIcon, PencilSquareIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { ChevronUpDownIcon, PencilSquareIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import { PdfViewerPlaceholder } from "../components/PdfViewerPlaceholder";
-import { ReviewModal } from "../components/Modals/ReviewModal";
 import { layoutConfig } from "../../config/layout.config";
 import { BadgeId } from "../../config/badges.config";
 import {
@@ -18,6 +17,8 @@ import {
 } from "../api/review";
 import { useImportFlow } from "../context/ImportFlowContext";
 import { BadgePill } from "../components/BadgePill";
+import { NewFoodModal, FoodCreateFormValues } from "../components/Modals/NewFoodModal";
+import { NewUnitModal, UnitCreateFormValues } from "../components/Modals/NewUnitModal";
 
 const mapStatusToBadgeId = (status?: string | null): BadgeId | null => {
   switch (status) {
@@ -38,11 +39,6 @@ const mapStatusToBadgeId = (status?: string | null): BadgeId | null => {
   }
 };
 
-interface ModalContext {
-  entry: ReviewIngredient;
-  target: "unit" | "ingredient";
-}
-
 interface SummaryFormState {
   portionsInput: string;
   totalTimeInput: string;
@@ -59,6 +55,12 @@ interface SearchableSelectProps {
 }
 
 const MAX_RESULTS = 50;
+
+const compareCandidateOptions = (a: CandidateOption, b: CandidateOption) => {
+  const left = (a.name ?? a.id ?? "").toString();
+  const right = (b.name ?? b.id ?? "").toString();
+  return left.localeCompare(right, undefined, { sensitivity: "base" });
+};
 
 const SearchableSelect: React.FC<SearchableSelectProps> = ({
   options,
@@ -179,6 +181,37 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
   );
 };
 
+const getFoodCreatePayload = (entry: ReviewIngredient): FoodCreateFormValues => {
+  const decision = (entry.foodDecision || {}) as Record<string, any>;
+  return (decision.create || {}) as FoodCreateFormValues;
+};
+
+const getUnitCreatePayload = (entry: ReviewIngredient): UnitCreateFormValues => {
+  const decision = (entry.unitDecision || {}) as Record<string, any>;
+  return (decision.create || {}) as UnitCreateFormValues;
+};
+
+const getFoodSuggestionBaseName = (entry: ReviewIngredient): string => {
+  const create = getFoodCreatePayload(entry);
+  return (
+    create.nameSingular ??
+    entry.foodSuggestion?.nameSingular ??
+    entry.foodOriginalName ??
+    entry.name
+  );
+};
+
+const getUnitSuggestionBaseName = (entry: ReviewIngredient): string => {
+  const create = getUnitCreatePayload(entry);
+  return (
+    create.name ??
+    entry.unitSuggestion?.name ??
+    entry.unitOriginalName ??
+    entry.unit ??
+    ""
+  );
+};
+
 const parseLocaleNumber = (value: string): number | null => {
   if (!value.trim()) {
     return null;
@@ -204,7 +237,11 @@ const parseInteger = (value: string): number | null => {
 
 const enrichReviewData = (data: ReviewData): ReviewData => ({
   ...data,
-  options: data.options ?? { foods: [], units: [] },
+  options: {
+    foods: data.options?.foods ?? [],
+    units: data.options?.units ?? [],
+    foodCategories: data.options?.foodCategories ?? []
+  },
   ingredients: data.ingredients.map((item) => ({
     ...item,
     notes: item.notes ?? "",
@@ -212,6 +249,7 @@ const enrichReviewData = (data: ReviewData): ReviewData => ({
       item.foodSelection ??
       ({
         mealieFoodId: item.foodMatch?.id ?? null,
+        newId: item.foodNewId ?? null,
         name: item.foodMatch?.name ?? item.name,
         badgeId: mapStatusToBadgeId(item.foodStatus),
         status: item.foodStatus ?? null
@@ -220,6 +258,7 @@ const enrichReviewData = (data: ReviewData): ReviewData => ({
       item.unitSelection ??
       ({
         mealieUnitId: item.unitMatch?.id ?? null,
+        newId: item.unitNewId ?? null,
         name: item.unitMatch?.name ?? item.unit ?? "",
         badgeId: mapStatusToBadgeId(item.unitStatus),
         status: item.unitStatus ?? null
@@ -258,13 +297,15 @@ const buildUpdatePayload = (data: ReviewData) => ({
       mealieFoodId: item.foodMatch?.id ?? null,
       name: item.foodMatch?.name ?? item.name,
       badgeId: item.foodStatus ?? null,
-      status: item.foodStatus ?? null
+      status: item.foodStatus ?? null,
+      newId: item.foodNewId ?? null
     },
     unitSelection: item.unitSelection ?? {
       mealieUnitId: item.unitMatch?.id ?? null,
       name: item.unitMatch?.name ?? item.unit ?? "",
       badgeId: item.unitStatus ?? null,
-      status: item.unitStatus ?? null
+      status: item.unitStatus ?? null,
+      newId: item.unitNewId ?? null
     }
   })),
   instructions: data.instructions.map((item) => ({
@@ -284,13 +325,36 @@ export const Step3Review: React.FC = () => {
 
   const [reviewData, setReviewData] = useState<ReviewData | null>(null);
   const [summaryForm, setSummaryForm] = useState<SummaryFormState>({ portionsInput: "", totalTimeInput: "" });
-  const [modalContext, setModalContext] = useState<ModalContext | null>(null);
+  const [foodModalEntry, setFoodModalEntry] = useState<ReviewIngredient | null>(null);
+  const [unitModalEntry, setUnitModalEntry] = useState<ReviewIngredient | null>(null);
   const [preparationSteps, setPreparationSteps] = useState<Record<string, string>>({});
   const [stepIngredients, setStepIngredients] = useState<Record<string, string[]>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const sortedFoodOptions = useMemo(() => {
+    if (!reviewData) {
+      return [];
+    }
+    return [...reviewData.options.foods].sort(compareCandidateOptions);
+  }, [reviewData]);
+  const sortedUnitOptions = useMemo(() => {
+    if (!reviewData) {
+      return [];
+    }
+    return [...reviewData.options.units].sort(compareCandidateOptions);
+  }, [reviewData]);
+  const sortedFoodCategories = useMemo(() => {
+    if (!reviewData) {
+      return [];
+    }
+    return [...reviewData.options.foodCategories].sort((a, b) => {
+      const left = (a.name ?? a.id ?? "").toString();
+      const right = (b.name ?? b.id ?? "").toString();
+      return left.localeCompare(right, undefined, { sensitivity: "base" });
+    });
+  }, [reviewData]);
 
   const autoResizeTextarea = useCallback((textarea: HTMLTextAreaElement | null) => {
     if (!textarea) return;
@@ -428,6 +492,70 @@ export const Step3Review: React.FC = () => {
     });
   }, []);
 
+  const handleFoodModalSave = useCallback(
+    (ingredientId: string, values: FoodCreateFormValues) => {
+      setReviewData((previous) => {
+        if (!previous) {
+          return previous;
+        }
+        const updatedIngredients = previous.ingredients.map((item) => {
+          if (item.id !== ingredientId) {
+            return item;
+          }
+          const nextCreate = {
+            ...getFoodCreatePayload(item),
+            ...values
+          };
+          const nextDecision = {
+            ...(item.foodDecision || {}),
+            create: nextCreate
+          };
+          return {
+            ...item,
+            foodDecision: nextDecision
+          };
+        });
+        const nextData = { ...previous, ingredients: updatedIngredients };
+        void persistChanges(nextData);
+        return nextData;
+      });
+      setFoodModalEntry(null);
+    },
+    [persistChanges]
+  );
+
+  const handleUnitModalSave = useCallback(
+    (ingredientId: string, values: UnitCreateFormValues) => {
+      setReviewData((previous) => {
+        if (!previous) {
+          return previous;
+        }
+        const updatedIngredients = previous.ingredients.map((item) => {
+          if (item.id !== ingredientId) {
+            return item;
+          }
+          const nextCreate = {
+            ...getUnitCreatePayload(item),
+            ...values
+          };
+          const nextDecision = {
+            ...(item.unitDecision || {}),
+            create: nextCreate
+          };
+          return {
+            ...item,
+            unitDecision: nextDecision
+          };
+        });
+        const nextData = { ...previous, ingredients: updatedIngredients };
+        void persistChanges(nextData);
+        return nextData;
+      });
+      setUnitModalEntry(null);
+    },
+    [persistChanges]
+  );
+
   const handleInstructionChange = useCallback((instruction: ReviewInstruction, value: string) => {
     setPreparationSteps((previous) => ({
       ...previous,
@@ -461,17 +589,20 @@ export const Step3Review: React.FC = () => {
           if (item.id !== ingredientId) {
             return item;
           }
-          const nextBadge: BadgeId = option ? "manual" : "none";
+          const isSuggestion = option ? option.id === item.unitNewId : false;
+          const nextBadge: BadgeId = isSuggestion ? "new" : option ? "manual" : "none";
           const updatedItem: ReviewIngredient = {
             ...item,
-            unit: option?.name ?? item.unit,
-            unitMatch: option
-              ? { id: option.id, name: option.name ?? "", strategy: "manual" }
-              : null,
-            unitStatus: option ? "manual" : "none",
+            unitMatch: isSuggestion
+              ? null
+              : option
+                ? { id: option.id, name: option.name ?? "", strategy: "manual" }
+                : null,
+            unitStatus: isSuggestion ? "new" : option ? "manual" : "none",
             unitSelection: {
-              mealieUnitId: option ? option.id : null,
-              name: option?.name ?? item.unit ?? "",
+              mealieUnitId: isSuggestion ? null : option?.id ?? null,
+              newId: isSuggestion ? item.unitNewId ?? option?.id ?? null : null,
+              name: isSuggestion ? getUnitSuggestionBaseName(item) : option?.name ?? item.unit ?? "",
               badgeId: nextBadge,
               status: nextBadge
             }
@@ -496,17 +627,20 @@ export const Step3Review: React.FC = () => {
           if (item.id !== ingredientId) {
             return item;
           }
-          const nextBadge: BadgeId = option ? "manual" : "new";
+          const isSuggestion = option ? option.id === item.foodNewId : false;
+          const nextBadge: BadgeId = isSuggestion ? "new" : option ? "manual" : "new";
           const updatedItem: ReviewIngredient = {
             ...item,
-            name: option?.name ?? item.name,
-            foodMatch: option
-              ? { id: option.id, name: option.name ?? "", strategy: "manual" }
-              : null,
-            foodStatus: option ? "manual" : "new",
+            foodMatch: isSuggestion
+              ? null
+              : option
+                ? { id: option.id, name: option.name ?? "", strategy: "manual" }
+                : null,
+            foodStatus: isSuggestion ? "new" : option ? "manual" : "new",
             foodSelection: {
-              mealieFoodId: option ? option.id : null,
-              name: option?.name ?? item.name,
+              mealieFoodId: isSuggestion ? null : option?.id ?? null,
+              newId: isSuggestion ? item.foodNewId ?? option?.id ?? null : null,
+              name: isSuggestion ? getFoodSuggestionBaseName(item) : option?.name ?? item.name,
               badgeId: nextBadge,
               status: nextBadge
             }
@@ -693,10 +827,56 @@ export const Step3Review: React.FC = () => {
                     (entry.foodSelection?.badgeId as BadgeId | undefined) ??
                     mapStatusToBadgeId(entry.foodStatus) ??
                     null;
-                  const isUnitResolved = !!unitBadgeId && unitBadgeId !== "new" && unitBadgeId !== "none";
-                  const isFoodResolved = !!foodBadgeId && foodBadgeId !== "new";
                   const originalUnitLabel = entry.unitOriginalName ?? entry.unit ?? "";
                   const originalFoodLabel = entry.foodOriginalName ?? entry.name;
+                  const unitSuggestionLabel = getUnitSuggestionBaseName(entry);
+                  const foodSuggestionLabel = getFoodSuggestionBaseName(entry);
+                  const unitSuggestionOption =
+                    entry.unitNewId && unitSuggestionLabel
+                      ? {
+                          id: entry.unitNewId,
+                          name: t("review.selection.newUnitOption", { value: unitSuggestionLabel })
+                        }
+                      : null;
+                  const foodSuggestionOption =
+                    entry.foodNewId && foodSuggestionLabel
+                      ? {
+                          id: entry.foodNewId,
+                          name: t("review.selection.newFoodOption", { value: foodSuggestionLabel })
+                        }
+                      : null;
+                  const unitOptions = unitSuggestionOption
+                    ? [
+                        unitSuggestionOption,
+                        ...sortedUnitOptions.filter((option) => option.id !== unitSuggestionOption.id)
+                      ]
+                    : sortedUnitOptions;
+                  const foodOptions = foodSuggestionOption
+                    ? [
+                        foodSuggestionOption,
+                        ...sortedFoodOptions.filter((option) => option.id !== foodSuggestionOption.id)
+                      ]
+                    : sortedFoodOptions;
+                  const selectedUnitId =
+                    entry.unitSelection?.newId ??
+                    entry.unitSelection?.mealieUnitId ??
+                    entry.unitMatch?.id ??
+                    null;
+                  const selectedFoodId =
+                    entry.foodSelection?.newId ??
+                    entry.foodSelection?.mealieFoodId ??
+                    entry.foodMatch?.id ??
+                    null;
+                  const unitDisplayValue =
+                    entry.unitSelection?.newId
+                      ? unitSuggestionLabel
+                      : entry.unitMatch?.name ?? entry.unitSelection?.name ?? entry.unit ?? "";
+                  const foodDisplayValue =
+                    entry.foodSelection?.newId
+                      ? foodSuggestionLabel
+                      : entry.foodMatch?.name ?? entry.foodSelection?.name ?? entry.name;
+                  const showUnitModalButton = Boolean(entry.unitSelection?.newId);
+                  const showFoodModalButton = Boolean(entry.foodSelection?.newId);
 
                   return (
                     <div
@@ -719,33 +899,32 @@ export const Step3Review: React.FC = () => {
                           <div className="flex items-center justify-between gap-3">
                             <div className="flex w-full items-center gap-3">
                               <BadgePill badgeId={unitBadgeId} fallbackStatus="none" />
+                              {showUnitModalButton ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setUnitModalEntry(entry)}
+                                  className={clsx(
+                                    "focus-ring inline-flex h-8 w-8 items-center justify-center border border-border bg-background hover:border-primary/60 hover:text-primary",
+                                    layoutConfig.borderRadius.small
+                                  )}
+                                  aria-label={t("review.selection.editNewUnit")}
+                                  title={t("review.selection.editNewUnit")}
+                                >
+                                  <PencilSquareIcon className="h-4 w-4" aria-hidden="true" />
+                                </button>
+                              ) : null}
                               <div className="flex-1">
                                 <SearchableSelect
-                                  options={reviewData.options.units}
-                                  selectedId={entry.unitMatch?.id ?? null}
-                                  displayValue={entry.unitMatch?.name ?? entry.unit ?? ""}
+                                  options={unitOptions}
+                                  selectedId={selectedUnitId}
+                                  displayValue={unitDisplayValue}
                                   placeholder={unitPlaceholder}
                                   clearLabel={clearSelectionLabel}
-                                  disabled={reviewData.options.units.length === 0}
+                                  disabled={unitOptions.length === 0}
                                   onChange={(option) => handleUnitSelection(entry.id, option)}
                                 />
                               </div>
                             </div>
-                            <button
-                              type="button"
-                              onClick={() => setModalContext({ entry, target: "unit" })}
-                              className={clsx(
-                                "focus-ring inline-flex h-8 w-8 items-center justify-center border border-border bg-background hover:border-primary/60 hover:text-primary",
-                                layoutConfig.borderRadius.small
-                              )}
-                              aria-label={isUnitResolved ? t("review.actions.view") : t("review.actions.edit")}
-                            >
-                              {isUnitResolved ? (
-                                <MagnifyingGlassIcon className="h-4 w-4" aria-hidden="true" />
-                              ) : (
-                                <PencilSquareIcon className="h-4 w-4" aria-hidden="true" />
-                              )}
-                            </button>
                           </div>
                         </div>
 
@@ -757,33 +936,32 @@ export const Step3Review: React.FC = () => {
                           <div className="flex items-center justify-between gap-3">
                             <div className="flex w-full items-center gap-3">
                               <BadgePill badgeId={foodBadgeId} fallbackStatus="new" />
+                              {showFoodModalButton ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setFoodModalEntry(entry)}
+                                  className={clsx(
+                                    "focus-ring inline-flex h-8 w-8 items-center justify-center border border-border bg-background hover:border-primary/60 hover:text-primary",
+                                    layoutConfig.borderRadius.small
+                                  )}
+                                  aria-label={t("review.selection.editNewFood")}
+                                  title={t("review.selection.editNewFood")}
+                                >
+                                  <PencilSquareIcon className="h-4 w-4" aria-hidden="true" />
+                                </button>
+                              ) : null}
                               <div className="flex-1">
                                 <SearchableSelect
-                                  options={reviewData.options.foods}
-                                  selectedId={entry.foodMatch?.id ?? null}
-                                  displayValue={entry.foodMatch?.name ?? entry.name}
+                                  options={foodOptions}
+                                  selectedId={selectedFoodId}
+                                  displayValue={foodDisplayValue}
                                   placeholder={foodPlaceholder}
                                   clearLabel={clearSelectionLabel}
-                                  disabled={reviewData.options.foods.length === 0}
+                                  disabled={foodOptions.length === 0}
                                   onChange={(option) => handleFoodSelection(entry.id, option)}
                                 />
                               </div>
                             </div>
-                            <button
-                              type="button"
-                              onClick={() => setModalContext({ entry, target: "ingredient" })}
-                              className={clsx(
-                                "focus-ring inline-flex h-8 w-8 items-center justify-center border border-border bg-background hover:border-primary/60 hover:text-primary",
-                                layoutConfig.borderRadius.small
-                              )}
-                              aria-label={isFoodResolved ? t("review.actions.view") : t("review.actions.edit")}
-                            >
-                              {isFoodResolved ? (
-                                <MagnifyingGlassIcon className="h-4 w-4" aria-hidden="true" />
-                              ) : (
-                                <PencilSquareIcon className="h-4 w-4" aria-hidden="true" />
-                              )}
-                            </button>
                           </div>
                         </div>
 
@@ -966,7 +1144,19 @@ export const Step3Review: React.FC = () => {
         <PdfViewerPlaceholder />
       </aside>
 
-      <ReviewModal context={modalContext} onClose={() => setModalContext(null)} />
+      <NewFoodModal
+        entry={foodModalEntry}
+        categories={sortedFoodCategories}
+        isOpen={Boolean(foodModalEntry)}
+        onClose={() => setFoodModalEntry(null)}
+        onSave={handleFoodModalSave}
+      />
+      <NewUnitModal
+        entry={unitModalEntry}
+        isOpen={Boolean(unitModalEntry)}
+        onClose={() => setUnitModalEntry(null)}
+        onSave={handleUnitModalSave}
+      />
     </div>
   );
 };

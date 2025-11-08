@@ -144,6 +144,7 @@ class FoodSelection(BaseModel):
     name: Optional[str] = None
     badgeId: Optional[str] = None
     status: Optional[str] = None
+    newId: Optional[str] = None
 
 
 class UnitSelection(BaseModel):
@@ -151,6 +152,7 @@ class UnitSelection(BaseModel):
     name: Optional[str] = None
     badgeId: Optional[str] = None
     status: Optional[str] = None
+    newId: Optional[str] = None
 
 
 class ReviewIngredient(BaseModel):
@@ -164,6 +166,8 @@ class ReviewIngredient(BaseModel):
     unitOriginalName: Optional[str] = None
     name: str
     foodOriginalName: Optional[str] = None
+    foodNewId: Optional[str] = None
+    unitNewId: Optional[str] = None
     note: Optional[str] = None
     notes: Optional[str] = None
     foodStatus: str
@@ -197,6 +201,7 @@ class ReviewAssets(BaseModel):
 class ReviewOptions(BaseModel):
     foods: List[CandidateOption] = Field(default_factory=list)
     units: List[CandidateOption] = Field(default_factory=list)
+    foodCategories: List[CategoryOption] = Field(default_factory=list)
 
 
 class ReviewSummary(BaseModel):
@@ -620,12 +625,14 @@ def _build_review_payload(run_id: str, config: AppConfig) -> ReviewDataResponse:
                 name=recipe_entry.get("name"),
                 badgeId=recipe_entry.get("foodBadgeId"),
                 status=food_status,
+                newId=recipe_entry.get("foodNewId"),
             )
             unit_selection = UnitSelection(
                 mealieUnitId=recipe_unit_id,
                 name=recipe_entry.get("unit"),
                 badgeId=recipe_entry.get("unitBadgeId"),
                 status=unit_status,
+                newId=recipe_entry.get("unitNewId"),
             )
 
             notes_value = None
@@ -649,6 +656,8 @@ def _build_review_payload(run_id: str, config: AppConfig) -> ReviewDataResponse:
                 unitOriginalName=ingredient.get("unitOriginalName"),
                 name=str(ingredient.get("name") or ""),
                 foodOriginalName=ingredient.get("foodOriginalName"),
+                foodNewId=food_entry.get("newId"),
+                unitNewId=unit_entry.get("newId"),
                 note=ingredient.get("note"),
                 notes=notes_value or "",
                 foodStatus=food_status,
@@ -763,6 +772,15 @@ def _build_review_payload(run_id: str, config: AppConfig) -> ReviewDataResponse:
     cache_root = Path(config.ingredients.cache_dir)
     foods_options = _load_candidate_options(cache_root / "MealieFoodsCache.json", "foods")
     units_options = _load_candidate_options(cache_root / "MealieUnitsCache.json", "units")
+    food_categories = [
+        CategoryOption(
+            id=str(cat.get("id")),
+            name=cat.get("name"),
+            groupId=cat.get("groupId"),
+        )
+        for cat in foods_review.get("availableCategories") or []
+        if cat.get("id")
+    ]
 
     return ReviewDataResponse(
         runId=run_id,
@@ -770,7 +788,7 @@ def _build_review_payload(run_id: str, config: AppConfig) -> ReviewDataResponse:
         ingredients=ingredients_payload,
         instructions=instructions_payload,
         assets=assets,
-        options=ReviewOptions(foods=foods_options, units=units_options),
+        options=ReviewOptions(foods=foods_options, units=units_options, foodCategories=food_categories),
     )
 
 
@@ -867,12 +885,14 @@ def _apply_review_update(run_id: str, config: AppConfig, payload: ReviewUpdateRe
         if entry and ingredient_update.foodSelection:
             selection = ingredient_update.foodSelection
             entry["mealieFoodId"] = selection.mealieFoodId
+            entry["foodNewId"] = selection.newId
             if selection.name is not None:
                 entry["name"] = selection.name
             entry["foodBadgeId"] = selection.badgeId
         if entry and ingredient_update.unitSelection:
             selection = ingredient_update.unitSelection
             entry["mealieUnitId"] = selection.mealieUnitId
+            entry["unitNewId"] = selection.newId
             if selection.name is not None:
                 entry["unit"] = selection.name
             entry["unitBadgeId"] = selection.badgeId

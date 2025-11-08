@@ -43,6 +43,9 @@ def normalize_recipe_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
                 original_name = food_block.get("originalName") or name
                 if original_name:
                     item.setdefault("foodOriginalName", original_name)
+                new_id = food_block.get("newId")
+                if new_id is not None and "foodNewId" not in item:
+                    item["foodNewId"] = new_id
                 mealie_food_id = food_block.get("mealieFoodId")
                 if mealie_food_id is not None:
                     item["mealieFoodId"] = mealie_food_id
@@ -57,6 +60,9 @@ def normalize_recipe_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
                 original_unit = unit_block.get("originalName") or unit_name
                 if original_unit:
                     item.setdefault("unitOriginalName", original_unit)
+                new_unit_id = unit_block.get("newId")
+                if new_unit_id is not None and "unitNewId" not in item:
+                    item["unitNewId"] = new_unit_id
                 mealie_unit_id = unit_block.get("mealieUnitId")
                 if mealie_unit_id is not None:
                     item["mealieUnitId"] = mealie_unit_id
@@ -88,6 +94,8 @@ def build_recipe_data_payload(recipe: Recipe) -> Dict[str, Any]:
             unit_badge = item.get("unitBadgeId")
             original_food = item.get("foodOriginalName") or name
             original_unit = item.get("unitOriginalName") or unit_text
+            food_new_id = item.get("foodNewId")
+            unit_new_id = item.get("unitNewId")
             food_block = {
                 "name": name,
                 "originalName": original_food,
@@ -96,6 +104,8 @@ def build_recipe_data_payload(recipe: Recipe) -> Dict[str, Any]:
                 food_block["mealieFoodId"] = mealie_food_id
             if food_badge is not None:
                 food_block["badgeId"] = food_badge
+            if food_new_id is not None:
+                food_block["newId"] = food_new_id
             unit_block = {
                 "name": unit_text,
                 "originalName": original_unit,
@@ -104,6 +114,8 @@ def build_recipe_data_payload(recipe: Recipe) -> Dict[str, Any]:
                 unit_block["mealieUnitId"] = mealie_unit_id
             if unit_badge is not None:
                 unit_block["badgeId"] = unit_badge
+            if unit_new_id is not None:
+                unit_block["newId"] = unit_new_id
             new_item = {k: v for k, v in item.items() if k not in {
                 "name",
                 "unit",
@@ -113,6 +125,8 @@ def build_recipe_data_payload(recipe: Recipe) -> Dict[str, Any]:
                 "unitBadgeId",
                 "foodOriginalName",
                 "unitOriginalName",
+                "foodNewId",
+                "unitNewId",
             }}
             new_item["food"] = food_block
             new_item["unit"] = unit_block

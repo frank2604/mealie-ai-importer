@@ -156,7 +156,11 @@
     "selection": {
       "foodPlaceholder": "Zutat auswählen …",
       "unitPlaceholder": "Einheit auswählen …",
-      "clear": "Auswahl entfernen"
+      "clear": "Auswahl entfernen",
+      "newFoodOption": "{{value}} (NEU)",
+      "newUnitOption": "{{value}} (NEU)",
+      "editNewFood": "Neues Lebensmittel anpassen",
+      "editNewUnit": "Neue Einheit anpassen"
     },
     "badges": {
       "foundWord": "Gefunden: direkte Wort-Übereinstimmung",
@@ -205,6 +209,28 @@
       "abbreviationPlural": "Abkürzung (Plural): {{value}}",
       "category": "Kategorie: {{value}}",
       "aliases": "Aliasse: {{value}}"
+    },
+    "newFoodModal": {
+      "title": "Neues Lebensmittel",
+      "nameSingular": "Name (Singular)",
+      "namePlural": "Name (Plural)",
+      "aliases": "Aliasse",
+      "aliasPlaceholder": "mit Komma trennen",
+      "category": "Kategorie",
+      "categoryPlaceholder": "Kategorie auswählen …",
+      "description": "Beschreibung",
+      "cancel": "Abbrechen",
+      "save": "Übernehmen"
+    },
+    "newUnitModal": {
+      "title": "Neue Einheit",
+      "name": "Name",
+      "pluralName": "Name (Plural)",
+      "abbreviation": "Abkürzung",
+      "pluralAbbreviation": "Abkürzung (Plural)",
+      "useAbbreviation": "Abkürzung verwenden",
+      "cancel": "Abbrechen",
+      "save": "Übernehmen"
     }
   },
   "transfer": {

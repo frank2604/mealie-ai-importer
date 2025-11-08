@@ -1,8 +1,8 @@
 {
-  "title": "Hähnchenbrust mit Parmaschinken und Champignon-Sahnesoße",
-  "description": "Zarte Hähnchenbrustfilets werden mit Salbei und Parma-Schinken umwickelt und in einer cremigen Champignon-Wermut-Sauce gegart. Das Gericht ist aromatisch und eignet sich gut als herzhaftes Hauptgericht für die ganze Familie. Dazu passen Pellkartoffeln und grüner Salat.",
+  "title": "Hähnchenbrust in Parma-Schinken mit Champignon-Sahnesoße",
+  "description": "Zarte Hähnchenbrustfilets werden mit Salbeiblättern belegt, in Parma-Schinken gewickelt und goldbraun angebraten. In einer cremigen Champignon-Sahnesoße mit trockenem Wermut geschmort ergibt das Gericht ein aromatisches und saftiges Hauptgericht. Dazu passen Pellkartoffeln und ein grüner Salat.",
   "portions": 4.0,
-  "total_time_minutes": 40,
+  "total_time_minutes": 50,
   "ingredients": [
     {
       "name": null,
@@ -35,8 +35,8 @@
           "unit": {
             "name": "Scheiben",
             "originalName": "Scheiben",
-            "mealieUnitId": "cb399cf8-d436-4110-901f-7808ea38165c",
-            "badgeId": "found_word"
+            "mealieUnitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+            "badgeId": "found_ai"
           }
         },
         {
@@ -57,7 +57,7 @@
         },
         {
           "quantity": 3.0,
-          "note": "geschält und klein gehackt",
+          "note": "geschält und kleingehackt",
           "food": {
             "name": "rote Zwiebeln",
             "originalName": "rote Zwiebeln",
@@ -68,17 +68,17 @@
             "name": "Stück",
             "originalName": "Stück",
             "mealieUnitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
-            "badgeId": "manual"
+            "badgeId": "found_word"
           }
         },
         {
           "quantity": 100.0,
           "note": null,
           "food": {
-            "name": "Wermut (trocken)",
-            "originalName": "Wermut (trocken)",
-            "mealieFoodId": "fd855a06-9787-4083-8122-8f738ff90e5d",
-            "badgeId": "found_ai"
+            "name": "Trockener Wermut",
+            "originalName": "trockener Wermut",
+            "badgeId": "new",
+            "newId": "food-new-0-4"
           },
           "unit": {
             "name": "ml",
@@ -105,7 +105,7 @@
         },
         {
           "quantity": 1.0,
-          "note": "zum Bestäuben",
+          "note": null,
           "food": {
             "name": "Mehl",
             "originalName": "Mehl",
@@ -137,39 +137,37 @@
         },
         {
           "quantity": null,
-          "note": "zum Anbraten",
+          "note": "zum Braten",
           "food": {
-            "name": "Fett zum Braten",
-            "originalName": "Fett zum Braten",
+            "name": "Fett",
+            "originalName": "Fett",
             "mealieFoodId": "1e9f9678-213c-477d-8c3a-7c5a7f365f32",
-            "badgeId": "found_word"
+            "badgeId": "found_ai"
           },
           "unit": {
-            "name": "Milliliter",
-            "originalName": "Milliliter",
-            "mealieUnitId": "b558643c-bb92-479d-97ea-1337edc49d3b",
-            "badgeId": "manual"
+            "name": null,
+            "originalName": null
           }
         },
         {
           "quantity": 6.0,
           "note": null,
           "food": {
-            "name": "Sojasprossen",
-            "originalName": "Wan Tan Tasche",
-            "mealieFoodId": "bef85ad9-55fb-494a-9327-83497d515a6c",
-            "badgeId": "manual"
+            "name": "Salbeiblätter",
+            "originalName": "Salbeiblätter",
+            "mealieFoodId": "31eedd6a-c57b-4979-8a9d-b7ff71663acc",
+            "badgeId": "found_word"
           },
           "unit": {
-            "name": "Stück",
-            "originalName": "Stück",
-            "mealieUnitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
-            "badgeId": "found_word"
+            "name": "Blatt",
+            "originalName": "Blatt",
+            "badgeId": "new",
+            "newId": "unit-new-0-9"
           }
         },
         {
           "quantity": null,
-          "note": "nach Geschmack",
+          "note": "zum Abschmecken",
           "food": {
             "name": "Salz",
             "originalName": "Salz",
@@ -183,7 +181,7 @@
         },
         {
           "quantity": null,
-          "note": "nach Geschmack, zum Pfeffern der Filets",
+          "note": "zum Abschmecken",
           "food": {
             "name": "Pfeffer",
             "originalName": "Pfeffer",
@@ -204,54 +202,68 @@
       "steps": [
         {
           "order": 1,
-          "instruction": "Die Hähnchenbrustfilets mit Pfeffer würzen. Jeweils ein Salbeiblatt auf das Filet legen und mit einer Scheibe Parma-Schinken umwickeln.",
+          "instruction": "Hähnchenbrustfilets mit Pfeffer würzen.",
           "timer_minutes": null
         },
         {
           "order": 2,
-          "instruction": "Fett in einer Pfanne erhitzen, die Filets mit Mehl bestäuben und von allen Seiten anbraten, bis sie Farbe bekommen. Die Filets herausnehmen und in eine feuerfeste Form legen.",
+          "instruction": "Jeweils ein Salbeiblatt auf ein Filet legen und die Filets mit Parma-Schinken umwickeln.",
           "timer_minutes": null
         },
         {
           "order": 3,
-          "instruction": "Zwiebeln schälen und klein hacken. Zusammen mit den geputzten und geviertelten Champignons in der Pfanne anbraten.",
+          "instruction": "Fett in einer Pfanne erhitzen, die Filets leicht mit Mehl bestäuben und von beiden Seiten anbraten, bis sie Farbe haben.",
           "timer_minutes": null
         },
         {
           "order": 4,
-          "instruction": "Mit trockenem Wermut ablöschen, etwas einkochen lassen. Süße Sahne angießen und den hellen Soßenbinder einrühren. Kurz aufkochen lassen und die Sauce mit Salz und Pfeffer abschmecken.",
+          "instruction": "Die angebratenen Filets herausnehmen und in eine feuerfeste Form legen.",
           "timer_minutes": null
         },
         {
           "order": 5,
-          "instruction": "Die Sauce über die in der Form liegenden Filets gießen und alles im vorgeheizten Backofen bei 200°C etwa 20 Minuten garen lassen.",
-          "timer_minutes": 20
+          "instruction": "Zwiebeln schälen und kleinhacken; zusammen mit den geputzten und geviertelten Champignons in der Pfanne anbraten.",
+          "timer_minutes": null
         },
         {
           "order": 6,
-          "instruction": "Die Hähnchenbrüste aus dem Ofen nehmen und servieren. Dazu passen Pellkartoffeln und grüner Salat.",
+          "instruction": "Mit Wermut ablöschen und etwas einkochen lassen, dann die süße Sahne zugeben.",
+          "timer_minutes": null
+        },
+        {
+          "order": 7,
+          "instruction": "Einen Esslöffel hellen Soßenbinder einrühren, die Sauce kurz aufkochen lassen und mit Salz und Pfeffer abschmecken.",
+          "timer_minutes": null
+        },
+        {
+          "order": 8,
+          "instruction": "Die Sauce über das Fleisch in der Form gießen und alles im vorgeheizten Ofen bei 200 °C etwa 20 Minuten garen lassen.",
+          "timer_minutes": 20
+        },
+        {
+          "order": 9,
+          "instruction": "Aus dem Ofen nehmen und heiß servieren. Dazu passen Pellkartoffeln und grüner Salat.",
           "timer_minutes": null
         }
       ]
     }
   ],
-  "notes": "Dazu passen Pellkartoffeln und grüner Salat.",
+  "notes": "Ofen auf 200 °C vorheizen. Mengenangaben nach Geschmack anpassen. Optional frische Petersilie zum Servieren.",
   "image_path": "data/pipeline/02_RecipeImage.jpg",
   "image_url": null,
   "metadata": {
-    "source": "data/uploads/7e38ec032f364f9eb1925d6b5b1dea04.pdf",
+    "source": "data/uploads/bf61ef3bfbec4bcdbb1dfaef97c1821a.pdf",
     "categories": [
       "Hauptgericht",
       "Geflügel"
     ],
-    "cuisine": "Deutsch",
+    "cuisine": "deutsch",
     "tags": [
       "Hähnchen",
-      "Parmaschinken",
+      "Parma-Schinken",
       "Champignons",
       "Sahnesoße",
-      "Ofen",
-      "Schnell"
+      "Ofengericht"
     ],
     "mealie_categories": [],
     "mealie_tags": []

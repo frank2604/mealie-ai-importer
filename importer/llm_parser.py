@@ -177,6 +177,7 @@ class OpenAiClient:
         if content is None:
             parsed_payload = message.get("parsed")
             if isinstance(parsed_payload, dict):
+                self._ensure_title(parsed_payload, request)
                 recipe = Recipe.parse_obj(parsed_payload)
                 if request.source and not recipe.metadata.source:
                     recipe.metadata.source = str(request.source)
@@ -186,6 +187,7 @@ class OpenAiClient:
 
         logger.debug("LLM raw response: %s", content)
         recipe_dict = _parse_json_response(content or "")
+        self._ensure_title(recipe_dict, request)
         recipe = Recipe.parse_obj(recipe_dict)
 
         if request.source and not recipe.metadata.source:
@@ -266,6 +268,27 @@ class OpenAiClient:
             return json.loads(content)
         except json.JSONDecodeError as exc:
             raise LlmParsingError(f"Ungültiges JSON vom LLM: {exc}") from exc
+
+    def _ensure_title(self, payload: Dict[str, Any], request: LlmRequest) -> None:
+        title = payload.get("title")
+        if isinstance(title, str):
+            stripped = title.strip()
+            if stripped:
+                payload["title"] = stripped
+                return
+        fallback = self._fallback_title(request)
+        payload["title"] = fallback
+        logger.warning("LLM lieferte keinen Titel – Fallback '%s' wird gesetzt", fallback)
+
+    @staticmethod
+    def _fallback_title(request: LlmRequest) -> str:
+        if request.title_hint and request.title_hint.strip() and request.title_hint.strip().lower() != "unbekannt":
+            return request.title_hint.strip()
+        if request.source:
+            stem = request.source.stem
+            if stem:
+                return stem
+        return "Rezept"
 
 
 def _extract_message_text(message: Dict[str, Any]) -> Optional[str]:

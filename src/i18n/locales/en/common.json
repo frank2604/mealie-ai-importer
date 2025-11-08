@@ -144,12 +144,27 @@
     "status": {
       "found": "Matched",
       "new": "New",
+      "manual": "Manual",
+      "none": "No unit",
       "error": "Issue",
-      "info": "AI Note"
+      "info": "AI note"
     },
     "actions": {
       "view": "View details",
       "edit": "Edit entry"
+    },
+    "selection": {
+      "foodPlaceholder": "Select ingredient…",
+      "unitPlaceholder": "Select unit…",
+      "clear": "Clear selection"
+    },
+    "badges": {
+      "foundWord": "Matched via exact word match",
+      "foundFuzzy": "Matched via fuzzy search",
+      "foundAi": "Matched via AI suggestion",
+      "new": "Requires creation",
+      "manual": "Selected manually",
+      "none": "No unit provided"
     },
     "table": {
       "headers": {

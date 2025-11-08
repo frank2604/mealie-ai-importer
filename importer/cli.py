@@ -26,6 +26,7 @@ from .modules import (
     ReviewPromptModule,
     ApplyUserDecisionsModule,
 )
+from .modules.context import normalize_recipe_payload
 from .modules.add_food_ids import AddFoodIdsModule
 from .modules.add_unit_ids import AddUnitIdsModule
 from .modules.ai_analyser import AiAnalyserModule
@@ -589,7 +590,7 @@ def _load_recipe(path: Path) -> Recipe:
         data = json.loads(raw)
     except json.JSONDecodeError as exc:
         raise ValueError(f"Ungültiges JSON in {path}: {exc}") from exc
-    recipe = Recipe.parse_obj(data)
+    recipe = Recipe.parse_obj(normalize_recipe_payload(data))
     base_dir = path.parent
     for asset in recipe.assets:
         if getattr(asset, "data", None) or not getattr(asset, "data_path", None):

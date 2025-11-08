@@ -14,6 +14,12 @@ from ...services.ingredients import IngredientService
 
 logger = logging.getLogger("Unit Checker")
 
+STATUS_FOUND_WORD = "found_word"
+STATUS_FOUND_FUZZY = "found_fuzzy"
+STATUS_FOUND_AI = "found_ai"
+STATUS_NEW = "new"
+STATUS_NONE = "none"
+
 _SYSTEM_PROMPT = (
     "Du ordnest Einheiten aus einem Rezept den vorhandenen Mealie-Einheiten zu. "
     "Wähle nur eine Einheit, wenn sie eindeutig passt, und antworte ausschließlich im JSON-Format "
@@ -182,6 +188,7 @@ class UnitCheckerModule:
 
         context.unit_matches = matches
         context.missing_unit_refs = missing
+        self._update_recipe_matches(context, ingredient_refs, matches, match_details, missing)
 
         logger.info(
             "Matched %s unit%s so far; %s still need attention",
@@ -555,6 +562,39 @@ class UnitCheckerModule:
         context.unit_review_path = review_path
         context.unit_decisions = {}
         logger.info("Saved the units review to %s", review_path)
+
+    def _update_recipe_matches(
+        self,
+        context: PipelineContext,
+        ingredient_refs: List[IngredientRef],
+        matches: Dict[str, str],
+        match_details: Dict[str, Dict[str, object]],
+        missing: List[IngredientRef],
+    ) -> None:
+        recipe = context.ensure_recipe()
+        missing_keys = {ref.key for ref in missing}
+        for ref in ingredient_refs:
+            ingredient = ref.ingredient
+            match_id = matches.get(ref.key)
+            ingredient.mealie_unit_id = match_id
+            if match_id:
+                strategy = (match_details.get(ref.key) or {}).get("strategy")
+                ingredient.unit_badge_id = self._badge_for_strategy(strategy)
+            elif ref.key in missing_keys:
+                ingredient.unit_badge_id = STATUS_NEW
+            else:
+                ingredient.unit_badge_id = STATUS_NONE
+        context.update_recipe_file()
+
+    @staticmethod
+    def _badge_for_strategy(strategy: Optional[object]) -> str:
+        if strategy == "exact" or strategy == "preassigned":
+            return STATUS_FOUND_WORD
+        if strategy == "fuzzy":
+            return STATUS_FOUND_FUZZY
+        if strategy == "ai":
+            return STATUS_FOUND_AI
+        return STATUS_FOUND_WORD
 
     # ------------------------------------------------------------------
     # Candidate helpers

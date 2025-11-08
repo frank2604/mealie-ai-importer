@@ -1,20 +1,42 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import clsx from "clsx";
-import { MagnifyingGlassIcon, PencilSquareIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { ChevronUpDownIcon, MagnifyingGlassIcon, PencilSquareIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import { PdfViewerPlaceholder } from "../components/PdfViewerPlaceholder";
 import { ReviewModal } from "../components/Modals/ReviewModal";
 import { layoutConfig } from "../../config/layout.config";
+import { BadgeId } from "../../config/badges.config";
 import {
+  CandidateOption,
   ReviewData,
   ReviewIngredient,
   ReviewInstruction,
+  FoodSelectionPayload,
+  UnitSelectionPayload,
   fetchReviewData,
   updateReviewData
 } from "../api/review";
 import { useImportFlow } from "../context/ImportFlowContext";
+import { BadgePill } from "../components/BadgePill";
 
-type ReviewStatus = "found" | "new" | "error" | "info";
+const mapStatusToBadgeId = (status?: string | null): BadgeId | null => {
+  switch (status) {
+    case "found_word":
+    case "found_fuzzy":
+    case "found_ai":
+      return status as BadgeId;
+    case "found":
+      return "found_word";
+    case "new":
+      return "new";
+    case "manual":
+      return "manual";
+    case "none":
+      return "none";
+    default:
+      return null;
+  }
+};
 
 interface ModalContext {
   entry: ReviewIngredient;
@@ -26,11 +48,135 @@ interface SummaryFormState {
   totalTimeInput: string;
 }
 
-const statusStyles: Record<ReviewStatus, string> = {
-  found: "bg-success/15 text-success border-success/40",
-  new: "bg-warning/15 text-warning border-warning/40",
-  error: "bg-error/15 text-error border-error/40",
-  info: "bg-info/15 text-info border-info/40"
+interface SearchableSelectProps {
+  options: CandidateOption[];
+  selectedId?: string | null;
+  displayValue?: string | null;
+  placeholder: string;
+  clearLabel: string;
+  disabled?: boolean;
+  onChange: (option: CandidateOption | null) => void;
+}
+
+const MAX_RESULTS = 50;
+
+const SearchableSelect: React.FC<SearchableSelectProps> = ({
+  options,
+  selectedId,
+  displayValue,
+  placeholder,
+  clearLabel,
+  disabled = false,
+  onChange
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const selectedOption = useMemo(
+    () => options.find((option) => option.id === selectedId) ?? null,
+    [options, selectedId]
+  );
+
+  const filteredOptions = useMemo(() => {
+    const term = query.trim().toLowerCase();
+    const base = term
+      ? options.filter((option) => (option.name ?? "").toLowerCase().includes(term))
+      : options;
+    return base.slice(0, MAX_RESULTS);
+  }, [options, query]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setQuery("");
+      return;
+    }
+    const handleClick = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+    };
+  }, [isOpen]);
+
+  const handleSelect = (option: CandidateOption | null) => {
+    onChange(option);
+    setIsOpen(false);
+    setQuery("");
+  };
+
+  const renderLabel = (option: CandidateOption | null) => {
+    if (!option) {
+      return displayValue || placeholder;
+    }
+    const parts = [option.name];
+    if (option.abbreviation) {
+      parts.push(`(${option.abbreviation})`);
+    }
+    return parts.filter(Boolean).join(" ");
+  };
+
+  return (
+    <div ref={containerRef} className="relative w-full">
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => setIsOpen((prev) => !prev)}
+        className={clsx(
+          "focus-ring flex w-full items-center justify-between border border-border bg-background px-3 py-2 text-sm font-medium text-text",
+          layoutConfig.borderRadius.medium,
+          disabled ? "cursor-not-allowed opacity-50" : "hover:border-primary/60 hover:text-primary"
+        )}
+      >
+        <span className="truncate text-left">{renderLabel(selectedOption)}</span>
+        <ChevronUpDownIcon className="ml-2 h-4 w-4 text-text/60" aria-hidden="true" />
+      </button>
+      {isOpen && !disabled ? (
+        <div className={clsx("absolute z-40 mt-1 w-full border border-border/60 bg-panel shadow-lg", layoutConfig.borderRadius.medium)}>
+          <div className="border-b border-border/60">
+            <input
+              autoFocus
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={placeholder}
+              className="w-full border-0 bg-transparent px-3 py-2 text-sm text-text outline-none"
+            />
+          </div>
+          <div className="max-h-60 overflow-auto">
+            <button
+              type="button"
+              className="flex w-full items-center px-3 py-2 text-left text-xs text-text/70 hover:bg-background/60"
+              onClick={() => handleSelect(null)}
+            >
+              {clearLabel}
+            </button>
+            {filteredOptions.map((option) => (
+              <button
+                type="button"
+                key={option.id}
+                onClick={() => handleSelect(option)}
+                className={clsx(
+                  "flex w-full flex-col px-3 py-2 text-left text-sm hover:bg-background/80",
+                  option.id === selectedId ? "bg-primary/10 text-primary" : "text-text"
+                )}
+              >
+                <span className="font-medium">{option.name ?? option.id}</span>
+                {option.abbreviation ? (
+                  <span className="text-xs text-text/60">{option.abbreviation}</span>
+                ) : null}
+              </button>
+            ))}
+            {filteredOptions.length === 0 ? (
+              <div className="px-3 py-2 text-xs text-text/60">—</div>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
 };
 
 const parseLocaleNumber = (value: string): number | null => {
@@ -58,9 +204,26 @@ const parseInteger = (value: string): number | null => {
 
 const enrichReviewData = (data: ReviewData): ReviewData => ({
   ...data,
+  options: data.options ?? { foods: [], units: [] },
   ingredients: data.ingredients.map((item) => ({
     ...item,
-    notes: item.notes ?? ""
+    notes: item.notes ?? "",
+    foodSelection:
+      item.foodSelection ??
+      ({
+        mealieFoodId: item.foodMatch?.id ?? null,
+        name: item.foodMatch?.name ?? item.name,
+        badgeId: mapStatusToBadgeId(item.foodStatus),
+        status: item.foodStatus ?? null
+      } as FoodSelectionPayload),
+    unitSelection:
+      item.unitSelection ??
+      ({
+        mealieUnitId: item.unitMatch?.id ?? null,
+        name: item.unitMatch?.name ?? item.unit ?? "",
+        badgeId: mapStatusToBadgeId(item.unitStatus),
+        status: item.unitStatus ?? null
+      } as UnitSelectionPayload)
   }))
 });
 
@@ -90,7 +253,19 @@ const buildUpdatePayload = (data: ReviewData) => ({
     id: item.id,
     notes: item.notes ?? "",
     foodDecision: { ...item.foodDecision, notes: item.notes ?? "" },
-    unitDecision: { ...item.unitDecision, notes: item.notes ?? "" }
+    unitDecision: { ...item.unitDecision, notes: item.notes ?? "" },
+    foodSelection: item.foodSelection ?? {
+      mealieFoodId: item.foodMatch?.id ?? null,
+      name: item.foodMatch?.name ?? item.name,
+      badgeId: item.foodStatus ?? null,
+      status: item.foodStatus ?? null
+    },
+    unitSelection: item.unitSelection ?? {
+      mealieUnitId: item.unitMatch?.id ?? null,
+      name: item.unitMatch?.name ?? item.unit ?? "",
+      badgeId: item.unitStatus ?? null,
+      status: item.unitStatus ?? null
+    }
   })),
   instructions: data.instructions.map((item) => ({
     id: item.id,
@@ -103,6 +278,9 @@ const buildUpdatePayload = (data: ReviewData) => ({
 export const Step3Review: React.FC = () => {
   const { t } = useTranslation();
   const { runId } = useImportFlow();
+  const unitPlaceholder = t("review.selection.unitPlaceholder");
+  const foodPlaceholder = t("review.selection.foodPlaceholder");
+  const clearSelectionLabel = t("review.selection.clear");
 
   const [reviewData, setReviewData] = useState<ReviewData | null>(null);
   const [summaryForm, setSummaryForm] = useState<SummaryFormState>({ portionsInput: "", totalTimeInput: "" });
@@ -158,14 +336,15 @@ export const Step3Review: React.FC = () => {
     };
   }, [runId]);
 
-  const persistChanges = useCallback(async () => {
-    if (!runId || !reviewData) {
+  const persistChanges = useCallback(async (overrideData?: ReviewData | null) => {
+    const snapshot = overrideData ?? reviewData;
+    if (!runId || !snapshot) {
       return;
     }
     setIsSaving(true);
     setSaveError(null);
     try {
-      const payload = buildUpdatePayload(reviewData);
+      const payload = buildUpdatePayload(snapshot);
       const updated = await updateReviewData(runId, payload);
       const enriched = enrichReviewData(updated);
       setReviewData(enriched);
@@ -272,17 +451,87 @@ export const Step3Review: React.FC = () => {
     });
   }, []);
 
+  const handleUnitSelection = useCallback(
+    (ingredientId: string, option: CandidateOption | null) => {
+      setReviewData((previous) => {
+        if (!previous) {
+          return previous;
+        }
+        const updatedIngredients = previous.ingredients.map((item) => {
+          if (item.id !== ingredientId) {
+            return item;
+          }
+          const nextBadge: BadgeId = option ? "manual" : "none";
+          const updatedItem: ReviewIngredient = {
+            ...item,
+            unit: option?.name ?? item.unit,
+            unitMatch: option
+              ? { id: option.id, name: option.name ?? "", strategy: "manual" }
+              : null,
+            unitStatus: option ? "manual" : "none",
+            unitSelection: {
+              mealieUnitId: option ? option.id : null,
+              name: option?.name ?? item.unit ?? "",
+              badgeId: nextBadge,
+              status: nextBadge
+            }
+          };
+          return updatedItem;
+        });
+        const nextData = { ...previous, ingredients: updatedIngredients };
+        void persistChanges(nextData);
+        return nextData;
+      });
+    },
+    [persistChanges]
+  );
+
+  const handleFoodSelection = useCallback(
+    (ingredientId: string, option: CandidateOption | null) => {
+      setReviewData((previous) => {
+        if (!previous) {
+          return previous;
+        }
+        const updatedIngredients = previous.ingredients.map((item) => {
+          if (item.id !== ingredientId) {
+            return item;
+          }
+          const nextBadge: BadgeId = option ? "manual" : "new";
+          const updatedItem: ReviewIngredient = {
+            ...item,
+            name: option?.name ?? item.name,
+            foodMatch: option
+              ? { id: option.id, name: option.name ?? "", strategy: "manual" }
+              : null,
+            foodStatus: option ? "manual" : "new",
+            foodSelection: {
+              mealieFoodId: option ? option.id : null,
+              name: option?.name ?? item.name,
+              badgeId: nextBadge,
+              status: nextBadge
+            }
+          };
+          return updatedItem;
+        });
+        const nextData = { ...previous, ingredients: updatedIngredients };
+        void persistChanges(nextData);
+        return nextData;
+      });
+    },
+    [persistChanges]
+  );
+
   const metaRows = useMemo(
     () => [
       {
         leftLabel: t("review.meta.portions"),
         leftValue: summaryForm.portionsInput,
         onLeftChange: handlePortionsChange,
-        onLeftBlur: persistChanges,
+        onLeftBlur: () => persistChanges(),
         rightLabel: t("review.meta.totalTime"),
         rightValue: summaryForm.totalTimeInput,
         onRightChange: handleTotalTimeChange,
-        onRightBlur: persistChanges
+        onRightBlur: () => persistChanges()
       }
     ],
     [handlePortionsChange, handleTotalTimeChange, persistChanges, summaryForm.portionsInput, summaryForm.totalTimeInput, t]
@@ -350,7 +599,7 @@ export const Step3Review: React.FC = () => {
                 <input
                   value={reviewData.summary.title}
                   onChange={(event) => handleSummaryFieldChange("title", event.target.value)}
-                  onBlur={persistChanges}
+                  onBlur={() => persistChanges()}
                   className={clsx(
                     "focus-ring w-full border border-border bg-background px-4 py-3 text-xl font-semibold text-primary",
                     layoutConfig.borderRadius.medium
@@ -362,7 +611,7 @@ export const Step3Review: React.FC = () => {
                     handleSummaryFieldChange("description", event.target.value);
                     autoResizeTextarea(event.target);
                   }}
-                  onBlur={persistChanges}
+                  onBlur={() => persistChanges()}
                   ref={(el) => autoResizeTextarea(el)}
                   rows={1}
                   className={clsx(
@@ -432,24 +681,22 @@ export const Step3Review: React.FC = () => {
               </header>
               <div className={layoutConfig.spacing.item.vertical}>
                 {reviewData.ingredients.map((entry) => {
-                  const unitActionIcon =
-                    entry.unitStatus === "found" ? (
-                      <MagnifyingGlassIcon className="h-4 w-4" aria-hidden="true" />
-                    ) : (
-                      <PencilSquareIcon className="h-4 w-4" aria-hidden="true" />
-                    );
-
-                  const ingredientActionIcon =
-                    entry.foodStatus === "found" ? (
-                      <MagnifyingGlassIcon className="h-4 w-4" aria-hidden="true" />
-                    ) : (
-                      <PencilSquareIcon className="h-4 w-4" aria-hidden="true" />
-                    );
-
                   const displayAmount =
                     entry.amountText ??
                     (entry.amount != null ? String(entry.amount).replace(".", ",") : "") ??
                     "";
+                  const unitBadgeId =
+                    (entry.unitSelection?.badgeId as BadgeId | undefined) ??
+                    mapStatusToBadgeId(entry.unitStatus) ??
+                    null;
+                  const foodBadgeId =
+                    (entry.foodSelection?.badgeId as BadgeId | undefined) ??
+                    mapStatusToBadgeId(entry.foodStatus) ??
+                    null;
+                  const isUnitResolved = !!unitBadgeId && unitBadgeId !== "new" && unitBadgeId !== "none";
+                  const isFoodResolved = !!foodBadgeId && foodBadgeId !== "new";
+                  const originalUnitLabel = entry.unitOriginalName ?? entry.unit ?? "";
+                  const originalFoodLabel = entry.foodOriginalName ?? entry.name;
 
                   return (
                     <div
@@ -466,23 +713,23 @@ export const Step3Review: React.FC = () => {
                           <div>
                             <div className="flex items-baseline gap-2">
                               <span className="text-lg font-semibold text-text">{displayAmount}</span>
-                              <span className="text-sm text-text/80">{entry.unit ?? ""}</span>
+                              <span className="text-sm text-text/80">{originalUnitLabel}</span>
                             </div>
                           </div>
                           <div className="flex items-center justify-between gap-3">
-                            <div className="flex items-center gap-2">
-                              <span
-                                className={clsx(
-                                  "inline-flex items-center border px-2 py-0.5 text-[11px] font-semibold uppercase",
-                                  layoutConfig.borderRadius.small,
-                                  statusStyles[(entry.unitStatus as ReviewStatus) || "info"]
-                                )}
-                              >
-                                {t(`review.status.${entry.unitStatus as ReviewStatus}`)}
-                              </span>
-                              <span className="font-medium text-text/85">
-                                {entry.unitMatch?.name ?? t("review.noMapping")}
-                              </span>
+                            <div className="flex w-full items-center gap-3">
+                              <BadgePill badgeId={unitBadgeId} fallbackStatus="none" />
+                              <div className="flex-1">
+                                <SearchableSelect
+                                  options={reviewData.options.units}
+                                  selectedId={entry.unitMatch?.id ?? null}
+                                  displayValue={entry.unitMatch?.name ?? entry.unit ?? ""}
+                                  placeholder={unitPlaceholder}
+                                  clearLabel={clearSelectionLabel}
+                                  disabled={reviewData.options.units.length === 0}
+                                  onChange={(option) => handleUnitSelection(entry.id, option)}
+                                />
+                              </div>
                             </div>
                             <button
                               type="button"
@@ -491,34 +738,36 @@ export const Step3Review: React.FC = () => {
                                 "focus-ring inline-flex h-8 w-8 items-center justify-center border border-border bg-background hover:border-primary/60 hover:text-primary",
                                 layoutConfig.borderRadius.small
                               )}
-                              aria-label={
-                                entry.unitStatus === "found" ? t("review.actions.view") : t("review.actions.edit")
-                              }
+                              aria-label={isUnitResolved ? t("review.actions.view") : t("review.actions.edit")}
                             >
-                              {unitActionIcon}
+                              {isUnitResolved ? (
+                                <MagnifyingGlassIcon className="h-4 w-4" aria-hidden="true" />
+                              ) : (
+                                <PencilSquareIcon className="h-4 w-4" aria-hidden="true" />
+                              )}
                             </button>
                           </div>
                         </div>
 
                         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                            <div>
-                              <div className="text-xs uppercase text-text/60">{t("review.table.labels.ingredient")}</div>
-                              <div className="font-semibold text-text">{entry.name}</div>
-                            </div>
+                          <div>
+                            <div className="text-xs uppercase text-text/60">{t("review.table.labels.ingredient")}</div>
+                            <div className="font-semibold text-text">{originalFoodLabel}</div>
+                          </div>
                           <div className="flex items-center justify-between gap-3">
-                            <div className="flex items-center gap-2">
-                              <span
-                                className={clsx(
-                                  "inline-flex items-center border px-2 py-0.5 text-[11px] font-semibold uppercase",
-                                  layoutConfig.borderRadius.small,
-                                  statusStyles[(entry.foodStatus as ReviewStatus) || "info"]
-                                )}
-                              >
-                                {t(`review.status.${entry.foodStatus as ReviewStatus}`)}
-                              </span>
-                              <span className="font-medium text-text/85">
-                                {entry.foodMatch?.name ?? t("review.noMapping")}
-                              </span>
+                            <div className="flex w-full items-center gap-3">
+                              <BadgePill badgeId={foodBadgeId} fallbackStatus="new" />
+                              <div className="flex-1">
+                                <SearchableSelect
+                                  options={reviewData.options.foods}
+                                  selectedId={entry.foodMatch?.id ?? null}
+                                  displayValue={entry.foodMatch?.name ?? entry.name}
+                                  placeholder={foodPlaceholder}
+                                  clearLabel={clearSelectionLabel}
+                                  disabled={reviewData.options.foods.length === 0}
+                                  onChange={(option) => handleFoodSelection(entry.id, option)}
+                                />
+                              </div>
                             </div>
                             <button
                               type="button"
@@ -527,11 +776,13 @@ export const Step3Review: React.FC = () => {
                                 "focus-ring inline-flex h-8 w-8 items-center justify-center border border-border bg-background hover:border-primary/60 hover:text-primary",
                                 layoutConfig.borderRadius.small
                               )}
-                              aria-label={
-                                entry.foodStatus === "found" ? t("review.actions.view") : t("review.actions.edit")
-                              }
+                              aria-label={isFoodResolved ? t("review.actions.view") : t("review.actions.edit")}
                             >
-                              {ingredientActionIcon}
+                              {isFoodResolved ? (
+                                <MagnifyingGlassIcon className="h-4 w-4" aria-hidden="true" />
+                              ) : (
+                                <PencilSquareIcon className="h-4 w-4" aria-hidden="true" />
+                              )}
                             </button>
                           </div>
                         </div>
@@ -546,7 +797,7 @@ export const Step3Review: React.FC = () => {
                               handleNoteChange(entry, event.target.value);
                               autoResizeTextarea(event.target);
                             }}
-                            onBlur={persistChanges}
+                  onBlur={() => persistChanges()}
                             ref={(el) => autoResizeTextarea(el)}
                             rows={1}
                             className={clsx(
@@ -601,7 +852,7 @@ export const Step3Review: React.FC = () => {
                                 handleInstructionChange(instruction, event.target.value);
                                 autoResizeTextarea(event.target);
                               }}
-                              onBlur={persistChanges}
+                              onBlur={() => persistChanges()}
                               ref={(el) => autoResizeTextarea(el)}
                               rows={1}
                               className={clsx(
@@ -631,8 +882,6 @@ export const Step3Review: React.FC = () => {
                                       className={clsx(
                                         "inline-flex items-center bg-primary/10 text-primary",
                                         layoutConfig.spacing.item.gap,
-                                        layoutConfig.spacing.button.badge.x,
-                                        layoutConfig.spacing.button.badge.y,
                                         layoutConfig.borderRadius.small
                                       )}
                                     >

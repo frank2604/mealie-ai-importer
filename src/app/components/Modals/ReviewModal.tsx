@@ -1,42 +1,14 @@
-import { Dialog, Switch, Transition } from "@headlessui/react";
+import { Dialog, Transition } from "@headlessui/react";
 import clsx from "clsx";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { layoutConfig } from "../../../config/layout.config";
+import { ReviewIngredient } from "../../api/review";
 
 type ReviewStatus = "found" | "new" | "error" | "info";
 
-interface ReviewEntry {
-  amount: string;
-  unit: string;
-  unitMapping: string;
-  unitStatus: ReviewStatus;
-  unitMethod?: string;
-  unitConfidence?: string;
-  unitNew?: {
-    nameSingular: string;
-    namePlural: string;
-    abbreviationSingular: string;
-    abbreviationPlural: string;
-    useAbbreviation: boolean;
-    supportsFraction: boolean;
-  };
-  ingredient: string;
-  ingredientMapping: string;
-  ingredientStatus: ReviewStatus;
-  ingredientMethod?: string;
-  ingredientConfidence?: string;
-  ingredientNew?: {
-    nameSingular: string;
-    namePlural: string;
-    category: string;
-    aliases: string;
-  };
-  note: string;
-}
-
 export interface ModalContext {
-  entry: ReviewEntry;
+  entry: ReviewIngredient;
   target: "unit" | "ingredient";
 }
 
@@ -45,50 +17,30 @@ interface ReviewModalProps {
   onClose: () => void;
 }
 
-const methodLabels: Record<string, string> = {
-  "word-match": "review.modal.methods.word",
-  fuzzy: "review.modal.methods.fuzzy",
-  ai: "review.modal.methods.ai"
+const statusStyles: Record<ReviewStatus, string> = {
+  found: "bg-success/10 text-success border-success/30",
+  new: "bg-warning/10 text-warning border-warning/30",
+  error: "bg-error/10 text-error border-error/30",
+  info: "bg-info/10 text-info border-info/30"
 };
 
 export const ReviewModal: React.FC<ReviewModalProps> = ({ context, onClose }) => {
-  const { t, i18n } = useTranslation();
-  const isOpen = Boolean(context);
-
-  const [unitState, setUnitState] = useState(() => context?.entry.unitNew);
-  const [ingredientState, setIngredientState] = useState(() => context?.entry.ingredientNew);
-
-  useEffect(() => {
-    setUnitState(context?.entry.unitNew);
-    setIngredientState(context?.entry.ingredientNew);
-  }, [context?.entry.unitNew, context?.entry.ingredientNew, i18n.resolvedLanguage]);
-
-  const categories = useMemo(() => {
-    const translated = t("review.modal.categories", { returnObjects: true }) as string[] | undefined;
-    return translated && translated.length > 0 ? translated : defaultCategories;
-  }, [t, i18n.resolvedLanguage]);
+  const { t } = useTranslation();
 
   if (!context) {
     return null;
   }
 
-  const isUnit = context.target === "unit";
-  const entry = context.entry;
-  const status = isUnit ? entry.unitStatus : entry.ingredientStatus;
-  const isFound = status === "found";
-
-  const title = isUnit ? entry.unitMapping : entry.ingredientMapping;
-  const subtitle = isFound
-    ? t(isUnit ? "review.modal.unitFound.subtitle" : "review.modal.ingredientFound.subtitle")
-    : t(isUnit ? "review.modal.unitNew.subtitle" : "review.modal.ingredientNew.subtitle");
-
-  const methodKey = isUnit ? entry.unitMethod : entry.ingredientMethod;
-  const confidence = isUnit ? entry.unitConfidence : entry.ingredientConfidence;
-
-  const methodLabel = methodKey ? t(methodLabels[methodKey] ?? methodKey) : undefined;
+  const { entry, target } = context;
+  const isUnit = target === "unit";
+  const status = (isUnit ? entry.unitStatus : entry.foodStatus) as ReviewStatus;
+  const match = isUnit ? entry.unitMatch : entry.foodMatch;
+  const candidates = isUnit ? entry.unitCandidates : entry.foodCandidates;
+  const suggestion = isUnit ? entry.unitSuggestion : entry.foodSuggestion;
+  const title = isUnit ? entry.unitMatch?.name ?? entry.unit ?? "" : entry.foodMatch?.name ?? entry.name;
 
   return (
-    <Transition appear show={isOpen} as={Fragment}>
+    <Transition appear show as={Fragment}>
       <Dialog as="div" className="relative z-40" onClose={onClose}>
         <Transition.Child
           as={Fragment}
@@ -113,184 +65,158 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({ context, onClose }) =>
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className={clsx("w-full max-w-2xl transform overflow-hidden border border-border bg-panel p-6 text-left align-middle shadow-xl transition-all", layoutConfig.borderRadius.large)}>
+              <Dialog.Panel
+                className={clsx(
+                  "w-full max-w-2xl transform overflow-hidden border border-border bg-panel p-6 text-left align-middle shadow-xl transition-all",
+                  layoutConfig.borderRadius.large
+                )}
+              >
                 <Dialog.Title as="h3" className="text-xl font-semibold text-primary">
                   {title}
                 </Dialog.Title>
-                <p className="mt-2 text-sm text-text/70">{subtitle}</p>
+                <div
+                  className={clsx(
+                    "mt-4 inline-flex items-center border px-3 py-1 text-xs font-semibold uppercase tracking-wide",
+                    layoutConfig.borderRadius.small,
+                    statusStyles[status]
+                  )}
+                >
+                  {t(`review.status.${status}`)}
+                </div>
 
-                {isFound ? (
-                  <div className="mt-6 space-y-4 text-sm text-text/80">
-                    <div className={clsx("border border-border/60 bg-background/40 px-4 py-3", layoutConfig.borderRadius.medium)}>
-                      <span className="text-xs uppercase text-text/60">
-                        {t("review.modal.methodLabel")}
-                      </span>
-                      <div className="mt-1 font-semibold">
-                        {methodLabel ?? t("review.modal.methodUnknown")}
+                <div className="mt-6 space-y-6 text-sm text-text/80">
+                  <section className="space-y-2">
+                    <h4 className="text-xs font-semibold uppercase tracking-wide text-text/60">
+                      {t("review.modal.currentMapping")}
+                    </h4>
+                    {match?.name ? (
+                      <div className="rounded-md border border-border/60 bg-background/60 px-4 py-3">
+                        <div className="font-semibold text-text">{match.name}</div>
+                        {match.strategy ? (
+                          <div className="text-xs text-text/60">
+                            {t("review.modal.strategy", { strategy: match.strategy })}
+                          </div>
+                        ) : null}
                       </div>
-                    </div>
-                    {confidence ? (
-                      <div className={clsx("border border-border/60 bg-background/40 px-4 py-3", layoutConfig.borderRadius.medium)}>
-                        <span className="text-xs uppercase text-text/60">{t("review.modal.confidenceLabel")}</span>
-                        <div className="mt-1 font-semibold text-success">{confidence}</div>
+                    ) : (
+                      <div className="rounded-md border border-dashed border-border/60 px-4 py-3 text-xs text-text/60">
+                        {t("review.modal.noMapping")}
                       </div>
-                    ) : null}
-                    <button
-                      type="button"
-                      onClick={onClose}
-                      className={clsx("focus-ring inline-flex bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary/90", layoutConfig.borderRadius.small)}
-                    >
-                      {t("review.modal.close")}
-                    </button>
-                  </div>
-                ) : isUnit ? (
-                  <div className="mt-6 space-y-5 text-sm text-text/80">
-                    <table className="w-full border border-border text-sm">
-                      <tbody>
-                        <ReviewModalRow
-                          label={t("review.modal.unitNew.fields.nameSingular")}
-                          value={unitState?.nameSingular ?? ""}
-                          onChange={(value) =>
-                            setUnitState((prev) => ({
-                              ...(prev ?? entry.unitNew ?? defaultUnitTemplate),
-                              nameSingular: value
-                            }))
-                          }
-                        />
-                        <ReviewModalRow
-                          label={t("review.modal.unitNew.fields.namePlural")}
-                          value={unitState?.namePlural ?? ""}
-                          onChange={(value) =>
-                            setUnitState((prev) => ({
-                              ...(prev ?? entry.unitNew ?? defaultUnitTemplate),
-                              namePlural: value
-                            }))
-                          }
-                        />
-                        <ReviewModalRow
-                          label={t("review.modal.unitNew.fields.abbreviationSingular")}
-                          value={unitState?.abbreviationSingular ?? ""}
-                          onChange={(value) =>
-                            setUnitState((prev) => ({
-                              ...(prev ?? entry.unitNew ?? defaultUnitTemplate),
-                              abbreviationSingular: value
-                            }))
-                          }
-                        />
-                        <ReviewModalRow
-                          label={t("review.modal.unitNew.fields.abbreviationPlural")}
-                          value={unitState?.abbreviationPlural ?? ""}
-                          onChange={(value) =>
-                            setUnitState((prev) => ({
-                              ...(prev ?? entry.unitNew ?? defaultUnitTemplate),
-                              abbreviationPlural: value
-                            }))
-                          }
-                        />
-                        <ReviewModalSwitchRow
-                          label={t("review.modal.unitNew.fields.useAbbreviation")}
-                          checked={unitState?.useAbbreviation ?? true}
-                          onChange={(checked) =>
-                            setUnitState((prev) => ({
-                              ...(prev ?? entry.unitNew ?? defaultUnitTemplate),
-                              useAbbreviation: checked
-                            }))
-                          }
-                        />
-                        <ReviewModalSwitchRow
-                          label={t("review.modal.unitNew.fields.supportsFraction")}
-                          checked={unitState?.supportsFraction ?? false}
-                          onChange={(checked) =>
-                            setUnitState((prev) => ({
-                              ...(prev ?? entry.unitNew ?? defaultUnitTemplate),
-                              supportsFraction: checked
-                            }))
-                          }
-                        />
-                      </tbody>
-                    </table>
-                    <div className="flex justify-end gap-3">
-                      <button
-                        type="button"
-                        onClick={onClose}
-                        className={clsx("focus-ring inline-flex border border-border px-4 py-2 text-sm font-semibold text-text hover:border-primary/60 hover:text-primary", layoutConfig.borderRadius.small)}
-                      >
-                        {t("review.modal.cancel")}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={onClose}
-                        className={clsx("focus-ring inline-flex bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary/90", layoutConfig.borderRadius.small)}
-                      >
-                        {t("review.modal.save")}
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="mt-6 space-y-5 text-sm text-text/80">
-                    <table className="w-full border border-border text-sm">
-                      <tbody>
-                        <ReviewModalRow
-                          label={t("review.modal.ingredientNew.fields.nameSingular")}
-                          value={ingredientState?.nameSingular ?? ""}
-                          onChange={(value) =>
-                            setIngredientState((prev) => ({
-                              ...(prev ?? entry.ingredientNew ?? defaultIngredientTemplate),
-                              nameSingular: value
-                            }))
-                          }
-                        />
-                        <ReviewModalRow
-                          label={t("review.modal.ingredientNew.fields.namePlural")}
-                          value={ingredientState?.namePlural ?? ""}
-                          onChange={(value) =>
-                            setIngredientState((prev) => ({
-                              ...(prev ?? entry.ingredientNew ?? defaultIngredientTemplate),
-                              namePlural: value
-                            }))
-                          }
-                        />
-                        <ReviewModalSelectRow
-                          label={t("review.modal.ingredientNew.fields.category")}
-                          value={ingredientState?.category ?? ""}
-                          options={categories}
-                          onChange={(value) =>
-                            setIngredientState((prev) => ({
-                              ...(prev ?? entry.ingredientNew ?? defaultIngredientTemplate),
-                              category: value
-                            }))
-                          }
-                        />
-                        <ReviewModalRow
-                          label={t("review.modal.ingredientNew.fields.aliases")}
-                          value={ingredientState?.aliases ?? ""}
-                          onChange={(value) =>
-                            setIngredientState((prev) => ({
-                              ...(prev ?? entry.ingredientNew ?? defaultIngredientTemplate),
-                              aliases: value
-                            }))
-                          }
-                        />
-                      </tbody>
-                    </table>
-                    <div className="flex justify-end gap-3">
-                      <button
-                        type="button"
-                        onClick={onClose}
-                        className={clsx("focus-ring inline-flex border border-border px-4 py-2 text-sm font-semibold text-text hover:border-primary/60 hover:text-primary", layoutConfig.borderRadius.small)}
-                      >
-                        {t("review.modal.cancel")}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={onClose}
-                        className={clsx("focus-ring inline-flex bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary/90", layoutConfig.borderRadius.small)}
-                      >
-                        {t("review.modal.save")}
-                      </button>
-                    </div>
-                  </div>
-                )}
+                    )}
+                  </section>
+
+                  <section className="space-y-2">
+                    <h4 className="text-xs font-semibold uppercase tracking-wide text-text/60">
+                      {t("review.modal.candidates")}
+                    </h4>
+                    {candidates.length > 0 ? (
+                      <ul className="space-y-2">
+                        {candidates.map((candidate) => (
+                          <li
+                            key={candidate.id}
+                            className={clsx(
+                              "flex items-center justify-between border border-border/60 bg-background/60 px-4 py-2",
+                              layoutConfig.borderRadius.medium
+                            )}
+                          >
+                            <div>
+                              <div className="font-semibold text-text">{candidate.name}</div>
+                              {candidate.pluralName ? (
+                                <div className="text-xs text-text/60">
+                                  {t("review.modal.plural", { value: candidate.pluralName })}
+                                </div>
+                              ) : null}
+                              {isUnit && (candidate.abbreviation || candidate.pluralAbbreviation) ? (
+                                <div className="text-xs text-text/60">
+                                  {[
+                                    candidate.abbreviation ? t("review.modal.abbreviation", { value: candidate.abbreviation }) : null,
+                                    candidate.pluralAbbreviation ? t("review.modal.abbreviationPlural", { value: candidate.pluralAbbreviation }) : null
+                                  ]
+                                    .filter(Boolean)
+                                    .join(" · ")}
+                                </div>
+                              ) : null}
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="rounded-md border border-dashed border-border/60 px-4 py-3 text-xs text-text/60">
+                        {t("review.modal.noCandidates")}
+                      </div>
+                    )}
+                  </section>
+
+                  {suggestion ? (
+                    <section className="space-y-2">
+                      <h4 className="text-xs font-semibold uppercase tracking-wide text-text/60">
+                        {t("review.modal.suggestion.title")}
+                      </h4>
+                      <div className={clsx("border border-border/60 bg-background/60 px-4 py-3", layoutConfig.borderRadius.medium)}>
+                        {isUnit ? (
+                          <div className="space-y-1">
+                            {suggestion.name ? (
+                              <div className="font-semibold text-text">{suggestion.name}</div>
+                            ) : null}
+                            {suggestion.pluralName ? (
+                              <div className="text-xs text-text/60">
+                                {t("review.modal.plural", { value: suggestion.pluralName })}
+                              </div>
+                            ) : null}
+                            {(suggestion.abbreviation || suggestion.pluralAbbreviation) && (
+                              <div className="text-xs text-text/60">
+                                {[
+                                  suggestion.abbreviation
+                                    ? t("review.modal.abbreviation", { value: suggestion.abbreviation })
+                                    : null,
+                                  suggestion.pluralAbbreviation
+                                    ? t("review.modal.abbreviationPlural", { value: suggestion.pluralAbbreviation })
+                                    : null
+                                ]
+                                  .filter(Boolean)
+                                  .join(" · ")}
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="space-y-1">
+                            {suggestion.nameSingular ? (
+                              <div className="font-semibold text-text">{suggestion.nameSingular}</div>
+                            ) : null}
+                            {suggestion.namePlural ? (
+                              <div className="text-xs text-text/60">
+                                {t("review.modal.plural", { value: suggestion.namePlural })}
+                              </div>
+                            ) : null}
+                            {suggestion.categoryName ? (
+                              <div className="text-xs text-text/60">
+                                {t("review.modal.category", { value: suggestion.categoryName })}
+                              </div>
+                            ) : null}
+                            {suggestion.aliases?.length ? (
+                              <div className="text-xs text-text/60">
+                                {t("review.modal.aliases", { value: suggestion.aliases.join(", ") })}
+                              </div>
+                            ) : null}
+                          </div>
+                        )}
+                      </div>
+                    </section>
+                  ) : null}
+                </div>
+
+                <div className="mt-6 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className={clsx(
+                      "focus-ring inline-flex items-center bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary/90",
+                      layoutConfig.borderRadius.small
+                    )}
+                  >
+                    {t("review.modal.close")}
+                  </button>
+                </div>
               </Dialog.Panel>
             </Transition.Child>
           </div>
@@ -299,106 +225,3 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({ context, onClose }) =>
     </Transition>
   );
 };
-
-interface RowProps {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-}
-
-const ReviewModalRow: React.FC<RowProps> = ({ label, value, onChange }) => (
-  <tr className="border-t border-border">
-    <td className="w-1/3 px-4 py-3 text-sm font-semibold text-text/70">{label}</td>
-    <td className="px-4 py-3">
-      <input
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className={clsx("focus-ring w-full border border-border bg-background px-4 py-2 text-sm", layoutConfig.borderRadius.small)}
-      />
-    </td>
-  </tr>
-);
-
-interface SwitchRowProps {
-  label: string;
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-}
-
-const ReviewModalSwitchRow: React.FC<SwitchRowProps> = ({ label, checked, onChange }) => (
-  <tr className="border-t border-border">
-    <td className="w-1/3 px-4 py-3 text-sm font-semibold text-text/70">{label}</td>
-    <td className="px-4 py-3">
-      <Switch
-        checked={checked}
-        onChange={onChange}
-        className={clsx(
-          checked ? "bg-primary" : "bg-border",
-          "relative inline-flex h-6 w-11 items-center transition-colors focus-ring",
-          layoutConfig.borderRadius.small
-        )}
-      >
-        <span
-          className={clsx(
-            checked ? "translate-x-6" : "translate-x-1",
-            "inline-block h-4 w-4 transform bg-panel transition-transform",
-            layoutConfig.borderRadius.small
-          )}
-        />
-      </Switch>
-    </td>
-  </tr>
-);
-
-const defaultCategories = [
-  "Gemüse",
-  "Obst",
-  "Gewürze",
-  "Fleisch",
-  "Fisch",
-  "Getreide",
-  "Milchprodukte",
-  "Saucen"
-];
-
-const defaultUnitTemplate = {
-  nameSingular: "",
-  namePlural: "",
-  abbreviationSingular: "",
-  abbreviationPlural: "",
-  useAbbreviation: true,
-  supportsFraction: false
-};
-
-const defaultIngredientTemplate = {
-  nameSingular: "",
-  namePlural: "",
-  category: "",
-  aliases: ""
-};
-
-interface SelectRowProps {
-  label: string;
-  value: string;
-  options: string[];
-  onChange: (value: string) => void;
-}
-
-const ReviewModalSelectRow: React.FC<SelectRowProps> = ({ label, value, options, onChange }) => (
-  <tr className="border-t border-border">
-    <td className="w-1/3 px-4 py-3 text-sm font-semibold text-text/70">{label}</td>
-    <td className="px-4 py-3">
-      <select
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className={clsx("focus-ring w-full border border-border bg-background px-4 py-2 text-sm", layoutConfig.borderRadius.small)}
-      >
-        {options.map((category) => (
-          <option key={category} value={category}>
-            {category}
-          </option>
-        ))}
-      </select>
-    </td>
-  </tr>
-);

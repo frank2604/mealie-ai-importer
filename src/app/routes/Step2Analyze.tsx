@@ -16,7 +16,7 @@ interface MetricItem {
 
 export const Step2Analyze: React.FC = () => {
   const { t } = useTranslation();
-  const { runId, status, error, logs, logCursor, appendLogs, setStatus, setError } = useImportFlow();
+  const { runId, status, error, logs, logCursor, appendLogs, setStatus, setError, setRunId } = useImportFlow();
   const { setNextHandler, setNextDisabled } = useStepNavigation();
   const [isPolling, setIsPolling] = useState(false);
 
@@ -56,6 +56,16 @@ export const Step2Analyze: React.FC = () => {
         if (!active) {
           return;
         }
+        if (!statusResult) {
+          setRunId(null);
+          setStatus("idle");
+          setError(null);
+          setIsPolling(false);
+          return;
+        }
+        if (!active) {
+          return;
+        }
         if (statusResult.status === "running") {
           setStatus("analyzing");
         } else if (statusResult.status === "starting") {
@@ -70,7 +80,7 @@ export const Step2Analyze: React.FC = () => {
         if (statusResult.error) {
           setError(statusResult.error);
         }
-        if (logResult.entries.length) {
+        if (logResult?.entries.length) {
           appendLogs(mapApiLogEntries(logResult.entries), logResult.nextCursor);
         }
         if (["completed", "failed", "aborted"].includes(statusResult.status)) {
@@ -98,7 +108,7 @@ export const Step2Analyze: React.FC = () => {
       }
       setIsPolling(false);
     };
-  }, [appendLogs, logCursor, runId, setError, setNextDisabled, setStatus]);
+  }, [appendLogs, logCursor, runId, setError, setNextDisabled, setStatus, setRunId]);
 
   const statusLabel = useMemo(() => {
     switch (status) {

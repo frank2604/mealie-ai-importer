@@ -103,8 +103,9 @@ class PipelineContext:
                 raw = self.recipe_data_path.read_text(encoding="utf-8")
                 data = json.loads(raw)
                 self.recipe = Recipe.parse_obj(data)
+                self._hydrate_recipe_assets()
             else:
-                raise RuntimeError("RecipeRawDataEnriched.json is not available yet")
+                raise RuntimeError("RecipeData.json is not available yet")
         return self.recipe
 
     def save_recipe(self, recipe: Recipe, *, destination: Optional[Path] = None, overwrite: bool = True) -> None:
@@ -113,7 +114,7 @@ class PipelineContext:
         if destination is not None:
             self.recipe_data_path = destination
         if not self.recipe_data_path:
-            raise RuntimeError("No save path for RecipeRawDataEnriched.json has been configured")
+            raise RuntimeError("No save path for RecipeData.json has been configured")
         if overwrite:
             self.recipe_data_path.write_text(
                 json.dumps(payload, ensure_ascii=False, indent=2),
@@ -155,3 +156,23 @@ class PipelineContext:
             "tag_categories_cache": str(self.cache_paths.tag_categories_cache),
             "timestamp": datetime.utcnow().isoformat(),
         }
+
+    def _hydrate_recipe_assets(self) -> None:
+        if not self.recipe or not self.recipe.assets:
+            return
+        base_dir = self.recipe_data_path.parent if self.recipe_data_path else self.output_dir
+        for asset in self.recipe.assets:
+            if getattr(asset, "data", None) or not getattr(asset, "data_path", None):
+                continue
+            asset_path = Path(asset.data_path)
+            if not asset_path.is_absolute():
+                asset_path = (base_dir / asset_path).resolve()
+            try:
+                payload = json.loads(asset_path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                continue
+            asset.data = payload.get("dataUrl") or payload.get("data")
+            if not asset.title:
+                asset.title = payload.get("title")
+            if not asset.description:
+                asset.description = payload.get("description")

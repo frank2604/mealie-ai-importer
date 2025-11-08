@@ -132,6 +132,10 @@
     ]
   },
   "review": {
+    "loading": "Loading review data…",
+    "saving": "Saving changes…",
+    "noRunSelected": "No run selected yet.",
+    "noMapping": "No mapping available.",
     "sections": {
       "ingredients": "Ingredients, quantities & units",
       "preparation": "Preparation",
@@ -147,19 +151,6 @@
       "view": "View details",
       "edit": "Edit entry"
     },
-    "pdfPlaceholder": {
-      "title": "PDF Preview",
-      "description": "The embedded PDF viewer will appear here in a later sprint.",
-      "toggleShow": "Show PDF",
-      "toggleHide": "Hide PDF",
-      "pager": {
-        "page": "Page {{current}} / {{total}}",
-        "prev": "Previous",
-        "next": "Next",
-        "zoomIn": "Zoom in",
-        "zoomOut": "Zoom out"
-      }
-    },
     "table": {
       "headers": {
         "source": "Detected in recipe",
@@ -170,158 +161,35 @@
         "note": "Note"
       }
     },
-    "summary": {
-      "title": "Chicken breast wrapped in prosciutto",
-      "description": "Tender chicken breasts wrapped in sage and Parma ham are quickly seared before finishing in a creamy mushroom-vermouth sauce. Serve with boiled potatoes and a crisp salad for a balanced main course.",
-      "meta": [
-        {
-          "leftLabel": "Servings",
-          "leftValue": "4",
-          "rightLabel": "Total time",
-          "rightValue": "1 h 30"
-        },
-        {
-          "leftLabel": "Portion yield",
-          "leftValue": "1.5",
-          "rightLabel": "Prep time",
-          "rightValue": "30 min"
-        },
-        {
-          "leftLabel": "Yield (text)",
-          "leftValue": "Liter soup",
-          "rightLabel": "Cook time",
-          "rightValue": "1 h"
-        }
-      ]
+    "meta": {
+      "portions": "Servings",
+      "totalTime": "Total time (minutes)"
     },
-    "entries": [
-      {
-        "amount": "2",
-        "unit": "Piece",
-        "unitMapping": "Piece",
-        "unitStatus": "found",
-        "unitMethod": "word-match",
-        "unitConfidence": "0.97",
-        "ingredient": "Red onions",
-        "ingredientMapping": "Onions (red)",
-        "ingredientStatus": "found",
-        "ingredientMethod": "fuzzy",
-        "ingredientConfidence": "0.92",
-        "note": "Dice into small cubes"
-      },
-      {
-        "amount": "1",
-        "unit": "Piece",
-        "unitMapping": "Piece",
-        "unitStatus": "found",
-        "unitMethod": "word-match",
-        "unitConfidence": "0.84",
-        "ingredient": "Bay leaf",
-        "ingredientMapping": "Bay leaf",
-        "ingredientStatus": "new",
-        "ingredientMethod": "ai",
-        "ingredientNew": {
-          "nameSingular": "Bay leaf",
-          "namePlural": "Bay leaves",
-          "category": "Spices",
-          "aliases": "Bayleaf; Laurel"
-        },
-        "note": "-"
-      },
-      {
-        "amount": "2",
-        "unit": "Liter",
-        "unitMapping": "Liter",
-        "unitStatus": "new",
-        "unitMethod": "ai",
-        "unitNew": {
-          "nameSingular": "Liter",
-          "namePlural": "Liters",
-          "abbreviationSingular": "l",
-          "abbreviationPlural": "l",
-          "useAbbreviation": true,
-          "supportsFraction": false
-        },
-        "ingredient": "Vegetable stock",
-        "ingredientMapping": "Vegetable broth",
-        "ingredientStatus": "found",
-        "ingredientMethod": "fuzzy",
-        "ingredientConfidence": "0.88",
-        "note": "Best prepared fresh"
-      }
-    ],
     "preparation": {
-      "headers": {
-        "step": "Step",
-        "text": "Text"
-      },
       "labels": {
-        "ingredients": "Ingredients used"
+        "ingredients": "Linked ingredients"
       },
-      "selectIngredient": "Add ingredient...",
-      "removeIngredient": "Remove ingredient",
-      "rows": [
-        {
-          "step": "1",
-          "text": "Bring vegetable stock to a boil"
-        },
-        {
-          "step": "2",
-          "text": "Dice red onions finely"
-        }
-      ]
+      "selectIngredient": "Add ingredient…",
+      "removeIngredient": "Remove ingredient"
     },
     "image": {
-      "caption": "Planned crop from the original PDF. The final image arrives with the PDF viewer."
+      "caption": "Planned crop from the original asset. The final crop will be shown once the PDF viewer is integrated."
     },
     "modal": {
-      "unitFound": {
-        "subtitle": "The unit was detected using this method:"
-      },
-      "ingredientFound": {
-        "subtitle": "The ingredient was detected using this method:"
-      },
-      "unitNew": {
-        "subtitle": "AI suggests creating the unit with the following parameters:",
-        "fields": {
-          "nameSingular": "Name singular",
-          "namePlural": "Name plural",
-          "abbreviationSingular": "Abbreviation singular",
-          "abbreviationPlural": "Abbreviation plural",
-          "useAbbreviation": "Use abbreviation",
-          "supportsFraction": "Supports fraction"
-        }
-      },
-      "ingredientNew": {
-        "subtitle": "AI suggests creating the ingredient with the following parameters:",
-        "fields": {
-          "nameSingular": "Name singular",
-          "namePlural": "Name plural",
-          "category": "Category",
-          "aliases": "Aliases"
-        }
-      },
-      "methods": {
-        "word": "Word match",
-        "fuzzy": "Fuzzy search",
-        "ai": "AI matching"
-      },
-      "methodLabel": "Detection method",
-      "methodUnknown": "Method unavailable",
-      "confidenceLabel": "Confidence",
       "close": "Close",
-      "cancel": "Cancel",
-      "save": "Apply",
-      "categories": [
-        "Vegetables",
-        "Fruit",
-        "Spices",
-        "Meat",
-        "Fish",
-        "Grains",
-        "Dairy",
-        "Sauces"
-      ]
+      "currentMapping": "Current mapping",
+      "candidates": "Candidates",
+      "noCandidates": "No suggestions available.",
+      "noMapping": "No mapping found.",
+      "strategy": "Strategy: {{strategy}}",
+      "suggestion": {
+        "title": "AI suggestion"
+      },
+      "plural": "Plural: {{value}}",
+      "abbreviation": "Abbreviation: {{value}}",
+      "abbreviationPlural": "Abbreviation (plural): {{value}}",
+      "category": "Category: {{value}}",
+      "aliases": "Aliases: {{value}}"
     }
   },
   "transfer": {
@@ -401,6 +269,12 @@
     "back": "Back",
     "next": "Next",
     "finish": "Transfer"
+  },
+  "confirmations": {
+    "cancelImport": "Do you really want to cancel the import? All collected data will be deleted."
+  },
+  "errors": {
+    "resetFailed": "Failed to reset workspace: {{message}}"
   },
   "modals": {
     "viewDetails": {

@@ -1,0 +1,179 @@
+{
+  "title": "Hähnchenbrustfilets im Parma-Schinken mit Champignon-Sahne-Soße",
+  "description": "Saftige Hähnchenbrustfilets werden mit Salbei und Parma-Schinken umwickelt, angebraten und in einer cremigen Champignon-Sahne-Soße fertiggegart. Das Gericht ist aromatisch und eignet sich gut als herzhaftes Hauptgericht zu Pellkartoffeln und grünem Salat.",
+  "portions": 5.0,
+  "total_time_minutes": 30,
+  "ingredients": [
+    {
+      "name": null,
+      "ingredients": [
+        {
+          "quantity": 4.0,
+          "food": [
+            "name": "Hähnchenbrustfilets",
+            "mealieFoodId": null,
+            "badgeId": 12345 <- z.B. GEFUNDEN
+          ],
+          "unit": [
+            "name": "Stück",
+            "mealieUnitId": null,
+            "badgeId": 12345 <- z.B. GEFUNDEN
+          "note": null,
+          ]
+        },
+        {
+          "name": "Parma-Schinken",
+          "quantity": 6.0,
+          "unit": "Scheiben",
+          "note": null,
+          "mealieFoodId": null,
+          "mealieUnitId": null
+        },
+        {
+          "name": "Champignons",
+          "quantity": 500.0,
+          "unit": "g",
+          "note": "geputzt, geviertelt, gewascht",
+          "mealieFoodId": null,
+          "mealieUnitId": null
+        },
+        {
+          "name": "rote Zwiebeln",
+          "quantity": 3.0,
+          "unit": "Stück",
+          "note": "geschält und klein gehackt",
+          "mealieFoodId": null,
+          "mealieUnitId": null
+        },
+        {
+          "name": "trockener Wermut",
+          "quantity": 100.0,
+          "unit": "ml",
+          "note": null,
+          "mealieFoodId": null,
+          "mealieUnitId": null
+        },
+        {
+          "name": "süße Sahne",
+          "quantity": 200.0,
+          "unit": "ml",
+          "note": null,
+          "mealieFoodId": null,
+          "mealieUnitId": null
+        },
+        {
+          "name": "Mehl",
+          "quantity": 1.0,
+          "unit": "Esslöffel",
+          "note": "zum Bestäuben",
+          "mealieFoodId": null,
+          "mealieUnitId": null
+        },
+        {
+          "name": "heller Soßenbinder",
+          "quantity": 1.0,
+          "unit": "Esslöffel",
+          "note": null,
+          "mealieFoodId": null,
+          "mealieUnitId": null
+        },
+        {
+          "name": "Fett",
+          "quantity": null,
+          "unit": null,
+          "note": "zum Braten",
+          "mealieFoodId": null,
+          "mealieUnitId": null
+        },
+        {
+          "name": "Salbeiblätter",
+          "quantity": 6.0,
+          "unit": "Blatt",
+          "note": null,
+          "mealieFoodId": null,
+          "mealieUnitId": null
+        },
+        {
+          "name": "Salz",
+          "quantity": null,
+          "unit": null,
+          "note": "nach Geschmack",
+          "mealieFoodId": null,
+          "mealieUnitId": null
+        },
+        {
+          "name": "Pfeffer",
+          "quantity": null,
+          "unit": null,
+          "note": "nach Geschmack",
+          "mealieFoodId": null,
+          "mealieUnitId": null
+        }
+      ]
+    }
+  ],
+  "instructions": [
+    {
+      "name": null,
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "Hähnchenbrustfilets mit Pfeffer würzen. Jeweils ein Salbeiblatt auf ein Filet legen und das Filet mit einer Scheibe Parma-Schinken umwickeln.",
+          "timer_minutes": null
+        },
+        {
+          "order": 2,
+          "instruction": "Fett in einer Pfanne erhitzen. Die Filets leicht mit Mehl bestäuben und in der Pfanne rundherum anbraten, bis sie Farbe bekommen. Die angebratenen Filets herausnehmen und in eine feuerfeste Form legen.",
+          "timer_minutes": null
+        },
+        {
+          "order": 3,
+          "instruction": "Zwiebeln schälen und klein hacken. Die Zwiebeln zusammen mit den geviertelten Champignons in der Pfanne anbraten, bis sie Farbe nehmen.",
+          "timer_minutes": null
+        },
+        {
+          "order": 4,
+          "instruction": "Mit trockenem Wermut ablöschen, etwas einkochen lassen und dann die süße Sahne zugießen. Den hellen Soßenbinder einrühren, die Soße kurz aufkochen lassen und mit Salz und Pfeffer abschmecken.",
+          "timer_minutes": null
+        },
+        {
+          "order": 5,
+          "instruction": "Die Sauce über die Hähnchenbrustfilets in der feuerfesten Form geben und alles im vorgeheizten Ofen bei 200 °C etwa 20 Minuten garen lassen.",
+          "timer_minutes": 20
+        },
+        {
+          "order": 6,
+          "instruction": "Die Hähnchenbrustfilets aus dem Ofen nehmen und servieren. Dazu passen Pellkartoffeln und grüner Salat.",
+          "timer_minutes": null
+        }
+      ]
+    }
+  ],
+  "notes": "Ofentemperatur 200 °C, Garzeit im Ofen etwa 20 Minuten. Dazu passen Pellkartoffeln und grüner Salat.",
+  "image_path": "data/pipeline/02_RecipeImage.jpg",
+  "image_url": null,
+  "metadata": {
+    "source": "data/uploads/5c3c5d56b266413bb3d95e8662b355f0.pdf",
+    "categories": [
+      "Hauptgericht",
+      "Geflügel",
+      "Ofengericht"
+    ],
+    "cuisine": "Deutsch",
+    "tags": [
+      "Hähnchen",
+      "Champignons",
+      "Sahnesoße",
+      "Schinken",
+      "Salbei"
+    ],
+    "mealie_categories": [],
+    "mealie_tags": []
+  },
+  "assets": [
+    {
+      "file_name": "02_RecipeImage.jpg",
+      "dataPath": null
+    }
+  ]
+}

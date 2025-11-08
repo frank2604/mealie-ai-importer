@@ -132,6 +132,10 @@
     ]
   },
   "review": {
+    "loading": "Lade Review-Daten …",
+    "saving": "Änderungen werden gespeichert …",
+    "noRunSelected": "Noch kein Lauf ausgewählt.",
+    "noMapping": "Keine Zuordnung vorhanden.",
     "sections": {
       "ingredients": "Zutaten, Mengen & Einheiten",
       "preparation": "Zubereitung",
@@ -147,19 +151,6 @@
       "view": "Details ansehen",
       "edit": "Eintrag bearbeiten"
     },
-    "pdfPlaceholder": {
-      "title": "PDF Vorschau",
-      "description": "Der PDF-Viewer wird hier eingebettet. Bis dahin siehst Du diesen Platzhalter.",
-      "toggleShow": "PDF anzeigen",
-      "toggleHide": "PDF ausblenden",
-      "pager": {
-        "page": "Seite {{current}} / {{total}}",
-        "prev": "Zurück",
-        "next": "Weiter",
-        "zoomIn": "Vergrößern",
-        "zoomOut": "Verkleinern"
-      }
-    },
     "table": {
       "headers": {
         "source": "Gefunden im Rezept",
@@ -170,158 +161,35 @@
         "note": "Notiz"
       }
     },
-    "summary": {
-      "title": "Hähnchenbrustfilet im Schinkenmantel",
-      "description": "Zarte Hähnchenbrustfilets werden mit Salbei und Parma-Schinken umwickelt, scharf angebraten und in einer cremigen Champignon-Wermut-Sauce im Ofen vollendet. Serviere das Gericht mit Pellkartoffeln und grünem Salat für ein rundes Hauptgericht.",
-      "meta": [
-        {
-          "leftLabel": "Portion",
-          "leftValue": "4",
-          "rightLabel": "Gesamtzeit",
-          "rightValue": "1 Stunde 30"
-        },
-        {
-          "leftLabel": "Portionsangabe",
-          "leftValue": "1,5",
-          "rightLabel": "Vorbereitungszeit",
-          "rightValue": "30 Min."
-        },
-        {
-          "leftLabel": "Ergibt (Text)",
-          "leftValue": "Liter Suppe",
-          "rightLabel": "Kochzeit",
-          "rightValue": "1 Stunde"
-        }
-      ]
+    "meta": {
+      "portions": "Portionen",
+      "totalTime": "Gesamtzeit (Minuten)"
     },
-    "entries": [
-      {
-        "amount": "2",
-        "unit": "Stück",
-        "unitMapping": "Stück",
-        "unitStatus": "found",
-        "unitMethod": "word-match",
-        "unitConfidence": "0,97",
-        "ingredient": "Rote Zwiebeln",
-        "ingredientMapping": "Zwiebeln (rot)",
-        "ingredientStatus": "found",
-        "ingredientMethod": "fuzzy",
-        "ingredientConfidence": "0,92",
-        "note": "In kleine Würfel schneiden"
-      },
-      {
-        "amount": "1",
-        "unit": "Stück",
-        "unitMapping": "Stück",
-        "unitStatus": "found",
-        "unitMethod": "word-match",
-        "unitConfidence": "0,84",
-        "ingredient": "Lorbeerblatt",
-        "ingredientMapping": "Lorbeerblatt",
-        "ingredientStatus": "new",
-        "ingredientMethod": "ai",
-        "ingredientNew": {
-          "nameSingular": "Lorbeerblatt",
-          "namePlural": "Lorbeerblätter",
-          "category": "Gewürze",
-          "aliases": "Bayleaf; Lorbeer"
-        },
-        "note": "-"
-      },
-      {
-        "amount": "2",
-        "unit": "Liter",
-        "unitMapping": "Liter",
-        "unitStatus": "new",
-        "unitMethod": "ai",
-        "unitNew": {
-          "nameSingular": "Liter",
-          "namePlural": "Liter",
-          "abbreviationSingular": "l",
-          "abbreviationPlural": "l",
-          "useAbbreviation": true,
-          "supportsFraction": false
-        },
-        "ingredient": "Gemüsebrühe",
-        "ingredientMapping": "Gemüsefond",
-        "ingredientStatus": "found",
-        "ingredientMethod": "fuzzy",
-        "ingredientConfidence": "0,88",
-        "note": "Am besten frisch zubereitet"
-      }
-    ],
     "preparation": {
-      "headers": {
-        "step": "Schritt",
-        "text": "Text"
-      },
       "labels": {
         "ingredients": "Verwendete Zutaten"
       },
       "selectIngredient": "Zutat hinzufügen...",
-      "removeIngredient": "Zutat entfernen",
-      "rows": [
-        {
-          "step": "1",
-          "text": "Gemüsebrühe zum Kochen bringen"
-        },
-        {
-          "step": "2",
-          "text": "Rote Zwiebeln in feine Würfel schneiden"
-        }
-      ]
+      "removeIngredient": "Zutat entfernen"
     },
     "image": {
       "caption": "Geplanter Bildausschnitt des Originals. Der finale Ausschnitt folgt mit dem PDF-Viewer."
     },
     "modal": {
-      "unitFound": {
-        "subtitle": "Die Einheit wurde mit dieser Methode gefunden:"
-      },
-      "ingredientFound": {
-        "subtitle": "Die Zutat wurde mit dieser Methode gefunden:"
-      },
-      "unitNew": {
-        "subtitle": "AI schlägt die Neuanlage der Einheit mit folgenden Parametern vor:",
-        "fields": {
-          "nameSingular": "Name Einzahl",
-          "namePlural": "Name Mehrzahl",
-          "abbreviationSingular": "Abkürzung Einzahl",
-          "abbreviationPlural": "Abkürzung Mehrzahl",
-          "useAbbreviation": "Verwende Abkürzung",
-          "supportsFraction": "Bruchzahl"
-        }
-      },
-      "ingredientNew": {
-        "subtitle": "AI schlägt die Neuanlage der Zutat mit folgenden Parametern vor:",
-        "fields": {
-          "nameSingular": "Name Einzahl",
-          "namePlural": "Name Mehrzahl",
-          "category": "Kategorie",
-          "aliases": "Aliasse"
-        }
-      },
-      "methods": {
-        "word": "Wortübereinstimmung",
-        "fuzzy": "Fuzzy-Suche",
-        "ai": "AI-Matching"
-      },
-      "methodLabel": "Gefundene Methode",
-      "methodUnknown": "Methode nicht verfügbar",
-      "confidenceLabel": "Confidence",
       "close": "Schließen",
-      "cancel": "Abbrechen",
-      "save": "Übernehmen",
-      "categories": [
-        "Gemüse",
-        "Obst",
-        "Gewürze",
-        "Fleisch",
-        "Fisch",
-        "Getreide",
-        "Milchprodukte",
-        "Saucen"
-      ]
+      "currentMapping": "Aktuelle Zuordnung",
+      "candidates": "Kandidaten",
+      "noCandidates": "Keine Vorschläge verfügbar.",
+      "noMapping": "Keine Zuordnung gefunden.",
+      "strategy": "Strategie: {{strategy}}",
+      "suggestion": {
+        "title": "AI-Vorschlag"
+      },
+      "plural": "Plural: {{value}}",
+      "abbreviation": "Abkürzung: {{value}}",
+      "abbreviationPlural": "Abkürzung (Plural): {{value}}",
+      "category": "Kategorie: {{value}}",
+      "aliases": "Aliasse: {{value}}"
     }
   },
   "transfer": {
@@ -401,6 +269,12 @@
     "back": "Zurück",
     "next": "Weiter",
     "finish": "Übertragen"
+  },
+  "confirmations": {
+    "cancelImport": "Möchtest du den Import wirklich abbrechen? Alle bisher eingelesenen Daten werden gelöscht."
+  },
+  "errors": {
+    "resetFailed": "Zurücksetzen fehlgeschlagen: {{message}}"
   },
   "modals": {
     "viewDetails": {

@@ -50,34 +50,41 @@ class AiAnalyserModule:
         recorder = context.pipeline_recorder
         requested_output = context.recipe_output_path
         payload = recipe.dict(by_alias=True)
+        payload_text = json.dumps(payload, ensure_ascii=False, indent=2)
         raw_path: Optional[Path] = None
-        enriched_path: Optional[Path] = None
+        recipe_path: Optional[Path] = None
 
         if recorder:
             raw_path = recorder.write_json("RecipeRawData", payload)
-            enriched_path = recorder.write_json("RecipeRawDataEnriched", payload)
-            context.recipe_data_path = enriched_path
-            context.save_recipe(recipe, destination=enriched_path, overwrite=False)
+            recipe_path = recorder.write_json("RecipeData", payload)
+            context.save_recipe(recipe, destination=recipe_path, overwrite=False)
         else:
-            target = context.recipe_output_path or (context.output_dir / "RecipeRawData.json")
-            target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-            context.recipe_data_path = target
-            context.save_recipe(recipe, destination=target)
-            raw_path = target
-            enriched_path = target
+            raw_path = context.output_dir / "RecipeRawData.json"
+            raw_path.parent.mkdir(parents=True, exist_ok=True)
+            raw_path.write_text(payload_text, encoding="utf-8")
 
-        final_output = raw_path
-        if requested_output and raw_path and requested_output != raw_path:
+            recipe_target = requested_output or (context.output_dir / "RecipeData.json")
+            recipe_target.parent.mkdir(parents=True, exist_ok=True)
+            recipe_target.write_text(payload_text, encoding="utf-8")
+            recipe_path = recipe_target
+            context.save_recipe(recipe, destination=recipe_path, overwrite=False)
+
+        final_output = recipe_path
+        if requested_output and recipe_path and requested_output != recipe_path:
             requested_output.parent.mkdir(parents=True, exist_ok=True)
-            requested_output.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+            requested_output.write_text(payload_text, encoding="utf-8")
             final_output = requested_output
+        elif not final_output:
+            final_output = recipe_path
 
+        if raw_path:
+            logger.info("Saved the raw recipe snapshot to %s", raw_path)
+        if recipe_path:
+            logger.info("Saved RecipeData.json to %s", recipe_path)
         if final_output:
             context.recipe_output_path = final_output
-            logger.info("Saved the structured recipe to %s", final_output)
-        if enriched_path:
-            logger.info("Updated RecipeRawDataEnriched.json at %s", enriched_path)
+            if final_output != recipe_path:
+                logger.info("Copied RecipeData.json to %s", final_output)
 
     def _parse_recipe_with_retry(self, extraction: PdfExtractionResult, context: PipelineContext) -> Recipe:
         attempts = 5
@@ -168,6 +175,8 @@ class AiAnalyserModule:
             logger.warning("Could not convert the image for upload")
             return
 
+        base_dir = output_dir
+
         if context.pipeline_recorder:
             numbered_image = context.pipeline_recorder.copy_file(prepared.file_path, label="RecipeImage")
             if prepared.file_path != numbered_image:
@@ -182,11 +191,31 @@ class AiAnalyserModule:
             image_path = prepared.file_path
 
         recipe.image_path = str(image_path)
+        image_payload = {
+            "fileName": image_path.name,
+            "dataUrl": prepared.data_url,
+            "title": recipe.title or context.source_pdf.stem,
+            "description": recipe.description,
+        }
+        if context.pipeline_recorder:
+            image_data_file = context.pipeline_recorder.write_json("RecipeImage", image_payload)
+        else:
+            image_data_file = base_dir / "RecipeImage.json"
+            image_data_file.parent.mkdir(parents=True, exist_ok=True)
+            image_data_file.write_text(json.dumps(image_payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+        try:
+            data_reference = str(image_data_file.relative_to(base_dir))
+        except ValueError:
+            data_reference = str(image_data_file)
+
         recipe.assets.append(
             RecipeAsset(
                 file_name=image_path.name,
                 data=prepared.data_url,
                 title=recipe.title or context.source_pdf.stem,
+                description=recipe.description,
+                data_path=data_reference,
             )
         )
         logger.info("Stored the selected image at %s", image_path)

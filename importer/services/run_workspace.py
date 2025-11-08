@@ -227,7 +227,7 @@ class RunWorkspace:
         *,
         pipeline_dir: Path,
         cache_dir: Path,
-        log_dir: Path,
+        log_dir: Optional[Path],
         archive_dir: Path,
     ) -> None:
         self._pipeline_dir = pipeline_dir
@@ -237,7 +237,8 @@ class RunWorkspace:
 
         self._pipeline_dir.mkdir(parents=True, exist_ok=True)
         self._cache_dir.mkdir(parents=True, exist_ok=True)
-        self._log_dir.mkdir(parents=True, exist_ok=True)
+        if self._log_dir is not None:
+            self._log_dir.mkdir(parents=True, exist_ok=True)
         (self._archive_dir / "recipes").mkdir(parents=True, exist_ok=True)
         (self._archive_dir / "foods").mkdir(parents=True, exist_ok=True)
         (self._archive_dir / "units").mkdir(parents=True, exist_ok=True)
@@ -251,7 +252,7 @@ class RunWorkspace:
         return self._cache_dir
 
     @property
-    def log_dir(self) -> Path:
+    def log_dir(self) -> Optional[Path]:
         return self._log_dir
 
     @property
@@ -289,6 +290,15 @@ class RunWorkspace:
         """Archive the current run immediately and return the archive root."""
         return self._archive_run(info)
 
+    def reset_current_run(self) -> None:
+        """Remove any run artifacts without archiving them."""
+        if self.run_info_path.exists():
+            self.run_info_path.unlink()
+        self._clear_directory(self._pipeline_dir)
+        self._clear_directory(self._cache_dir)
+        if self._log_dir is not None:
+            self._clear_directory(self._log_dir)
+
     def _archive_run(self, info: RunInfo) -> Path:
         recipe_dir_name = _normalize_filename(info.recipe_name, fallback=info.run_id)
         archive_root = (
@@ -308,7 +318,8 @@ class RunWorkspace:
 
         self._move_contents(self._pipeline_dir, pipeline_target, ignore_files={self.run_info_path.name})
         self._move_contents(self._cache_dir, cache_target)
-        self._move_contents(self._log_dir, log_target)
+        if self._log_dir is not None:
+            self._move_contents(self._log_dir, log_target)
 
         self._copy_api_payloads(
             pipeline_target.iterdir(),
@@ -321,7 +332,8 @@ class RunWorkspace:
 
         self._clear_directory(self._pipeline_dir)
         self._clear_directory(self._cache_dir)
-        self._clear_directory(self._log_dir)
+        if self._log_dir is not None:
+            self._clear_directory(self._log_dir)
 
         return archive_root
 
@@ -369,7 +381,8 @@ class RunWorkspace:
         self.archive_previous_run()
         self._clear_directory(self._pipeline_dir)
         self._clear_directory(self._cache_dir)
-        self._clear_directory(self._log_dir)
+        if self._log_dir is not None:
+            self._clear_directory(self._log_dir)
 
         run_id = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
         log_file = self._pipeline_dir / f"{run_id}_run.log"

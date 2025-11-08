@@ -1,0 +1,625 @@
+{
+  "generatedAt": "2025-11-08T08:01:45.293120",
+  "summary": {
+    "totalUnits": 9,
+    "autoMatched": 8,
+    "missing": 1
+  },
+  "instructions": "Adjust 'userDecision' for each unit if you want to override the automatic choice. action = 'auto' keeps current behaviour, 'use_existing' expects useUnitId, 'create' expects details under create, 'skip' ignores the unit.",
+  "units": [
+    {
+      "key": "0:0",
+      "sectionIndex": 0,
+      "sectionName": "Section 1",
+      "ingredientIndex": 0,
+      "ingredient": {
+        "name": "Hähnchenbrustfilets",
+        "quantity": 4.0,
+        "unit": "Stück",
+        "note": null
+      },
+      "currentMatch": {
+        "unitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+        "name": "Stück",
+        "strategy": "exact"
+      },
+      "status": "matched",
+      "candidates": [
+        {
+          "id": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+          "name": "Stück",
+          "pluralName": "Stücke",
+          "abbreviation": "Stk.",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "17a89f14-fa36-43ad-a56b-8a096325ec25",
+          "name": "Schuss",
+          "pluralName": "Schuss",
+          "abbreviation": "",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "cb399cf8-d436-4110-901f-7808ea38165c",
+          "name": "Scheibe",
+          "pluralName": "Scheiben",
+          "abbreviation": "",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "39f5c698-554c-4be9-84b6-83e53bde8086",
+          "name": "Packung",
+          "pluralName": "Packungen",
+          "abbreviation": "",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "e6711358-ba95-4a63-8824-a784977fba14",
+          "name": "Tasse",
+          "pluralName": "Tassen",
+          "abbreviation": "c",
+          "pluralAbbreviation": ""
+        }
+      ],
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useUnitId": null,
+        "create": {
+          "name": null,
+          "pluralName": null,
+          "abbreviation": null,
+          "pluralAbbreviation": null,
+          "useAbbreviation": false
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:1",
+      "sectionIndex": 0,
+      "sectionName": "Section 1",
+      "ingredientIndex": 1,
+      "ingredient": {
+        "name": "Parma-Schinken",
+        "quantity": 6.0,
+        "unit": "Scheiben",
+        "note": null
+      },
+      "currentMatch": {
+        "unitId": "cb399cf8-d436-4110-901f-7808ea38165c",
+        "name": "Scheibe",
+        "strategy": "exact"
+      },
+      "status": "matched",
+      "candidates": [
+        {
+          "id": "cb399cf8-d436-4110-901f-7808ea38165c",
+          "name": "Scheibe",
+          "pluralName": "Scheiben",
+          "abbreviation": "",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "2ecfc79c-9348-42d4-8e15-8e329ed1f7aa",
+          "name": "Dose",
+          "pluralName": "Dosen",
+          "abbreviation": "",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "b737ead9-f0b1-406d-8f33-d2ab44fd3a85",
+          "name": "Zehe",
+          "pluralName": "Zehen",
+          "abbreviation": "",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+          "name": "Stück",
+          "pluralName": "Stücke",
+          "abbreviation": "Stk.",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "8867a997-b6df-4012-baf2-c4f6987208b7",
+          "name": "Prise",
+          "pluralName": "Prisen",
+          "abbreviation": "",
+          "pluralAbbreviation": ""
+        }
+      ],
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useUnitId": null,
+        "create": {
+          "name": null,
+          "pluralName": null,
+          "abbreviation": null,
+          "pluralAbbreviation": null,
+          "useAbbreviation": false
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:2",
+      "sectionIndex": 0,
+      "sectionName": "Section 1",
+      "ingredientIndex": 2,
+      "ingredient": {
+        "name": "Champignons",
+        "quantity": 500.0,
+        "unit": "g",
+        "note": "geputzt, geviertelt"
+      },
+      "currentMatch": {
+        "unitId": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
+        "name": "Gramm",
+        "strategy": "exact"
+      },
+      "status": "matched",
+      "candidates": [
+        {
+          "id": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
+          "name": "Gramm",
+          "pluralName": "Gramm",
+          "abbreviation": "g",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "8ed1a825-51f2-4d54-b244-d44bcdcd4f99",
+          "name": "Milligramm",
+          "pluralName": "Milligramm",
+          "abbreviation": "mg",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "cdcbfa6e-9a7d-4cc3-bf8b-4a007dda1737",
+          "name": "Kilogramm",
+          "pluralName": "Kilogramm",
+          "abbreviation": "kg",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "302d0411-3e0f-464a-ba90-797821381c03",
+          "name": "Gallone",
+          "pluralName": "Gallonen",
+          "abbreviation": "gal",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "39f5c698-554c-4be9-84b6-83e53bde8086",
+          "name": "Packung",
+          "pluralName": "Packungen",
+          "abbreviation": "",
+          "pluralAbbreviation": ""
+        }
+      ],
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useUnitId": null,
+        "create": {
+          "name": null,
+          "pluralName": null,
+          "abbreviation": null,
+          "pluralAbbreviation": null,
+          "useAbbreviation": false
+        },
+        "notes": "geputzt, geviertelt, gewascht"
+      }
+    },
+    {
+      "key": "0:3",
+      "sectionIndex": 0,
+      "sectionName": "Section 1",
+      "ingredientIndex": 3,
+      "ingredient": {
+        "name": "rote Zwiebeln",
+        "quantity": 3.0,
+        "unit": "Stück",
+        "note": "geschält und klein gehackt"
+      },
+      "currentMatch": {
+        "unitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+        "name": "Stück",
+        "strategy": "exact"
+      },
+      "status": "matched",
+      "candidates": [
+        {
+          "id": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+          "name": "Stück",
+          "pluralName": "Stücke",
+          "abbreviation": "Stk.",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "17a89f14-fa36-43ad-a56b-8a096325ec25",
+          "name": "Schuss",
+          "pluralName": "Schuss",
+          "abbreviation": "",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "cb399cf8-d436-4110-901f-7808ea38165c",
+          "name": "Scheibe",
+          "pluralName": "Scheiben",
+          "abbreviation": "",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "39f5c698-554c-4be9-84b6-83e53bde8086",
+          "name": "Packung",
+          "pluralName": "Packungen",
+          "abbreviation": "",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "e6711358-ba95-4a63-8824-a784977fba14",
+          "name": "Tasse",
+          "pluralName": "Tassen",
+          "abbreviation": "c",
+          "pluralAbbreviation": ""
+        }
+      ],
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useUnitId": null,
+        "create": {
+          "name": null,
+          "pluralName": null,
+          "abbreviation": null,
+          "pluralAbbreviation": null,
+          "useAbbreviation": false
+        },
+        "notes": "geschält und klein gehackt"
+      }
+    },
+    {
+      "key": "0:4",
+      "sectionIndex": 0,
+      "sectionName": "Section 1",
+      "ingredientIndex": 4,
+      "ingredient": {
+        "name": "trockener Wermut",
+        "quantity": 100.0,
+        "unit": "ml",
+        "note": null
+      },
+      "currentMatch": {
+        "unitId": "b558643c-bb92-479d-97ea-1337edc49d3b",
+        "name": "Milliliter",
+        "strategy": "exact"
+      },
+      "status": "matched",
+      "candidates": [
+        {
+          "id": "b558643c-bb92-479d-97ea-1337edc49d3b",
+          "name": "Milliliter",
+          "pluralName": "Milliliter",
+          "abbreviation": "ml",
+          "pluralAbbreviation": "ml"
+        },
+        {
+          "id": "3b04677f-506d-4519-8b16-be376e35a159",
+          "name": "Liter",
+          "pluralName": "Liter",
+          "abbreviation": "L",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "8ed1a825-51f2-4d54-b244-d44bcdcd4f99",
+          "name": "Milligramm",
+          "pluralName": "Milligramm",
+          "abbreviation": "mg",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+          "name": "Esslöffel",
+          "pluralName": "Esslöffel",
+          "abbreviation": "EL",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "190e0f06-fae8-4d6f-9009-a3c7b214434e",
+          "name": "Teelöffel",
+          "pluralName": "Teelöffel",
+          "abbreviation": "TL",
+          "pluralAbbreviation": ""
+        }
+      ],
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useUnitId": null,
+        "create": {
+          "name": null,
+          "pluralName": null,
+          "abbreviation": null,
+          "pluralAbbreviation": null,
+          "useAbbreviation": false
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:5",
+      "sectionIndex": 0,
+      "sectionName": "Section 1",
+      "ingredientIndex": 5,
+      "ingredient": {
+        "name": "süße Sahne",
+        "quantity": 200.0,
+        "unit": "ml",
+        "note": null
+      },
+      "currentMatch": {
+        "unitId": "b558643c-bb92-479d-97ea-1337edc49d3b",
+        "name": "Milliliter",
+        "strategy": "exact"
+      },
+      "status": "matched",
+      "candidates": [
+        {
+          "id": "b558643c-bb92-479d-97ea-1337edc49d3b",
+          "name": "Milliliter",
+          "pluralName": "Milliliter",
+          "abbreviation": "ml",
+          "pluralAbbreviation": "ml"
+        },
+        {
+          "id": "3b04677f-506d-4519-8b16-be376e35a159",
+          "name": "Liter",
+          "pluralName": "Liter",
+          "abbreviation": "L",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "8ed1a825-51f2-4d54-b244-d44bcdcd4f99",
+          "name": "Milligramm",
+          "pluralName": "Milligramm",
+          "abbreviation": "mg",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+          "name": "Esslöffel",
+          "pluralName": "Esslöffel",
+          "abbreviation": "EL",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "190e0f06-fae8-4d6f-9009-a3c7b214434e",
+          "name": "Teelöffel",
+          "pluralName": "Teelöffel",
+          "abbreviation": "TL",
+          "pluralAbbreviation": ""
+        }
+      ],
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useUnitId": null,
+        "create": {
+          "name": null,
+          "pluralName": null,
+          "abbreviation": null,
+          "pluralAbbreviation": null,
+          "useAbbreviation": false
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:6",
+      "sectionIndex": 0,
+      "sectionName": "Section 1",
+      "ingredientIndex": 6,
+      "ingredient": {
+        "name": "Mehl",
+        "quantity": 1.0,
+        "unit": "Esslöffel",
+        "note": "zum Bestäuben"
+      },
+      "currentMatch": {
+        "unitId": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+        "name": "Esslöffel",
+        "strategy": "exact"
+      },
+      "status": "matched",
+      "candidates": [
+        {
+          "id": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+          "name": "Esslöffel",
+          "pluralName": "Esslöffel",
+          "abbreviation": "EL",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "190e0f06-fae8-4d6f-9009-a3c7b214434e",
+          "name": "Teelöffel",
+          "pluralName": "Teelöffel",
+          "abbreviation": "TL",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "be7bea41-3db8-4e09-921e-95370e4ad273",
+          "name": "Kopf",
+          "pluralName": "Köpfe",
+          "abbreviation": "",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "e6711358-ba95-4a63-8824-a784977fba14",
+          "name": "Tasse",
+          "pluralName": "Tassen",
+          "abbreviation": "c",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "b737ead9-f0b1-406d-8f33-d2ab44fd3a85",
+          "name": "Zehe",
+          "pluralName": "Zehen",
+          "abbreviation": "",
+          "pluralAbbreviation": ""
+        }
+      ],
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useUnitId": null,
+        "create": {
+          "name": null,
+          "pluralName": null,
+          "abbreviation": null,
+          "pluralAbbreviation": null,
+          "useAbbreviation": false
+        },
+        "notes": "zum Bestäuben"
+      }
+    },
+    {
+      "key": "0:7",
+      "sectionIndex": 0,
+      "sectionName": "Section 1",
+      "ingredientIndex": 7,
+      "ingredient": {
+        "name": "heller Soßenbinder",
+        "quantity": 1.0,
+        "unit": "Esslöffel",
+        "note": null
+      },
+      "currentMatch": {
+        "unitId": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+        "name": "Esslöffel",
+        "strategy": "exact"
+      },
+      "status": "matched",
+      "candidates": [
+        {
+          "id": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+          "name": "Esslöffel",
+          "pluralName": "Esslöffel",
+          "abbreviation": "EL",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "190e0f06-fae8-4d6f-9009-a3c7b214434e",
+          "name": "Teelöffel",
+          "pluralName": "Teelöffel",
+          "abbreviation": "TL",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "be7bea41-3db8-4e09-921e-95370e4ad273",
+          "name": "Kopf",
+          "pluralName": "Köpfe",
+          "abbreviation": "",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "e6711358-ba95-4a63-8824-a784977fba14",
+          "name": "Tasse",
+          "pluralName": "Tassen",
+          "abbreviation": "c",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "b737ead9-f0b1-406d-8f33-d2ab44fd3a85",
+          "name": "Zehe",
+          "pluralName": "Zehen",
+          "abbreviation": "",
+          "pluralAbbreviation": ""
+        }
+      ],
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useUnitId": null,
+        "create": {
+          "name": null,
+          "pluralName": null,
+          "abbreviation": null,
+          "pluralAbbreviation": null,
+          "useAbbreviation": false
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:9",
+      "sectionIndex": 0,
+      "sectionName": "Section 1",
+      "ingredientIndex": 9,
+      "ingredient": {
+        "name": "Salbeiblätter",
+        "quantity": 6.0,
+        "unit": "Blatt",
+        "note": null
+      },
+      "currentMatch": null,
+      "status": "missing",
+      "candidates": [
+        {
+          "id": "3b04677f-506d-4519-8b16-be376e35a159",
+          "name": "Liter",
+          "pluralName": "Liter",
+          "abbreviation": "L",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "13736d8c-269c-4045-8453-474d109d4f5d",
+          "name": "Quart",
+          "pluralName": "Quarts",
+          "abbreviation": "qt",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "b558643c-bb92-479d-97ea-1337edc49d3b",
+          "name": "Milliliter",
+          "pluralName": "Milliliter",
+          "abbreviation": "ml",
+          "pluralAbbreviation": "ml"
+        },
+        {
+          "id": "cdcbfa6e-9a7d-4cc3-bf8b-4a007dda1737",
+          "name": "Kilogramm",
+          "pluralName": "Kilogramm",
+          "abbreviation": "kg",
+          "pluralAbbreviation": ""
+        },
+        {
+          "id": "28ea4d64-6942-4713-ac19-1f223bca5da0",
+          "name": "Pint",
+          "pluralName": "Pints",
+          "abbreviation": "pt",
+          "pluralAbbreviation": ""
+        }
+      ],
+      "suggestion": {
+        "name": "Blatt",
+        "pluralName": "Blätter",
+        "abbreviation": null,
+        "pluralAbbreviation": null,
+        "useAbbreviation": false
+      },
+      "userDecision": {
+        "action": "auto",
+        "useUnitId": null,
+        "create": {
+          "name": "Blatt",
+          "pluralName": "Blätter",
+          "abbreviation": null,
+          "pluralAbbreviation": null,
+          "useAbbreviation": false
+        },
+        "notes": ""
+      }
+    }
+  ]
+}

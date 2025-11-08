@@ -7,6 +7,7 @@ interface StickyFooterProps {
   isFirstStep: boolean;
   isLastStep: boolean;
   isNextDisabled?: boolean;
+  isCancelDisabled?: boolean;
   onBack: () => void;
   onNext: () => void;
   onCancel: () => void;
@@ -16,6 +17,7 @@ export const StickyFooter: React.FC<StickyFooterProps> = ({
   isFirstStep,
   isLastStep,
   isNextDisabled = false,
+  isCancelDisabled = false,
   onBack,
   onNext,
   onCancel
@@ -28,7 +30,14 @@ export const StickyFooter: React.FC<StickyFooterProps> = ({
         <button
           type="button"
           onClick={onCancel}
-          className={clsx("focus-ring inline-flex items-center gap-2 border border-border px-4 py-2 text-sm font-semibold text-text hover:border-error/60 hover:text-error", layoutConfig.borderRadius.small)}
+          disabled={isCancelDisabled}
+          className={clsx(
+            "focus-ring inline-flex items-center gap-2 border border-border px-4 py-2 text-sm font-semibold",
+            layoutConfig.borderRadius.small,
+            isCancelDisabled
+              ? "cursor-not-allowed opacity-50"
+              : "text-text hover:border-error/60 hover:text-error"
+          )}
         >
           <XMarkIcon className="h-4 w-4" aria-hidden="true" />
           {t("buttons.cancel")}

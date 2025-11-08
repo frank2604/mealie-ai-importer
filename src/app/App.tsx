@@ -7,7 +7,8 @@ import { StepTabs } from "./components/StepTabs";
 import { StickyFooter } from "./components/StickyFooter";
 import { getStepByPath, stepDefinitions } from "./stepConfig";
 import { layoutConfig } from "../config/layout.config";
-import { ImportFlowProvider } from "./context/ImportFlowContext";
+import { ImportFlowProvider, useImportFlow } from "./context/ImportFlowContext";
+import { resetWorkspace as resetWorkspaceApi } from "./api/imports";
 
 const settingsPath = "/settings";
 
@@ -20,20 +21,22 @@ interface StepNavigationContextValue {
 
 const StepNavigationContext = createContext<StepNavigationContextValue | undefined>(undefined);
 
-export const useStepNavigation = (): StepNavigationContextValue => {
+export function useStepNavigation(): StepNavigationContextValue {
   const context = useContext(StepNavigationContext);
   if (!context) {
     throw new Error("useStepNavigation muss innerhalb des StepNavigationContext verwendet werden.");
   }
   return context;
-};
+}
 
-export const App: React.FC = () => {
+const AppShell: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { reset: resetFlow } = useImportFlow();
   const nextHandlerRef = useRef<StepNextHandler | null>(null);
   const [isNextDisabled, setIsNextDisabled] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
 
   const currentPath = location.pathname;
   const isOnSettings = currentPath.startsWith(settingsPath);
@@ -84,8 +87,27 @@ export const App: React.FC = () => {
       });
   };
 
-  const handleCancel = () => {
-    navigate(stepDefinitions[0].path);
+  const handleCancel = async () => {
+    if (isCancelling) {
+      return;
+    }
+    const confirmed = window.confirm(t("confirmations.cancelImport"));
+    if (!confirmed) {
+      return;
+    }
+    setIsCancelling(true);
+    try {
+      await resetWorkspaceApi();
+      resetFlow();
+      navigate(stepDefinitions[0].path, { replace: true });
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("Zurücksetzen des Workspaces fehlgeschlagen:", error);
+      const message = error instanceof Error ? error.message : String(error);
+      alert(t("errors.resetFailed", { message }));
+    } finally {
+      setIsCancelling(false);
+    }
   };
 
   const handleSettingsBack = () => {
@@ -93,9 +115,10 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-background text-text">
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <div className="sticky top-0 z-40 border-b border-border/70 bg-background/95 backdrop-blur">
+    <StepNavigationContext.Provider value={navigationContextValue}>
+      <div className="flex h-screen flex-col overflow-hidden bg-background text-text">
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <div className="sticky top-0 z-40 border-b border-border/70 bg-background/95 backdrop-blur">
           {isOnSettings ? (
             <div className={clsx("flex w-full items-center justify-between gap-4 py-4", layoutConfig.spacing.layout.page.x)}>
               <button
@@ -152,27 +175,31 @@ export const App: React.FC = () => {
           )}
         </div>
 
-        <StepNavigationContext.Provider value={navigationContextValue}>
-          <ImportFlowProvider>
             <main className={clsx("flex w-full flex-1 flex-col overflow-hidden", layoutConfig.spacing.layout.page.x, layoutConfig.spacing.layout.page.y)}>
               <div className="flex min-h-0 flex-1 flex-col">
                 <Outlet />
               </div>
             </main>
-          </ImportFlowProvider>
-        </StepNavigationContext.Provider>
-      </div>
+        </div>
 
-      {!isOnSettings && (
-        <StickyFooter
-          isFirstStep={isFirstStep}
-          isLastStep={isLastStep}
-          isNextDisabled={isNextDisabled}
-          onBack={handleBack}
-          onNext={handleNext}
-          onCancel={handleCancel}
-        />
-      )}
-    </div>
+        {!isOnSettings && (
+          <StickyFooter
+            isFirstStep={isFirstStep}
+            isLastStep={isLastStep}
+            isNextDisabled={isNextDisabled}
+            isCancelDisabled={isCancelling}
+            onBack={handleBack}
+            onNext={handleNext}
+            onCancel={handleCancel}
+          />
+        )}
+      </div>
+    </StepNavigationContext.Provider>
   );
 };
+
+export const App: React.FC = () => (
+  <ImportFlowProvider>
+    <AppShell />
+  </ImportFlowProvider>
+);

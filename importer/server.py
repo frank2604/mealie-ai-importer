@@ -1,13 +1,14 @@
 """FastAPI service exposing the Mealie importer pipeline."""
 from __future__ import annotations
 
+import json
 import logging
 import re
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from threading import Lock
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
 from fastapi import (
@@ -18,7 +19,8 @@ from fastapi import (
     UploadFile,
 )
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from fastapi.responses import FileResponse
+from pydantic import BaseModel, Field
 
 from .cli import _create_openai_client  # pylint: disable=protected-access
 from .config import AppConfig, ConfigError, load_config
@@ -85,6 +87,145 @@ class LogResponse(BaseModel):
     nextCursor: int
 
 
+class ActiveRunResponse(BaseModel):
+    runId: str
+    status: str
+    recipeName: str
+    startedAt: str
+    completedAt: Optional[str] = None
+
+
+class CategoryOption(BaseModel):
+    id: str
+    name: Optional[str] = None
+    groupId: Optional[str] = None
+    slug: Optional[str] = None
+
+
+class TagCategory(BaseModel):
+    category: str
+    tags: List[CategoryOption] = Field(default_factory=list)
+
+
+class MatchInfo(BaseModel):
+    id: Optional[str] = None
+    name: Optional[str] = None
+    strategy: Optional[str] = None
+
+
+class CandidateOption(BaseModel):
+    id: str
+    name: Optional[str] = None
+    pluralName: Optional[str] = None
+    abbreviation: Optional[str] = None
+    pluralAbbreviation: Optional[str] = None
+
+
+class UnitSuggestion(BaseModel):
+    name: Optional[str] = None
+    pluralName: Optional[str] = None
+    abbreviation: Optional[str] = None
+    pluralAbbreviation: Optional[str] = None
+    useAbbreviation: Optional[bool] = None
+
+
+class FoodSuggestion(BaseModel):
+    nameSingular: Optional[str] = None
+    namePlural: Optional[str] = None
+    aliases: List[str] = Field(default_factory=list)
+    categoryId: Optional[str] = None
+    categoryName: Optional[str] = None
+
+
+class ReviewIngredient(BaseModel):
+    id: str
+    sectionIndex: int
+    ingredientIndex: int
+    sectionName: Optional[str] = None
+    amount: Optional[float] = None
+    amountText: Optional[str] = None
+    unit: Optional[str] = None
+    name: str
+    note: Optional[str] = None
+    notes: Optional[str] = None
+    foodStatus: str
+    foodMatch: Optional[MatchInfo] = None
+    foodCandidates: List[CandidateOption] = Field(default_factory=list)
+    foodSuggestion: Optional[FoodSuggestion] = None
+    foodDecision: Dict[str, Any] = Field(default_factory=dict)
+    unitStatus: str
+    unitMatch: Optional[MatchInfo] = None
+    unitCandidates: List[CandidateOption] = Field(default_factory=list)
+    unitSuggestion: Optional[UnitSuggestion] = None
+    unitDecision: Dict[str, Any] = Field(default_factory=dict)
+
+
+class ReviewInstruction(BaseModel):
+    id: str
+    sectionIndex: int
+    stepIndex: int
+    order: int
+    text: str
+    timerMinutes: Optional[int] = None
+
+
+class ReviewAssets(BaseModel):
+    pdfUrl: Optional[str] = None
+    imageUrl: Optional[str] = None
+
+
+class ReviewSummary(BaseModel):
+    title: str
+    description: str
+    portions: Optional[float] = None
+    totalTimeMinutes: Optional[int] = None
+    categoryId: Optional[str] = None
+    tagIds: List[str] = Field(default_factory=list)
+    availableCategories: List[CategoryOption] = Field(default_factory=list)
+    availableTagCategories: List[TagCategory] = Field(default_factory=list)
+
+
+class ReviewDataResponse(BaseModel):
+    runId: str
+    summary: ReviewSummary
+    ingredients: List[ReviewIngredient] = Field(default_factory=list)
+    instructions: List[ReviewInstruction] = Field(default_factory=list)
+    assets: ReviewAssets
+
+
+class ReviewSummaryUpdate(BaseModel):
+    title: str
+    description: str
+    portions: Optional[float] = None
+    totalTimeMinutes: Optional[int] = None
+    categoryId: Optional[str] = None
+    tagIds: List[str] = Field(default_factory=list)
+
+
+class ReviewIngredientUpdate(BaseModel):
+    id: str
+    notes: Optional[str] = None
+    foodDecision: Dict[str, Any] = Field(default_factory=dict)
+    unitDecision: Dict[str, Any] = Field(default_factory=dict)
+
+
+class ReviewInstructionUpdate(BaseModel):
+    id: str
+    order: Optional[int] = None
+    text: str
+    timerMinutes: Optional[int] = None
+
+
+class ReviewUpdateRequest(BaseModel):
+    summary: ReviewSummaryUpdate
+    ingredients: List[ReviewIngredientUpdate] = Field(default_factory=list)
+    instructions: List[ReviewInstructionUpdate] = Field(default_factory=list)
+
+
+class ResetWorkspaceResponse(BaseModel):
+    status: str
+
+
 @dataclass
 class PendingUpload:
     upload_id: str
@@ -105,6 +246,19 @@ class RunState:
     pipeline_dir: Path
     error: Optional[str] = None
     completed_at: Optional[str] = None
+
+
+@dataclass
+class ReviewContext:
+    run_info: RunInfo
+    pipeline_dir: Path
+    raw_path: Path
+    recipe_path: Path
+    foods_path: Optional[Path]
+    units_path: Optional[Path]
+    metadata_path: Optional[Path]
+    pdf_path: Optional[Path]
+    image_path: Optional[Path]
 
 
 app = FastAPI(title="Mealie Importer API", version="0.1.0")
@@ -201,9 +355,427 @@ def _build_workspace(config: AppConfig) -> RunWorkspace:
     return RunWorkspace(
         pipeline_dir=pipeline_dir,
         cache_dir=cache_dir,
-        log_dir=data_root / "log",
+        log_dir=None,
         archive_dir=data_root / "archive",
     )
+
+
+_STATUS_MAP = {
+    "matched": "found",
+    "missing": "new",
+    "conflict": "error",
+    "error": "error",
+}
+
+_STRATEGY_MAP = {
+    "exact": "word-match",
+    "preassigned": "word-match",
+    "word": "word-match",
+    "word-match": "word-match",
+    "fuzzy": "fuzzy",
+    "similar": "fuzzy",
+    "ai": "ai",
+}
+
+
+def _find_single_file(directory: Path, pattern: str) -> Path:
+    matches = sorted(directory.glob(pattern))
+    if not matches:
+        raise HTTPException(status_code=404, detail=f"Erwartete Datei '{pattern}' wurde im Pipeline-Ordner nicht gefunden.")
+    return matches[-1]
+
+
+def _find_optional_file(directory: Path, pattern: str) -> Optional[Path]:
+    matches = sorted(directory.glob(pattern))
+    for candidate in matches:
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+def _load_json_file(path: Optional[Path]) -> Dict[str, Any]:
+    if not path or not path.exists():
+        return {}
+    try:
+        with path.open("r", encoding="utf-8") as handle:
+            return json.load(handle)
+    except json.JSONDecodeError as exc:
+        raise HTTPException(status_code=500, detail=f"Die Datei {path.name} enthält ungültiges JSON: {exc}") from exc
+
+
+def _write_json_file(path: Path, payload: Dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as handle:
+        json.dump(payload, handle, ensure_ascii=False, indent=2)
+
+
+def _resolve_review_context(config: AppConfig, run_id: str) -> ReviewContext:
+    workspace = _build_workspace(config)
+    run_info = workspace.load_run_info()
+    if run_info is None or run_info.run_id != run_id:
+        raise HTTPException(status_code=404, detail="Importlauf nicht gefunden oder bereits archiviert.")
+
+    pipeline_dir = workspace.pipeline_dir
+    raw_path = _find_single_file(pipeline_dir, "*RecipeRawData.json")
+    try:
+        recipe_path = _find_single_file(pipeline_dir, "*RecipeData.json")
+    except HTTPException:
+        try:
+            recipe_path = _find_single_file(pipeline_dir, "*Recipe.json")
+        except HTTPException:
+            try:
+                recipe_path = _find_single_file(pipeline_dir, "*RecipeRawDataEnriched.json")
+            except HTTPException:
+                recipe_path = raw_path
+
+    foods_path = _find_optional_file(pipeline_dir, "*FoodsReview.json") or pipeline_dir / "05_FoodsReview.json"
+    units_path = _find_optional_file(pipeline_dir, "*UnitsReview.json") or pipeline_dir / "06_UnitsReview.json"
+    metadata_path = _find_optional_file(pipeline_dir, "*MetadataReview.json") or pipeline_dir / "07_MetadataReview.json"
+    pdf_path = _find_optional_file(pipeline_dir, "*.pdf")
+    image_path = _find_optional_file(pipeline_dir, "*RecipeImage.*")
+
+    return ReviewContext(
+        run_info=run_info,
+        pipeline_dir=pipeline_dir,
+        raw_path=raw_path,
+        recipe_path=recipe_path,
+        foods_path=foods_path,
+        units_path=units_path,
+        metadata_path=metadata_path,
+        pdf_path=pdf_path,
+        image_path=image_path,
+    )
+
+
+def _map_status(value: Optional[str]) -> str:
+    if not value:
+        return "info"
+    return _STATUS_MAP.get(value.lower(), "info")
+
+
+def _map_strategy(value: Optional[str]) -> Optional[str]:
+    if not value:
+        return None
+    return _STRATEGY_MAP.get(value.lower(), value.lower())
+
+
+def _format_quantity(value: Any) -> Optional[str]:
+    if value is None:
+        return None
+    if isinstance(value, (int, float)):
+        if int(value) == value:
+            return str(int(value))
+        return str(value)
+    return str(value)
+
+
+def _build_review_payload(run_id: str, config: AppConfig) -> ReviewDataResponse:
+    context = _resolve_review_context(config, run_id)
+
+    recipe_data = _load_json_file(context.recipe_path)
+    foods_review = _load_json_file(context.foods_path)
+    units_review = _load_json_file(context.units_path)
+    metadata_review = _load_json_file(context.metadata_path)
+
+    foods_map = {
+        str(item.get("key")): item for item in foods_review.get("ingredients", []) if isinstance(item, dict)
+    }
+    units_map = {
+        str(item.get("key")): item for item in units_review.get("units", []) if isinstance(item, dict)
+    }
+
+    ingredients_payload: List[ReviewIngredient] = []
+    ingredients_sections = recipe_data.get("ingredients") or []
+
+    for section_index, section in enumerate(ingredients_sections):
+        section_name = section.get("name")
+        for ingredient_index, ingredient in enumerate(section.get("ingredients") or []):
+            key = f"{section_index}:{ingredient_index}"
+            food_entry = foods_map.get(key, {})
+            unit_entry = units_map.get(key, {})
+
+            food_status = _map_status(food_entry.get("status"))
+            unit_status = _map_status(unit_entry.get("status"))
+
+            food_match = food_entry.get("currentMatch") or {}
+            unit_match = unit_entry.get("currentMatch") or {}
+
+            food_candidates = [
+                CandidateOption(
+                    id=str(candidate.get("id")),
+                    name=candidate.get("name"),
+                    pluralName=candidate.get("pluralName"),
+                )
+                for candidate in food_entry.get("candidates") or []
+                if candidate.get("id")
+            ]
+
+            unit_candidates = [
+                CandidateOption(
+                    id=str(candidate.get("id")),
+                    name=candidate.get("name"),
+                    pluralName=candidate.get("pluralName"),
+                    abbreviation=candidate.get("abbreviation"),
+                    pluralAbbreviation=candidate.get("pluralAbbreviation"),
+                )
+                for candidate in unit_entry.get("candidates") or []
+                if candidate.get("id")
+            ]
+
+            food_decision = dict(food_entry.get("userDecision") or {})
+            unit_decision = dict(unit_entry.get("userDecision") or {})
+
+            notes_value = None
+            if "notes" in food_decision:
+                notes_value = food_decision.get("notes")
+            elif "notes" in unit_decision:
+                notes_value = unit_decision.get("notes")
+
+            if notes_value is None or notes_value == "":
+                source_note = ingredient.get("note")
+                notes_value = str(source_note) if source_note else ""
+
+            ingredient_payload = ReviewIngredient(
+                id=key,
+                sectionIndex=section_index,
+                ingredientIndex=ingredient_index,
+                sectionName=section_name,
+                amount=ingredient.get("quantity"),
+                amountText=_format_quantity(ingredient.get("quantity")),
+                unit=ingredient.get("unit"),
+                name=str(ingredient.get("name") or ""),
+                note=ingredient.get("note"),
+                notes=notes_value or "",
+                foodStatus=food_status,
+                foodMatch=MatchInfo(
+                    id=food_match.get("foodId"),
+                    name=food_match.get("name"),
+                    strategy=_map_strategy(food_match.get("strategy")),
+                )
+                if food_match
+                else None,
+                foodCandidates=food_candidates,
+                foodSuggestion=FoodSuggestion(
+                    nameSingular=(food_entry.get("suggestion") or {}).get("nameSingular"),
+                    namePlural=(food_entry.get("suggestion") or {}).get("namePlural"),
+                    aliases=list((food_entry.get("suggestion") or {}).get("aliases") or []),
+                    categoryId=(food_entry.get("suggestion") or {}).get("categoryId"),
+                    categoryName=(food_entry.get("suggestion") or {}).get("categoryName"),
+                )
+                if food_entry.get("suggestion")
+                else None,
+                foodDecision=food_decision,
+                unitStatus=unit_status,
+                unitMatch=MatchInfo(
+                    id=unit_match.get("unitId"),
+                    name=unit_match.get("name"),
+                    strategy=_map_strategy(unit_match.get("strategy")),
+                )
+                if unit_match
+                else None,
+                unitCandidates=unit_candidates,
+                unitSuggestion=UnitSuggestion(
+                    name=(unit_entry.get("suggestion") or {}).get("name"),
+                    pluralName=(unit_entry.get("suggestion") or {}).get("pluralName"),
+                    abbreviation=(unit_entry.get("suggestion") or {}).get("abbreviation"),
+                    pluralAbbreviation=(unit_entry.get("suggestion") or {}).get("pluralAbbreviation"),
+                    useAbbreviation=(unit_entry.get("suggestion") or {}).get("useAbbreviation"),
+                )
+                if unit_entry.get("suggestion")
+                else None,
+                unitDecision=unit_decision,
+            )
+            ingredients_payload.append(ingredient_payload)
+
+    instructions_payload: List[ReviewInstruction] = []
+    instructions_sections = recipe_data.get("instructions") or []
+    for section_index, section in enumerate(instructions_sections):
+        for step_index, step in enumerate(section.get("steps") or []):
+            instruction_payload = ReviewInstruction(
+                id=f"{section_index}:{step_index}",
+                sectionIndex=section_index,
+                stepIndex=step_index,
+                order=int(step.get("order") or step_index + 1),
+                text=str(step.get("instruction") or ""),
+                timerMinutes=step.get("timer_minutes"),
+            )
+            instructions_payload.append(instruction_payload)
+
+    metadata_user_decision = metadata_review.get("userDecision", {})
+    portions_value = recipe_data.get("portions")
+    if not isinstance(portions_value, (int, float)):
+        candidate = metadata_user_decision.get("portions")
+        portions_value = candidate if isinstance(candidate, (int, float)) else None
+
+    total_time_value = recipe_data.get("total_time_minutes")
+    if not isinstance(total_time_value, int):
+        candidate = metadata_user_decision.get("totalTimeMinutes")
+        total_time_value = candidate if isinstance(candidate, int) else None
+
+    summary = ReviewSummary(
+        title=str(recipe_data.get("title") or context.run_info.recipe_name),
+        description=str(recipe_data.get("description") or ""),
+        portions=portions_value,
+        totalTimeMinutes=total_time_value,
+        categoryId=metadata_user_decision.get("categoryId"),
+        tagIds=list(metadata_user_decision.get("tagIds") or []),
+        availableCategories=[
+            CategoryOption(
+                id=str(item.get("id")),
+                name=item.get("name"),
+                groupId=item.get("groupId"),
+                slug=item.get("slug"),
+            )
+            for item in metadata_review.get("available", {}).get("categories", [])
+            if item.get("id")
+        ],
+        availableTagCategories=[
+            TagCategory(
+                category=block.get("category") or "",
+                tags=[
+                    CategoryOption(
+                        id=str(tag.get("id")),
+                        name=tag.get("name"),
+                        groupId=tag.get("groupId"),
+                        slug=tag.get("slug"),
+                    )
+                    for tag in block.get("tags") or []
+                    if tag.get("id")
+                ],
+            )
+            for block in metadata_review.get("available", {}).get("tagCategories", [])
+            if block.get("category")
+        ],
+    )
+
+    assets = ReviewAssets(
+        pdfUrl=f"/api/imports/{run_id}/pdf" if context.pdf_path else None,
+        imageUrl=f"/api/imports/{run_id}/image" if context.image_path else None,
+    )
+
+    return ReviewDataResponse(
+        runId=run_id,
+        summary=summary,
+        ingredients=ingredients_payload,
+        instructions=instructions_payload,
+        assets=assets,
+    )
+
+
+def _apply_review_update(run_id: str, config: AppConfig, payload: ReviewUpdateRequest) -> None:
+    context = _resolve_review_context(config, run_id)
+
+    raw_snapshot = _load_json_file(context.raw_path)
+    recipe_data = _load_json_file(context.recipe_path)
+    foods_review = _load_json_file(context.foods_path)
+    units_review = _load_json_file(context.units_path)
+    metadata_review = _load_json_file(context.metadata_path)
+
+    # Ensure instructions structure exists
+    if "instructions" not in recipe_data or not isinstance(recipe_data["instructions"], list):
+        recipe_data["instructions"] = raw_snapshot.get("instructions", [])
+
+    # Update summary fields
+    recipe_data["title"] = payload.summary.title
+    recipe_data["description"] = payload.summary.description
+    if payload.summary.portions is not None:
+        recipe_data["portions"] = payload.summary.portions
+    if payload.summary.totalTimeMinutes is not None:
+        recipe_data["total_time_minutes"] = payload.summary.totalTimeMinutes
+
+    # Update metadata review selections
+    user_decision = metadata_review.setdefault("userDecision", {})
+    if payload.summary.portions is not None:
+        user_decision["portions"] = payload.summary.portions
+    if payload.summary.totalTimeMinutes is not None:
+        user_decision["totalTimeMinutes"] = payload.summary.totalTimeMinutes
+    user_decision["categoryId"] = payload.summary.categoryId
+    user_decision["tagIds"] = payload.summary.tagIds
+
+    current_state = metadata_review.setdefault("current", {})
+    if payload.summary.portions is not None:
+        current_state["portions"] = payload.summary.portions
+    if payload.summary.totalTimeMinutes is not None:
+        current_state["totalTimeMinutes"] = payload.summary.totalTimeMinutes
+    if payload.summary.categoryId is not None:
+        current_state["category"] = payload.summary.categoryId
+    if payload.summary.tagIds is not None:
+        current_state["tagIds"] = payload.summary.tagIds
+
+    # Update ingredient decisions
+    foods_entries = foods_review.setdefault("ingredients", [])
+    foods_map = {
+        str(entry.get("key")): entry for entry in foods_entries if isinstance(entry, dict)
+    }
+    units_entries = units_review.setdefault("units", [])
+    units_map = {
+        str(entry.get("key")): entry for entry in units_entries if isinstance(entry, dict)
+    }
+
+    def _set_ingredient_note(target: Dict[str, Any], key: str, value: Optional[str]) -> None:
+        try:
+            section_index_str, ingredient_index_str = key.split(":", 1)
+            section_index = int(section_index_str)
+            ingredient_index = int(ingredient_index_str)
+        except (ValueError, AttributeError):
+            return
+        sections = target.setdefault("ingredients", [])
+        if not (0 <= section_index < len(sections)):
+            return
+        section = sections[section_index]
+        items = section.setdefault("ingredients", [])
+        if not (0 <= ingredient_index < len(items)):
+            return
+        items[ingredient_index]["note"] = value or None
+
+    for ingredient_update in payload.ingredients:
+        key = ingredient_update.id
+        notes_value = ingredient_update.notes if ingredient_update.notes is not None else ""
+
+        if key in foods_map:
+            decision = dict(ingredient_update.foodDecision or {})
+            if notes_value is not None:
+                decision["notes"] = notes_value
+            foods_map[key]["userDecision"] = decision
+
+        if key in units_map:
+            decision = dict(ingredient_update.unitDecision or {})
+            if notes_value is not None:
+                decision["notes"] = notes_value
+            units_map[key]["userDecision"] = decision
+
+        _set_ingredient_note(recipe_data, key, notes_value)
+
+    # Update instructions
+    instructions_sections = recipe_data.setdefault("instructions", [])
+    for instruction_update in payload.instructions:
+        try:
+            section_index_str, step_index_str = instruction_update.id.split(":", 1)
+            section_index = int(section_index_str)
+            step_index = int(step_index_str)
+        except (ValueError, AttributeError):
+            continue
+
+        if not (0 <= section_index < len(instructions_sections)):
+            continue
+        steps = instructions_sections[section_index].setdefault("steps", [])
+        if not (0 <= step_index < len(steps)):
+            continue
+        step = steps[step_index]
+        step["instruction"] = instruction_update.text
+        if instruction_update.order is not None:
+            step["order"] = instruction_update.order
+        if instruction_update.timerMinutes is not None or "timer_minutes" in step:
+            step["timer_minutes"] = instruction_update.timerMinutes
+
+    # Persist files
+    _write_json_file(context.recipe_path, recipe_data)
+    if context.foods_path:
+        _write_json_file(context.foods_path, foods_review)
+    if context.units_path:
+        _write_json_file(context.units_path, units_review)
+    if context.metadata_path:
+        _write_json_file(context.metadata_path, metadata_review)
 
 
 def _run_analysis(run_state: RunState, pending: PendingUpload, config: AppConfig, workspace: RunWorkspace, run_info: RunInfo) -> None:
@@ -394,6 +966,54 @@ async def start_analysis(upload_id: str, background_tasks: BackgroundTasks) -> S
     )
 
 
+@app.get("/api/imports/active", response_model=ActiveRunResponse)
+async def get_active_run() -> ActiveRunResponse:
+    config = _load_app_config()
+    workspace = _build_workspace(config)
+    run_info = workspace.load_run_info()
+    if not run_info:
+        raise HTTPException(status_code=404, detail="Es ist kein aktiver Importlauf vorhanden.")
+    return ActiveRunResponse(
+        runId=run_info.run_id,
+        status=run_info.status,
+        recipeName=run_info.recipe_name,
+        startedAt=run_info.started_at,
+        completedAt=run_info.completed_at,
+    )
+
+
+@app.delete("/api/imports/workspace", response_model=ResetWorkspaceResponse)
+async def reset_workspace_endpoint() -> ResetWorkspaceResponse:
+    config = _load_app_config()
+    workspace = _build_workspace(config)
+    workspace.reset_current_run()
+    pending_files: List[Path] = []
+    with RUN_STATE_LOCK:
+        for pending in PENDING_UPLOADS.values():
+            pending_files.append(pending.file_path)
+        PENDING_UPLOADS.clear()
+        ACTIVE_RUNS.clear()
+    for file_path in pending_files:
+        try:
+            file_path.unlink(missing_ok=True)
+        except OSError:
+            logger.debug("Konnte Upload-Datei nicht löschen: %s", file_path)
+    return ResetWorkspaceResponse(status="ok")
+
+
+@app.get("/api/imports/{run_id}/review", response_model=ReviewDataResponse)
+async def get_review_data(run_id: str) -> ReviewDataResponse:
+    config = _load_app_config()
+    return _build_review_payload(run_id, config)
+
+
+@app.put("/api/imports/{run_id}/review", response_model=ReviewDataResponse)
+async def update_review_data(run_id: str, update: ReviewUpdateRequest) -> ReviewDataResponse:
+    config = _load_app_config()
+    _apply_review_update(run_id, config, update)
+    return _build_review_payload(run_id, config)
+
+
 @app.get("/api/imports/{run_id}", response_model=RunStatusResponse)
 async def get_run_status(run_id: str) -> RunStatusResponse:
     state = _read_run_state(run_id)
@@ -411,6 +1031,31 @@ async def get_run_status(run_id: str) -> RunStatusResponse:
 async def get_run_logs(run_id: str, after: int = 0) -> LogResponse:
     state = _read_run_state(run_id)
     return _parse_log_entries(state, after)
+
+
+@app.get("/api/imports/{run_id}/pdf")
+async def download_run_pdf(run_id: str) -> FileResponse:
+    config = _load_app_config()
+    context = _resolve_review_context(config, run_id)
+    if not context.pdf_path or not context.pdf_path.exists():
+        raise HTTPException(status_code=404, detail="PDF-Datei für diesen Lauf wurde nicht gefunden.")
+    return FileResponse(path=context.pdf_path, media_type="application/pdf", filename=context.pdf_path.name)
+
+
+@app.get("/api/imports/{run_id}/image")
+async def download_run_image(run_id: str) -> FileResponse:
+    config = _load_app_config()
+    context = _resolve_review_context(config, run_id)
+    if not context.image_path or not context.image_path.exists():
+        raise HTTPException(status_code=404, detail="Bilddatei für diesen Lauf wurde nicht gefunden.")
+    suffix = context.image_path.suffix.lower()
+    media_type = {
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".png": "image/png",
+        ".webp": "image/webp",
+    }.get(suffix, "application/octet-stream")
+    return FileResponse(path=context.image_path, media_type=media_type, filename=context.image_path.name)
 
 
 @app.get("/api/health")

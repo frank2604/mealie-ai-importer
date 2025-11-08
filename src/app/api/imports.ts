@@ -1,7 +1,7 @@
 import type { LogEntry } from "../components/LogViewer";
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? "/api";
-const BASE_URL = API_BASE_URL.endsWith("/") ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
+export const BASE_URL = API_BASE_URL.endsWith("/") ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
 
 export interface UploadPdfResult {
   uploadId: string;
@@ -35,6 +35,14 @@ export interface ApiLogEntry {
 export interface RunLogResult {
   entries: ApiLogEntry[];
   nextCursor: number;
+}
+
+export interface ActiveRunResult {
+  runId: string;
+  status: string;
+  recipeName: string;
+  startedAt: string;
+  completedAt?: string;
 }
 
 const mapLogLevel = (level: string): LogEntry["level"] => {
@@ -88,23 +96,29 @@ export const startAnalysis = async (uploadId: string): Promise<StartAnalysisResu
   return (await response.json()) as StartAnalysisResult;
 };
 
-export const fetchRunStatus = async (runId: string): Promise<RunStatusResult> => {
+export const fetchRunStatus = async (runId: string): Promise<RunStatusResult | null> => {
   const response = await fetch(`${BASE_URL}/imports/${runId}`, {
     method: "GET",
     credentials: "same-origin"
   });
+  if (response.status === 404) {
+    return null;
+  }
   if (!response.ok) {
     throw await parseError(response);
   }
   return (await response.json()) as RunStatusResult;
 };
 
-export const fetchRunLogs = async (runId: string, after = 0): Promise<RunLogResult> => {
+export const fetchRunLogs = async (runId: string, after = 0): Promise<RunLogResult | null> => {
   const query = after > 0 ? `?after=${after}` : "";
   const response = await fetch(`${BASE_URL}/imports/${encodeURIComponent(runId)}/logs${query}`, {
     method: "GET",
     credentials: "same-origin"
   });
+  if (response.status === 404) {
+    return null;
+  }
   if (!response.ok) {
     throw await parseError(response);
   }
@@ -118,3 +132,24 @@ export const mapApiLogEntries = (entries: ApiLogEntry[]): LogEntry[] =>
     message: entry.message,
     timestamp: entry.timestamp
   }));
+
+export const fetchActiveRun = async (): Promise<ActiveRunResult> => {
+  const response = await fetch(`${BASE_URL}/imports/active`, {
+    method: "GET",
+    credentials: "same-origin"
+  });
+  if (!response.ok) {
+    throw await parseError(response);
+  }
+  return (await response.json()) as ActiveRunResult;
+};
+
+export const resetWorkspace = async (): Promise<void> => {
+  const response = await fetch(`${BASE_URL}/imports/workspace`, {
+    method: "DELETE",
+    credentials: "same-origin"
+  });
+  if (!response.ok) {
+    throw await parseError(response);
+  }
+};

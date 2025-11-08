@@ -282,8 +282,14 @@ def _extract_message_text(message: Dict[str, Any]) -> Optional[str]:
     return None
 
 
-def parse_with_llm(text: str, *, llm_client: OpenAiClient, source: Optional[Path] = None,
-                   servings_hint: Optional[str] = None) -> Recipe:
+def parse_with_llm(
+    text: str,
+    *,
+    llm_client: OpenAiClient,
+    source: Optional[Path] = None,
+    servings_hint: Optional[str] = None,
+    title_hint: Optional[str] = None,
+) -> Recipe:
     """Parse *text* using the provided LLM client and return a Recipe."""
     cleaned_text = text.strip()
     if not cleaned_text:
@@ -292,7 +298,7 @@ def parse_with_llm(text: str, *, llm_client: OpenAiClient, source: Optional[Path
     request = LlmRequest(
         text=cleaned_text,
         source=source,
-        title_hint=source.stem if source else None,
+        title_hint=title_hint,
         servings_hint=servings_hint,
     )
 

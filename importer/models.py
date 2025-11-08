@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-from pydantic import BaseModel, Field, HttpUrl, validator
+from pydantic import BaseModel, Field, HttpUrl, validator, ConfigDict
 
 
 class Ingredient(BaseModel):
@@ -13,15 +13,13 @@ class Ingredient(BaseModel):
     note: Optional[str] = None
     mealie_food_id: Optional[str] = Field(default=None, alias="mealieFoodId")
     mealie_unit_id: Optional[str] = Field(default=None, alias="mealieUnitId")
+    model_config = ConfigDict(populate_by_name=True)
 
     @validator("name")
     def name_must_not_be_blank(cls, value: str) -> str:  # noqa: N805 - pydantic validator signature
         if not value.strip():
             raise ValueError("Ingredient name cannot be empty")
         return value
-
-    class Config:
-        allow_population_by_field_name = True
 
 
 class IngredientSection(BaseModel):
@@ -51,9 +49,7 @@ class OrganizerReference(BaseModel):
     name: str
     group_id: Optional[str] = Field(default=None, alias="groupId")
     slug: Optional[str] = None
-
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class RecipeMetadata(BaseModel):
@@ -67,9 +63,10 @@ class RecipeMetadata(BaseModel):
 
 class RecipeAsset(BaseModel):
     file_name: str
-    data: str
-    title: Optional[str] = None
-    description: Optional[str] = None
+    data: Optional[str] = Field(default=None, exclude=True)
+    title: Optional[str] = Field(default=None, exclude=True)
+    description: Optional[str] = Field(default=None, exclude=True)
+    data_path: Optional[str] = Field(default=None, alias="dataPath")
 
 
 class Recipe(BaseModel):
@@ -84,12 +81,10 @@ class Recipe(BaseModel):
     image_url: Optional[HttpUrl] = None
     metadata: RecipeMetadata = Field(default_factory=RecipeMetadata)
     assets: List[RecipeAsset] = Field(default_factory=list)
+    model_config = ConfigDict(populate_by_name=True)
 
     @validator("title")
     def title_must_not_be_blank(cls, value: str) -> str:  # noqa: N805
         if not value.strip():
             raise ValueError("Recipe title cannot be empty")
         return value
-
-    class Config:
-        allow_population_by_field_name = True

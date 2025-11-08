@@ -419,11 +419,11 @@ def _handle_upload_pdf(*, pdf_path: Path, config: AppConfig, dry_run: bool) -> i
     workspace = RunWorkspace(
         pipeline_dir=pipeline_dir,
         cache_dir=cache_dir,
-        log_dir=data_root / "log",
+        log_dir=None,
         archive_dir=data_root / "archive",
     )
     run_info = workspace.start_run(recipe_name=recipe_key, source_pdf=pdf_path)
-    log_file = Path(run_info.log_file) if run_info.log_file else workspace.log_dir / f"{run_info.run_id}.log"
+    log_file = Path(run_info.log_file) if run_info.log_file else pipeline_dir / f"{run_info.run_id}.log"
     configure_logging(log_file=log_file)
     logger.info("Starte Importlauf %s – Log-Datei: %s", run_info.run_id, log_file)
 
@@ -589,7 +589,24 @@ def _load_recipe(path: Path) -> Recipe:
         data = json.loads(raw)
     except json.JSONDecodeError as exc:
         raise ValueError(f"Ungültiges JSON in {path}: {exc}") from exc
-    return Recipe.parse_obj(data)
+    recipe = Recipe.parse_obj(data)
+    base_dir = path.parent
+    for asset in recipe.assets:
+        if getattr(asset, "data", None) or not getattr(asset, "data_path", None):
+            continue
+        asset_path = Path(asset.data_path)
+        if not asset_path.is_absolute():
+            asset_path = (base_dir / asset_path).resolve()
+        try:
+            payload = json.loads(asset_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        asset.data = payload.get("dataUrl") or payload.get("data")
+        if not asset.title:
+            asset.title = payload.get("title")
+        if not asset.description:
+            asset.description = payload.get("description")
+    return recipe
 
 
 def _create_openai_client(llm_config: LlmConfig) -> Optional[OpenAiClient]:

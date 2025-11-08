@@ -1,5 +1,5 @@
 {
-  "updated_at": "2025-11-08T13:47:47.244216",
+  "updated_at": "2025-11-08T16:13:39.165760",
   "foods": [
     {
       "id": "0bb022f0-4715-4bdf-8938-7be3b867d3ab",
@@ -94,12 +94,6 @@
       "aliases": []
     },
     {
-      "id": "fd855a06-9787-4083-8122-8f738ff90e5d",
-      "name": "Trockener Wermut",
-      "pluralName": "Trockener Wermut",
-      "aliases": []
-    },
-    {
       "id": "56d8f876-0110-410f-951e-7a4b365437ce",
       "name": "Hähnchenbrustfilet",
       "pluralName": "Hähnchenbrustfilets",
@@ -129,12 +123,6 @@
       "aliases": [
         "{'name': 'suesse sahne'}"
       ]
-    },
-    {
-      "id": "9223b4b8-5d94-426c-ace7-8bbf5a4c4033",
-      "name": "Wermut",
-      "pluralName": "Wermut",
-      "aliases": []
     },
     {
       "id": "60554611-f601-4d7f-b7dc-ce21c3462067",

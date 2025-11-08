@@ -45,6 +45,7 @@ export interface FoodSuggestion {
 export interface ReviewOptions {
   foods: CandidateOption[];
   units: CandidateOption[];
+  foodCategories: CategoryOption[];
 }
 
 export interface FoodSelectionPayload {
@@ -52,6 +53,7 @@ export interface FoodSelectionPayload {
   name?: string | null;
   badgeId?: string | null;
   status?: string | null;
+  newId?: string | null;
 }
 
 export interface UnitSelectionPayload {
@@ -59,6 +61,7 @@ export interface UnitSelectionPayload {
   name?: string | null;
   badgeId?: string | null;
   status?: string | null;
+  newId?: string | null;
 }
 
 export interface ReviewIngredient {
@@ -72,18 +75,20 @@ export interface ReviewIngredient {
   unitOriginalName?: string | null;
   name: string;
   foodOriginalName?: string | null;
+  foodNewId?: string | null;
+  unitNewId?: string | null;
   note?: string | null;
   notes?: string | null;
   foodStatus: string;
   foodMatch?: MatchInfo | null;
   foodCandidates: CandidateOption[];
   foodSuggestion?: FoodSuggestion | null;
-  foodDecision: Record<string, unknown>;
+  foodDecision: Record<string, any>;
   unitStatus: string;
   unitMatch?: MatchInfo | null;
   unitCandidates: CandidateOption[];
   unitSuggestion?: UnitSuggestion | null;
-  unitDecision: Record<string, unknown>;
+  unitDecision: Record<string, any>;
   foodSelection?: FoodSelectionPayload;
   unitSelection?: UnitSelectionPayload;
 }
@@ -134,8 +139,8 @@ export interface ReviewSummaryUpdatePayload {
 export interface ReviewIngredientUpdatePayload {
   id: string;
   notes?: string | null;
-  foodDecision: Record<string, unknown>;
-  unitDecision: Record<string, unknown>;
+  foodDecision: Record<string, any>;
+  unitDecision: Record<string, any>;
   foodSelection?: FoodSelectionPayload;
   unitSelection?: UnitSelectionPayload;
 }

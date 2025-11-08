@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2025-11-08T13:47:53.518929",
+  "generatedAt": "2025-11-08T16:14:28.664788",
   "summary": {
     "totalIngredients": 12,
-    "autoMatched": 12,
-    "missing": 0
+    "autoMatched": 11,
+    "missing": 1
   },
   "instructions": "Adjust 'userDecision' for each ingredient if you want to override the automatic choice. action = 'auto' keeps current behaviour, 'use_existing' expects useFoodId, 'create' expects details under create, 'skip' ignores the ingredient.",
   "availableCategories": [
@@ -128,6 +128,7 @@
         "unit": "Stück",
         "note": null
       },
+      "newId": null,
       "currentMatch": {
         "foodId": "56d8f876-0110-410f-951e-7a4b365437ce",
         "name": "Hähnchenbrustfilet",
@@ -146,19 +147,19 @@
           "pluralName": "Fett zum Braten"
         },
         {
-          "id": "fd855a06-9787-4083-8122-8f738ff90e5d",
-          "name": "Trockener Wermut",
-          "pluralName": "Trockener Wermut"
-        },
-        {
-          "id": "9223b4b8-5d94-426c-ace7-8bbf5a4c4033",
-          "name": "Wermut",
-          "pluralName": "Wermut"
-        },
-        {
           "id": "53fed768-728a-4b51-aff1-ca5a1857b6dc",
           "name": "Zwiebel",
           "pluralName": "Zwiebeln"
+        },
+        {
+          "id": "ddb8a0cf-cbaf-46bf-9069-233386e3d7bc",
+          "name": "Knoblauchzehe",
+          "pluralName": "Knoblauchzehen"
+        },
+        {
+          "id": "1e788050-8eef-433d-850c-6ededd09e367",
+          "name": "Baguette",
+          "pluralName": "Baguette"
         }
       ],
       "suggestion": null,
@@ -187,6 +188,7 @@
         "unit": "Scheiben",
         "note": null
       },
+      "newId": null,
       "currentMatch": {
         "foodId": "2092d72d-0375-4ce9-b524-830a98107cf4",
         "name": "Parma-Schinken",
@@ -246,6 +248,7 @@
         "unit": "g",
         "note": "geputzt, geviertelt"
       },
+      "newId": null,
       "currentMatch": {
         "foodId": "60554611-f601-4d7f-b7dc-ce21c3462067",
         "name": "Champignon",
@@ -303,8 +306,9 @@
         "name": "rote Zwiebeln",
         "quantity": 3.0,
         "unit": "Stück",
-        "note": "geschält und klein gehackt"
+        "note": "geschält und kleingehackt"
       },
+      "newId": null,
       "currentMatch": {
         "foodId": "faec60df-abda-4f65-bed0-b81d47121a55",
         "name": "Rote Zwiebel",
@@ -350,7 +354,7 @@
           "categoryName": null,
           "description": null
         },
-        "notes": "geschält und klein gehackt"
+        "notes": "geschält und kleingehackt"
       }
     },
     {
@@ -359,54 +363,63 @@
       "sectionName": "Section 1",
       "ingredientIndex": 4,
       "ingredient": {
-        "name": "Wermut (trocken)",
+        "name": "trockener Wermut",
         "quantity": 100.0,
         "unit": "ml",
         "note": null
       },
-      "currentMatch": {
-        "foodId": "fd855a06-9787-4083-8122-8f738ff90e5d",
-        "name": "Trockener Wermut",
-        "strategy": "ai"
-      },
-      "status": "matched",
+      "newId": "food-new-0-4",
+      "currentMatch": null,
+      "status": "missing",
       "candidates": [
         {
-          "id": "9223b4b8-5d94-426c-ace7-8bbf5a4c4033",
-          "name": "Wermut",
-          "pluralName": "Wermut"
+          "id": "b7e2a76d-d763-4ab6-8a71-f099511c4d3d",
+          "name": "Rinderbrühe",
+          "pluralName": "Rinderbrühe"
         },
         {
-          "id": "0bb022f0-4715-4bdf-8938-7be3b867d3ab",
-          "name": "Wan Tan Tasche",
-          "pluralName": "Wan Tan Taschen"
+          "id": "faec60df-abda-4f65-bed0-b81d47121a55",
+          "name": "Rote Zwiebel",
+          "pluralName": "Rote Zwiebeln"
         },
         {
-          "id": "fd855a06-9787-4083-8122-8f738ff90e5d",
-          "name": "Trockener Wermut",
-          "pluralName": "Trockener Wermut"
+          "id": "16018665-3023-4213-aeb2-c8445dd699b6",
+          "name": "Heller Soßenbinder",
+          "pluralName": "Heller Soßenbinder"
+        },
+        {
+          "id": "e05b0a19-e240-4b42-94b9-509e485d60b0",
+          "name": "Gruyere",
+          "pluralName": "Gruyere"
         },
         {
           "id": "2092d72d-0375-4ce9-b524-830a98107cf4",
           "name": "Parma-Schinken",
           "pluralName": "Parma-Schinken"
-        },
-        {
-          "id": "1e9f9678-213c-477d-8c3a-7c5a7f365f32",
-          "name": "Fett zum Braten",
-          "pluralName": "Fett zum Braten"
         }
       ],
-      "suggestion": null,
+      "suggestion": {
+        "nameSingular": "Trockener Wermut",
+        "namePlural": "Trockener Wermut",
+        "aliases": [
+          "trockener wermut",
+          "trockener-wermut"
+        ],
+        "categoryId": "7c260419-4a87-440b-8b4d-cec090a65078",
+        "categoryName": "Alkohol 🍻"
+      },
       "userDecision": {
         "action": "auto",
         "useFoodId": null,
         "create": {
-          "nameSingular": null,
-          "namePlural": null,
-          "aliases": [],
-          "categoryId": null,
-          "categoryName": null,
+          "nameSingular": "Trockener Wermut",
+          "namePlural": "Trockener Wermut",
+          "aliases": [
+            "trockener wermut",
+            "trockener-wermut"
+          ],
+          "categoryId": "7c260419-4a87-440b-8b4d-cec090a65078",
+          "categoryName": "Alkohol 🍻",
           "description": null
         },
         "notes": ""
@@ -423,6 +436,7 @@
         "unit": "ml",
         "note": null
       },
+      "newId": null,
       "currentMatch": {
         "foodId": "ce7b4e53-b248-490e-953f-c4548bfb941a",
         "name": "Süße Sahne",
@@ -480,8 +494,9 @@
         "name": "Mehl",
         "quantity": 1.0,
         "unit": "Esslöffel",
-        "note": "zum Bestäuben"
+        "note": null
       },
+      "newId": null,
       "currentMatch": {
         "foodId": "49ad74f8-8303-4fa3-8e31-0e5b0d55e12d",
         "name": "Mehl",
@@ -527,7 +542,7 @@
           "categoryName": null,
           "description": null
         },
-        "notes": "zum Bestäuben"
+        "notes": ""
       }
     },
     {
@@ -541,6 +556,7 @@
         "unit": "Esslöffel",
         "note": null
       },
+      "newId": null,
       "currentMatch": {
         "foodId": "16018665-3023-4213-aeb2-c8445dd699b6",
         "name": "Heller Soßenbinder",
@@ -564,14 +580,14 @@
           "pluralName": "Rinderbrühe"
         },
         {
-          "id": "fd855a06-9787-4083-8122-8f738ff90e5d",
-          "name": "Trockener Wermut",
-          "pluralName": "Trockener Wermut"
-        },
-        {
           "id": "a89d7c25-26dc-4258-9891-d5718371fc6e",
           "name": "Möhre",
           "pluralName": "Möhren"
+        },
+        {
+          "id": "56d8f876-0110-410f-951e-7a4b365437ce",
+          "name": "Hähnchenbrustfilet",
+          "pluralName": "Hähnchenbrustfilets"
         }
       ],
       "suggestion": null,
@@ -595,42 +611,43 @@
       "sectionName": "Section 1",
       "ingredientIndex": 8,
       "ingredient": {
-        "name": "Fett zum Braten",
+        "name": "Fett",
         "quantity": null,
         "unit": null,
-        "note": "zum Anbraten"
+        "note": "zum Braten"
       },
+      "newId": null,
       "currentMatch": {
         "foodId": "1e9f9678-213c-477d-8c3a-7c5a7f365f32",
         "name": "Fett zum Braten",
-        "strategy": "exact"
+        "strategy": "ai"
       },
       "status": "matched",
       "candidates": [
-        {
-          "id": "1e9f9678-213c-477d-8c3a-7c5a7f365f32",
-          "name": "Fett zum Braten",
-          "pluralName": "Fett zum Braten"
-        },
-        {
-          "id": "faec60df-abda-4f65-bed0-b81d47121a55",
-          "name": "Rote Zwiebel",
-          "pluralName": "Rote Zwiebeln"
-        },
-        {
-          "id": "a89d7c25-26dc-4258-9891-d5718371fc6e",
-          "name": "Möhre",
-          "pluralName": "Möhren"
-        },
         {
           "id": "1e788050-8eef-433d-850c-6ededd09e367",
           "name": "Baguette",
           "pluralName": "Baguette"
         },
         {
-          "id": "53fed768-728a-4b51-aff1-ca5a1857b6dc",
-          "name": "Zwiebel",
-          "pluralName": "Zwiebeln"
+          "id": "1e9f9678-213c-477d-8c3a-7c5a7f365f32",
+          "name": "Fett zum Braten",
+          "pluralName": "Fett zum Braten"
+        },
+        {
+          "id": "31eedd6a-c57b-4979-8a9d-b7ff71663acc",
+          "name": "Salbeiblatt",
+          "pluralName": "Salbeiblätter"
+        },
+        {
+          "id": "4df85f09-2b50-4d36-a9f2-09ffee8ca8d1",
+          "name": "Butter",
+          "pluralName": "Butter"
+        },
+        {
+          "id": "baec189d-c87d-4e04-b972-db79b960e84e",
+          "name": "Pfeffer",
+          "pluralName": "Pfeffer"
         }
       ],
       "suggestion": null,
@@ -645,7 +662,7 @@
           "categoryName": null,
           "description": null
         },
-        "notes": "zum Anbraten"
+        "notes": "zum Braten"
       }
     },
     {
@@ -656,9 +673,10 @@
       "ingredient": {
         "name": "Salbeiblätter",
         "quantity": 6.0,
-        "unit": "Stück",
+        "unit": "Blatt",
         "note": null
       },
+      "newId": null,
       "currentMatch": {
         "foodId": "31eedd6a-c57b-4979-8a9d-b7ff71663acc",
         "name": "Salbeiblatt",
@@ -716,8 +734,9 @@
         "name": "Salz",
         "quantity": null,
         "unit": null,
-        "note": "nach Geschmack"
+        "note": "zum Abschmecken"
       },
+      "newId": null,
       "currentMatch": {
         "foodId": "aeb19e8c-cc64-4a19-a216-182b40e0852e",
         "name": "Salz",
@@ -763,7 +782,7 @@
           "categoryName": null,
           "description": null
         },
-        "notes": "nach Geschmack"
+        "notes": "zum Abschmecken"
       }
     },
     {
@@ -775,8 +794,9 @@
         "name": "Pfeffer",
         "quantity": null,
         "unit": null,
-        "note": "nach Geschmack, zum Pfeffern der Filets"
+        "note": "zum Abschmecken"
       },
+      "newId": null,
       "currentMatch": {
         "foodId": "baec189d-c87d-4e04-b972-db79b960e84e",
         "name": "Pfeffer",
@@ -795,11 +815,6 @@
           "pluralName": "Wasser"
         },
         {
-          "id": "9223b4b8-5d94-426c-ace7-8bbf5a4c4033",
-          "name": "Wermut",
-          "pluralName": "Wermut"
-        },
-        {
           "id": "4df85f09-2b50-4d36-a9f2-09ffee8ca8d1",
           "name": "Butter",
           "pluralName": "Butter"
@@ -808,6 +823,11 @@
           "id": "31eedd6a-c57b-4979-8a9d-b7ff71663acc",
           "name": "Salbeiblatt",
           "pluralName": "Salbeiblätter"
+        },
+        {
+          "id": "e05b0a19-e240-4b42-94b9-509e485d60b0",
+          "name": "Gruyere",
+          "pluralName": "Gruyere"
         }
       ],
       "suggestion": null,
@@ -822,7 +842,7 @@
           "categoryName": null,
           "description": null
         },
-        "notes": "nach Geschmack, zum Pfeffern der Filets"
+        "notes": "zum Abschmecken"
       }
     }
   ]

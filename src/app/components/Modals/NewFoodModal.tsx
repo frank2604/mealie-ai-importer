@@ -50,7 +50,7 @@ export const NewFoodModal: React.FC<NewFoodModalProps> = ({ entry, categories, i
     );
     setNamePlural((createPayload.namePlural ?? entry.foodSuggestion?.namePlural) ?? "");
     setAliasesInput((createPayload.aliases ?? entry.foodSuggestion?.aliases ?? []).join(", "));
-    setCategoryId(createPayload.categoryId ?? "");
+    setCategoryId(createPayload.categoryId ?? entry.foodSuggestion?.categoryId ?? "");
     setDescription(createPayload.description ?? "");
   }, [entry]);
 

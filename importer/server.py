@@ -1,9 +1,11 @@
 """FastAPI service exposing the Mealie importer pipeline."""
 from __future__ import annotations
 
+import base64
 import json
 import logging
 import re
+import time
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -42,6 +44,16 @@ logger = logging.getLogger(__name__)
 UPLOAD_ROOT = Path("data/uploads")
 UPLOAD_ROOT.mkdir(parents=True, exist_ok=True)
 
+IMAGE_MEDIA_TYPES = {
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".png": "image/png",
+    ".webp": "image/webp",
+}
+
+DEFAULT_IMAGE_FILE = "02_RecipeImage.jpg"
+DEFAULT_IMAGE_JSON = "03_RecipeImage.json"
+
 RUN_STATE_LOCK = Lock()
 ACTIVE_RUNS: Dict[str, "RunState"] = {}
 PENDING_UPLOADS: Dict[str, "PendingUpload"] = {}
@@ -78,9 +90,10 @@ class RunStatusResponse(BaseModel):
 
 class LogEntryModel(BaseModel):
     id: str
-    level: str
-    message: str
-    timestamp: str
+
+
+class ImageUploadResponse(BaseModel):
+    imageUrl: str
 
 
 class LogResponse(BaseModel):
@@ -207,8 +220,12 @@ class ReviewOptions(BaseModel):
 class ReviewSummary(BaseModel):
     title: str
     description: str
-    portions: Optional[float] = None
-    totalTimeMinutes: Optional[int] = None
+    recipeServings: Optional[float] = None
+    recipeYieldQuantity: Optional[float] = None
+    recipeYield: Optional[str] = None
+    totalTime: Optional[str] = None
+    prepTime: Optional[str] = None
+    performTime: Optional[str] = None
     categoryId: Optional[str] = None
     tagIds: List[str] = Field(default_factory=list)
     availableCategories: List[CategoryOption] = Field(default_factory=list)
@@ -227,8 +244,12 @@ class ReviewDataResponse(BaseModel):
 class ReviewSummaryUpdate(BaseModel):
     title: str
     description: str
-    portions: Optional[float] = None
-    totalTimeMinutes: Optional[int] = None
+    recipeServings: Optional[float] = None
+    recipeYieldQuantity: Optional[float] = None
+    recipeYield: Optional[str] = None
+    totalTime: Optional[str] = None
+    prepTime: Optional[str] = None
+    performTime: Optional[str] = None
     categoryId: Optional[str] = None
     tagIds: List[str] = Field(default_factory=list)
 
@@ -446,6 +467,15 @@ def _write_json_file(path: Path, payload: Dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as handle:
         json.dump(payload, handle, ensure_ascii=False, indent=2)
+
+
+def _write_recipe_image_json(pipeline_dir: Path, file_name: str, data: bytes, mime_type: str) -> None:
+    data_url = f"data:{mime_type};base64,{base64.b64encode(data).decode('ascii')}"
+    payload = {"fileName": file_name, "dataUrl": data_url}
+    json_path = _find_optional_file(pipeline_dir, "*RecipeImage.json")
+    if not json_path:
+        json_path = pipeline_dir / DEFAULT_IMAGE_JSON
+    _write_json_file(json_path, payload)
 
 
 def _load_candidate_options(path: Path, key: str) -> List[CandidateOption]:
@@ -718,21 +748,36 @@ def _build_review_payload(run_id: str, config: AppConfig) -> ReviewDataResponse:
             instructions_payload.append(instruction_payload)
 
     metadata_user_decision = metadata_review.get("userDecision", {})
-    portions_value = recipe_data.get("portions")
-    if not isinstance(portions_value, (int, float)):
-        candidate = metadata_user_decision.get("portions")
-        portions_value = candidate if isinstance(candidate, (int, float)) else None
+    servings_value = recipe_data.get("recipeServings")
+    if servings_value is None:
+        servings_value = recipe_data.get("portions")
+    if not isinstance(servings_value, (int, float)):
+        candidate = metadata_user_decision.get("recipeServings") or metadata_user_decision.get("portions")
+        servings_value = candidate if isinstance(candidate, (int, float)) else None
 
-    total_time_value = recipe_data.get("total_time_minutes")
-    if not isinstance(total_time_value, int):
-        candidate = metadata_user_decision.get("totalTimeMinutes")
-        total_time_value = candidate if isinstance(candidate, int) else None
+    total_time_value = recipe_data.get("totalTime")
+    if total_time_value is None:
+        legacy_minutes = recipe_data.get("total_time_minutes")
+        if isinstance(legacy_minutes, (int, float)):
+            total_time_value = f"{int(legacy_minutes)} Minuten"
+    if not isinstance(total_time_value, str):
+        candidate = metadata_user_decision.get("totalTime") or metadata_user_decision.get("totalTimeMinutes")
+        if isinstance(candidate, str):
+            total_time_value = candidate
+        elif isinstance(candidate, (int, float)):
+            total_time_value = f"{int(candidate)} Minuten"
+        else:
+            total_time_value = None
 
     summary = ReviewSummary(
         title=str(recipe_data.get("title") or context.run_info.recipe_name),
         description=str(recipe_data.get("description") or ""),
-        portions=portions_value,
-        totalTimeMinutes=total_time_value,
+        recipeServings=servings_value,
+        recipeYieldQuantity=recipe_data.get("recipeYieldQuantity"),
+        recipeYield=recipe_data.get("recipeYield"),
+        totalTime=total_time_value,
+        prepTime=recipe_data.get("prepTime"),
+        performTime=recipe_data.get("performTime"),
         categoryId=metadata_user_decision.get("categoryId"),
         tagIds=list(metadata_user_decision.get("tagIds") or []),
         availableCategories=[
@@ -808,25 +853,33 @@ def _apply_review_update(run_id: str, config: AppConfig, payload: ReviewUpdateRe
     # Update summary fields
     recipe_data["title"] = payload.summary.title
     recipe_data["description"] = payload.summary.description
-    if payload.summary.portions is not None:
-        recipe_data["portions"] = payload.summary.portions
-    if payload.summary.totalTimeMinutes is not None:
-        recipe_data["total_time_minutes"] = payload.summary.totalTimeMinutes
+    if payload.summary.recipeServings is not None:
+        recipe_data["recipeServings"] = payload.summary.recipeServings
+    if payload.summary.recipeYieldQuantity is not None:
+        recipe_data["recipeYieldQuantity"] = payload.summary.recipeYieldQuantity
+    if payload.summary.recipeYield is not None:
+        recipe_data["recipeYield"] = payload.summary.recipeYield
+    if payload.summary.totalTime is not None:
+        recipe_data["totalTime"] = payload.summary.totalTime
+    if payload.summary.prepTime is not None:
+        recipe_data["prepTime"] = payload.summary.prepTime
+    if payload.summary.performTime is not None:
+        recipe_data["performTime"] = payload.summary.performTime
 
     # Update metadata review selections
     user_decision = metadata_review.setdefault("userDecision", {})
-    if payload.summary.portions is not None:
-        user_decision["portions"] = payload.summary.portions
-    if payload.summary.totalTimeMinutes is not None:
-        user_decision["totalTimeMinutes"] = payload.summary.totalTimeMinutes
+    if payload.summary.recipeServings is not None:
+        user_decision["recipeServings"] = payload.summary.recipeServings
+    if payload.summary.totalTime is not None:
+        user_decision["totalTime"] = payload.summary.totalTime
     user_decision["categoryId"] = payload.summary.categoryId
     user_decision["tagIds"] = payload.summary.tagIds
 
     current_state = metadata_review.setdefault("current", {})
-    if payload.summary.portions is not None:
-        current_state["portions"] = payload.summary.portions
-    if payload.summary.totalTimeMinutes is not None:
-        current_state["totalTimeMinutes"] = payload.summary.totalTimeMinutes
+    if payload.summary.recipeServings is not None:
+        current_state["recipeServings"] = payload.summary.recipeServings
+    if payload.summary.totalTime is not None:
+        current_state["totalTime"] = payload.summary.totalTime
     if payload.summary.categoryId is not None:
         current_state["category"] = payload.summary.categoryId
     if payload.summary.tagIds is not None:
@@ -1201,13 +1254,35 @@ async def download_run_image(run_id: str) -> FileResponse:
     if not context.image_path or not context.image_path.exists():
         raise HTTPException(status_code=404, detail="Bilddatei für diesen Lauf wurde nicht gefunden.")
     suffix = context.image_path.suffix.lower()
-    media_type = {
-        ".jpg": "image/jpeg",
-        ".jpeg": "image/jpeg",
-        ".png": "image/png",
-        ".webp": "image/webp",
-    }.get(suffix, "application/octet-stream")
+    media_type = IMAGE_MEDIA_TYPES.get(suffix, "application/octet-stream")
     return FileResponse(path=context.image_path, media_type=media_type, filename=context.image_path.name)
+
+
+@app.post("/api/imports/{run_id}/image", response_model=ImageUploadResponse)
+async def upload_run_image(run_id: str, file: UploadFile = File(...)) -> ImageUploadResponse:
+    if not file:
+        raise HTTPException(status_code=400, detail="Keine Datei übergeben.")
+    contents = await file.read()
+    if not contents:
+        raise HTTPException(status_code=400, detail="Die hochgeladene Datei ist leer.")
+
+    suffix = Path(file.filename or "").suffix.lower() or ".jpg"
+    if suffix not in IMAGE_MEDIA_TYPES:
+        suffix = ".jpg"
+
+    config = _load_app_config()
+    context = _resolve_review_context(config, run_id)
+    target_name = context.image_path.name if context.image_path else DEFAULT_IMAGE_FILE
+    if not target_name.endswith(suffix):
+        target_name = Path(target_name).with_suffix(suffix).name
+    target_path = context.pipeline_dir / target_name
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+    target_path.write_bytes(contents)
+
+    _write_recipe_image_json(context.pipeline_dir, target_name, contents, IMAGE_MEDIA_TYPES[suffix])
+
+    cache_buster = int(time.time())
+    return ImageUploadResponse(imageUrl=f"/api/imports/{run_id}/image?ts={cache_buster}")
 
 
 @app.get("/api/health")

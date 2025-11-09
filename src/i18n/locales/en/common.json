@@ -182,7 +182,18 @@
     },
     "meta": {
       "portions": "Servings",
-      "totalTime": "Total time (minutes)"
+      "recipeYieldQuantity": "Yield quantity",
+      "recipeYield": "Yield text",
+      "totalTime": "Total time",
+      "prepTime": "Prep time",
+      "performTime": "Cooking time",
+      "category": "Category",
+      "tags": "Tags",
+      "categoryPlaceholder": "Select category…",
+      "tagsPlaceholder": "Select tag…",
+      "tagsSearch": "Search…",
+      "editTags": "Edit tags",
+      "removeTag": "Remove tag"
     },
     "preparation": {
       "labels": {
@@ -192,7 +203,11 @@
       "removeIngredient": "Remove ingredient"
     },
     "image": {
-      "caption": "Planned crop from the original asset. The final crop will be shown once the PDF viewer is integrated."
+      "caption": "Planned crop from the original asset. The final crop will be shown once the PDF viewer is integrated.",
+      "uploadButton": "Select image",
+      "dropHint": "or drop a file here",
+      "empty": "No image available yet.",
+      "uploading": "Uploading image…"
     },
     "modal": {
       "close": "Close",

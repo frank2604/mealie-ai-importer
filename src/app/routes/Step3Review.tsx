@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, Fragment } from "react";
 import clsx from "clsx";
+import { Dialog, Transition } from "@headlessui/react";
 import { ChevronUpDownIcon, PencilSquareIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import { PdfViewerPlaceholder } from "../components/PdfViewerPlaceholder";
@@ -7,18 +8,21 @@ import { layoutConfig } from "../../config/layout.config";
 import { BadgeId } from "../../config/badges.config";
 import {
   CandidateOption,
+  CategoryOption,
   ReviewData,
   ReviewIngredient,
   ReviewInstruction,
   FoodSelectionPayload,
   UnitSelectionPayload,
   fetchReviewData,
-  updateReviewData
+  updateReviewData,
+  uploadRecipeImage
 } from "../api/review";
 import { useImportFlow } from "../context/ImportFlowContext";
 import { BadgePill } from "../components/BadgePill";
 import { NewFoodModal, FoodCreateFormValues } from "../components/Modals/NewFoodModal";
 import { NewUnitModal, UnitCreateFormValues } from "../components/Modals/NewUnitModal";
+import { BASE_URL } from "../api/imports";
 
 const mapStatusToBadgeId = (status?: string | null): BadgeId | null => {
   switch (status) {
@@ -40,8 +44,12 @@ const mapStatusToBadgeId = (status?: string | null): BadgeId | null => {
 };
 
 interface SummaryFormState {
-  portionsInput: string;
+  servingsInput: string;
+  yieldQuantityInput: string;
+  yieldTextInput: string;
   totalTimeInput: string;
+  prepTimeInput: string;
+  performTimeInput: string;
 }
 
 interface SearchableSelectProps {
@@ -55,6 +63,7 @@ interface SearchableSelectProps {
 }
 
 const MAX_RESULTS = 50;
+type TagOption = CategoryOption & { category?: string | null };
 
 const compareCandidateOptions = (a: CandidateOption, b: CandidateOption) => {
   const left = (a.name ?? a.id ?? "").toString();
@@ -180,6 +189,189 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
     </div>
   );
 };
+interface TagMultiSelectProps {
+  options: TagOption[];
+  selectedIds: string[];
+  placeholder: string;
+  searchPlaceholder: string;
+  onChange: (ids: string[]) => void;
+}
+
+const TagSelectionList: React.FC<TagMultiSelectProps & { categories: string[]; activeCategory: string | null; onCategoryToggle: (category: string | null) => void }> = ({
+  options,
+  selectedIds,
+  placeholder,
+  searchPlaceholder,
+  onChange,
+  categories,
+  activeCategory,
+  onCategoryToggle
+}) => {
+  const [query, setQuery] = useState("");
+  const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds]);
+  const filteredOptions = useMemo(() => {
+    const term = query.trim().toLowerCase();
+    return options.filter((option) => {
+      const name = (option.name ?? option.id).toLowerCase();
+      const category = (option.category ?? "").toLowerCase();
+      const matchesQuery = !term || name.includes(term) || category.includes(term);
+      const matchesCategory = !activeCategory || option.category === activeCategory;
+      return matchesQuery && matchesCategory;
+    });
+  }, [activeCategory, options, query]);
+
+  const toggleSelection = (id: string) => {
+    if (selectedSet.has(id)) {
+      onChange(selectedIds.filter((item) => item !== id));
+    } else {
+      onChange([...selectedIds, id]);
+    }
+  };
+
+  const removeSelection = (id: string) => {
+    onChange(selectedIds.filter((item) => item !== id));
+  };
+
+  return (
+    <div className={clsx("border border-border bg-background", layoutConfig.borderRadius.medium)}>
+      <div className="border-b border-border/60 px-3 py-2">
+        <input
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder={searchPlaceholder}
+          className="w-full border-0 bg-transparent text-sm text-text outline-none"
+        />
+      </div>
+      {categories.length ? (
+        <div className="flex flex-wrap gap-2 border-b border-border/60 px-3 py-2">
+          {categories.map((category) => {
+            const isActive = category === activeCategory;
+            return (
+              <button
+                type="button"
+                key={category}
+                onClick={() => onCategoryToggle(isActive ? null : category)}
+                className={clsx(
+                  "inline-flex items-center border px-2 py-1 text-xs font-semibold",
+                  layoutConfig.borderRadius.small,
+                  isActive ? "border-primary bg-primary/10 text-primary" : "border-border text-text/70 hover:text-primary hover:border-primary/50"
+                )}
+              >
+                {category}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+      <div className="max-h-[32rem] overflow-auto">
+        {filteredOptions.length === 0 ? (
+          <div className="px-3 py-2 text-xs text-text/60">{placeholder}</div>
+        ) : (
+          filteredOptions.map((option) => {
+            const isSelected = selectedSet.has(option.id);
+            return (
+              <label
+                key={option.id}
+                className={clsx(
+                  "flex cursor-pointer items-center gap-3 px-3 py-2 text-sm",
+                  isSelected ? "bg-primary/10 text-primary" : "text-text/80"
+                )}
+              >
+                <input
+                  type="checkbox"
+                  checked={isSelected}
+                  onChange={() => toggleSelection(option.id)}
+                  className="h-4 w-4 border-border text-primary focus:ring-primary"
+                />
+                <div className="flex flex-col">
+                  <span className="font-semibold">{option.name ?? option.id}</span>
+                  {option.category ? <span className="text-xs text-text/60">{option.category}</span> : null}
+                </div>
+              </label>
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
+};
+
+interface TagSelectionModalProps extends TagMultiSelectProps {
+  isOpen: boolean;
+  onClose: () => void;
+  categories: string[];
+  activeCategory: string | null;
+  onCategoryToggle: (category: string | null) => void;
+}
+
+const TagSelectionModal: React.FC<TagSelectionModalProps> = ({ isOpen, onClose, options, selectedIds, placeholder, searchPlaceholder, onChange, categories, activeCategory, onCategoryToggle }) => {
+  const { t } = useTranslation();
+
+  return (
+    <Transition appear show={isOpen} as={Fragment}>
+      <Dialog as="div" className="relative z-40" onClose={onClose}>
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-200"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-150"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" />
+        </Transition.Child>
+
+        <div className="fixed inset-0 overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-200"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-150"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+            >
+              <Dialog.Panel
+                className={clsx(
+                  "w-full max-w-4xl transform overflow-hidden border border-border bg-panel p-6 text-left align-middle shadow-xl transition-all",
+                  layoutConfig.borderRadius.large
+                )}
+              >
+                <Dialog.Title className="text-xl font-semibold text-primary">{t("review.meta.tags")}</Dialog.Title>
+                <div className="mt-4" style={{ maxHeight: "80vh" }}>
+                  <TagSelectionList
+                    options={options}
+                    selectedIds={selectedIds}
+                    placeholder={placeholder}
+                    searchPlaceholder={searchPlaceholder}
+                    onChange={onChange}
+                    categories={categories}
+                    activeCategory={activeCategory}
+                    onCategoryToggle={onCategoryToggle}
+                  />
+                </div>
+                <div className="mt-4 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className={clsx(
+                      "focus-ring inline-flex items-center bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary/90",
+                      layoutConfig.borderRadius.small
+                    )}
+                  >
+                    {t("review.modal.close")}
+                  </button>
+                </div>
+              </Dialog.Panel>
+            </Transition.Child>
+          </div>
+        </div>
+      </Dialog>
+    </Transition>
+  );
+};
 
 const getFoodCreatePayload = (entry: ReviewIngredient): FoodCreateFormValues => {
   const decision = (entry.foodDecision || {}) as Record<string, any>;
@@ -224,51 +416,63 @@ const parseLocaleNumber = (value: string): number | null => {
   return parsed;
 };
 
-const parseInteger = (value: string): number | null => {
-  if (!value.trim()) {
-    return null;
-  }
-  const parsed = Number.parseInt(value.trim(), 10);
-  if (Number.isNaN(parsed)) {
-    return null;
-  }
-  return parsed;
+const enrichReviewData = (data: ReviewData): ReviewData => {
+  const legacySummary = data.summary as Record<string, unknown>;
+  const normalizedSummary = {
+    ...data.summary,
+    recipeServings:
+      data.summary.recipeServings ??
+      (typeof legacySummary.portions === "number" ? (legacySummary.portions as number) : null),
+    totalTime:
+      data.summary.totalTime ??
+      (typeof legacySummary.totalTimeMinutes === "number"
+        ? String(legacySummary.totalTimeMinutes)
+        : (legacySummary.totalTimeMinutes as string | null) ??
+          (typeof legacySummary.total_time_minutes === "number"
+            ? String(legacySummary.total_time_minutes)
+            : null))
+  };
+
+  return {
+    ...data,
+    summary: normalizedSummary,
+    options: {
+      foods: data.options?.foods ?? [],
+      units: data.options?.units ?? [],
+      foodCategories: data.options?.foodCategories ?? []
+    },
+    ingredients: data.ingredients.map((item) => ({
+      ...item,
+      notes: item.notes ?? "",
+      foodSelection:
+        item.foodSelection ??
+        ({
+          mealieFoodId: item.foodMatch?.id ?? null,
+          newId: item.foodNewId ?? null,
+          name: item.foodMatch?.name ?? item.name,
+          badgeId: mapStatusToBadgeId(item.foodStatus),
+          status: item.foodStatus ?? null
+        } as FoodSelectionPayload),
+      unitSelection:
+        item.unitSelection ??
+        ({
+          mealieUnitId: item.unitMatch?.id ?? null,
+          newId: item.unitNewId ?? null,
+          name: item.unitMatch?.name ?? item.unit ?? "",
+          badgeId: mapStatusToBadgeId(item.unitStatus),
+          status: item.unitStatus ?? null
+        } as UnitSelectionPayload)
+    }))
+  };
 };
 
-const enrichReviewData = (data: ReviewData): ReviewData => ({
-  ...data,
-  options: {
-    foods: data.options?.foods ?? [],
-    units: data.options?.units ?? [],
-    foodCategories: data.options?.foodCategories ?? []
-  },
-  ingredients: data.ingredients.map((item) => ({
-    ...item,
-    notes: item.notes ?? "",
-    foodSelection:
-      item.foodSelection ??
-      ({
-        mealieFoodId: item.foodMatch?.id ?? null,
-        newId: item.foodNewId ?? null,
-        name: item.foodMatch?.name ?? item.name,
-        badgeId: mapStatusToBadgeId(item.foodStatus),
-        status: item.foodStatus ?? null
-      } as FoodSelectionPayload),
-    unitSelection:
-      item.unitSelection ??
-      ({
-        mealieUnitId: item.unitMatch?.id ?? null,
-        newId: item.unitNewId ?? null,
-        name: item.unitMatch?.name ?? item.unit ?? "",
-        badgeId: mapStatusToBadgeId(item.unitStatus),
-        status: item.unitStatus ?? null
-      } as UnitSelectionPayload)
-  }))
-});
-
 const createSummaryForm = (summary: ReviewData["summary"]): SummaryFormState => ({
-  portionsInput: summary.portions != null ? String(summary.portions).replace(".", ",") : "",
-  totalTimeInput: summary.totalTimeMinutes != null ? String(summary.totalTimeMinutes) : ""
+  servingsInput: summary.recipeServings != null ? String(summary.recipeServings).replace(".", ",") : "",
+  yieldQuantityInput: summary.recipeYieldQuantity != null ? String(summary.recipeYieldQuantity).replace(".", ",") : "",
+  yieldTextInput: summary.recipeYield ?? "",
+  totalTimeInput: summary.totalTime ?? "",
+  prepTimeInput: summary.prepTime ?? "",
+  performTimeInput: summary.performTime ?? ""
 });
 
 const createPreparationSteps = (instructions: ReviewInstruction[]): Record<string, string> => {
@@ -283,8 +487,12 @@ const buildUpdatePayload = (data: ReviewData) => ({
   summary: {
     title: data.summary.title,
     description: data.summary.description,
-    portions: data.summary.portions ?? null,
-    totalTimeMinutes: data.summary.totalTimeMinutes ?? null,
+    recipeServings: data.summary.recipeServings ?? null,
+    recipeYieldQuantity: data.summary.recipeYieldQuantity ?? null,
+    recipeYield: data.summary.recipeYield ?? null,
+    totalTime: data.summary.totalTime ?? null,
+    prepTime: data.summary.prepTime ?? null,
+    performTime: data.summary.performTime ?? null,
     categoryId: data.summary.categoryId ?? null,
     tagIds: data.summary.tagIds ?? []
   },
@@ -324,9 +532,22 @@ export const Step3Review: React.FC = () => {
   const clearSelectionLabel = t("review.selection.clear");
 
   const [reviewData, setReviewData] = useState<ReviewData | null>(null);
-  const [summaryForm, setSummaryForm] = useState<SummaryFormState>({ portionsInput: "", totalTimeInput: "" });
+  const [summaryForm, setSummaryForm] = useState<SummaryFormState>({
+    servingsInput: "",
+    yieldQuantityInput: "",
+    yieldTextInput: "",
+    totalTimeInput: "",
+    prepTimeInput: "",
+    performTimeInput: ""
+  });
   const [foodModalEntry, setFoodModalEntry] = useState<ReviewIngredient | null>(null);
   const [unitModalEntry, setUnitModalEntry] = useState<ReviewIngredient | null>(null);
+  const [isTagModalOpen, setIsTagModalOpen] = useState(false);
+  const [activeTagCategory, setActiveTagCategory] = useState<string | null>(null);
+  const [isImageUploading, setIsImageUploading] = useState(false);
+  const [imageError, setImageError] = useState<string | null>(null);
+  const [isDragActive, setIsDragActive] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [preparationSteps, setPreparationSteps] = useState<Record<string, string>>({});
   const [stepIngredients, setStepIngredients] = useState<Record<string, string[]>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -355,6 +576,79 @@ export const Step3Review: React.FC = () => {
       return left.localeCompare(right, undefined, { sensitivity: "base" });
     });
   }, [reviewData]);
+  const sortedCategoryOptions = useMemo(() => {
+    if (!reviewData) {
+      return [];
+    }
+    return (reviewData.summary.availableCategories || [])
+      .map((category) => ({
+        id: category.id,
+        name: category.name ?? category.id
+      }))
+      .sort(compareCandidateOptions);
+  }, [reviewData]);
+  const sortedTagOptions = useMemo(() => {
+    if (!reviewData) {
+      return [];
+    }
+    const groups = reviewData.summary.availableTagCategories || [];
+    const flattened: TagOption[] = [];
+    groups.forEach((group) => {
+      (group.tags || []).forEach((tag) => {
+        if (tag.id) {
+          flattened.push({
+            ...tag,
+            category: group.category
+          });
+        }
+      });
+    });
+    return flattened.sort((a, b) => {
+      const left = (a.name ?? a.id ?? "").toString();
+      const right = (b.name ?? b.id ?? "").toString();
+      return left.localeCompare(right, undefined, { sensitivity: "base" });
+    });
+  }, [reviewData]);
+  const availableTagCategories = useMemo(() => {
+    if (!reviewData) {
+      return [];
+    }
+    const categories = (reviewData.summary.availableTagCategories || [])
+      .map((group) => group.category)
+      .filter((category): category is string => Boolean(category));
+    return Array.from(new Set(categories));
+  }, [reviewData]);
+  const selectedTagDetails = useMemo(() => {
+    if (!reviewData) {
+      return [];
+    }
+    const ids = reviewData.summary.tagIds ?? [];
+    return ids.map((id) => {
+      const match = sortedTagOptions.find((option) => option.id === id);
+      return (
+        match ?? {
+          id,
+          name: id,
+          category: null
+        }
+      );
+    });
+  }, [reviewData, sortedTagOptions]);
+  const imageAspectClass = layoutConfig.images?.aspectRatio ?? "aspect-video";
+  const currentImageUrl = useMemo(() => {
+    const rawUrl = reviewData?.assets?.imageUrl;
+    if (!rawUrl) {
+      return null;
+    }
+    if (/^https?:\/\//i.test(rawUrl)) {
+      return rawUrl;
+    }
+    if (BASE_URL.startsWith("http")) {
+      const apiRoot = BASE_URL.replace(/\/api$/, "");
+      return `${apiRoot}${rawUrl}`;
+    }
+    return rawUrl;
+  }, [reviewData?.assets?.imageUrl]);
 
   const autoResizeTextarea = useCallback((textarea: HTMLTextAreaElement | null) => {
     if (!textarea) return;
@@ -365,7 +659,14 @@ export const Step3Review: React.FC = () => {
   useEffect(() => {
     if (!runId) {
       setReviewData(null);
-      setSummaryForm({ portionsInput: "", totalTimeInput: "" });
+      setSummaryForm({
+        servingsInput: "",
+        yieldQuantityInput: "",
+        yieldTextInput: "",
+        totalTimeInput: "",
+        prepTimeInput: "",
+        performTimeInput: ""
+      });
       setPreparationSteps({});
       setStepIngredients({});
       return;
@@ -439,8 +740,8 @@ export const Step3Review: React.FC = () => {
     []
   );
 
-  const handlePortionsChange = useCallback((value: string) => {
-    setSummaryForm((previous) => ({ ...previous, portionsInput: value }));
+  const handleServingsChange = useCallback((value: string) => {
+    setSummaryForm((previous) => ({ ...previous, servingsInput: value }));
     setReviewData((previous) => {
       if (!previous) {
         return previous;
@@ -449,7 +750,7 @@ export const Step3Review: React.FC = () => {
         ...previous,
         summary: {
           ...previous.summary,
-          portions: parseLocaleNumber(value)
+          recipeServings: parseLocaleNumber(value)
         }
       };
     });
@@ -465,11 +766,183 @@ export const Step3Review: React.FC = () => {
         ...previous,
         summary: {
           ...previous.summary,
-          totalTimeMinutes: parseInteger(value)
+          totalTime: value
         }
       };
     });
   }, []);
+
+  const handleYieldQuantityChange = useCallback((value: string) => {
+    setSummaryForm((previous) => ({ ...previous, yieldQuantityInput: value }));
+    setReviewData((previous) => {
+      if (!previous) {
+        return previous;
+      }
+      return {
+        ...previous,
+        summary: {
+          ...previous.summary,
+          recipeYieldQuantity: parseLocaleNumber(value)
+        }
+      };
+    });
+  }, []);
+
+  const handleYieldTextChange = useCallback((value: string) => {
+    setSummaryForm((previous) => ({ ...previous, yieldTextInput: value }));
+    setReviewData((previous) => {
+      if (!previous) {
+        return previous;
+      }
+      return {
+        ...previous,
+        summary: {
+          ...previous.summary,
+          recipeYield: value
+        }
+      };
+    });
+  }, []);
+
+  const handlePrepTimeChange = useCallback((value: string) => {
+    setSummaryForm((previous) => ({ ...previous, prepTimeInput: value }));
+    setReviewData((previous) => {
+      if (!previous) {
+        return previous;
+      }
+      return {
+        ...previous,
+        summary: {
+          ...previous.summary,
+          prepTime: value
+        }
+      };
+    });
+  }, []);
+
+  const handlePerformTimeChange = useCallback((value: string) => {
+    setSummaryForm((previous) => ({ ...previous, performTimeInput: value }));
+    setReviewData((previous) => {
+      if (!previous) {
+        return previous;
+      }
+      return {
+        ...previous,
+        summary: {
+          ...previous.summary,
+          performTime: value
+        }
+      };
+    });
+  }, []);
+
+  const handleCategorySelect = useCallback(
+    (option: CandidateOption | null) => {
+      setReviewData((previous) => {
+        if (!previous) {
+          return previous;
+        }
+        const updated = {
+          ...previous,
+          summary: {
+            ...previous.summary,
+            categoryId: option?.id ?? null
+          }
+        };
+        void persistChanges(updated);
+        return updated;
+      });
+    },
+    [persistChanges]
+  );
+
+  const handleTagsChange = useCallback(
+    (ids: string[]) => {
+      setReviewData((previous) => {
+        if (!previous) {
+          return previous;
+        }
+        const updated = {
+          ...previous,
+          summary: {
+            ...previous.summary,
+            tagIds: ids
+          }
+        };
+        void persistChanges(updated);
+        return updated;
+      });
+    },
+    [persistChanges]
+  );
+
+  const handleTagChipRemove = useCallback(
+    (id: string) => {
+      const currentIds = reviewData?.summary.tagIds ?? [];
+      handleTagsChange(currentIds.filter((tagId) => tagId !== id));
+    },
+    [handleTagsChange, reviewData?.summary.tagIds]
+  );
+
+  const handleCategoryFilterToggle = useCallback((category: string | null) => {
+    setActiveTagCategory(category);
+  }, []);
+
+  const handleImageUpload = useCallback(
+    async (file: File | null | undefined) => {
+      if (!runId || !file) {
+        return;
+      }
+      setIsImageUploading(true);
+      setImageError(null);
+      try {
+        const response = await uploadRecipeImage(runId, file);
+        setReviewData((previous) => {
+          if (!previous) {
+            return previous;
+          }
+          return {
+            ...previous,
+            assets: {
+              ...previous.assets,
+              imageUrl: response.imageUrl
+            }
+          };
+        });
+      } catch (error) {
+        setImageError(error instanceof Error ? error.message : String(error));
+      } finally {
+        setIsImageUploading(false);
+      }
+    },
+    [runId]
+  );
+
+  const handleDropZoneDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setIsDragActive(true);
+  }, []);
+
+  const handleDropZoneDragLeave = useCallback((event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    if (event.currentTarget.contains(event.relatedTarget as Node)) {
+      return;
+    }
+    setIsDragActive(false);
+  }, []);
+
+  const handleDropZoneDrop = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      setIsDragActive(false);
+      const files = event.dataTransfer?.files;
+      if (files && files.length > 0) {
+        const file = Array.from(files).find((item) => item.type.startsWith("image/")) ?? files[0];
+        void handleImageUpload(file);
+      }
+    },
+    [handleImageUpload]
+  );
 
   const handleNoteChange = useCallback((entry: ReviewIngredient, value: string) => {
     setReviewData((previous) => {
@@ -655,22 +1128,6 @@ export const Step3Review: React.FC = () => {
     [persistChanges]
   );
 
-  const metaRows = useMemo(
-    () => [
-      {
-        leftLabel: t("review.meta.portions"),
-        leftValue: summaryForm.portionsInput,
-        onLeftChange: handlePortionsChange,
-        onLeftBlur: () => persistChanges(),
-        rightLabel: t("review.meta.totalTime"),
-        rightValue: summaryForm.totalTimeInput,
-        onRightChange: handleTotalTimeChange,
-        onRightBlur: () => persistChanges()
-      }
-    ],
-    [handlePortionsChange, handleTotalTimeChange, persistChanges, summaryForm.portionsInput, summaryForm.totalTimeInput, t]
-  );
-
   if (!runId) {
     return (
       <div className="flex h-full items-center justify-center text-sm text-text/70">
@@ -754,43 +1211,96 @@ export const Step3Review: React.FC = () => {
                   )}
                 />
               </div>
-              <div className="overflow-x-auto">
-                <table className="min-w-full border-t border-border text-sm">
-                  <tbody>
-                    {metaRows.map((row, index) => (
-                      <tr key={`meta-${index}`} className={index % 2 === 1 ? "bg-background/40" : ""}>
-                        <td className="border-t border-border px-4 py-3 text-xs font-semibold uppercase tracking-wide text-text/60">
-                          {row.leftLabel}
-                        </td>
-                        <td className="border-t border-border px-4 py-3">
-                          <input
-                            value={row.leftValue}
-                            onChange={(event) => row.onLeftChange(event.target.value)}
-                            onBlur={row.onLeftBlur}
-                            className={clsx(
-                              "focus-ring w-full border border-border bg-background px-3 py-2 text-sm font-semibold text-text/85",
-                              layoutConfig.borderRadius.medium
-                            )}
-                          />
-                        </td>
-                        <td className="border-t border-border px-4 py-3 text-xs font-semibold uppercase tracking-wide text-text/60">
-                          {row.rightLabel}
-                        </td>
-                        <td className="border-t border-border px-4 py-3">
-                          <input
-                            value={row.rightValue}
-                            onChange={(event) => row.onRightChange(event.target.value)}
-                            onBlur={row.onRightBlur}
-                            className={clsx(
-                              "focus-ring w-full border border-border bg-background px-3 py-2 text-sm font-semibold text-text/85",
-                              layoutConfig.borderRadius.medium
-                            )}
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div
+                className={clsx(
+                  "grid gap-4 border-t border-border px-4 py-4",
+                  "md:grid-cols-3"
+                )}
+              >
+                <div>
+                  <label className="text-xs font-semibold uppercase tracking-wide text-text/60">
+                    {t("review.meta.portions")}
+                  </label>
+                  <input
+                    value={summaryForm.servingsInput}
+                    onChange={(event) => handleServingsChange(event.target.value)}
+                    onBlur={() => persistChanges()}
+                    className={clsx(
+                      "focus-ring mt-1 w-full border border-border bg-background px-3 py-2 text-sm font-semibold text-text/85",
+                      layoutConfig.borderRadius.medium
+                    )}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold uppercase tracking-wide text-text/60">
+                    {t("review.meta.recipeYieldQuantity")}
+                  </label>
+                  <input
+                    value={summaryForm.yieldQuantityInput}
+                    onChange={(event) => handleYieldQuantityChange(event.target.value)}
+                    onBlur={() => persistChanges()}
+                    className={clsx(
+                      "focus-ring mt-1 w-full border border-border bg-background px-3 py-2 text-sm font-semibold text-text/85",
+                      layoutConfig.borderRadius.medium
+                    )}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold uppercase tracking-wide text-text/60">
+                    {t("review.meta.recipeYield")}
+                  </label>
+                  <input
+                    value={summaryForm.yieldTextInput}
+                    onChange={(event) => handleYieldTextChange(event.target.value)}
+                    onBlur={() => persistChanges()}
+                    className={clsx(
+                      "focus-ring mt-1 w-full border border-border bg-background px-3 py-2 text-sm font-semibold text-text/85",
+                      layoutConfig.borderRadius.medium
+                    )}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold uppercase tracking-wide text-text/60">
+                    {t("review.meta.totalTime")}
+                  </label>
+                  <input
+                    value={summaryForm.totalTimeInput}
+                    onChange={(event) => handleTotalTimeChange(event.target.value)}
+                    onBlur={() => persistChanges()}
+                    className={clsx(
+                      "focus-ring mt-1 w-full border border-border bg-background px-3 py-2 text-sm font-semibold text-text/85",
+                      layoutConfig.borderRadius.medium
+                    )}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold uppercase tracking-wide text-text/60">
+                    {t("review.meta.prepTime")}
+                  </label>
+                  <input
+                    value={summaryForm.prepTimeInput}
+                    onChange={(event) => handlePrepTimeChange(event.target.value)}
+                    onBlur={() => persistChanges()}
+                    className={clsx(
+                      "focus-ring mt-1 w-full border border-border bg-background px-3 py-2 text-sm font-semibold text-text/85",
+                      layoutConfig.borderRadius.medium
+                    )}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold uppercase tracking-wide text-text/60">
+                    {t("review.meta.performTime")}
+                  </label>
+                  <input
+                    value={summaryForm.performTimeInput}
+                    onChange={(event) => handlePerformTimeChange(event.target.value)}
+                    onBlur={() => persistChanges()}
+                    className={clsx(
+                      "focus-ring mt-1 w-full border border-border bg-background px-3 py-2 text-sm font-semibold text-text/85",
+                      layoutConfig.borderRadius.medium
+                    )}
+                  />
+                </div>
               </div>
               {isSaving ? (
                 <div className="border-t border-border bg-background/80 px-4 py-2 text-xs text-text/60">
@@ -799,6 +1309,88 @@ export const Step3Review: React.FC = () => {
               ) : saveError ? (
                 <div className="border-t border-border bg-error/10 px-4 py-2 text-xs text-error">{saveError}</div>
               ) : null}
+            </div>
+
+            <div
+              className={clsx(
+                "border border-border bg-background px-4 py-4 shadow-sm",
+                layoutConfig.spacing.element.vertical,
+                layoutConfig.spacing.layout.container.x,
+                layoutConfig.spacing.layout.container.y,
+                layoutConfig.borderRadius.medium
+              )}
+            >
+              <div>
+                <label className="text-xs font-semibold uppercase tracking-wide text-text/60">
+                  {t("review.meta.category")}
+                </label>
+                <div className="mt-1">
+                  <SearchableSelect
+                    options={sortedCategoryOptions}
+                    selectedId={reviewData.summary.categoryId ?? null}
+                    displayValue={
+                      sortedCategoryOptions.find((option) => option.id === (reviewData.summary.categoryId ?? ""))?.name ??
+                      ""
+                    }
+                    placeholder={t("review.meta.categoryPlaceholder")}
+                    clearLabel={t("review.selection.clear")}
+                    disabled={sortedCategoryOptions.length === 0}
+                    onChange={(option) => handleCategorySelect(option)}
+                  />
+                </div>
+              </div>
+              <div className="mt-4">
+                <label className="text-xs font-semibold uppercase tracking-wide text-text/60">
+                  {t("review.meta.tags")}
+                </label>
+                <div className="mt-1 flex items-start gap-2">
+                  <div
+                    className={clsx(
+                      "flex min-h-[44px] flex-1 flex-wrap gap-2 border border-border bg-background px-3 py-2",
+                      layoutConfig.borderRadius.medium
+                    )}
+                  >
+                    {selectedTagDetails.length === 0 ? (
+                      <span className="text-sm text-text/50">{t("review.meta.tagsPlaceholder")}</span>
+                    ) : (
+                      selectedTagDetails.map((tag) => {
+                        const display = tag.category ? `${tag.category} | ${tag.name}` : tag.name ?? tag.id;
+                        return (
+                          <span
+                            key={tag.id}
+                            className={clsx(
+                              "inline-flex items-center border border-primary/30 bg-primary/10 px-2 py-1 text-xs font-semibold text-primary",
+                              layoutConfig.borderRadius.small
+                            )}
+                          >
+                            {display}
+                            <button
+                              type="button"
+                              onClick={() => handleTagChipRemove(tag.id)}
+                              className="ml-1 text-primary hover:text-primary/70"
+                              aria-label={t("review.meta.removeTag")}
+                            >
+                              ×
+                            </button>
+                          </span>
+                        );
+                      })
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsTagModalOpen(true)}
+                    className={clsx(
+                      "focus-ring inline-flex h-9 w-9 items-center justify-center border border-border bg-background hover:border-primary/60 hover:text-primary",
+                      layoutConfig.borderRadius.small
+                    )}
+                    aria-label={t("review.meta.editTags")}
+                    title={t("review.meta.editTags")}
+                  >
+                    <PencilSquareIcon className="h-4 w-4" aria-hidden="true" />
+                  </button>
+                </div>
+              </div>
             </div>
 
             <div
@@ -1131,9 +1723,67 @@ export const Step3Review: React.FC = () => {
               <header>
                 <h3 className="text-lg font-semibold">{t("review.sections.image")}</h3>
               </header>
-              <div className={clsx("overflow-hidden border border-border bg-background", layoutConfig.borderRadius.medium)}>
-                <div className="aspect-[4/3] w-full bg-secondary/40" aria-hidden="true" />
-                <p className="px-4 py-3 text-sm text-text/70">{t("review.image.caption")}</p>
+              <div className="space-y-3">
+                <div
+                  className={clsx(
+                    "relative overflow-hidden border border-border bg-background",
+                    imageAspectClass,
+                    layoutConfig.borderRadius.medium
+                  )}
+                >
+                  {currentImageUrl ? (
+                    <img src={currentImageUrl} alt={t("review.sections.image")} className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-sm text-text/50">
+                      {t("review.image.empty")}
+                    </div>
+                  )}
+                  {isImageUploading ? (
+                    <div className="absolute inset-0 flex items-center justify-center bg-background/70 text-sm font-semibold text-primary">
+                      {t("review.image.uploading")}
+                    </div>
+                  ) : null}
+                </div>
+                <div className="flex flex-wrap items-center gap-3">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(event) => {
+                      const file = event.target.files?.[0];
+                      if (file) {
+                        void handleImageUpload(file);
+                      }
+                      event.target.value = "";
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isImageUploading || !runId}
+                    className={clsx(
+                      "focus-ring inline-flex items-center border border-border bg-background px-4 py-2 text-sm font-semibold text-text hover:border-primary/60 hover:text-primary disabled:cursor-not-allowed disabled:opacity-50",
+                      layoutConfig.borderRadius.small
+                    )}
+                  >
+                    {t("review.image.uploadButton")}
+                  </button>
+                  <div
+                    onDragOver={handleDropZoneDragOver}
+                    onDragLeave={handleDropZoneDragLeave}
+                    onDrop={handleDropZoneDrop}
+                    className={clsx(
+                      "flex h-11 flex-1 items-center justify-center border border-dashed text-xs",
+                      layoutConfig.borderRadius.small,
+                      isDragActive ? "border-primary text-primary" : "border-border text-text/70"
+                    )}
+                  >
+                    {t("review.image.dropHint")}
+                  </div>
+                </div>
+                {imageError ? <div className="text-sm text-error">{imageError}</div> : null}
+                <p className="text-xs text-text/70">{t("review.image.caption")}</p>
               </div>
             </div>
           </div>
@@ -1157,6 +1807,20 @@ export const Step3Review: React.FC = () => {
         onClose={() => setUnitModalEntry(null)}
         onSave={handleUnitModalSave}
       />
+      {reviewData ? (
+        <TagSelectionModal
+          isOpen={isTagModalOpen}
+          onClose={() => setIsTagModalOpen(false)}
+          options={sortedTagOptions}
+          selectedIds={reviewData.summary.tagIds ?? []}
+          placeholder={t("review.meta.tagsPlaceholder")}
+          searchPlaceholder={t("review.meta.tagsSearch")}
+          onChange={handleTagsChange}
+          categories={availableTagCategories}
+          activeCategory={activeTagCategory}
+          onCategoryToggle={handleCategoryFilterToggle}
+        />
+      ) : null}
     </div>
   );
 };

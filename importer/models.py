@@ -78,8 +78,12 @@ class RecipeAsset(BaseModel):
 class Recipe(BaseModel):
     title: str
     description: Optional[str] = None
-    portions: Optional[float] = None
-    total_time_minutes: Optional[int] = None
+    recipe_servings: Optional[float] = Field(default=None, alias="recipeServings")
+    recipe_yield_quantity: Optional[float] = Field(default=None, alias="recipeYieldQuantity")
+    recipe_yield: Optional[str] = Field(default=None, alias="recipeYield")
+    total_time: Optional[str] = Field(default=None, alias="totalTime")
+    prep_time: Optional[str] = Field(default=None, alias="prepTime")
+    perform_time: Optional[str] = Field(default=None, alias="performTime")
     ingredients: List[IngredientSection] = Field(default_factory=list)
     instructions: List[InstructionSection] = Field(default_factory=list)
     notes: Optional[str] = None

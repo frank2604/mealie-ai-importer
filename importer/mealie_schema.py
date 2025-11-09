@@ -24,7 +24,9 @@ def recipe_to_mealie(recipe: Recipe, ingredient_service: Optional[IngredientServ
     payload: Dict[str, Any] = {
         "name": recipe.title,
         "description": recipe.description or "",
-        "recipeServings": recipe.portions,
+        "recipeServings": recipe.recipe_servings,
+        "recipeYieldQuantity": recipe.recipe_yield_quantity,
+        "recipeYield": recipe.recipe_yield,
         "recipeIngredient": _map_ingredients(recipe.ingredients, ingredient_service, recipe),
         "recipeInstructions": _map_instructions(recipe.instructions),
         "recipeCategory": _map_name_list(recipe.metadata.categories),
@@ -42,8 +44,12 @@ def recipe_to_mealie(recipe: Recipe, ingredient_service: Optional[IngredientServ
         "notes": _map_notes(recipe.notes),
     }
 
-    if recipe.total_time_minutes:
-        payload["totalTime"] = _format_minutes(recipe.total_time_minutes)
+    if recipe.total_time:
+        payload["totalTime"] = recipe.total_time
+    if recipe.prep_time:
+        payload["prepTime"] = recipe.prep_time
+    if recipe.perform_time:
+        payload["performTime"] = recipe.perform_time
     if recipe.metadata.cuisine:
         payload.setdefault("tags", []).append(
             {"name": recipe.metadata.cuisine, "slug": _slugify(recipe.metadata.cuisine)}
@@ -204,18 +210,6 @@ def _map_notes(notes: Optional[str]) -> List[Dict[str, Any]]:
             "text": notes,
         }
     ]
-
-
-def _format_minutes(minutes: int) -> str:
-    if minutes < 60:
-        return f"{minutes} Minuten"
-    hours, mins = divmod(minutes, 60)
-    parts = []
-    if hours:
-        parts.append(f"{hours} Stunden")
-    if mins:
-        parts.append(f"{mins} Minuten")
-    return " ".join(parts)
 
 
 def _clean_nulls(value: Any) -> Any:

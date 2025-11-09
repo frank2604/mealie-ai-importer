@@ -182,7 +182,18 @@
     },
     "meta": {
       "portions": "Portionen",
-      "totalTime": "Gesamtzeit (Minuten)"
+      "recipeYieldQuantity": "Portionsangabe",
+      "recipeYield": "Ergibt Text",
+      "totalTime": "Gesamtzeit",
+      "prepTime": "Vorbereitung",
+      "performTime": "Kochzeit",
+      "category": "Kategorie",
+      "tags": "Schlagworte",
+      "categoryPlaceholder": "Kategorie auswählen …",
+      "tagsPlaceholder": "Schlagwort auswählen …",
+      "tagsSearch": "Suchen …",
+      "editTags": "Schlagworte bearbeiten",
+      "removeTag": "Schlagwort entfernen"
     },
     "preparation": {
       "labels": {
@@ -192,7 +203,11 @@
       "removeIngredient": "Zutat entfernen"
     },
     "image": {
-      "caption": "Geplanter Bildausschnitt des Originals. Der finale Ausschnitt folgt mit dem PDF-Viewer."
+      "caption": "Geplanter Bildausschnitt des Originals. Der finale Ausschnitt folgt mit dem PDF-Viewer.",
+      "uploadButton": "Bild auswählen",
+      "dropHint": "oder Datei hier ablegen",
+      "empty": "Noch kein Bild vorhanden.",
+      "uploading": "Bild wird hochgeladen …"
     },
     "modal": {
       "close": "Schließen",

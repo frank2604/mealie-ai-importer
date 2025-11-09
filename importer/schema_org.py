@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from datetime import datetime
+import re
 from typing import Any, Dict, Iterable, List, Optional
 
 from .models import Ingredient, IngredientSection, InstructionSection, Recipe
@@ -27,10 +28,22 @@ def recipe_to_schemaorg(recipe: Recipe) -> SchemaOrgRecipe:
         "recipeInstructions": _instruction_list(recipe.instructions),
     }
 
-    if recipe.portions:
-        data["recipeYield"] = f"{recipe.portions:g} Portionen"
-    if recipe.total_time_minutes:
-        data["totalTime"] = _format_iso_duration(recipe.total_time_minutes)
+    if recipe.recipe_yield:
+        data["recipeYield"] = recipe.recipe_yield
+    elif recipe.recipe_servings:
+        data["recipeYield"] = f"{recipe.recipe_servings:g} Portionen"
+    if recipe.total_time:
+        parsed_minutes = _parse_total_time_text(recipe.total_time)
+        if parsed_minutes:
+            data["totalTime"] = _format_iso_duration(parsed_minutes)
+    if recipe.prep_time:
+        parsed_prep = _parse_total_time_text(recipe.prep_time)
+        if parsed_prep:
+            data["prepTime"] = _format_iso_duration(parsed_prep)
+    if recipe.perform_time:
+        parsed_cook = _parse_total_time_text(recipe.perform_time)
+        if parsed_cook:
+            data["cookTime"] = _format_iso_duration(parsed_cook)
 
     if recipe.metadata.tags:
         data["keywords"] = ", ".join(recipe.metadata.tags)
@@ -107,6 +120,45 @@ def _format_iso_duration(minutes: int) -> str:
     if mins:
         parts.append(f"{mins}M")
     return "".join(parts)
+
+
+_TIME_CHUNK_RE = re.compile(r"(\d+(?:[.,]\d+)?)\s*(stunden?|std|hours?|hour|hrs?|hr|h|minuten?|mins?|min|m)?", re.I)
+
+
+def _parse_total_time_text(raw_value: str) -> Optional[int]:
+    """Best effort parser to convert free-form durations into minutes."""
+    if not raw_value:
+        return None
+    text = raw_value.strip()
+    if not text:
+        return None
+    total_minutes = 0.0
+    matched = False
+    for match in _TIME_CHUNK_RE.finditer(text):
+        number_text = match.group(1)
+        unit = (match.group(2) or "").lower()
+        if not number_text:
+            continue
+        try:
+            value = float(number_text.replace(",", "."))
+        except ValueError:
+            continue
+        if not unit:
+            continue
+        matched = True
+        if unit.startswith(("h", "st", "hour")):
+            total_minutes += value * 60.0
+        else:
+            total_minutes += value
+    if matched and total_minutes > 0:
+        return int(round(total_minutes))
+    digits = re.findall(r"\d+", text)
+    if len(digits) == 1:
+        try:
+            return int(digits[0])
+        except ValueError:
+            return None
+    return None
 
 
 def _clean_nulls(value: Any) -> Any:

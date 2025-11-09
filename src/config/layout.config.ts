@@ -146,6 +146,10 @@ export const layoutConfig = {
     card: 'shadow-sm',
     panel: 'shadow-sm',
   },
+  images: {
+    /** Seitenverhältnis für Bildcontainer (z. B. Rezeptbild) */
+    aspectRatio: 'aspect-[16/10]',
+  },
 
   // ============================================================================
   // STEP 1: Auswählen

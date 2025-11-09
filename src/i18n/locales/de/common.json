@@ -170,6 +170,18 @@
       "manual": "Manuell ausgewählt",
       "none": "Keine Einheit vorhanden"
     },
+    "pdfViewer": {
+      "title": "Original-PDF",
+      "loading": "PDF wird geladen …",
+      "noPdf": "Keine PDF-Datei verfügbar.",
+      "error": "PDF konnte nicht geladen werden. {{message}}",
+      "prev": "Zurück",
+      "next": "Weiter",
+      "zoomIn": "Hineinzoomen",
+      "zoomOut": "Herauszoomen",
+      "resetZoom": "Zurücksetzen",
+      "pageIndicator": "Seite {{current}} / {{total}}"
+    },
     "table": {
       "headers": {
         "source": "Gefunden im Rezept",
@@ -207,7 +219,12 @@
       "uploadButton": "Bild auswählen",
       "dropHint": "oder Datei hier ablegen",
       "empty": "Noch kein Bild vorhanden.",
-      "uploading": "Bild wird hochgeladen …"
+      "uploading": "Bild wird hochgeladen …",
+      "cropButton": "Zuschneiden",
+      "cropModalTitle": "Bild zuschneiden",
+      "cropModalApply": "Übernehmen",
+      "cropModalCancel": "Abbrechen",
+      "zoomLabel": "Zoom"
     },
     "modal": {
       "close": "Schließen",

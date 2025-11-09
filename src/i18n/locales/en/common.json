@@ -162,6 +162,19 @@
       "editNewFood": "Edit new food",
       "editNewUnit": "Edit new unit"
     },
+    "pdfViewer": {
+      "title": "Original PDF",
+      "subtitle": "Use it to verify the source document.",
+      "loading": "Loading PDF…",
+      "noPdf": "No PDF available.",
+      "error": "Failed to load PDF. {{message}}",
+      "prev": "Previous",
+      "next": "Next",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "resetZoom": "Reset",
+      "pageIndicator": "Page {{current}} / {{total}}"
+    },
     "badges": {
       "foundWord": "Matched via exact word match",
       "foundFuzzy": "Matched via fuzzy search",
@@ -207,7 +220,12 @@
       "uploadButton": "Select image",
       "dropHint": "or drop a file here",
       "empty": "No image available yet.",
-      "uploading": "Uploading image…"
+      "uploading": "Uploading image…",
+      "cropButton": "Crop",
+      "cropModalTitle": "Crop image",
+      "cropModalApply": "Apply",
+      "cropModalCancel": "Cancel",
+      "zoomLabel": "Zoom"
     },
     "modal": {
       "close": "Close",

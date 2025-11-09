@@ -13,13 +13,7 @@ from threading import Lock
 from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
-from fastapi import (
-    BackgroundTasks,
-    FastAPI,
-    File,
-    HTTPException,
-    UploadFile,
-)
+from fastapi import BackgroundTasks, FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
@@ -64,6 +58,18 @@ LOG_PATTERN = re.compile(
     r"(?P<logger>[^:]+): "
     r"(?P<message>.*)$"
 )
+
+
+def _apply_cors_headers(response: FileResponse, request: Request) -> FileResponse:
+    """Ensure static file responses can be used in canvas operations."""
+    origin = request.headers.get("origin")
+    if origin:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Vary"] = "Origin"
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+    else:
+        response.headers["Access-Control-Allow-Origin"] = "*"
+    return response
 
 
 class UploadResponse(BaseModel):
@@ -315,10 +321,12 @@ class ReviewContext:
     image_path: Optional[Path]
 
 
+UI_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173"]
+
 app = FastAPI(title="Mealie Importer API", version="0.1.0")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=UI_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -1239,23 +1247,31 @@ async def get_run_logs(run_id: str, after: int = 0) -> LogResponse:
 
 
 @app.get("/api/imports/{run_id}/pdf")
-async def download_run_pdf(run_id: str) -> FileResponse:
+async def download_run_pdf(run_id: str, request: Request) -> FileResponse:
     config = _load_app_config()
     context = _resolve_review_context(config, run_id)
     if not context.pdf_path or not context.pdf_path.exists():
         raise HTTPException(status_code=404, detail="PDF-Datei für diesen Lauf wurde nicht gefunden.")
-    return FileResponse(path=context.pdf_path, media_type="application/pdf", filename=context.pdf_path.name)
+    response = FileResponse(path=context.pdf_path, media_type="application/pdf", filename=context.pdf_path.name)
+    response.headers["Cache-Control"] = "no-store"
+    return _apply_cors_headers(response, request)
 
 
 @app.get("/api/imports/{run_id}/image")
-async def download_run_image(run_id: str) -> FileResponse:
+async def download_run_image(run_id: str, request: Request) -> FileResponse:
     config = _load_app_config()
     context = _resolve_review_context(config, run_id)
     if not context.image_path or not context.image_path.exists():
         raise HTTPException(status_code=404, detail="Bilddatei für diesen Lauf wurde nicht gefunden.")
     suffix = context.image_path.suffix.lower()
     media_type = IMAGE_MEDIA_TYPES.get(suffix, "application/octet-stream")
-    return FileResponse(path=context.image_path, media_type=media_type, filename=context.image_path.name)
+    response = FileResponse(
+        path=context.image_path,
+        media_type=media_type,
+        filename=context.image_path.name,
+    )
+    response.headers["Cache-Control"] = "no-store"
+    return _apply_cors_headers(response, request)
 
 
 @app.post("/api/imports/{run_id}/image", response_model=ImageUploadResponse)

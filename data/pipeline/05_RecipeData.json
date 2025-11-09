@@ -79,10 +79,10 @@
           "quantity": 100.0,
           "note": null,
           "food": {
-            "name": "Trockener Wermut",
+            "name": "Agavendicksaft",
             "originalName": "trockener Wermut",
-            "badgeId": "new",
-            "newId": "food-new-0-4"
+            "mealieFoodId": "d9eba0f7-27ac-40b9-ac5a-c47d14f705be",
+            "badgeId": "manual"
           },
           "unit": {
             "name": "ml",

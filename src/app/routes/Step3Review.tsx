@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState, Fragment } from "react";
 import clsx from "clsx";
 import { Dialog, Transition } from "@headlessui/react";
+import Cropper from "react-easy-crop";
+import type { Area } from "react-easy-crop";
+import "react-easy-crop/react-easy-crop.css";
 import { ChevronUpDownIcon, PencilSquareIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
-import { PdfViewerPlaceholder } from "../components/PdfViewerPlaceholder";
+import { PdfViewer } from "../components/PdfViewer";
 import { layoutConfig } from "../../config/layout.config";
 import { BadgeId } from "../../config/badges.config";
 import {
@@ -60,6 +63,11 @@ interface SearchableSelectProps {
   clearLabel: string;
   disabled?: boolean;
   onChange: (option: CandidateOption | null) => void;
+}
+
+interface StepIngredientOption {
+  id: string;
+  foodLabel: string;
 }
 
 const MAX_RESULTS = 50;
@@ -393,6 +401,9 @@ const getFoodSuggestionBaseName = (entry: ReviewIngredient): string => {
   );
 };
 
+const getIngredientSelectionKey = (entry: ReviewIngredient): string | null =>
+  entry.foodSelection?.newId ?? entry.foodSelection?.mealieFoodId ?? entry.foodMatch?.id ?? null;
+
 const getUnitSuggestionBaseName = (entry: ReviewIngredient): string => {
   const create = getUnitCreatePayload(entry);
   return (
@@ -548,8 +559,13 @@ export const Step3Review: React.FC = () => {
   const [imageError, setImageError] = useState<string | null>(null);
   const [isDragActive, setIsDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [isCropModalOpen, setIsCropModalOpen] = useState(false);
+  const [crop, setCrop] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [preparationSteps, setPreparationSteps] = useState<Record<string, string>>({});
   const [stepIngredients, setStepIngredients] = useState<Record<string, string[]>>({});
+  const ingredientSelectionKeyRef = useRef<Record<string, string | null>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -634,6 +650,44 @@ export const Step3Review: React.FC = () => {
       );
     });
   }, [reviewData, sortedTagOptions]);
+  const stepIngredientOptions = useMemo<StepIngredientOption[]>(() => {
+    if (!reviewData) {
+      return [];
+    }
+    const options = reviewData.ingredients
+      .map((ingredient) => {
+        const selectedFoodId =
+          ingredient.foodSelection?.newId ??
+          ingredient.foodSelection?.mealieFoodId ??
+          ingredient.foodMatch?.id ??
+          null;
+        if (!selectedFoodId) {
+          return null;
+        }
+        const foodLabel =
+          ingredient.foodSelection?.newId
+            ? getFoodSuggestionBaseName(ingredient)
+            : ingredient.foodMatch?.name ?? ingredient.foodSelection?.name ?? ingredient.name;
+        if (!foodLabel) {
+          return null;
+        }
+        return {
+          id: ingredient.id,
+          foodLabel
+        };
+      })
+      .filter((option): option is StepIngredientOption => Boolean(option));
+    options.sort((a, b) => a.foodLabel.localeCompare(b.foodLabel, undefined, { sensitivity: "base" }));
+    return options;
+  }, [reviewData]);
+  const stepIngredientOptionMap = useMemo(() => {
+    const map = new Map<string, StepIngredientOption>();
+    stepIngredientOptions.forEach((option) => {
+      map.set(option.id, option);
+    });
+    return map;
+  }, [stepIngredientOptions]);
+  const formatStepIngredientLabel = useCallback((option: StepIngredientOption) => option.foodLabel, []);
   const imageAspectClass = layoutConfig.images?.aspectRatio ?? "aspect-video";
   const currentImageUrl = useMemo(() => {
     const rawUrl = reviewData?.assets?.imageUrl;
@@ -649,6 +703,20 @@ export const Step3Review: React.FC = () => {
     }
     return rawUrl;
   }, [reviewData?.assets?.imageUrl]);
+  const currentPdfUrl = useMemo(() => {
+    const rawUrl = reviewData?.assets?.pdfUrl;
+    if (!rawUrl) {
+      return null;
+    }
+    if (/^https?:\/\//i.test(rawUrl)) {
+      return rawUrl;
+    }
+    if (BASE_URL.startsWith("http")) {
+      const apiRoot = BASE_URL.replace(/\/api$/, "");
+      return `${apiRoot}${rawUrl}`;
+    }
+    return rawUrl;
+  }, [reviewData?.assets?.pdfUrl]);
 
   const autoResizeTextarea = useCallback((textarea: HTMLTextAreaElement | null) => {
     if (!textarea) return;
@@ -721,6 +789,77 @@ export const Step3Review: React.FC = () => {
       setIsSaving(false);
     }
   }, [runId, reviewData]);
+
+  useEffect(() => {
+    if (!reviewData) {
+      ingredientSelectionKeyRef.current = {};
+      return;
+    }
+    const nextKeys: Record<string, string | null> = {};
+    const removalIds: string[] = [];
+    reviewData.ingredients.forEach((ingredient) => {
+      const key = getIngredientSelectionKey(ingredient);
+      nextKeys[ingredient.id] = key;
+      const previous = ingredientSelectionKeyRef.current[ingredient.id];
+      if (previous !== undefined && previous !== key) {
+        removalIds.push(ingredient.id);
+      }
+    });
+    ingredientSelectionKeyRef.current = nextKeys;
+    if (removalIds.length > 0) {
+      const removalSet = new Set(removalIds);
+      setStepIngredients((previous) => {
+        if (Object.keys(previous).length === 0) {
+          return previous;
+        }
+        let changed = false;
+        const nextEntries = Object.entries(previous).map(([stepId, ids]) => {
+          const filtered = ids.filter((id) => !removalSet.has(id));
+          if (filtered.length !== ids.length) {
+            changed = true;
+          }
+          return [stepId, filtered];
+        });
+        if (!changed) {
+          return previous;
+        }
+        return Object.fromEntries(nextEntries) as Record<string, string[]>;
+      });
+    }
+  }, [reviewData?.ingredients]);
+
+  useEffect(() => {
+    if (stepIngredientOptions.length === 0) {
+      setStepIngredients((previous) => {
+        if (Object.values(previous).every((items) => items.length === 0)) {
+          return previous;
+        }
+        const cleared = Object.fromEntries(
+          Object.keys(previous).map((stepId) => [stepId, [] as string[]])
+        ) as Record<string, string[]>;
+        return cleared;
+      });
+      return;
+    }
+    const allowedIds = new Set(stepIngredientOptions.map((option) => option.id));
+    setStepIngredients((previous) => {
+      if (Object.keys(previous).length === 0) {
+        return previous;
+      }
+      let changed = false;
+      const nextEntries = Object.entries(previous).map(([stepId, ids]) => {
+        const filtered = ids.filter((id) => allowedIds.has(id));
+        if (filtered.length !== ids.length) {
+          changed = true;
+        }
+        return [stepId, filtered];
+      });
+      if (!changed) {
+        return previous;
+      }
+      return Object.fromEntries(nextEntries) as Record<string, string[]>;
+    });
+  }, [stepIngredientOptions]);
 
   const handleSummaryFieldChange = useCallback(
     (field: "title" | "description", value: string) => {
@@ -918,6 +1057,27 @@ export const Step3Review: React.FC = () => {
     [runId]
   );
 
+  const handleCropComplete = useCallback((_croppedArea: Area, areaPixels: Area) => {
+    setCroppedAreaPixels(areaPixels);
+  }, []);
+
+  const handleCropSave = useCallback(async () => {
+    if (!currentImageUrl || !croppedAreaPixels) {
+      return;
+    }
+    try {
+      const blob = await getCroppedBlob(currentImageUrl, croppedAreaPixels);
+      if (!blob) {
+        return;
+      }
+      const file = new File([blob], `cropped-${Date.now()}.jpg`, { type: blob.type || "image/jpeg" });
+      await handleImageUpload(file);
+      setIsCropModalOpen(false);
+    } catch (error) {
+      setImageError(error instanceof Error ? error.message : String(error));
+    }
+  }, [croppedAreaPixels, currentImageUrl, handleImageUpload]);
+
   const handleDropZoneDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     setIsDragActive(true);
@@ -943,6 +1103,14 @@ export const Step3Review: React.FC = () => {
     },
     [handleImageUpload]
   );
+
+  useEffect(() => {
+    if (!isCropModalOpen) {
+      setZoom(1);
+      setCrop({ x: 0, y: 0 });
+      setCroppedAreaPixels(null);
+    }
+  }, [isCropModalOpen]);
 
   const handleNoteChange = useCallback((entry: ReviewIngredient, value: string) => {
     setReviewData((previous) => {
@@ -1643,8 +1811,21 @@ export const Step3Review: React.FC = () => {
                             {selected.length > 0 && (
                               <div className={clsx("mb-2 flex flex-wrap", layoutConfig.spacing.item.gap)}>
                                 {selected.map((ingredientId) => {
+                                  const option = stepIngredientOptionMap.get(ingredientId);
                                   const ingredient = reviewData.ingredients.find((item) => item.id === ingredientId);
-                                  if (!ingredient) return null;
+                                  if (!option && !ingredient) {
+                                    return null;
+                                  }
+                                  const fallbackFoodLabel = ingredient
+                                    ? ingredient.foodSelection?.newId
+                                      ? getFoodSuggestionBaseName(ingredient)
+                                      : ingredient.foodMatch?.name ??
+                                        ingredient.foodSelection?.name ??
+                                        ingredient.name
+                                    : "";
+                                  const displayLabel = option
+                                    ? formatStepIngredientLabel(option)
+                                    : fallbackFoodLabel;
 
                                   return (
                                     <span
@@ -1655,16 +1836,17 @@ export const Step3Review: React.FC = () => {
                                         layoutConfig.borderRadius.small
                                       )}
                                     >
-                                      <span className="text-xs font-semibold">
-                                        {`${ingredient.amountText ?? ""} ${ingredient.unit ?? ""} ${ingredient.name}`}
-                                      </span>
+                                      <span className="text-xs font-semibold">{displayLabel}</span>
                                       <button
                                         type="button"
                                         onClick={() =>
-                                          setStepIngredients((previous) => ({
-                                            ...previous,
-                                            [instruction.id]: previous[instruction.id].filter((id) => id !== ingredientId)
-                                          }))
+                                          setStepIngredients((previous) => {
+                                            const current = previous[instruction.id] || [];
+                                            return {
+                                              ...previous,
+                                              [instruction.id]: current.filter((id) => id !== ingredientId)
+                                            };
+                                          })
                                         }
                                         className="focus-ring hover:text-error"
                                         aria-label={t("review.preparation.removeIngredient")}
@@ -1694,11 +1876,11 @@ export const Step3Review: React.FC = () => {
                               )}
                             >
                               <option value="">{t("review.preparation.selectIngredient")}</option>
-                              {reviewData.ingredients
-                                .filter((ingredient) => !selected.includes(ingredient.id))
-                                .map((ingredient) => (
-                                  <option key={ingredient.id} value={ingredient.id}>
-                                    {`${ingredient.amountText ?? ""} ${ingredient.unit ?? ""} ${ingredient.name}`}
+                              {stepIngredientOptions
+                                .filter((option) => !selected.includes(option.id))
+                                .map((option) => (
+                                  <option key={option.id} value={option.id}>
+                                    {formatStepIngredientLabel(option)}
                                   </option>
                                 ))}
                             </select>
@@ -1764,7 +1946,7 @@ export const Step3Review: React.FC = () => {
                     disabled={isImageUploading || !runId}
                     className={clsx(
                       "focus-ring inline-flex items-center border border-border bg-background px-4 py-2 text-sm font-semibold text-text hover:border-primary/60 hover:text-primary disabled:cursor-not-allowed disabled:opacity-50",
-                      layoutConfig.borderRadius.small
+                      layoutConfig.borderRadius.medium
                     )}
                   >
                     {t("review.image.uploadButton")}
@@ -1775,15 +1957,26 @@ export const Step3Review: React.FC = () => {
                     onDrop={handleDropZoneDrop}
                     className={clsx(
                       "flex h-11 flex-1 items-center justify-center border border-dashed text-xs",
-                      layoutConfig.borderRadius.small,
+                      layoutConfig.borderRadius.medium,
                       isDragActive ? "border-primary text-primary" : "border-border text-text/70"
                     )}
                   >
                     {t("review.image.dropHint")}
                   </div>
+                  {currentImageUrl ? (
+                    <button
+                      type="button"
+                      onClick={() => setIsCropModalOpen(true)}
+                      className={clsx(
+                        "focus-ring ml-auto inline-flex items-center border border-border bg-background px-4 py-2 text-sm font-semibold text-text hover:border-primary/60 hover:text-primary",
+                        layoutConfig.borderRadius.medium
+                      )}
+                    >
+                      {t("review.image.cropButton")}
+                    </button>
+                  ) : null}
                 </div>
                 {imageError ? <div className="text-sm text-error">{imageError}</div> : null}
-                <p className="text-xs text-text/70">{t("review.image.caption")}</p>
               </div>
             </div>
           </div>
@@ -1791,7 +1984,7 @@ export const Step3Review: React.FC = () => {
       </div>
 
       <aside className={layoutConfig.step3.grid.rightColumnClasses}>
-        <PdfViewerPlaceholder />
+        <PdfViewer src={currentPdfUrl} />
       </aside>
 
       <NewFoodModal
@@ -1821,6 +2014,130 @@ export const Step3Review: React.FC = () => {
           onCategoryToggle={handleCategoryFilterToggle}
         />
       ) : null}
+      {currentImageUrl ? (
+        <Transition appear show={isCropModalOpen} as={Fragment}>
+          <Dialog as="div" className="relative z-40" onClose={() => setIsCropModalOpen(false)}>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-200"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-150"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" />
+            </Transition.Child>
+
+            <div className="fixed inset-0 overflow-y-auto">
+              <div className="flex min-h-full items-center justify-center p-4 text-center">
+                <Transition.Child
+                  as={Fragment}
+                  enter="ease-out duration-200"
+                  enterFrom="opacity-0 scale-95"
+                  enterTo="opacity-100 scale-100"
+                  leave="ease-in duration-150"
+                  leaveFrom="opacity-100 scale-100"
+                  leaveTo="opacity-0 scale-95"
+                >
+                  <Dialog.Panel
+                    className={clsx(
+                      "w-full max-w-4xl transform overflow-hidden border border-border bg-panel p-6 text-left align-middle shadow-xl transition-all",
+                      layoutConfig.borderRadius.large
+                    )}
+                  >
+                    <Dialog.Title className="text-xl font-semibold text-primary">{t("review.image.cropModalTitle")}</Dialog.Title>
+                    <div className="mt-4">
+                      <div className="relative h-[60vh] w-full overflow-hidden">
+                        <Cropper
+                          image={currentImageUrl}
+                          crop={crop}
+                          zoom={zoom}
+                          aspect={16 / 10}
+                          onCropChange={setCrop}
+                          onZoomChange={setZoom}
+                          onCropComplete={handleCropComplete}
+                        />
+                      </div>
+                      <label className="mt-4 block text-xs font-semibold uppercase tracking-wide text-text/60">
+                        {t("review.image.zoomLabel")}
+                      </label>
+                      <input
+                        type="range"
+                        min={1}
+                        max={3}
+                        step={0.1}
+                        value={zoom}
+                        onChange={(event) => setZoom(Number(event.target.value))}
+                        className="mt-2 w-full"
+                      />
+                    </div>
+                    <div className="mt-4 flex justify-end gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setIsCropModalOpen(false)}
+                        className={clsx(
+                          "focus-ring inline-flex items-center border border-border px-4 py-2 text-sm font-semibold text-text hover:border-primary/60 hover:text-primary",
+                          layoutConfig.borderRadius.small
+                        )}
+                      >
+                        {t("review.image.cropModalCancel")}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void handleCropSave()}
+                        className={clsx(
+                          "focus-ring inline-flex items-center bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary/90",
+                          layoutConfig.borderRadius.small
+                        )}
+                      >
+                        {t("review.image.cropModalApply")}
+                      </button>
+                    </div>
+                  </Dialog.Panel>
+                </Transition.Child>
+              </div>
+            </div>
+          </Dialog>
+        </Transition>
+      ) : null}
     </div>
   );
+};
+
+const createImage = (url: string): Promise<HTMLImageElement> =>
+  new Promise((resolve, reject) => {
+    const image = new Image();
+    image.addEventListener("load", () => resolve(image));
+    image.addEventListener("error", (error) => reject(error));
+    image.setAttribute("crossOrigin", "anonymous");
+    image.src = url;
+  });
+
+const getCroppedBlob = async (
+  imageSrc: string,
+  pixelCrop: { x: number; y: number; width: number; height: number }
+): Promise<Blob | null> => {
+  const image = await createImage(imageSrc);
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    return null;
+  }
+  canvas.width = pixelCrop.width;
+  canvas.height = pixelCrop.height;
+  ctx.drawImage(
+    image,
+    pixelCrop.x,
+    pixelCrop.y,
+    pixelCrop.width,
+    pixelCrop.height,
+    0,
+    0,
+    pixelCrop.width,
+    pixelCrop.height
+  );
+  return new Promise((resolve) => {
+    canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.92);
+  });
 };

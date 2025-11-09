@@ -250,20 +250,20 @@ class AssignMetadataModule:
         payload = {
             "generatedAt": datetime.utcnow().isoformat(),
             "current": {
-                "portions": recipe.portions,
-                "totalTimeMinutes": recipe.total_time_minutes,
+                "recipeServings": recipe.recipe_servings,
+                "totalTime": recipe.total_time,
                 "category": current_category,
                 "tagIds": [tag["id"] for tag in current_tags],
             },
             "proposal": {
-                "portions": recipe.portions,
-                "totalTimeMinutes": recipe.total_time_minutes,
+                "recipeServings": recipe.recipe_servings,
+                "totalTime": recipe.total_time,
                 "categoryId": proposal_category_id or (current_category or {}).get("id"),
                 "tagIds": proposal_tags or [tag["id"] for tag in current_tags],
             },
             "userDecision": {
-                "portions": recipe.portions,
-                "totalTimeMinutes": recipe.total_time_minutes,
+                "recipeServings": recipe.recipe_servings,
+                "totalTime": recipe.total_time,
                 "categoryId": proposal_category_id or (current_category or {}).get("id"),
                 "tagIds": proposal_tags or [tag["id"] for tag in current_tags],
             },
@@ -272,7 +272,7 @@ class AssignMetadataModule:
                 "tagCategories": available_tag_categories,
             },
             "instructions": (
-                "Update 'userDecision' to change category, tags, portions, or totalTimeMinutes. "
+                "Update 'userDecision' to change category, tags, recipeServings, or totalTime. "
                 "Leave values as-is to accept the suggested data."
             ),
         }
@@ -328,8 +328,8 @@ class AssignMetadataModule:
                 "title": recipe.title,
                 "description": recipe.description,
                 "notes": recipe.notes,
-                "portions": recipe.portions,
-                "total_time_minutes": recipe.total_time_minutes,
+                "recipeServings": recipe.recipe_servings,
+                "totalTime": recipe.total_time,
                 "ingredients": ingredient_items,
                 "instructions": instruction_texts,
             },

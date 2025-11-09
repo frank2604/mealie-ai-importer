@@ -110,8 +110,12 @@ export interface ReviewAssets {
 export interface ReviewSummary {
   title: string;
   description: string;
-  portions?: number | null;
-  totalTimeMinutes?: number | null;
+  recipeServings?: number | null;
+  recipeYieldQuantity?: number | null;
+  recipeYield?: string | null;
+  totalTime?: string | null;
+  prepTime?: string | null;
+  performTime?: string | null;
   categoryId?: string | null;
   tagIds: string[];
   availableCategories: CategoryOption[];
@@ -127,11 +131,19 @@ export interface ReviewData {
   options: ReviewOptions;
 }
 
+export interface ImageUploadResponse {
+  imageUrl: string;
+}
+
 export interface ReviewSummaryUpdatePayload {
   title: string;
   description: string;
-  portions?: number | null;
-  totalTimeMinutes?: number | null;
+  recipeServings?: number | null;
+  recipeYieldQuantity?: number | null;
+  recipeYield?: string | null;
+  totalTime?: string | null;
+  prepTime?: string | null;
+  performTime?: string | null;
   categoryId?: string | null;
   tagIds: string[];
 }
@@ -195,4 +207,18 @@ export const updateReviewData = async (runId: string, payload: ReviewUpdatePaylo
     throw await parseError(response);
   }
   return (await response.json()) as ReviewData;
+};
+
+export const uploadRecipeImage = async (runId: string, file: File): Promise<ImageUploadResponse> => {
+  const formData = new FormData();
+  formData.append("file", file);
+  const response = await fetch(`${BASE_URL}/imports/${encodeURIComponent(runId)}/image`, {
+    method: "POST",
+    credentials: "same-origin",
+    body: formData
+  });
+  if (!response.ok) {
+    throw await parseError(response);
+  }
+  return (await response.json()) as ImageUploadResponse;
 };

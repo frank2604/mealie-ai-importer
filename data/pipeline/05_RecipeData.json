@@ -1,8 +1,12 @@
 {
   "title": "Hähnchenbrust in Parma-Schinken mit Champignon-Sahnesoße",
   "description": "Zarte Hähnchenbrustfilets werden mit Salbeiblättern belegt, in Parma-Schinken gewickelt und goldbraun angebraten. In einer cremigen Champignon-Sahnesoße mit trockenem Wermut geschmort ergibt das Gericht ein aromatisches und saftiges Hauptgericht. Dazu passen Pellkartoffeln und ein grüner Salat.",
-  "portions": 4.0,
-  "total_time_minutes": 50,
+  "recipeServings": 4.0,
+  "recipeYieldQuantity": null,
+  "recipeYield": null,
+  "totalTime": "50 Minuten",
+  "prepTime": null,
+  "performTime": null,
   "ingredients": [
     {
       "name": null,

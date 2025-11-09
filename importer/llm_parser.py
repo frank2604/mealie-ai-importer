@@ -41,7 +41,7 @@ Regeln:
 3. Zutaten werden in Abschnitte gruppiert (häufig nur ein Abschnitt ohne Namen). Jede Zutat enthält Felder:
    "name", optional "quantity" (float), optional "unit", optional "note".
 4. Schritte werden nummeriert, jeder Schritt enthält ein Feld "order" (int) und "instruction" (string).
-5. Füge falls möglich "portions" (float), "total_time_minutes" (int) und "notes" hinzu.
+5. Füge falls möglich "recipeServings" (float), "recipeYieldQuantity" (float), "recipeYield" (Text), "totalTime", "prepTime" und "performTime" (jeweils Text wie "50 Min." oder "1,5 Stunden") sowie "notes" hinzu.
 6. Fülle "metadata" mit "source" (falls bekannt) und sinnvollen "tags" oder "categories".
 7. Verwende keine Abkürzungen wie "n. B." – schreibe sie aus.
 8. Wenn Informationen fehlen, lasse die Felder auf null oder leeren Listen.
@@ -54,8 +54,12 @@ Erzeuge JSON mit folgendem Schema:
 {{
   "title": "string",
   "description": "string" | null,
-  "portions": float | null,
-  "total_time_minutes": int | null,
+  "recipeServings": float | null,
+  "recipeYieldQuantity": float | null,
+  "recipeYield": "string" | null,
+  "totalTime": "string" | null,
+  "prepTime": "string" | null,
+  "performTime": "string" | null,
   "ingredients": [
     {{
       "name": "string" | null,

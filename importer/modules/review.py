@@ -276,10 +276,8 @@ class ApplyUserDecisionsModule:
 
         final = {}
 
-        final["portions"] = user_decision.get("portions", proposal.get("portions"))
-        final["totalTimeMinutes"] = user_decision.get(
-            "totalTimeMinutes", proposal.get("totalTimeMinutes")
-        )
+        final["recipeServings"] = user_decision.get("recipeServings", proposal.get("recipeServings"))
+        final["totalTime"] = user_decision.get("totalTime", proposal.get("totalTime"))
         final["categoryId"] = user_decision.get("categoryId", proposal.get("categoryId"))
         final["tagIds"] = user_decision.get("tagIds", proposal.get("tagIds") or [])
 
@@ -307,20 +305,20 @@ class ApplyUserDecisionsModule:
                     "slug": tag.get("slug"),
                 }
 
-        if final.get("portions") is not None:
+        if final.get("recipeServings") is not None:
             try:
-                recipe.portions = float(final["portions"])
-            except (TypeError, ValueError):
-                logger.warning("Invalid portions value in metadata decision: %s", final["portions"])
-
-        if final.get("totalTimeMinutes") is not None:
-            try:
-                recipe.total_time_minutes = int(final["totalTimeMinutes"])
+                recipe.recipe_servings = float(final["recipeServings"])
             except (TypeError, ValueError):
                 logger.warning(
-                    "Invalid totalTimeMinutes value in metadata decision: %s",
-                    final["totalTimeMinutes"],
+                    "Invalid recipeServings value in metadata decision: %s", final["recipeServings"]
                 )
+
+        if final.get("totalTime") is not None:
+            value = final.get("totalTime")
+            if isinstance(value, str):
+                recipe.total_time = value
+            elif value is None:
+                recipe.total_time = None
 
         mealie_categories: List[OrganizerReference] = []
         category_id = final.get("categoryId")

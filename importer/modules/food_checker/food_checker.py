@@ -221,7 +221,6 @@ class FoodCheckerModule:
                         name,
                     )
 
-        categories = reference.get("categories", [])
         self._write_review(
             context,
             ingredient_refs,
@@ -229,7 +228,6 @@ class FoodCheckerModule:
             match_details,
             missing,
             suggestions,
-            categories,
             new_ids,
         )
 
@@ -455,10 +453,9 @@ class FoodCheckerModule:
         context: PipelineContext,
         ingredient_refs: List[IngredientRef],
         matches: Dict[str, str],
-        match_details: Dict[str, Dict[str, object]],
+        match_details: Dict[str, Dict[str, object]],  # noqa: ARG002 - kept for future use / debugging
         missing: List[IngredientRef],
         suggestions: Dict[str, Dict[str, object]],
-        categories: List[Dict[str, object]],
         new_ids: Dict[str, str],
     ) -> None:
         recorder = context.pipeline_recorder
@@ -466,21 +463,11 @@ class FoodCheckerModule:
             logger.debug("No pipeline recorder available, so no foods review file was created")
             return
 
-        recipe = context.ensure_recipe()
-        foods_by_id = {item.id: item for item in self._foods}
-        missing_keys = {ref.key for ref in missing}
         items: List[Dict[str, object]] = []
 
         for ref in ingredient_refs:
-            section_name = ""
-            if 0 <= ref.section_index < len(recipe.ingredients):
-                section = recipe.ingredients[ref.section_index]
-                section_name = section.name or f"Section {ref.section_index + 1}"
-
             ingredient = ref.ingredient
             key = ref.key
-            matched_id = matches.get(key)
-            matched_food = foods_by_id.get(matched_id) if matched_id else None
             suggestion = suggestions.get(ingredient.name)
             create_defaults = {
                 "nameSingular": None,
@@ -500,39 +487,11 @@ class FoodCheckerModule:
                         "categoryName": suggestion.get("categoryName"),
                     }
                 )
-            candidates = [
-                {
-                    "id": candidate.id,
-                    "name": candidate.name,
-                    "pluralName": candidate.plural,
-                }
-                for candidate in self._top_candidates(ingredient.name, limit=5)
-            ]
 
             items.append(
                 {
                     "key": key,
-                    "sectionIndex": ref.section_index,
-                    "sectionName": section_name,
-                    "ingredientIndex": ref.ingredient_index,
-                    "ingredient": {
-                        "name": ingredient.name,
-                        "quantity": ingredient.quantity,
-                        "unit": ingredient.unit,
-                        "note": ingredient.note,
-                    },
                     "newId": new_ids.get(key),
-                    "currentMatch": (
-                        {
-                            "foodId": matched_id,
-                            "name": matched_food.name if matched_food else None,
-                            "strategy": match_details.get(key, {}).get("strategy"),
-                        }
-                        if matched_id
-                        else None
-                    ),
-                    "status": "missing" if key in missing_keys else "matched",
-                    "candidates": candidates,
                     "suggestion": suggestion,
                     "userDecision": {
                         "action": "auto",
@@ -545,17 +504,6 @@ class FoodCheckerModule:
 
         payload = {
             "generatedAt": datetime.utcnow().isoformat(),
-            "summary": {
-                "totalIngredients": len(ingredient_refs),
-                "autoMatched": len(ingredient_refs) - len(missing),
-                "missing": len(missing),
-            },
-            "instructions": (
-                "Adjust 'userDecision' for each ingredient if you want to override the automatic choice. "
-                "action = 'auto' keeps current behaviour, 'use_existing' expects useFoodId, "
-                "'create' expects details under create, 'skip' ignores the ingredient."
-            ),
-            "availableCategories": categories,
             "ingredients": items,
         }
 

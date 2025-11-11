@@ -16,11 +16,21 @@ interface MetricItem {
 
 export const Step2Analyze: React.FC = () => {
   const { t } = useTranslation();
-  const { runId, status, error, logs, logCursor, appendLogs, setStatus, setError, setRunId } = useImportFlow();
+  const {
+    runId,
+    status,
+    error,
+    analysisLogs,
+    analysisCursor,
+    appendAnalysisLogs,
+    setStatus,
+    setError,
+    setRunId
+  } = useImportFlow();
   const { setNextHandler, setNextDisabled } = useStepNavigation();
   const [isPolling, setIsPolling] = useState(false);
 
-  const logEntries = useMemo<LogEntry[]>(() => logs, [logs]);
+  const logEntries = useMemo<LogEntry[]>(() => analysisLogs, [analysisLogs]);
 
   const metrics: MetricItem[] = [
     { id: "ingredients", value: "18", delta: "+3", status: "up" },
@@ -36,7 +46,7 @@ export const Step2Analyze: React.FC = () => {
         setNextDisabled(false);
       };
     }
-    setNextDisabled(status !== "completed");
+    setNextDisabled(!["review", "completed"].includes(status));
     return () => {
       setNextDisabled(false);
     };
@@ -52,7 +62,10 @@ export const Step2Analyze: React.FC = () => {
     const poll = async () => {
       setIsPolling(true);
       try {
-        const [statusResult, logResult] = await Promise.all([fetchRunStatus(runId), fetchRunLogs(runId, logCursor)]);
+        const [statusResult, logResult] = await Promise.all([
+          fetchRunStatus(runId),
+          fetchRunLogs(runId, analysisCursor, "analysis")
+        ]);
         if (!active) {
           return;
         }
@@ -70,6 +83,10 @@ export const Step2Analyze: React.FC = () => {
           setStatus("analyzing");
         } else if (statusResult.status === "starting") {
           setStatus("starting");
+        } else if (statusResult.status === "review") {
+          setStatus("review");
+        } else if (statusResult.status === "transferring") {
+          setStatus("transferring");
         } else if (statusResult.status === "completed") {
           setStatus("completed");
         } else if (statusResult.status === "failed") {
@@ -81,10 +98,10 @@ export const Step2Analyze: React.FC = () => {
           setError(statusResult.error);
         }
         if (logResult?.entries.length) {
-          appendLogs(mapApiLogEntries(logResult.entries), logResult.nextCursor);
+          appendAnalysisLogs(mapApiLogEntries(logResult.entries), logResult.nextCursor);
         }
-        if (["completed", "failed", "aborted"].includes(statusResult.status)) {
-          setNextDisabled(statusResult.status !== "completed");
+        if (["review", "completed", "failed", "aborted"].includes(statusResult.status)) {
+          setNextDisabled(!["review", "completed"].includes(statusResult.status));
           setIsPolling(false);
           return;
         }
@@ -108,7 +125,7 @@ export const Step2Analyze: React.FC = () => {
       }
       setIsPolling(false);
     };
-  }, [appendLogs, logCursor, runId, setError, setNextDisabled, setStatus, setRunId]);
+  }, [analysisCursor, appendAnalysisLogs, runId, setError, setNextDisabled, setStatus, setRunId]);
 
   const statusLabel = useMemo(() => {
     switch (status) {
@@ -116,6 +133,10 @@ export const Step2Analyze: React.FC = () => {
         return t("analyze.status.starting");
       case "analyzing":
         return t("analyze.status.running");
+      case "review":
+        return t("analyze.status.review");
+      case "transferring":
+        return t("analyze.status.transferring");
       case "completed":
         return t("analyze.status.completed");
       case "failed":

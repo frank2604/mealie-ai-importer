@@ -1,7 +1,9 @@
 """Shared pipeline context and helper structures."""
 from __future__ import annotations
 
+import base64
 import json
+import mimetypes
 from copy import deepcopy
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -284,17 +286,96 @@ class PipelineContext:
             return
         base_dir = self.recipe_data_path.parent if self.recipe_data_path else self.output_dir
         for asset in self.recipe.assets:
-            if getattr(asset, "data", None) or not getattr(asset, "data_path", None):
+            if getattr(asset, "data", None):
                 continue
-            asset_path = Path(asset.data_path)
-            if not asset_path.is_absolute():
-                asset_path = (base_dir / asset_path).resolve()
-            try:
-                payload = json.loads(asset_path.read_text(encoding="utf-8"))
-            except (OSError, json.JSONDecodeError):
+
+            def _resolve_path(path_str: str) -> Path:
+                candidate = Path(path_str)
+                if not candidate.is_absolute():
+                    candidate = (base_dir / candidate).resolve()
+                return candidate
+
+            def _read_json(path: Path) -> Optional[Dict[str, Any]]:
+                try:
+                    return json.loads(path.read_text(encoding="utf-8"))
+                except (OSError, json.JSONDecodeError):
+                    return None
+
+            def _apply_payload(payload: Dict[str, Any], source_path: Optional[Path]) -> bool:
+                data_url = payload.get("dataUrl") or payload.get("data")
+                if not data_url:
+                    return False
+                asset.data = data_url
+                if not asset.title:
+                    asset.title = payload.get("title")
+                if not asset.description:
+                    asset.description = payload.get("description")
+                if source_path and not asset.data_path:
+                    try:
+                        asset.data_path = str(source_path.relative_to(base_dir))
+                    except ValueError:
+                        asset.data_path = str(source_path)
+                return True
+
+            # 1) Try explicit data_path (JSON or binary)
+            data_paths: List[Path] = []
+            if getattr(asset, "data_path", None):
+                data_paths.append(_resolve_path(str(asset.data_path)))
+
+            # 2) Try known RecipeImage JSON snapshots
+            for candidate in sorted(base_dir.glob("*RecipeImage*.json")):
+                if candidate not in data_paths:
+                    data_paths.append(candidate)
+
+            applied = False
+            for candidate in data_paths:
+                if candidate.suffix.lower() == ".json":
+                    payload = _read_json(candidate)
+                    if not payload:
+                        continue
+                    file_name = payload.get("fileName")
+                    if file_name and asset.file_name and file_name != asset.file_name:
+                        continue
+                    if _apply_payload(payload, candidate):
+                        applied = True
+                        break
+                else:
+                    try:
+                        raw = candidate.read_bytes()
+                    except OSError:
+                        continue
+                    mime_type, _ = mimetypes.guess_type(candidate.name)
+                    mime_type = mime_type or "application/octet-stream"
+                    data_url = f"data:{mime_type};base64,{base64.b64encode(raw).decode('ascii')}"
+                    if _apply_payload({"dataUrl": data_url}, candidate):
+                        applied = True
+                        break
+
+            if applied:
                 continue
-            asset.data = payload.get("dataUrl") or payload.get("data")
-            if not asset.title:
-                asset.title = payload.get("title")
-            if not asset.description:
-                asset.description = payload.get("description")
+
+            # 3) Fallback to the actual image file (based on asset.file_name or recipe.image_path)
+            image_candidates: List[Path] = []
+            if asset.file_name:
+                image_candidates.append(_resolve_path(asset.file_name))
+            recipe_image_path = getattr(self.recipe, "image_path", None)
+            if recipe_image_path:
+                image_candidates.append(_resolve_path(recipe_image_path))
+
+            seen: set[Path] = set()
+            for candidate in image_candidates:
+                candidate = candidate.resolve()
+                if candidate in seen or not candidate.exists():
+                    continue
+                seen.add(candidate)
+                mime_type, _ = mimetypes.guess_type(candidate.name)
+                mime_type = mime_type or "application/octet-stream"
+                try:
+                    raw = candidate.read_bytes()
+                except OSError:
+                    continue
+                data_url = f"data:{mime_type};base64,{base64.b64encode(raw).decode('ascii')}"
+                if _apply_payload({"dataUrl": data_url}, candidate):
+                    if not asset.file_name:
+                        asset.file_name = candidate.name
+                    break

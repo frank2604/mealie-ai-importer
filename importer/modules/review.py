@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 import logging
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional
+from typing import Any, Dict, Iterable, List, Optional
 
 from ..exceptions import UserAbort
 from ..models import OrganizerReference
@@ -100,7 +100,14 @@ class ApplyUserDecisionsModule:
                 user_decision = {}
             action = str(user_decision.get("action") or "auto").strip().lower()
             use_food_id = user_decision.get("useFoodId")
-            create_payload = user_decision.get("create")
+            normalized_create = self._normalize_food_create_payload(
+                user_decision.get("create"),
+                item.get("suggestion"),
+            )
+            has_match = key in context.food_matches and context.food_matches[key]
+
+            if action == "auto" and normalized_create and not has_match:
+                action = "create"
 
             if action == "use_existing" and use_food_id:
                 new_matches[key] = str(use_food_id)
@@ -110,17 +117,17 @@ class ApplyUserDecisionsModule:
                 }
                 continue
 
-            if action == "create" and isinstance(create_payload, dict):
+            if action == "create":
+                if not normalized_create:
+                    logger.warning(
+                        'Food "%s" wurde zur Erstellung markiert, aber es fehlen Angaben in der Review-Datei',
+                        ingredient_map[key].ingredient.name,
+                    )
+                    decisions[key] = {"action": "auto"}
+                    continue
                 decisions[key] = {
                     "action": "create",
-                    "create": {
-                        "nameSingular": create_payload.get("nameSingular"),
-                        "namePlural": create_payload.get("namePlural"),
-                        "aliases": create_payload.get("aliases") or [],
-                        "categoryId": create_payload.get("categoryId"),
-                        "categoryName": create_payload.get("categoryName"),
-                        "description": create_payload.get("description"),
-                    },
+                    "create": normalized_create,
                 }
                 continue
 
@@ -131,7 +138,10 @@ class ApplyUserDecisionsModule:
                 continue
 
             # default behaviour: auto (use existing matches or create via automation)
-            decisions[key] = {"action": "auto"}
+            entry = {"action": "auto"}
+            if normalized_create:
+                entry["create"] = normalized_create
+            decisions[key] = entry
 
         context.food_decisions = decisions
         context.food_matches = new_matches
@@ -194,7 +204,14 @@ class ApplyUserDecisionsModule:
                 user_decision = {}
             action = str(user_decision.get("action") or "auto").strip().lower()
             use_unit_id = user_decision.get("useUnitId")
-            create_payload = user_decision.get("create")
+            normalized_create = self._normalize_unit_create_payload(
+                user_decision.get("create"),
+                item.get("suggestion"),
+            )
+            has_match = key in context.unit_matches and context.unit_matches[key]
+
+            if action == "auto" and normalized_create and not has_match:
+                action = "create"
 
             if action == "use_existing" and use_unit_id:
                 new_matches[key] = str(use_unit_id)
@@ -204,16 +221,17 @@ class ApplyUserDecisionsModule:
                 }
                 continue
 
-            if action == "create" and isinstance(create_payload, dict):
+            if action == "create":
+                if not normalized_create:
+                    logger.warning(
+                        'Einheit für "%s" sollte erstellt werden, aber es fehlen Details in der Review-Datei',
+                        ingredient_map[key].ingredient.unit or "",
+                    )
+                    decisions[key] = {"action": "auto"}
+                    continue
                 decisions[key] = {
                     "action": "create",
-                    "create": {
-                        "name": create_payload.get("name"),
-                        "pluralName": create_payload.get("pluralName"),
-                        "abbreviation": create_payload.get("abbreviation"),
-                        "pluralAbbreviation": create_payload.get("pluralAbbreviation"),
-                        "useAbbreviation": bool(create_payload.get("useAbbreviation")),
-                    },
+                    "create": normalized_create,
                 }
                 continue
 
@@ -223,7 +241,10 @@ class ApplyUserDecisionsModule:
                     new_matches.pop(key, None)
                 continue
 
-            decisions[key] = {"action": "auto"}
+            entry = {"action": "auto"}
+            if normalized_create:
+                entry["create"] = normalized_create
+            decisions[key] = entry
 
         context.unit_decisions = decisions
         context.unit_matches = new_matches
@@ -360,3 +381,70 @@ class ApplyUserDecisionsModule:
     @staticmethod
     def _build_ingredient_map(context: PipelineContext) -> Dict[str, IngredientRef]:
         return {ref.key: ref for ref in context.iter_ingredients()}
+
+    @staticmethod
+    def _normalize_food_create_payload(
+        create_payload: Optional[Dict[str, Any]],
+        suggestion: Optional[Dict[str, Any]],
+    ) -> Optional[Dict[str, Any]]:
+        create = create_payload if isinstance(create_payload, dict) else {}
+        fallback = suggestion if isinstance(suggestion, dict) else {}
+
+        def pick(field: str) -> Optional[Any]:
+            value = create.get(field)
+            if value in ("", None):
+                value = fallback.get(field)
+            return value
+
+        aliases = create.get("aliases")
+        if not isinstance(aliases, list):
+            aliases = fallback.get("aliases")
+        alias_list = [str(alias) for alias in (aliases or []) if isinstance(alias, str) and alias]
+        normalized = {
+            "nameSingular": pick("nameSingular"),
+            "namePlural": pick("namePlural"),
+            "aliases": alias_list,
+            "categoryId": pick("categoryId"),
+            "categoryName": pick("categoryName"),
+            "description": pick("description"),
+        }
+        has_value = any(
+            normalized.get(key)
+            for key in ("nameSingular", "namePlural", "categoryId", "categoryName")
+        ) or bool(alias_list) or bool(normalized.get("description"))
+        if not has_value:
+            return None
+        return normalized
+
+    @staticmethod
+    def _normalize_unit_create_payload(
+        create_payload: Optional[Dict[str, Any]],
+        suggestion: Optional[Dict[str, Any]],
+    ) -> Optional[Dict[str, Any]]:
+        create = create_payload if isinstance(create_payload, dict) else {}
+        fallback = suggestion if isinstance(suggestion, dict) else {}
+
+        def pick(field: str) -> Optional[Any]:
+            value = create.get(field)
+            if value in ("", None):
+                value = fallback.get(field)
+            return value
+
+        use_abbreviation = create.get("useAbbreviation")
+        if use_abbreviation is None:
+            use_abbreviation = fallback.get("useAbbreviation")
+
+        normalized = {
+            "name": pick("name"),
+            "pluralName": pick("pluralName"),
+            "abbreviation": pick("abbreviation"),
+            "pluralAbbreviation": pick("pluralAbbreviation"),
+            "useAbbreviation": bool(use_abbreviation),
+        }
+        has_value = any(
+            normalized.get(key)
+            for key in ("name", "pluralName", "abbreviation", "pluralAbbreviation")
+        )
+        if not has_value:
+            return None
+        return normalized

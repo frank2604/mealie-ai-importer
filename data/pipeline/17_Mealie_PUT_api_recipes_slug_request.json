@@ -1,0 +1,169 @@
+{
+  "id": "1a5b03bd-19de-47bb-8f8b-93c5fdc225cd",
+  "userId": "48ff7261-817a-43a9-89de-63ee69dd4a3e",
+  "householdId": "68c99137-3b89-4a63-b504-97c353531455",
+  "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+  "name": "Hähnchenbrust mit Parma-Schinken in Wermut-Sahnesoße",
+  "slug": "hahnchenbrust-mit-parma-schinken-in-wermut-sahnesosse",
+  "image": null,
+  "recipeServings": 4.0,
+  "recipeYieldQuantity": 4.0,
+  "recipeYield": "4 Portionen",
+  "totalTime": "45 Min.",
+  "prepTime": "25 Min.",
+  "cookTime": null,
+  "performTime": "20 Min.",
+  "description": "Zarte Hähnchenbrustfilets werden mit Salbeiblättern belegt, in Parma-Schinken gewickelt und kurz angebraten. Eine cremige Wermut-Champignon-Soße macht das Gericht besonders aromatisch. Ideal zu Pellkartoffeln und einem grünen Salat.",
+  "recipeCategory": [],
+  "tags": [],
+  "tools": [],
+  "rating": null,
+  "orgURL": "data/uploads/9f91d9ac04934c18b7ccfa471e7dcdaa.pdf",
+  "dateAdded": "2025-11-11",
+  "dateUpdated": "2025-11-11T17:05:32.767836Z",
+  "createdAt": "2025-11-11T17:05:32.768745Z",
+  "updatedAt": "2025-11-11T17:05:32.768746Z",
+  "lastMade": null,
+  "recipeIngredient": [
+    {
+      "quantity": 4.0,
+      "unit": {
+        "id": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+        "name": "Stück"
+      },
+      "food": {
+        "id": "56d8f876-0110-410f-951e-7a4b365437ce",
+        "name": "Hähnchenbrustfilet"
+      }
+    },
+    {
+      "quantity": 6.0,
+      "unit": {
+        "id": "2c3e0c93-592c-4759-bb3e-685a247b49b8",
+        "name": "Scheibe"
+      },
+      "food": {
+        "id": "2092d72d-0375-4ce9-b524-830a98107cf4",
+        "name": "Parma-Schinken"
+      }
+    },
+    {
+      "quantity": 500.0,
+      "note": "geputzt, geviertelt",
+      "unit": {
+        "id": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
+        "name": "Gramm"
+      },
+      "food": {
+        "id": "60554611-f601-4d7f-b7dc-ce21c3462067",
+        "name": "Champignon"
+      }
+    },
+    {
+      "quantity": 3.0,
+      "note": "geschält und klein gehackt",
+      "unit": {
+        "id": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+        "name": "Stück"
+      },
+      "food": {
+        "id": "faec60df-abda-4f65-bed0-b81d47121a55",
+        "name": "Rote Zwiebel"
+      }
+    },
+    {
+      "quantity": 100.0,
+      "unit": {
+        "id": "b558643c-bb92-479d-97ea-1337edc49d3b",
+        "name": "Milliliter"
+      },
+      "food": {
+        "id": "cbcaa29b-a3b7-4615-89a7-a2691fef9e3f",
+        "name": "Trockener Wermut"
+      }
+    },
+    {
+      "quantity": 200.0,
+      "unit": {
+        "id": "b558643c-bb92-479d-97ea-1337edc49d3b",
+        "name": "Milliliter"
+      },
+      "food": {
+        "id": "ce7b4e53-b248-490e-953f-c4548bfb941a",
+        "name": "Süße Sahne"
+      }
+    },
+    {
+      "quantity": 1.0,
+      "unit": {
+        "id": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+        "name": "Esslöffel"
+      },
+      "food": {
+        "id": "49ad74f8-8303-4fa3-8e31-0e5b0d55e12d",
+        "name": "Mehl"
+      }
+    },
+    {
+      "quantity": 1.0,
+      "unit": {
+        "id": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+        "name": "Esslöffel"
+      },
+      "food": {
+        "id": "16018665-3023-4213-aeb2-c8445dd699b6",
+        "name": "Heller Soßenbinder"
+      }
+    },
+    {
+      "note": "Fett zum Braten (zum Braten verwenden)"
+    },
+    {
+      "quantity": 6.0,
+      "unit": {
+        "id": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+        "name": "Stück"
+      },
+      "food": {
+        "id": "31eedd6a-c57b-4979-8a9d-b7ff71663acc",
+        "name": "Salbeiblatt"
+      }
+    },
+    {
+      "note": "Salz (nach Geschmack)"
+    },
+    {
+      "note": "Pfeffer (nach Geschmack)"
+    }
+  ],
+  "recipeInstructions": [],
+  "nutrition": {
+    "calories": null,
+    "carbohydrateContent": null,
+    "cholesterolContent": null,
+    "fatContent": null,
+    "fiberContent": null,
+    "proteinContent": null,
+    "saturatedFatContent": null,
+    "sodiumContent": null,
+    "sugarContent": null,
+    "transFatContent": null,
+    "unsaturatedFatContent": null
+  },
+  "settings": {
+    "public": false,
+    "showNutrition": false,
+    "showAssets": true,
+    "landscapeView": false,
+    "disableComments": false,
+    "locked": false
+  },
+  "notes": [
+    {
+      "title": "Hinweis",
+      "text": "Als Beilage eignen sich Pellkartoffeln und ein grüner Salat. Die Garzeit kann je nach Ofen und Dicke der Filets leicht variieren."
+    }
+  ],
+  "extras": {},
+  "comments": []
+}

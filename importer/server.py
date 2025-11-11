@@ -30,6 +30,12 @@ from .modules.food_checker import FoodCheckerModule
 from .modules.input import PdfInputModule
 from .modules.refresh_caches import RefreshCachesModule
 from .modules.unit_checker import UnitCheckerModule
+from .modules.review import ApplyUserDecisionsModule
+from .modules.create_foods import CreateFoodsModule
+from .modules.add_food_ids import AddFoodIdsModule
+from .modules.create_units import CreateUnitsModule
+from .modules.add_unit_ids import AddUnitIdsModule
+from .modules.create_recipe import CreateRecipeModule
 from .services.run_workspace import PipelineRecorder, RunInfo, RunWorkspace
 from .services.ingredients import IngredientService
 
@@ -85,6 +91,13 @@ class StartAnalysisResponse(BaseModel):
     startedAt: str
 
 
+class TransferStartResponse(BaseModel):
+    runId: str
+    status: str
+    recipeName: str
+    startedAt: str
+
+
 class RunStatusResponse(BaseModel):
     runId: str
     status: str
@@ -96,6 +109,9 @@ class RunStatusResponse(BaseModel):
 
 class LogEntryModel(BaseModel):
     id: str
+    level: str
+    message: str
+    timestamp: str
 
 
 class ImageUploadResponse(BaseModel):
@@ -191,12 +207,10 @@ class ReviewIngredient(BaseModel):
     notes: Optional[str] = None
     foodStatus: str
     foodMatch: Optional[MatchInfo] = None
-    foodCandidates: List[CandidateOption] = Field(default_factory=list)
     foodSuggestion: Optional[FoodSuggestion] = None
     foodDecision: Dict[str, Any] = Field(default_factory=dict)
     unitStatus: str
     unitMatch: Optional[MatchInfo] = None
-    unitCandidates: List[CandidateOption] = Field(default_factory=list)
     unitSuggestion: Optional[UnitSuggestion] = None
     unitDecision: Dict[str, Any] = Field(default_factory=dict)
     foodSelection: Optional[FoodSelection] = None
@@ -303,6 +317,8 @@ class RunState:
     status: str
     started_at: str
     log_file: Path
+    analysis_log_file: Path
+    transfer_log_file: Path
     pipeline_dir: Path
     error: Optional[str] = None
     completed_at: Optional[str] = None
@@ -347,7 +363,7 @@ def _load_app_config() -> AppConfig:
 
 def _assert_no_running_job() -> None:
     with RUN_STATE_LOCK:
-        busy = any(state.status in {"starting", "running"} for state in ACTIVE_RUNS.values())
+        busy = any(state.status in {"starting", "running", "transferring"} for state in ACTIVE_RUNS.values())
     if busy:
         raise HTTPException(status_code=409, detail="Ein anderer Importlauf ist noch aktiv.")
 
@@ -375,13 +391,24 @@ def _pop_pending_upload(upload_id: str) -> PendingUpload:
 
 
 def _register_run_state(pending: PendingUpload, run_info: RunInfo, pipeline_dir: Path) -> RunState:
+    analysis_log = Path(
+        run_info.analysis_log_file
+        or run_info.log_file
+        or pipeline_dir / f"{run_info.run_id}_analysis.log"
+    )
+    transfer_log = Path(
+        run_info.transfer_log_file
+        or pipeline_dir / f"{run_info.run_id}_transfer.log"
+    )
     state = RunState(
         run_id=run_info.run_id,
         upload_id=pending.upload_id,
         recipe_name=pending.recipe_name,
         status="starting",
         started_at=run_info.started_at,
-        log_file=Path(run_info.log_file or pipeline_dir / f"{run_info.run_id}_run.log"),
+        log_file=analysis_log,
+        analysis_log_file=analysis_log,
+        transfer_log_file=transfer_log,
         pipeline_dir=pipeline_dir,
     )
     with RUN_STATE_LOCK:
@@ -389,15 +416,24 @@ def _register_run_state(pending: PendingUpload, run_info: RunInfo, pipeline_dir:
     return state
 
 
-def _update_run_state(run_id: str, *, status: Optional[str] = None, error: Optional[str] = None, completed_at: Optional[str] = None) -> None:
+def _update_run_state(
+    run_id: str,
+    *,
+    status: Optional[str] = None,
+    error: Optional[str] = None,
+    completed_at: Optional[str] = None,
+    clear_error: bool = False,
+) -> None:
     with RUN_STATE_LOCK:
         state = ACTIVE_RUNS.get(run_id)
         if not state:
             return
         if status:
             state.status = status
-        if error:
+        if error is not None:
             state.error = error
+        elif clear_error:
+            state.error = None
         if completed_at:
             state.completed_at = completed_at
 
@@ -405,9 +441,40 @@ def _update_run_state(run_id: str, *, status: Optional[str] = None, error: Optio
 def _read_run_state(run_id: str) -> RunState:
     with RUN_STATE_LOCK:
         state = ACTIVE_RUNS.get(run_id)
-    if not state:
+    if state:
+        return state
+    config = _load_app_config()
+    workspace = _build_workspace(config)
+    run_info = workspace.load_run_info()
+    if not run_info or run_info.run_id != run_id:
         raise HTTPException(status_code=404, detail="Importlauf nicht gefunden.")
-    return state
+    analysis_log = Path(
+        run_info.analysis_log_file
+        or run_info.log_file
+        or workspace.pipeline_dir / f"{run_id}_analysis.log"
+    )
+    transfer_log = Path(
+        run_info.transfer_log_file
+        or workspace.pipeline_dir / f"{run_id}_transfer.log"
+    )
+    current_log = transfer_log if (run_info.status or "").lower() in {"transferring", "completed"} else analysis_log
+
+    recreated = RunState(
+        run_id=run_info.run_id,
+        upload_id="resume",
+        recipe_name=run_info.recipe_name,
+        status=run_info.status or "review",
+        started_at=run_info.started_at,
+        log_file=current_log,
+        analysis_log_file=analysis_log,
+        transfer_log_file=transfer_log,
+        pipeline_dir=workspace.pipeline_dir,
+        error=getattr(run_info, "error", None),
+        completed_at=run_info.completed_at,
+    )
+    with RUN_STATE_LOCK:
+        ACTIVE_RUNS[run_id] = recreated
+    return recreated
 
 
 def _build_workspace(config: AppConfig) -> RunWorkspace:
@@ -477,6 +544,17 @@ def _write_json_file(path: Path, payload: Dict[str, Any]) -> None:
         json.dump(payload, handle, ensure_ascii=False, indent=2)
 
 
+def _resume_pipeline_recorder(directory: Path) -> PipelineRecorder:
+    recorder = PipelineRecorder(directory)
+    max_index = 0
+    for entry in directory.iterdir():
+        match = re.match(r"^(\d{2})_", entry.name)
+        if match:
+            max_index = max(max_index, int(match.group(1)))
+    recorder._counter = max_index  # type: ignore[attr-defined]
+    return recorder
+
+
 def _write_recipe_image_json(pipeline_dir: Path, file_name: str, data: bytes, mime_type: str) -> None:
     data_url = f"data:{mime_type};base64,{base64.b64encode(data).decode('ascii')}"
     payload = {"fileName": file_name, "dataUrl": data_url}
@@ -510,6 +588,31 @@ def _load_candidate_options(path: Path, key: str) -> List[CandidateOption]:
             )
         )
     return options
+
+
+def _load_food_categories(path: Path) -> List[CategoryOption]:
+    if not path.exists():
+        return []
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return []
+    items = payload.get("categories")
+    if not isinstance(items, list):
+        return []
+    categories: List[CategoryOption] = []
+    for item in items:
+        if not isinstance(item, dict) or not item.get("id"):
+            continue
+        categories.append(
+            CategoryOption(
+                id=str(item.get("id")),
+                name=item.get("name"),
+                groupId=item.get("groupId"),
+                slug=item.get("slug"),
+            )
+        )
+    return categories
 
 
 def _resolve_review_context(config: AppConfig, run_id: str) -> ReviewContext:
@@ -548,6 +651,47 @@ def _resolve_review_context(config: AppConfig, run_id: str) -> ReviewContext:
         pdf_path=pdf_path,
         image_path=image_path,
     )
+
+
+def _prepare_transfer_context(config: AppConfig, run_state: RunState) -> PipelineContext:
+    review_context = _resolve_review_context(config, run_state.run_id)
+    source_pdf = (
+        review_context.pdf_path
+        or (Path(review_context.run_info.source_pdf) if review_context.run_info.source_pdf else None)
+        or (review_context.pipeline_dir / f"{review_context.run_info.recipe_name}.pdf")
+    )
+    if not source_pdf.exists():
+        source_pdf.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            source_pdf.touch(exist_ok=True)
+        except OSError:
+            pass
+
+    recorder = _resume_pipeline_recorder(review_context.pipeline_dir)
+    cache_paths = CachePaths(Path(config.ingredients.cache_dir))
+    context = PipelineContext(
+        source_pdf=source_pdf,
+        output_dir=review_context.pipeline_dir,
+        config=config,
+        cache_paths=cache_paths,
+        run_id=run_state.run_id,
+        pipeline_recorder=recorder,
+        log_file=run_state.log_file,
+    )
+    context.recipe_data_path = review_context.recipe_path
+    context.recipe_output_path = review_context.recipe_path
+    context.food_review_path = review_context.foods_path
+    context.unit_review_path = review_context.units_path
+    context.metadata_review_path = review_context.metadata_path
+
+    recipe = context.ensure_recipe()
+    for ref in context.iter_ingredients():
+        if ref.ingredient.mealie_food_id:
+            context.food_matches[ref.key] = ref.ingredient.mealie_food_id
+        if ref.ingredient.mealie_unit_id:
+            context.unit_matches[ref.key] = ref.ingredient.mealie_unit_id
+    context.recipe = recipe
+    return context
 
 
 def _map_status(value: Optional[str]) -> str:
@@ -609,52 +753,31 @@ def _build_review_payload(run_id: str, config: AppConfig) -> ReviewDataResponse:
             unit_entry = units_map.get(key, {})
             recipe_entry = recipe_ingredient_map.get(key, {})
 
-            food_status = _map_status(
-                recipe_entry.get("foodBadgeId") or food_entry.get("status")
-            )
-            unit_status = _map_status(
-                recipe_entry.get("unitBadgeId") or unit_entry.get("status")
-            )
+            food_status = _map_status(recipe_entry.get("foodBadgeId"))
+            unit_status = _map_status(recipe_entry.get("unitBadgeId"))
 
-            food_match = food_entry.get("currentMatch") or {}
-            unit_match = unit_entry.get("currentMatch") or {}
             recipe_food_id = recipe_entry.get("mealieFoodId")
             recipe_unit_id = recipe_entry.get("mealieUnitId")
 
-            if recipe_food_id:
-                food_match = {
-                    "foodId": recipe_food_id,
-                    "name": recipe_entry.get("name") or food_match.get("name"),
-                    "strategy": food_match.get("strategy") or food_status,
-                }
-            if recipe_unit_id:
-                unit_match = {
-                    "unitId": recipe_unit_id,
-                    "name": recipe_entry.get("unit") or unit_match.get("name"),
-                    "strategy": unit_match.get("strategy") or unit_status,
-                }
-
-            food_candidates = [
-                CandidateOption(
-                    id=str(candidate.get("id")),
-                    name=candidate.get("name"),
-                    pluralName=candidate.get("pluralName"),
+            food_match_obj = (
+                MatchInfo(
+                    id=recipe_food_id,
+                    name=recipe_entry.get("name"),
+                    strategy=_map_strategy(recipe_entry.get("foodBadgeId")),
                 )
-                for candidate in food_entry.get("candidates") or []
-                if candidate.get("id")
-            ]
+                if recipe_food_id
+                else None
+            )
 
-            unit_candidates = [
-                CandidateOption(
-                    id=str(candidate.get("id")),
-                    name=candidate.get("name"),
-                    pluralName=candidate.get("pluralName"),
-                    abbreviation=candidate.get("abbreviation"),
-                    pluralAbbreviation=candidate.get("pluralAbbreviation"),
+            unit_match_obj = (
+                MatchInfo(
+                    id=recipe_unit_id,
+                    name=recipe_entry.get("unit"),
+                    strategy=_map_strategy(recipe_entry.get("unitBadgeId")),
                 )
-                for candidate in unit_entry.get("candidates") or []
-                if candidate.get("id")
-            ]
+                if recipe_unit_id
+                else None
+            )
 
             food_decision = dict(food_entry.get("userDecision") or {})
             unit_decision = dict(unit_entry.get("userDecision") or {})
@@ -699,14 +822,7 @@ def _build_review_payload(run_id: str, config: AppConfig) -> ReviewDataResponse:
                 note=ingredient.get("note"),
                 notes=notes_value or "",
                 foodStatus=food_status,
-                foodMatch=MatchInfo(
-                    id=food_match.get("foodId"),
-                    name=food_match.get("name"),
-                    strategy=_map_strategy(food_match.get("strategy")),
-                )
-                if food_match
-                else None,
-                foodCandidates=food_candidates,
+                foodMatch=food_match_obj,
                 foodSuggestion=FoodSuggestion(
                     nameSingular=(food_entry.get("suggestion") or {}).get("nameSingular"),
                     namePlural=(food_entry.get("suggestion") or {}).get("namePlural"),
@@ -718,14 +834,7 @@ def _build_review_payload(run_id: str, config: AppConfig) -> ReviewDataResponse:
                 else None,
                 foodDecision=food_decision,
                 unitStatus=unit_status,
-                unitMatch=MatchInfo(
-                    id=unit_match.get("unitId"),
-                    name=unit_match.get("name"),
-                    strategy=_map_strategy(unit_match.get("strategy")),
-                )
-                if unit_match
-                else None,
-                unitCandidates=unit_candidates,
+                unitMatch=unit_match_obj,
                 unitSuggestion=UnitSuggestion(
                     name=(unit_entry.get("suggestion") or {}).get("name"),
                     pluralName=(unit_entry.get("suggestion") or {}).get("pluralName"),
@@ -825,15 +934,7 @@ def _build_review_payload(run_id: str, config: AppConfig) -> ReviewDataResponse:
     cache_root = Path(config.ingredients.cache_dir)
     foods_options = _load_candidate_options(cache_root / "MealieFoodsCache.json", "foods")
     units_options = _load_candidate_options(cache_root / "MealieUnitsCache.json", "units")
-    food_categories = [
-        CategoryOption(
-            id=str(cat.get("id")),
-            name=cat.get("name"),
-            groupId=cat.get("groupId"),
-        )
-        for cat in foods_review.get("availableCategories") or []
-        if cat.get("id")
-    ]
+    food_categories = _load_food_categories(cache_root / "MealieFoodCategoriesCache.json")
 
     return ReviewDataResponse(
         runId=run_id,
@@ -1071,9 +1172,9 @@ def _run_analysis(run_state: RunState, pending: PendingUpload, config: AppConfig
             _update_run_state(run_state.run_id, status="aborted", completed_at=_now_utc(), error=str(exc))
             return
 
-        run_info.mark_completed(status="completed")
+        run_info.mark_completed(status="review")
         workspace.save_run_info(run_info)
-        _update_run_state(run_state.run_id, status="completed", completed_at=run_info.completed_at or _now_utc())
+        _update_run_state(run_state.run_id, status="review", completed_at=run_info.completed_at or _now_utc())
     except Exception as exc:  # pragma: no cover - defensive
         logger.exception("Analyse fehlgeschlagen: %s", exc)
         run_info.mark_completed(status="failed")
@@ -1090,8 +1191,67 @@ def _run_analysis(run_state: RunState, pending: PendingUpload, config: AppConfig
             logger.debug("Hochgeladene Datei konnte nicht gelöscht werden: %s", pending.file_path)
 
 
-def _parse_log_entries(run_state: RunState, after: int) -> LogResponse:
-    log_file = run_state.log_file
+def _run_transfer(run_state: RunState, config: AppConfig, workspace: RunWorkspace, run_info: RunInfo) -> None:
+    logger.info("Starte Übertragung für Lauf %s (%s)", run_state.run_id, run_state.recipe_name)
+    ingredient_service: Optional[IngredientService] = None
+    file_handler: Optional[logging.Handler] = None
+    root_logger = logging.getLogger()
+    try:
+        if not (config.mealie.base_url and config.mealie.token):
+            raise RuntimeError("Mealie-Zugangsdaten fehlen – Übertragung nicht möglich.")
+
+        ingredient_service = IngredientService(
+            base_url=config.mealie.base_url,
+            token=config.mealie.token,
+            config=config.ingredients,
+            llm_client=None,
+            verify=config.mealie.verify_option(),
+            auto_seed=False,
+        )
+
+        if run_state.log_file:
+            file_handler = logging.FileHandler(run_state.log_file, encoding="utf-8")
+            file_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s", "%Y-%m-%d %H:%M:%S"))
+            root_logger.addHandler(file_handler)
+
+        context = _prepare_transfer_context(config, run_state)
+        context.requires_user_review = False
+
+        modules = [
+            ApplyUserDecisionsModule(),
+            CreateFoodsModule(ingredient_service),
+            AddFoodIdsModule(),
+            CreateUnitsModule(ingredient_service),
+            AddUnitIdsModule(),
+            CreateRecipeModule(
+                config=config,
+                ingredient_service=ingredient_service,
+                dry_run=False,
+                on_duplicate=None,
+            ),
+        ]
+
+        runner = PipelineRunner(modules)
+        runner.run(context)
+
+        run_info.mark_completed(status="completed")
+        workspace.save_run_info(run_info)
+        _update_run_state(run_state.run_id, status="completed", completed_at=run_info.completed_at or _now_utc(), clear_error=True)
+        logger.info("Übertragung erfolgreich abgeschlossen")
+    except Exception as exc:  # pragma: no cover - defensive
+        logger.exception("Übertragung fehlgeschlagen: %s", exc)
+        run_info.status = "review"
+        workspace.save_run_info(run_info)
+        _update_run_state(run_state.run_id, status="review", error=str(exc))
+    finally:
+        if ingredient_service:
+            ingredient_service.close()
+        if file_handler:
+            root_logger.removeHandler(file_handler)
+            file_handler.close()
+
+
+def _parse_log_entries(log_file: Path, run_state: RunState, after: int) -> LogResponse:
     if not log_file.exists():
         return LogResponse(runId=run_state.run_id, entries=[], nextCursor=after)
 
@@ -1179,6 +1339,37 @@ async def start_analysis(upload_id: str, background_tasks: BackgroundTasks) -> S
     )
 
 
+@app.post("/api/imports/{run_id}/transfer", response_model=TransferStartResponse)
+async def start_transfer(run_id: str, background_tasks: BackgroundTasks) -> TransferStartResponse:
+    state = _read_run_state(run_id)
+    if state.status not in {"review"}:
+        raise HTTPException(status_code=409, detail="Die Analyse muss abgeschlossen sein, bevor die Übertragung starten kann.")
+    _assert_no_running_job()
+    config = _load_app_config()
+    workspace = _build_workspace(config)
+    run_info = workspace.load_run_info()
+    if not run_info or run_info.run_id != run_id:
+        raise HTTPException(status_code=404, detail="Importlauf nicht gefunden oder bereits archiviert.")
+
+    try:
+        state.transfer_log_file.unlink()
+    except FileNotFoundError:
+        pass
+    state.log_file = state.transfer_log_file
+
+    _update_run_state(run_id, status="transferring", clear_error=True)
+    run_info.status = "transferring"
+    workspace.save_run_info(run_info)
+    background_tasks.add_task(_run_transfer, state, config, workspace, run_info)
+
+    return TransferStartResponse(
+        runId=run_id,
+        status="transferring",
+        recipeName=run_info.recipe_name,
+        startedAt=run_info.started_at,
+    )
+
+
 @app.get("/api/imports/active", response_model=ActiveRunResponse)
 async def get_active_run() -> ActiveRunResponse:
     config = _load_app_config()
@@ -1241,9 +1432,18 @@ async def get_run_status(run_id: str) -> RunStatusResponse:
 
 
 @app.get("/api/imports/{run_id}/logs", response_model=LogResponse)
-async def get_run_logs(run_id: str, after: int = 0) -> LogResponse:
+async def get_run_logs(run_id: str, after: int = 0, phase: Optional[str] = None) -> LogResponse:
     state = _read_run_state(run_id)
-    return _parse_log_entries(state, after)
+    normalized = (phase or "").strip().lower()
+    analysis_log = getattr(state, "analysis_log_file", state.log_file)
+    transfer_log = getattr(state, "transfer_log_file", state.log_file)
+    if normalized == "analysis":
+        target = analysis_log
+    elif normalized == "transfer":
+        target = transfer_log
+    else:
+        target = state.log_file
+    return _parse_log_entries(target, state, after)
 
 
 @app.get("/api/imports/{run_id}/pdf")

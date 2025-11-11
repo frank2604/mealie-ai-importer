@@ -25,6 +25,13 @@ export interface RunStatusResult {
   error?: string;
 }
 
+export interface TransferStartResult {
+  runId: string;
+  status: string;
+  recipeName: string;
+  startedAt: string;
+}
+
 export interface ApiLogEntry {
   id: string;
   level: string;
@@ -45,8 +52,8 @@ export interface ActiveRunResult {
   completedAt?: string;
 }
 
-const mapLogLevel = (level: string): LogEntry["level"] => {
-  const normalized = level.toUpperCase();
+const mapLogLevel = (level: string | null | undefined): LogEntry["level"] => {
+  const normalized = (level ?? "INFO").toString().toUpperCase();
   if (normalized === "WARN" || normalized === "WARNING") {
     return "WARN";
   }
@@ -110,8 +117,19 @@ export const fetchRunStatus = async (runId: string): Promise<RunStatusResult | n
   return (await response.json()) as RunStatusResult;
 };
 
-export const fetchRunLogs = async (runId: string, after = 0): Promise<RunLogResult | null> => {
-  const query = after > 0 ? `?after=${after}` : "";
+export const fetchRunLogs = async (
+  runId: string,
+  after = 0,
+  phase?: "analysis" | "transfer"
+): Promise<RunLogResult | null> => {
+  const params = new URLSearchParams();
+  if (after > 0) {
+    params.set("after", String(after));
+  }
+  if (phase) {
+    params.set("phase", phase);
+  }
+  const query = params.toString() ? `?${params.toString()}` : "";
   const response = await fetch(`${BASE_URL}/imports/${encodeURIComponent(runId)}/logs${query}`, {
     method: "GET",
     credentials: "same-origin"
@@ -123,6 +141,17 @@ export const fetchRunLogs = async (runId: string, after = 0): Promise<RunLogResu
     throw await parseError(response);
   }
   return (await response.json()) as RunLogResult;
+};
+
+export const startTransfer = async (runId: string): Promise<TransferStartResult> => {
+  const response = await fetch(`${BASE_URL}/imports/${encodeURIComponent(runId)}/transfer`, {
+    method: "POST",
+    credentials: "same-origin"
+  });
+  if (!response.ok) {
+    throw await parseError(response);
+  }
+  return (await response.json()) as TransferStartResult;
 };
 
 export const mapApiLogEntries = (entries: ApiLogEntry[]): LogEntry[] =>

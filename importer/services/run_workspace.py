@@ -48,6 +48,8 @@ class RunInfo:
     completed_at: Optional[str] = None
     source_pdf: Optional[str] = None
     log_file: Optional[str] = None
+    analysis_log_file: Optional[str] = None
+    transfer_log_file: Optional[str] = None
 
     def mark_completed(self, *, status: str = "completed") -> None:
         self.status = status
@@ -385,13 +387,16 @@ class RunWorkspace:
             self._clear_directory(self._log_dir)
 
         run_id = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
-        log_file = self._pipeline_dir / f"{run_id}_run.log"
+        analysis_log = self._pipeline_dir / f"{run_id}_analysis.log"
+        transfer_log = self._pipeline_dir / f"{run_id}_transfer.log"
         info = RunInfo(
             run_id=run_id,
             recipe_name=recipe_name,
             started_at=_now_utc(),
             source_pdf=str(source_pdf) if source_pdf else None,
-            log_file=str(log_file),
+            log_file=str(analysis_log),
+            analysis_log_file=str(analysis_log),
+            transfer_log_file=str(transfer_log),
         )
         self.save_run_info(info)
 

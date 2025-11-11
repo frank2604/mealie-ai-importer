@@ -26,6 +26,7 @@ import { BadgePill } from "../components/BadgePill";
 import { NewFoodModal, FoodCreateFormValues } from "../components/Modals/NewFoodModal";
 import { NewUnitModal, UnitCreateFormValues } from "../components/Modals/NewUnitModal";
 import { BASE_URL } from "../api/imports";
+import { useStepNavigation } from "../App";
 
 const mapStatusToBadgeId = (status?: string | null): BadgeId | null => {
   switch (status) {
@@ -537,7 +538,8 @@ const buildUpdatePayload = (data: ReviewData) => ({
 
 export const Step3Review: React.FC = () => {
   const { t } = useTranslation();
-  const { runId } = useImportFlow();
+  const { runId, status, setError } = useImportFlow();
+  const { setNextHandler, setNextDisabled } = useStepNavigation();
   const unitPlaceholder = t("review.selection.unitPlaceholder");
   const foodPlaceholder = t("review.selection.foodPlaceholder");
   const clearSelectionLabel = t("review.selection.clear");
@@ -789,6 +791,33 @@ export const Step3Review: React.FC = () => {
       setIsSaving(false);
     }
   }, [runId, reviewData]);
+
+  useEffect(() => {
+    const disabled = !runId || !reviewData || isSaving || isLoading;
+    setNextDisabled(disabled);
+  }, [isLoading, isSaving, reviewData, runId, setNextDisabled]);
+
+  useEffect(() => {
+    setNextHandler(() => async () => {
+      if (!runId || !reviewData) {
+        return false;
+      }
+      setNextDisabled(true);
+      try {
+        await persistChanges();
+        setError(null);
+        return true;
+      } catch (transferError) {
+        const message = transferError instanceof Error ? transferError.message : String(transferError);
+        setError(message);
+        setNextDisabled(false);
+        return false;
+      }
+    });
+    return () => {
+      setNextHandler(null);
+    };
+  }, [persistChanges, runId, setError, setNextDisabled, setNextHandler, reviewData]);
 
   useEffect(() => {
     if (!reviewData) {

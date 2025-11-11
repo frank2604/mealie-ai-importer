@@ -81,12 +81,10 @@ export interface ReviewIngredient {
   notes?: string | null;
   foodStatus: string;
   foodMatch?: MatchInfo | null;
-  foodCandidates: CandidateOption[];
   foodSuggestion?: FoodSuggestion | null;
   foodDecision: Record<string, any>;
   unitStatus: string;
   unitMatch?: MatchInfo | null;
-  unitCandidates: CandidateOption[];
   unitSuggestion?: UnitSuggestion | null;
   unitDecision: Record<string, any>;
   foodSelection?: FoodSelectionPayload;

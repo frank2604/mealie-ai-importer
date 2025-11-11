@@ -1,0 +1,11 @@
+{
+  "name": "Scheibe",
+  "payload": {
+    "name": "Scheibe",
+    "pluralName": "Scheiben",
+    "extras": {},
+    "fraction": true,
+    "useAbbreviation": false,
+    "aliases": []
+  }
+}

@@ -35,12 +35,16 @@ export const Step1Select: React.FC = () => {
         return t("select.status.uploaded");
       case "starting":
         return t("select.status.starting");
-      case "analyzing":
-        return t("select.status.analyzing");
-      case "completed":
-        return t("select.status.completed");
-      case "failed":
-        return t("select.status.failed");
+    case "analyzing":
+      return t("select.status.analyzing");
+    case "review":
+      return t("select.status.review");
+    case "transferring":
+      return t("select.status.transferring");
+    case "completed":
+      return t("select.status.completed");
+    case "failed":
+      return t("select.status.failed");
       case "aborted":
         return t("select.status.aborted");
       default:

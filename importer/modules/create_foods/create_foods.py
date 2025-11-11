@@ -67,7 +67,7 @@ class CreateFoodsModule:
                 logger.debug("Skipping automatic food creation because no Mealie connection is available")
             return
 
-        recipe = context.ensure_recipe()
+        context.ensure_recipe()
         missing_refs = list(context.missing_food_refs)
         if not missing_refs:
             logger.info("Every ingredient already has a matching Mealie food")
@@ -92,8 +92,8 @@ class CreateFoodsModule:
         remaining: List[IngredientRef] = []
         decisions = context.food_decisions or {}
 
-        auto_refs: List[IngredientRef] = []
         manual_creations: List[tuple[IngredientRef, Dict[str, object]]] = []
+        unresolved_refs: List[IngredientRef] = []
 
         for ref in missing_refs:
             decision = decisions.get(ref.key, {})
@@ -126,7 +126,7 @@ class CreateFoodsModule:
                 )
                 continue
 
-            auto_refs.append(ref)
+            unresolved_refs.append(ref)
 
         # handle manual creations before automatic flow
         for ref, create_payload in manual_creations:
@@ -158,49 +158,15 @@ class CreateFoodsModule:
                 resource.id,
             )
 
-        missing_refs = auto_refs
-        if missing_refs:
-            logger.info(
-                "Asking the assistant for naming ideas and categories: %s",
-                ", ".join(ref.ingredient.name for ref in missing_refs),
+        if unresolved_refs:
+            names = ", ".join(ref.ingredient.name for ref in unresolved_refs)
+            logger.error(
+                "Die folgenden Zutaten besitzen nach dem Review noch keine Mealie-ID: %s. "
+                "Bitte passe die Review-Dateien an und starte die Übertragung erneut.",
+                names,
             )
-            self._service.prepare_food_forms(
-                (ref.ingredient.name for ref in missing_refs),
-                debug=recorder,
-            )
-
-        for ref in missing_refs:
-            ingredient = ref.ingredient
-            try:
-                resource = self._service.get_or_create_food(
-                    name=ingredient.name,
-                    description="",
-                    category_hint=self._category_hint(recipe),
-                    debug=recorder,
-                )
-            except Exception as exc:  # pragma: no cover - external API failure
-                logger.error('Mealie could not create the food "%s": %s', ingredient.name, exc)
-                recorder.write(
-                    "create_food_error",
-                    {
-                        "ingredient": ingredient.name,
-                        "error": str(exc),
-                    },
-                )
-                remaining.append(ref)
-                continue
-
-            created[ref.key] = resource.id
-            context.food_matches[ref.key] = resource.id
-            context.created_food_ids[ingredient.name] = resource.id
-            logger.info('Created "%s" in Mealie (ID: %s)', ingredient.name, resource.id)
-            recorder.write(
-                "create_food_success",
-                {
-                    "ingredient": ingredient.name,
-                    "foodId": resource.id,
-                },
-            )
+            context.missing_food_refs = unresolved_refs + remaining
+            raise RuntimeError("Es fehlen noch Food-Entscheidungen – Übertragung abgebrochen.")
 
         context.missing_food_refs = remaining
         if created:
@@ -220,13 +186,6 @@ class CreateFoodsModule:
                 "timestamp": datetime.utcnow().isoformat(),
             },
         )
-
-    def _category_hint(self, recipe) -> Optional[str]:
-        if recipe.metadata.categories:
-            return recipe.metadata.categories[0]
-        if recipe.metadata.cuisine:
-            return recipe.metadata.cuisine
-        return None
 
     def _write_updated_cache(self, context: PipelineContext) -> None:
         if not self._service:

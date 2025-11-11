@@ -9,6 +9,8 @@ export type ImportStatus =
   | "uploaded"
   | "starting"
   | "analyzing"
+  | "review"
+  | "transferring"
   | "completed"
   | "failed"
   | "aborted";
@@ -26,14 +28,18 @@ interface ImportFlowContextValue {
   runId: string | null;
   status: ImportStatus;
   error: string | null;
-  logs: LogEntry[];
-  logCursor: number;
+  analysisLogs: LogEntry[];
+  analysisCursor: number;
+  transferLogs: LogEntry[];
+  transferCursor: number;
   setUploadInfo: (info: UploadInfo) => void;
   setRunId: (runId: string | null) => void;
   setStatus: (status: ImportStatus) => void;
   setError: (message: string | null) => void;
-  appendLogs: (entries: LogEntry[], nextCursor: number) => void;
+  appendAnalysisLogs: (entries: LogEntry[], nextCursor: number) => void;
+  appendTransferLogs: (entries: LogEntry[], nextCursor: number) => void;
   resetLogs: () => void;
+  resetTransferLogs: () => void;
   reset: () => void;
 }
 
@@ -107,8 +113,10 @@ export const ImportFlowProvider: React.FC<{ children: ReactNode }> = ({ children
   const [runId, setRunIdState] = useState<string | null>(() => persistedRef.current?.runId ?? null);
   const [status, setStatusState] = useState<ImportStatus>(() => persistedRef.current?.status ?? "idle");
   const [error, setErrorState] = useState<string | null>(null);
-  const [logs, setLogs] = useState<LogEntry[]>([]);
-  const [logCursor, setLogCursor] = useState(0);
+  const [analysisLogs, setAnalysisLogs] = useState<LogEntry[]>([]);
+  const [analysisCursor, setAnalysisCursor] = useState(0);
+  const [transferLogs, setTransferLogs] = useState<LogEntry[]>([]);
+  const [transferCursor, setTransferCursor] = useState(0);
 
   const setUploadInfo = useCallback(({ uploadId: id, fileName: name, recipeName: recipe }: UploadInfo) => {
     setUploadId(id);
@@ -116,8 +124,10 @@ export const ImportFlowProvider: React.FC<{ children: ReactNode }> = ({ children
     setRecipeName(recipe);
     setStatusState("uploaded");
     setErrorState(null);
-    setLogs([]);
-    setLogCursor(0);
+    setAnalysisLogs([]);
+    setAnalysisCursor(0);
+    setTransferLogs([]);
+    setTransferCursor(0);
     setRunIdState(null);
   }, []);
 
@@ -133,12 +143,12 @@ export const ImportFlowProvider: React.FC<{ children: ReactNode }> = ({ children
     setErrorState(message);
   }, []);
 
-  const appendLogs = useCallback(
+  const appendAnalysisLogs = useCallback(
     (entries: LogEntry[], nextCursor: number) => {
-      if (entries.length === 0 && nextCursor === logCursor) {
+      if (entries.length === 0 && nextCursor === analysisCursor) {
         return;
       }
-      setLogs((previous) => {
+      setAnalysisLogs((previous) => {
         if (!entries.length) {
           return previous;
         }
@@ -151,14 +161,44 @@ export const ImportFlowProvider: React.FC<{ children: ReactNode }> = ({ children
         }
         return merged;
       });
-      setLogCursor(nextCursor);
+      setAnalysisCursor(nextCursor);
     },
-    [logCursor]
+    [analysisCursor]
+  );
+
+  const appendTransferLogs = useCallback(
+    (entries: LogEntry[], nextCursor: number) => {
+      if (entries.length === 0 && nextCursor === transferCursor) {
+        return;
+      }
+      setTransferLogs((previous) => {
+        if (!entries.length) {
+          return previous;
+        }
+        const existingIds = new Set(previous.map((entry) => entry.id));
+        const merged = [...previous];
+        for (const entry of entries) {
+          if (!existingIds.has(entry.id)) {
+            merged.push(entry);
+          }
+        }
+        return merged;
+      });
+      setTransferCursor(nextCursor);
+    },
+    [transferCursor]
   );
 
   const resetLogs = useCallback(() => {
-    setLogs([]);
-    setLogCursor(0);
+    setAnalysisLogs([]);
+    setAnalysisCursor(0);
+    setTransferLogs([]);
+    setTransferCursor(0);
+  }, []);
+
+  const resetTransferLogs = useCallback(() => {
+    setTransferLogs([]);
+    setTransferCursor(0);
   }, []);
 
   const reset = useCallback(() => {
@@ -168,8 +208,10 @@ export const ImportFlowProvider: React.FC<{ children: ReactNode }> = ({ children
     setRunIdState(null);
     setStatusState("idle");
     setErrorState(null);
-    setLogs([]);
-    setLogCursor(0);
+    setAnalysisLogs([]);
+    setAnalysisCursor(0);
+    setTransferLogs([]);
+    setTransferCursor(0);
     clearPersistedState();
   }, []);
 
@@ -224,31 +266,39 @@ export const ImportFlowProvider: React.FC<{ children: ReactNode }> = ({ children
       runId,
       status,
       error,
-      logs,
-      logCursor,
+      analysisLogs,
+      analysisCursor,
+      transferLogs,
+      transferCursor,
       setUploadInfo,
       setRunId,
       setStatus,
       setError,
-      appendLogs,
+      appendAnalysisLogs,
+      appendTransferLogs,
       resetLogs,
+      resetTransferLogs,
       reset
     }),
     [
-      appendLogs,
+      analysisCursor,
+      analysisLogs,
+      appendAnalysisLogs,
+      appendTransferLogs,
       error,
       fileName,
-      logCursor,
-      logs,
       recipeName,
       reset,
       resetLogs,
+      resetTransferLogs,
       runId,
       setError,
       setRunId,
       setStatus,
       setUploadInfo,
       status,
+      transferCursor,
+      transferLogs,
       uploadId
     ]
   );

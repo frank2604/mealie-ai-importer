@@ -59,8 +59,8 @@ class CreateUnitsModule:
         remaining: List[IngredientRef] = []
         decisions = context.unit_decisions or {}
 
-        auto_refs: List[IngredientRef] = []
         manual_creations: List[tuple[IngredientRef, Dict[str, object]]] = []
+        unresolved_refs: List[IngredientRef] = []
 
         for ref in missing_refs:
             decision = decisions.get(ref.key, {})
@@ -92,7 +92,7 @@ class CreateUnitsModule:
                 )
                 continue
 
-            auto_refs.append(ref)
+            unresolved_refs.append(ref)
 
         for ref, create_payload in manual_creations:
             unit_name = create_payload.get("name") or (ref.ingredient.unit or "")
@@ -115,36 +115,15 @@ class CreateUnitsModule:
             created[ref.key] = resource.id
             logger.info('Created the unit "%s" with your details (ID: %s)', unit_name, resource.id)
 
-        missing_refs = auto_refs
-        if missing_refs:
-            logger.info(
-                "Asking the assistant for unit naming ideas: %s",
-                ", ".join(ref.ingredient.unit for ref in missing_refs if ref.ingredient.unit),
+        if unresolved_refs:
+            names = ", ".join(ref.ingredient.unit or "(ohne Einheit)" for ref in unresolved_refs)
+            logger.error(
+                "Die folgenden Einheiten sind nach dem Review weiterhin ohne Mealie-ID: %s. "
+                "Bitte ergänze die Entscheidungen und starte die Übertragung erneut.",
+                names,
             )
-            self._service.prepare_unit_forms(
-                (ref.ingredient.unit for ref in missing_refs),
-                debug=recorder,
-            )
-
-        for ref in missing_refs:
-            ingredient = ref.ingredient
-            unit_name = ingredient.unit or ""
-            if not unit_name:
-                continue
-            try:
-                resource = self._service.get_or_create_unit(
-                    name=unit_name,
-                    debug=recorder,
-                )
-            except Exception as exc:  # pragma: no cover - network failure
-                logger.error('Mealie could not create the unit "%s": %s', unit_name, exc)
-                remaining.append(ref)
-                continue
-
-            created[ref.key] = resource.id
-            context.unit_matches[ref.key] = resource.id
-            context.created_unit_ids[unit_name] = resource.id
-            logger.info('Created "%s" in Mealie (ID: %s)', unit_name, resource.id)
+            context.missing_unit_refs = unresolved_refs + remaining
+            raise RuntimeError("Es fehlen noch Unit-Entscheidungen – Übertragung abgebrochen.")
 
         context.missing_unit_refs = remaining
         if created:

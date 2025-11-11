@@ -458,8 +458,8 @@ class UnitCheckerModule:
         self,
         context: PipelineContext,
         ingredient_refs: List[IngredientRef],
-        matches: Dict[str, str],
-        match_details: Dict[str, Dict[str, object]],
+        matches: Dict[str, str],  # noqa: ARG002 - reserved for future enhancements
+        match_details: Dict[str, Dict[str, object]],  # noqa: ARG002
         missing: List[IngredientRef],
         suggestions: Dict[str, Dict[str, object]],
         new_ids: Dict[str, str],
@@ -469,21 +469,10 @@ class UnitCheckerModule:
             logger.debug("No pipeline recorder available, so no units review file was created")
             return
 
-        recipe = context.ensure_recipe()
-        units_by_id = {item.id: item for item in self._units}
-        missing_keys = {ref.key for ref in missing}
-
         items: List[Dict[str, object]] = []
         for ref in ingredient_refs:
-            section_name = ""
-            if 0 <= ref.section_index < len(recipe.ingredients):
-                section = recipe.ingredients[ref.section_index]
-                section_name = section.name or f"Section {ref.section_index + 1}"
-
             ingredient = ref.ingredient
             key = ref.key
-            matched_id = matches.get(key)
-            matched_unit = units_by_id.get(matched_id) if matched_id else None
             suggestion = suggestions.get(ingredient.unit or "")
             create_defaults = {
                 "name": None,
@@ -502,41 +491,11 @@ class UnitCheckerModule:
                         "useAbbreviation": bool(suggestion.get("useAbbreviation")),
                     }
                 )
-            candidates = [
-                {
-                    "id": candidate.id,
-                    "name": candidate.name,
-                    "pluralName": candidate.plural,
-                    "abbreviation": candidate.abbreviation,
-                    "pluralAbbreviation": candidate.plural_abbreviation,
-                }
-                for candidate in self._top_candidates(ingredient.unit or "", limit=5)
-            ]
 
             items.append(
                 {
                     "key": key,
-                    "sectionIndex": ref.section_index,
-                    "sectionName": section_name,
-                    "ingredientIndex": ref.ingredient_index,
-                    "ingredient": {
-                        "name": ingredient.name,
-                        "quantity": ingredient.quantity,
-                        "unit": ingredient.unit,
-                        "note": ingredient.note,
-                    },
                     "newId": new_ids.get(key),
-                    "currentMatch": (
-                        {
-                            "unitId": matched_id,
-                            "name": matched_unit.name if matched_unit else None,
-                            "strategy": match_details.get(key, {}).get("strategy"),
-                        }
-                        if matched_id
-                        else None
-                    ),
-                    "status": "missing" if key in missing_keys else "matched",
-                    "candidates": candidates,
                     "suggestion": suggestion,
                     "userDecision": {
                         "action": "auto",
@@ -549,16 +508,6 @@ class UnitCheckerModule:
 
         payload = {
             "generatedAt": datetime.utcnow().isoformat(),
-            "summary": {
-                "totalUnits": len(ingredient_refs),
-                "autoMatched": len(ingredient_refs) - len(missing),
-                "missing": len(missing),
-            },
-            "instructions": (
-                "Adjust 'userDecision' for each unit if you want to override the automatic choice. "
-                "action = 'auto' keeps current behaviour, 'use_existing' expects useUnitId, "
-                "'create' expects details under create, 'skip' ignores the unit."
-            ),
             "units": items,
         }
 

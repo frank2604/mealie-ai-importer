@@ -55,7 +55,9 @@
       "uploaded": "Upload complete. Click \"Next\" to start the analysis.",
       "starting": "Analysis is starting …",
       "analyzing": "Analysis in progress. Logs will appear shortly.",
-      "completed": "Analysis finished. Continue to step 3 to review the results.",
+      "review": "Analysis done. Continue to step 3 to review the results.",
+      "transferring": "Transferring data to Mealie …",
+      "completed": "Transfer finished. You can finalize the import.",
       "failed": "Analysis failed. Check the log and try again.",
       "aborted": "Analysis aborted."
     },
@@ -73,7 +75,9 @@
       "idle": "Ready and waiting.",
       "starting": "Preparing the analysis …",
       "running": "Analysis running …",
-      "completed": "Analysis completed.",
+      "review": "Analysis completed. Step 3 is ready for review.",
+      "transferring": "Transfer in progress …",
+      "completed": "Transfer completed.",
       "failed": "Analysis failed.",
       "aborted": "Analysis aborted.",
       "polling": "Receiving live log data …",
@@ -269,51 +273,23 @@
   "transfer": {
     "logTitle": "Transfer Log",
     "archive": "Archive log",
-    "summary": "Summary of all transferred items. Use the archive to revisit the run later.",
-    "logEntries": [
-      {
-        "level": "INFO",
-        "message": "Prepared transfer and validated API targets.",
-        "time": "08:34:01"
-      },
-      {
-        "level": "OK",
-        "message": "Updated 11 ingredients with existing IDs.",
-        "time": "08:34:08"
-      },
-      {
-        "level": "OK",
-        "message": "Created new unit \"Pinch\".",
-        "time": "08:34:09"
-      },
-      {
-        "level": "AI",
-        "message": "Suggestion: Tag recipe as \"Quick & Easy\".",
-        "time": "08:34:11"
-      },
-      {
-        "level": "WARN",
-        "message": "Skipped image upload – no asset detected.",
-        "time": "08:34:12"
-      }
-    ],
-    "summaryItems": [
-      {
-        "title": "Ingredients updated",
-        "value": "11",
-        "description": "including 3 new pantry items"
-      },
-      {
-        "title": "Units created",
-        "value": "1",
-        "description": "Pinch"
-      },
-      {
-        "title": "Recipes synced",
-        "value": "1",
-        "description": "Asian veggie soup"
-      }
-    ]
+    "summary": "Live log of everything sent to Mealie. Archive the log after a successful transfer.",
+    "recipeLabel": "Recipe: {{recipeName}}",
+    "runIdLabel": "Run ID: {{runId}}",
+    "status": {
+      "idle": "Ready to transfer.",
+      "review": "Analysis finished – start the transfer in step 3.",
+      "transferring": "Transfer in progress …",
+      "completed": "Transfer completed.",
+      "failed": "Transfer failed. Please inspect the log.",
+      "aborted": "Transfer aborted.",
+      "polling": "Monitoring the Mealie API …",
+      "noRun": "No active run. Start the transfer from step 3."
+    },
+    "actions": {
+      "start": "Start transfer",
+      "retry": "Restart transfer"
+    }
   },
   "settings": {
     "title": "Settings",

@@ -55,7 +55,9 @@
       "uploaded": "Upload erfolgreich. Du kannst mit \"Weiter\" zur Analyse wechseln.",
       "starting": "Analyse wird gestartet …",
       "analyzing": "Analyse läuft. Logs erscheinen gleich hier.",
-      "completed": "Analyse abgeschlossen. Wechsle zu Schritt 3, um die Ergebnisse zu prüfen.",
+      "review": "Analyse abgeschlossen. Wechsle zu Schritt 3, um die Ergebnisse zu prüfen.",
+      "transferring": "Übertragung läuft …",
+      "completed": "Übertragung abgeschlossen. Du kannst den Import jetzt abschließen.",
       "failed": "Analyse fehlgeschlagen. Bitte prüfe das Log und versuche es erneut.",
       "aborted": "Analyse abgebrochen."
     },
@@ -73,7 +75,9 @@
       "idle": "Bereit für den Start.",
       "starting": "Analyse wird vorbereitet …",
       "running": "Analyse läuft …",
-      "completed": "Analyse abgeschlossen.",
+      "review": "Analyse abgeschlossen. Schritt 3 wartet auf dein Review.",
+      "transferring": "Übertragung läuft …",
+      "completed": "Übertragung abgeschlossen.",
       "failed": "Analyse fehlgeschlagen.",
       "aborted": "Analyse abgebrochen.",
       "polling": "Empfange Live-Log-Daten …",
@@ -269,50 +273,22 @@
     "logTitle": "Übertragungs-Protokoll",
     "archive": "Log archivieren",
     "summary": "Zusammenfassung der übertragenen Elemente. Nutze das Archiv, um die Ergebnisse später nachzuvollziehen.",
-    "logEntries": [
-      {
-        "level": "INFO",
-        "message": "Übertragung vorbereitet und API-Ziele validiert.",
-        "time": "08:34:01"
-      },
-      {
-        "level": "OK",
-        "message": "11 Zutaten mit bestehenden IDs aktualisiert.",
-        "time": "08:34:08"
-      },
-      {
-        "level": "OK",
-        "message": "Neue Einheit \"Prise\" wird erstellt.",
-        "time": "08:34:09"
-      },
-      {
-        "level": "AI",
-        "message": "Empfehlung: Rezept als \"Schnell & leicht\" taggen.",
-        "time": "08:34:11"
-      },
-      {
-        "level": "WARN",
-        "message": "Bild-Upload übersprungen – kein Asset erkannt.",
-        "time": "08:34:12"
-      }
-    ],
-    "summaryItems": [
-      {
-        "title": "Zutaten aktualisiert",
-        "value": "11",
-        "description": "davon 3 neue Lebensmittel"
-      },
-      {
-        "title": "Einheiten erstellt",
-        "value": "1",
-        "description": "Prise"
-      },
-      {
-        "title": "Rezepte synchronisiert",
-        "value": "1",
-        "description": "Asia-Gemüse-Suppe"
-      }
-    ]
+    "recipeLabel": "Rezept: {{recipeName}}",
+    "runIdLabel": "Lauf-ID: {{runId}}",
+    "status": {
+      "idle": "Bereit für die Übertragung.",
+      "review": "Analyse abgeschlossen – du kannst die Übertragung in Schritt 3 starten.",
+      "transferring": "Übertragung läuft …",
+      "completed": "Übertragung abgeschlossen.",
+      "failed": "Übertragung fehlgeschlagen. Bitte prüfe das Log.",
+      "aborted": "Übertragung abgebrochen.",
+      "polling": "Überwachung der Mealie-API …",
+      "noRun": "Kein aktiver Lauf. Starte die Übertragung in Schritt 3."
+    },
+    "actions": {
+      "start": "Übertragung starten",
+      "retry": "Übertragung erneut starten"
+    }
   },
   "settings": {
     "title": "Einstellungen",

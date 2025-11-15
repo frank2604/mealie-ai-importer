@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2025-11-11T17:01:21.392142",
+  "generatedAt": "2025-11-15T13:15:58.485554",
   "current": {
     "recipeServings": 4.0,
-    "totalTime": "45 Min.",
+    "totalTime": "50 Min.",
     "category": null,
     "tagIds": []
   },
   "proposal": {
     "recipeServings": 4.0,
-    "totalTime": "45 Min.",
+    "totalTime": "50 Min.",
     "categoryId": "c8b08673-ba91-4d4e-899b-77b9e9a4e733",
     "tagIds": [
       "6b6c225a-f74e-4366-a61b-deb6afccdb3c",
@@ -24,7 +24,7 @@
   },
   "userDecision": {
     "recipeServings": 4.0,
-    "totalTime": "45 Min.",
+    "totalTime": "50 Min.",
     "categoryId": "c8b08673-ba91-4d4e-899b-77b9e9a4e733",
     "tagIds": [
       "6b6c225a-f74e-4366-a61b-deb6afccdb3c",

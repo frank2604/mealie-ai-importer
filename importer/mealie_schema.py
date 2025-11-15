@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 from uuid import uuid4
 
-from .models import Ingredient, IngredientSection, InstructionSection, Recipe, RecipeAsset
+from .models import Ingredient, IngredientSection, InstructionSection, OrganizerReference, Recipe, RecipeAsset
 from .services.ingredients import FoodResource, IngredientService, UnitResource
 
 
@@ -21,6 +21,11 @@ class MealiePayload:
 
 
 def recipe_to_mealie(recipe: Recipe, ingredient_service: Optional[IngredientService] = None) -> MealiePayload:
+    categories_payload = _map_organizer_refs(recipe.metadata.mealie_categories) or _map_name_list(
+        recipe.metadata.categories
+    )
+    tags_payload = _map_organizer_refs(recipe.metadata.mealie_tags) or _map_name_list(recipe.metadata.tags)
+
     payload: Dict[str, Any] = {
         "name": recipe.title,
         "description": recipe.description or "",
@@ -29,8 +34,8 @@ def recipe_to_mealie(recipe: Recipe, ingredient_service: Optional[IngredientServ
         "recipeYield": recipe.recipe_yield,
         "recipeIngredient": _map_ingredients(recipe.ingredients, ingredient_service, recipe),
         "recipeInstructions": _map_instructions(recipe.instructions),
-        "recipeCategory": _map_name_list(recipe.metadata.categories),
-        "tags": _map_name_list(recipe.metadata.tags),
+        "recipeCategory": categories_payload,
+        "tags": tags_payload,
         "tools": [],
         "settings": {
             "public": False,
@@ -181,6 +186,23 @@ def _map_instructions(sections: Iterable[InstructionSection]) -> List[Dict[str, 
 
 def _map_name_list(names: Iterable[str]) -> List[Dict[str, Any]]:
     return [{"name": name, "slug": _slugify(name)} for name in names if name]
+
+
+def _map_organizer_refs(refs: Iterable[OrganizerReference]) -> List[Dict[str, Any]]:
+    items: List[Dict[str, Any]] = []
+    for ref in refs:
+        if not ref.id or not ref.name:
+            continue
+        record: Dict[str, Any] = {
+            "id": ref.id,
+            "name": ref.name,
+        }
+        if ref.group_id:
+            record["groupId"] = ref.group_id
+        if ref.slug:
+            record["slug"] = ref.slug
+        items.append(record)
+    return items
 
 
 def _map_assets(assets: Iterable[RecipeAsset], title: str) -> List[Dict[str, Any]]:

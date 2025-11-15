@@ -6,9 +6,10 @@ import { layoutConfig } from "../../config/layout.config";
 
 interface DropZoneProps {
   onFilesSelected?: (files: FileList) => void;
+  className?: string;
 }
 
-export const DropZone: React.FC<DropZoneProps> = ({ onFilesSelected }) => {
+export const DropZone: React.FC<DropZoneProps> = ({ onFilesSelected, className }) => {
   const { t } = useTranslation();
   const [isDragging, setIsDragging] = useState(false);
 
@@ -44,7 +45,8 @@ export const DropZone: React.FC<DropZoneProps> = ({ onFilesSelected }) => {
       className={clsx(
         "focus-ring flex flex-col items-center justify-center border-2 border-dashed px-6 py-16 text-center transition-colors",
         layoutConfig.borderRadius.large,
-        isDragging ? "border-primary bg-primary/10" : "border-border bg-panel hover:border-primary/70"
+        isDragging ? "border-primary bg-primary/10" : "border-border bg-panel hover:border-primary/70",
+        className
       )}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}

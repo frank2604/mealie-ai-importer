@@ -26,6 +26,8 @@ export const Step1Select: React.FC = () => {
   const [localError, setLocalError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const hints = t("select.hints", { returnObjects: true }) as string[];
+  const pageTitle = t("select.pageTitle", { defaultValue: t("steps.select.title") });
+  const pageSubtitle = t("select.pageSubtitle", { defaultValue: t("steps.select.subtitle") });
 
   const statusMessage = useMemo(() => {
     switch (status) {
@@ -128,37 +130,59 @@ export const Step1Select: React.FC = () => {
   }, [runId, uploadId, setNextHandler, setRunId, setStatus, setNextDisabled, setError, t]);
 
   return (
-    <div className="flex-1 overflow-y-auto">
-      <div className={clsx("grid lg:grid-cols-[3fr,2fr]", layoutConfig.spacing.layout.columns)}>
-        <div className={clsx("border border-border bg-panel shadow-sm", layoutConfig.spacing.element.vertical, layoutConfig.spacing.layout.container.x, layoutConfig.spacing.layout.container.y, layoutConfig.borderRadius.large)}>
-          <h2 className="text-2xl font-semibold">{t("steps.select.title")}</h2>
-          <p className="text-sm text-text/70">{t("steps.select.subtitle")}</p>
-          <ul className={clsx("text-sm text-text/80", layoutConfig.spacing.element.vertical)}>
-            {hints.map((hint) => (
-              <li key={hint} className={clsx("border border-border/70 bg-background/80", layoutConfig.spacing.element.padding.x, layoutConfig.spacing.element.padding.y, layoutConfig.borderRadius.medium)}>
-                {hint}
-              </li>
-            ))}
-          </ul>
-          <div className={clsx("mt-6 rounded-md border border-border/70 bg-background/60 p-4 text-sm text-text/80", layoutConfig.borderRadius.medium)}>
-            {fileName ? (
-              <div className="flex flex-col gap-1">
-                <span className="font-semibold text-primary">{t("select.selectedFile", { fileName })}</span>
-                {recipeName ? <span className="text-xs text-text/60">{t("select.recipeName", { recipeName })}</span> : null}
-              </div>
-            ) : (
-              <span>{t("select.noFileSelected")}</span>
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex-1 min-h-0 overflow-y-auto">
+        <div
+          className={clsx(
+            "grid h-full flex-1 grid-cols-1 grid-rows-[auto_minmax(0,1fr)] overflow-y-auto lg:grid-cols-[3fr,2fr] lg:grid-rows-none lg:overflow-visible",
+            layoutConfig.spacing.layout.columns
+          )}
+        >
+          <div
+            className={clsx(
+              "border border-border bg-panel shadow-sm self-start",
+              layoutConfig.spacing.element.vertical,
+              layoutConfig.spacing.layout.container.x,
+              layoutConfig.spacing.layout.container.y,
+              layoutConfig.borderRadius.large
             )}
-            {statusMessage ? <div className="mt-3 text-xs text-text/70">{statusMessage}</div> : null}
-            {(localError || error) && (
-              <div className="mt-3 rounded border border-error/40 bg-error/10 px-3 py-2 text-xs text-error">
-                {localError ?? error}
-              </div>
-            )}
-            {isUploading ? <div className="mt-3 text-xs text-text/60">{t("select.status.uploading")}</div> : null}
+          >
+            <h2 className="text-2xl font-semibold">{pageTitle}</h2>
+            <p className="text-sm text-text/70">{pageSubtitle}</p>
+            <ul className="ml-5 list-disc space-y-2 text-sm text-text/80">
+              {hints.map((hint) => (
+                <li key={hint}>{hint}</li>
+              ))}
+            </ul>
+            <div
+              className={clsx(
+                "mt-6 rounded-md border border-border/70 bg-background/60 p-4 text-sm text-text/80",
+                layoutConfig.borderRadius.medium
+              )}
+            >
+              {fileName ? (
+                <div className="flex flex-col gap-1">
+                  <span className="font-semibold text-primary">{t("select.selectedFile", { fileName })}</span>
+                </div>
+              ) : (
+                <span>{t("select.noFileSelected")}</span>
+              )}
+              {statusMessage ? <div className="mt-3 text-xs text-text/70">{statusMessage}</div> : null}
+              {(localError || error) && (
+                <div className="mt-3 rounded border border-error/40 bg-error/10 px-3 py-2 text-xs text-error">
+                  {localError ?? error}
+                </div>
+              )}
+              {isUploading ? <div className="mt-3 text-xs text-text/60">{t("select.status.uploading")}</div> : null}
+            </div>
+          </div>
+          <div className="flex min-h-[320px] flex-col">
+            <DropZone
+              onFilesSelected={handleUpload}
+              className="flex-1 min-h-[320px] lg:min-h-[360px] xl:h-full xl:min-h-0"
+            />
           </div>
         </div>
-        <DropZone onFilesSelected={handleUpload} />
       </div>
     </div>
   );

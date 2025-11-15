@@ -1,6 +1,15 @@
 {
-  "updated_at": "2025-11-11T17:05:27.678550",
+  "updated_at": "2025-11-15T13:14:59.845271",
   "foods": [
+    {
+      "id": "cbcaa29b-a3b7-4615-89a7-a2691fef9e3f",
+      "name": "Trockener Wermut",
+      "pluralName": "Trockener Wermut",
+      "aliases": [
+        "{'name': 'trockener wermut'}",
+        "{'name': 'trockener-wermut'}"
+      ]
+    },
     {
       "id": "0bb022f0-4715-4bdf-8938-7be3b867d3ab",
       "name": "Wan Tan Tasche",
@@ -190,31 +199,6 @@
         "{'name': 'Speisezwiebel'}",
         "{'name': 'Küchenzwiebel'}"
       ]
-    },
-    {
-      "id": "cbcaa29b-a3b7-4615-89a7-a2691fef9e3f",
-      "name": "Trockener Wermut",
-      "pluralName": "Trockener Wermut",
-      "description": "",
-      "extras": {},
-      "labelId": "7c260419-4a87-440b-8b4d-cec090a65078",
-      "aliases": [
-        {
-          "name": "trockener wermut"
-        },
-        {
-          "name": "trockener-wermut"
-        }
-      ],
-      "householdsWithIngredientFood": [],
-      "label": {
-        "name": "Alkohol 🍻",
-        "color": "#B5651D",
-        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-        "id": "7c260419-4a87-440b-8b4d-cec090a65078"
-      },
-      "createdAt": "2025-11-11T17:05:27.658411Z",
-      "updatedAt": "2025-11-11T17:05:27.658415Z"
     }
   ]
 }

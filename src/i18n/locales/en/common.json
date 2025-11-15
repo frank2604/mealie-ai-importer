@@ -20,7 +20,7 @@
   "steps": {
     "select": {
       "title": "Select",
-      "subtitle": "Import and prepare your PDF"
+      "subtitle": "Select recipe PDF and upload it"
     },
     "analyze": {
       "title": "Analyze",
@@ -42,10 +42,12 @@
     "browse": "Browse files"
   },
   "select": {
+    "pageTitle": "Welcome to the Mealie AI Importer",
+    "pageSubtitle": "Use AI to analyse recipe PDFs and push structured data to Mealie",
     "hints": [
-      "Multi-page PDFs with ingredient lists and instructions work best.",
-      "Use clear quantity expressions – the AI suggests alternatives when uncertain.",
-      "Your data stays on this device. Optional cloud sync will arrive later."
+      "PDFs with images, ingredient lists, and instructions achieve the best results.",
+      "Missing units or ingredients are suggested by the AI.",
+      "In step 3, you have the opportunity to check and correct everything."
     ],
     "selectedFile": "Selected file: {{fileName}}",
     "recipeName": "Resolved recipe title: {{recipeName}}",

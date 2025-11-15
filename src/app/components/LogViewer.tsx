@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { layoutConfig } from "../../config/layout.config";
 
@@ -16,6 +16,7 @@ interface LogViewerProps {
   logs: LogEntry[];
   titleKey: string;
   summaryKey?: string;
+  className?: string;
 }
 
 const levelOrder: LogLevel[] = ["INFO", "OK", "WARN", "ERROR", "AI"];
@@ -28,9 +29,10 @@ const levelColor: Record<LogLevel, string> = {
   AI: "bg-accent/10 text-accent border-accent/40"
 };
 
-export const LogViewer: React.FC<LogViewerProps> = ({ logs, titleKey, summaryKey }) => {
+export const LogViewer: React.FC<LogViewerProps> = ({ logs, titleKey, summaryKey, className }) => {
   const { t } = useTranslation();
   const [activeFilter, setActiveFilter] = useState<LogLevel | "ALL">("ALL");
+  const listRef = useRef<HTMLOListElement | null>(null);
 
   const filteredLogs = useMemo(() => {
     if (activeFilter === "ALL") {
@@ -39,12 +41,38 @@ export const LogViewer: React.FC<LogViewerProps> = ({ logs, titleKey, summaryKey
     return logs.filter((entry) => entry.level === activeFilter);
   }, [activeFilter, logs]);
 
+  useEffect(() => {
+    if (activeFilter !== "ALL") {
+      return;
+    }
+    const container = listRef.current;
+    if (!container) {
+      return;
+    }
+    const isNearBottom = container.scrollHeight - container.clientHeight - container.scrollTop < 40;
+    if (isNearBottom) {
+      container.scrollTop = container.scrollHeight;
+    }
+  }, [activeFilter, logs]);
+
   return (
-    <div className={clsx("flex h-full flex-col border border-border bg-panel", layoutConfig.borderRadius.large)}>
-      <div className={clsx("flex flex-wrap items-center justify-between border-b border-border", layoutConfig.spacing.element.gap, layoutConfig.spacing.section.padding.x, layoutConfig.spacing.section.padding.y)}>
+    <div
+      className={clsx(
+        "flex h-full min-h-0 flex-col border border-border bg-panel overflow-hidden",
+        layoutConfig.borderRadius.large,
+        className
+      )}
+    >
+      <div
+        className={clsx(
+          "sticky top-0 z-10 flex flex-wrap items-center justify-between border-b border-border bg-panel",
+          layoutConfig.spacing.element.gap,
+          layoutConfig.spacing.section.padding.x,
+          layoutConfig.spacing.section.padding.y
+        )}
+      >
         <div>
           <h3 className="text-lg font-semibold">{t(titleKey)}</h3>
-          {summaryKey ? <p className="text-sm text-text/70">{t(summaryKey)}</p> : null}
         </div>
         <div className={clsx("flex items-center", layoutConfig.spacing.item.gap)}>
           <button
@@ -79,6 +107,7 @@ export const LogViewer: React.FC<LogViewerProps> = ({ logs, titleKey, summaryKey
         </div>
       </div>
       <ol
+        ref={listRef}
         className={clsx("flex-1 overflow-y-auto", layoutConfig.spacing.item.vertical, layoutConfig.spacing.section.padding.x, layoutConfig.spacing.section.padding.y)}
         aria-label={t("logViewer.ariaLabel")}
       >

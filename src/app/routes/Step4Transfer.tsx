@@ -164,80 +164,102 @@ export const Step4Transfer: React.FC = () => {
   const startButtonLabel = status === "failed" ? t("transfer.actions.retry") : t("transfer.actions.start");
 
   return (
-    <div className="flex-1 overflow-y-auto">
-      <div className={clsx("grid xl:grid-cols-[2fr,1fr]", layoutConfig.spacing.layout.columns)}>
-        <div className={clsx("flex flex-col", layoutConfig.spacing.layout.columns)}>
-          <LogViewer logs={logEntries} titleKey="transfer.logTitle" summaryKey="transfer.summary" />
-        </div>
-        <aside
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex-1 min-h-0 overflow-y-auto">
+        <div
           className={clsx(
-            "flex h-full flex-col border border-border bg-panel shadow-sm",
-            layoutConfig.spacing.section.gap,
-            layoutConfig.spacing.layout.container.x,
-            layoutConfig.spacing.layout.container.y,
-            layoutConfig.borderRadius.large
+            "grid h-full flex-1 grid-cols-1 grid-rows-[auto_minmax(0,1fr)] gap-6 xl:grid-cols-[2fr_3fr] xl:grid-rows-none",
+            layoutConfig.spacing.layout.columns
           )}
         >
-          <header>
-            <h3 className="text-lg font-semibold">{t("steps.transfer.title")}</h3>
-            <p className="mt-2 text-sm text-text/70">{t("steps.transfer.subtitle")}</p>
-          </header>
-          <section
+          <aside
             className={clsx(
-              "border border-border/60 bg-background/70",
-              layoutConfig.spacing.element.padding.x,
-              layoutConfig.spacing.element.padding.y,
-              layoutConfig.borderRadius.medium
+              "flex flex-col gap-4 border border-border bg-panel self-start",
+              layoutConfig.borderRadius.large,
+              layoutConfig.spacing.section.padding.x,
+              layoutConfig.spacing.section.padding.y
             )}
           >
-            <div className="text-xs font-semibold uppercase tracking-wide text-text/60">{t("transfer.summary")}</div>
-            <div className="mt-2 text-base font-semibold text-primary">{statusLabel}</div>
-            {helperText ? <div className="mt-1 text-xs text-text/60">{helperText}</div> : null}
-            {recipeName ? <div className="mt-3 text-sm text-text/70">{t("transfer.recipeLabel", { recipeName })}</div> : null}
-            {runId ? <div className="text-xs text-text/60">{t("transfer.runIdLabel", { runId })}</div> : null}
-            {error ? (
-              <div className="mt-3 rounded border border-error/40 bg-error/10 px-3 py-2 text-xs text-error">
-                {error}
-              </div>
-            ) : null}
-          </section>
-          <div className="mt-auto">
-            {status === "completed" ? (
-              <button
-                type="button"
-                className={clsx(
-                  "focus-ring inline-flex w-full items-center justify-center border border-border bg-panel text-sm font-semibold text-text hover:border-primary/60 hover:text-primary",
-                  layoutConfig.spacing.item.gap,
-                  layoutConfig.spacing.button.default.x,
-                  layoutConfig.spacing.button.default.y,
-                  layoutConfig.borderRadius.small
-                )}
-              >
-                <ArrowDownTrayIcon className="h-4 w-4" aria-hidden="true" />
-                {t("transfer.archive")}
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => {
-                  transferRequestedRef.current = false;
-                  void triggerTransfer();
-                }}
-                disabled={!canStartTransfer}
-                className={clsx(
-                  "focus-ring inline-flex w-full items-center justify-center border border-border bg-panel text-sm font-semibold text-text hover:border-primary/60 hover:text-primary disabled:cursor-not-allowed disabled:opacity-50",
-                  layoutConfig.spacing.item.gap,
-                  layoutConfig.spacing.button.default.x,
-                  layoutConfig.spacing.button.default.y,
-                  layoutConfig.borderRadius.small
-                )}
-              >
-                <ArrowPathIcon className={clsx("h-4 w-4", isStartingTransfer && "animate-spin")} aria-hidden="true" />
-                {startButtonLabel}
-              </button>
+            <section
+              className={clsx(
+                "border border-border/60 bg-background/70",
+                layoutConfig.spacing.element.padding.x,
+                layoutConfig.spacing.element.padding.y,
+                layoutConfig.borderRadius.medium
+              )}
+            >
+              <div className="text-base font-semibold text-primary">{statusLabel}</div>
+              {helperText ? <div className="mt-2 text-xs text-text/60">{helperText}</div> : null}
+              {recipeName ? (
+                <div className="mt-4 text-sm text-text/70">{t("transfer.recipeLabel", { recipeName })}</div>
+              ) : null}
+              {runId ? <div className="text-xs text-text/60">{t("transfer.runIdLabel", { runId })}</div> : null}
+              {error ? (
+                <div className="mt-3 rounded border border-error/40 bg-error/10 px-3 py-2 text-xs text-error">
+                  {error}
+                </div>
+              ) : null}
+            </section>
+            <div className="mt-auto">
+              {status === "completed" ? (
+                <button
+                  type="button"
+                  className={clsx(
+                    "focus-ring inline-flex w-full items-center justify-center border border-border bg-panel text-sm font-semibold text-text hover:border-primary/60 hover:text-primary",
+                    layoutConfig.spacing.item.gap,
+                    layoutConfig.spacing.button.default.x,
+                    layoutConfig.spacing.button.default.y,
+                    layoutConfig.borderRadius.small
+                  )}
+                >
+                  <ArrowDownTrayIcon className="h-4 w-4" aria-hidden="true" />
+                  {t("transfer.archive")}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    transferRequestedRef.current = false;
+                    void triggerTransfer();
+                  }}
+                  disabled={!canStartTransfer}
+                  className={clsx(
+                    "focus-ring inline-flex w-full items-center justify-center border border-border bg-panel text-sm font-semibold text-text hover:border-primary/60 hover:text-primary disabled:cursor-not-allowed disabled:opacity-50",
+                    layoutConfig.spacing.item.gap,
+                    layoutConfig.spacing.button.default.x,
+                    layoutConfig.spacing.button.default.y,
+                    layoutConfig.borderRadius.small
+                  )}
+                >
+                  <ArrowPathIcon className={clsx("h-4 w-4", isStartingTransfer && "animate-spin")} aria-hidden="true" />
+                  {startButtonLabel}
+                </button>
+              )}
+            </div>
+          </aside>
+          <section
+            className={clsx(
+              "flex min-h-[400px] flex-col overflow-hidden border border-border bg-panel",
+              layoutConfig.borderRadius.large,
+              layoutConfig.shadow.panel
             )}
-          </div>
-        </aside>
+          >
+            <div
+              className={clsx(
+                "flex min-h-0 flex-1 flex-col",
+                layoutConfig.spacing.section.padding.x,
+                layoutConfig.spacing.section.padding.y
+              )}
+            >
+              <LogViewer
+                className="min-h-0 flex-1"
+                logs={logEntries}
+                titleKey="transfer.logTitle"
+                summaryKey="transfer.summary"
+              />
+            </div>
+          </section>
+        </div>
       </div>
     </div>
   );

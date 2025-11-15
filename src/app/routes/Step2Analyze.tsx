@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { LogViewer, LogEntry } from "../components/LogViewer";
 import clsx from "clsx";
@@ -6,12 +6,11 @@ import { layoutConfig } from "../../config/layout.config";
 import { useImportFlow } from "../context/ImportFlowContext";
 import { useStepNavigation } from "../App";
 import { fetchRunLogs, fetchRunStatus, mapApiLogEntries } from "../api/imports";
+import { fetchReviewData, type ReviewData, type ReviewIngredient } from "../api/review";
 
-interface MetricItem {
-  id: string;
-  value: string;
-  delta: string;
-  status: "up" | "down" | "neutral";
+interface MetricValue {
+  total: number | null;
+  newlyAdded: number | null;
 }
 
 export const Step2Analyze: React.FC = () => {
@@ -29,14 +28,23 @@ export const Step2Analyze: React.FC = () => {
   } = useImportFlow();
   const { setNextHandler, setNextDisabled } = useStepNavigation();
   const [isPolling, setIsPolling] = useState(false);
-
+  const [ingredientMetric, setIngredientMetric] = useState<MetricValue>({ total: null, newlyAdded: null });
+  const [unitMetric, setUnitMetric] = useState<MetricValue>({ total: null, newlyAdded: null });
   const logEntries = useMemo<LogEntry[]>(() => analysisLogs, [analysisLogs]);
-
-  const metrics: MetricItem[] = [
-    { id: "ingredients", value: "18", delta: "+3", status: "up" },
-    { id: "units", value: "7", delta: "+1", status: "up" },
-    { id: "confidence", value: "86%", delta: "+4%", status: "neutral" }
-  ];
+  const refreshMetrics = useCallback(
+    async (currentRunId: string) => {
+      try {
+        const data = await fetchReviewData(currentRunId);
+        const ingredientsMetric = computeIngredientMetric(data);
+        const unitsMetric = computeUnitMetric(data);
+        setIngredientMetric(ingredientsMetric);
+        setUnitMetric(unitsMetric);
+      } catch {
+        // ignore – metrics remain empty
+      }
+    },
+    []
+  );
 
   useEffect(() => {
     setNextHandler(null);
@@ -103,6 +111,9 @@ export const Step2Analyze: React.FC = () => {
         if (["review", "completed", "failed", "aborted"].includes(statusResult.status)) {
           setNextDisabled(!["review", "completed"].includes(statusResult.status));
           setIsPolling(false);
+          if (["review", "completed"].includes(statusResult.status) && runId) {
+            void refreshMetrics(runId);
+          }
           return;
         }
         timeoutId = window.setTimeout(poll, 2000);
@@ -125,7 +136,18 @@ export const Step2Analyze: React.FC = () => {
       }
       setIsPolling(false);
     };
-  }, [analysisCursor, appendAnalysisLogs, runId, setError, setNextDisabled, setStatus, setRunId]);
+  }, [analysisCursor, appendAnalysisLogs, refreshMetrics, runId, setError, setNextDisabled, setStatus, setRunId]);
+
+  useEffect(() => {
+    if (!runId) {
+      setIngredientMetric({ total: null, newlyAdded: null });
+      setUnitMetric({ total: null, newlyAdded: null });
+      return;
+    }
+    if (["review", "completed"].includes(status) && !isPolling) {
+      void refreshMetrics(runId);
+    }
+  }, [isPolling, refreshMetrics, runId, status]);
 
   const statusLabel = useMemo(() => {
     switch (status) {
@@ -149,40 +171,30 @@ export const Step2Analyze: React.FC = () => {
   }, [status, t]);
 
   return (
-    <div className="flex-1 overflow-y-auto">
-      <div className={clsx("grid xl:grid-cols-[2fr,1fr]", layoutConfig.spacing.layout.columns)}>
-        <div className={clsx("flex flex-col", layoutConfig.spacing.layout.columns)}>
-          <div className={clsx("grid sm:grid-cols-3", layoutConfig.spacing.section.gap)}>
-            {metrics.map((item) => (
-              <div key={item.id} className={clsx("border border-border bg-panel shadow-sm", layoutConfig.spacing.layout.container.x, layoutConfig.spacing.layout.container.y, layoutConfig.borderRadius.large)}>
-                <div className="text-xs font-semibold uppercase tracking-wide text-text/60">
-                  {t(`analyze.metrics.${item.id}.title`)}
-                </div>
-                <div className={clsx("mt-2 flex items-baseline", layoutConfig.spacing.item.gap)}>
-                  <span className="text-3xl font-semibold text-primary">{item.value}</span>
-                  <span
-                    className={
-                      item.status === "down"
-                        ? "text-sm font-semibold text-error"
-                        : item.status === "up"
-                          ? "text-sm font-semibold text-success"
-                          : "text-sm font-semibold text-text/60"
-                    }
-                  >
-                    {item.delta}
-                  </span>
-                </div>
-                <p className="mt-1 text-xs text-text/70">{t(`analyze.metrics.${item.id}.description`)}</p>
-              </div>
-            ))}
-          </div>
-          <LogViewer logs={logEntries} titleKey="analyze.logTitle" summaryKey="analyze.summary" />
-        </div>
-        <aside className={clsx("flex h-full flex-col justify-between border border-border bg-panel shadow-sm", layoutConfig.spacing.section.gap, layoutConfig.spacing.layout.container.x, layoutConfig.spacing.layout.container.y, layoutConfig.borderRadius.large)}>
-          <section>
-            <h3 className="text-lg font-semibold text-primary">{t("steps.analyze.title")}</h3>
-            <p className="mt-2 text-sm text-text/70">{t("steps.analyze.subtitle")}</p>
-            <div className="mt-4 rounded border border-border/70 bg-background/70 px-4 py-3 text-sm">
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex-1 min-h-0 overflow-y-auto">
+        <div
+          className={clsx(
+            "grid h-full flex-1 grid-cols-1 grid-rows-[auto_minmax(0,1fr)] gap-6 xl:grid-cols-[2fr_3fr] xl:grid-rows-none",
+            layoutConfig.spacing.layout.columns
+          )}
+        >
+          <aside
+            className={clsx(
+              "flex flex-col gap-4 border border-border bg-panel self-start",
+              layoutConfig.borderRadius.large,
+              layoutConfig.spacing.section.padding.x,
+              layoutConfig.spacing.section.padding.y
+            )}
+          >
+            <section
+              className={clsx(
+                "border border-border/70 bg-background/70 text-sm",
+                layoutConfig.spacing.element.padding.x,
+                layoutConfig.spacing.element.padding.y,
+                layoutConfig.borderRadius.medium
+              )}
+            >
               <div className="font-semibold text-primary">{statusLabel}</div>
               {isPolling ? <div className="mt-2 text-xs text-text/60">{t("analyze.status.polling")}</div> : null}
               {error ? (
@@ -191,20 +203,147 @@ export const Step2Analyze: React.FC = () => {
                 </div>
               ) : null}
               {!runId ? <div className="mt-2 text-xs text-text/60">{t("analyze.status.noRun")}</div> : null}
+            </section>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <MetricCard
+                title={t("analyze.metrics.ingredients.title")}
+              description={t("analyze.metrics.ingredients.description")}
+              value={ingredientMetric.total}
+              delta={ingredientMetric.newlyAdded}
+            />
+            <MetricCard
+              title={t("analyze.metrics.units.title")}
+              description={t("analyze.metrics.units.description")}
+              value={unitMetric.total}
+              delta={unitMetric.newlyAdded}
+            />
+          </div>
+
+          </aside>
+
+          <section
+            className={clsx(
+              "flex min-h-[400px] flex-col overflow-hidden border border-border bg-panel",
+              layoutConfig.borderRadius.large,
+              layoutConfig.shadow.panel
+            )}
+          >
+            <div
+              className={clsx(
+                "flex min-h-0 flex-1 flex-col",
+                layoutConfig.spacing.section.padding.x,
+                layoutConfig.spacing.section.padding.y
+              )}
+            >
+              <LogViewer
+                className={clsx("min-h-0 flex-1")}
+                logs={logEntries}
+                titleKey="analyze.logTitle"
+                summaryKey="analyze.summary"
+              />
             </div>
           </section>
-          <section className={clsx("text-sm text-text/80", layoutConfig.spacing.element.vertical)}>
-            {(t("analyze.checklist", { returnObjects: true }) as string[]).map((item) => (
-              <div key={item} className={clsx("border border-border/70 bg-background/80", layoutConfig.spacing.element.padding.x, layoutConfig.spacing.element.padding.y, layoutConfig.borderRadius.medium)}>
-                • {item}
-              </div>
-            ))}
-          </section>
-          <section className={clsx("border border-border bg-background/60 text-xs text-text/60", layoutConfig.spacing.element.padding.x, layoutConfig.spacing.element.padding.y, layoutConfig.borderRadius.medium)}>
-            {t("notifications.comingSoon")}
-          </section>
-        </aside>
+        </div>
       </div>
     </div>
   );
 };
+
+const normalizeKey = (value?: string | null): string => (value ?? "").trim().toLowerCase();
+
+const buildIngredientKey = (ingredient: ReviewIngredient): string => {
+  const source =
+    ingredient.foodSelection?.name ||
+    ingredient.foodOriginalName ||
+    ingredient.name ||
+    ingredient.foodMatch?.name ||
+    `${ingredient.sectionIndex}:${ingredient.ingredientIndex}`;
+  const normalized = normalizeKey(source);
+  return normalized || `${ingredient.sectionIndex}:${ingredient.ingredientIndex}`;
+};
+
+const buildUnitKey = (ingredient: ReviewIngredient): string | null => {
+  const source =
+    ingredient.unitSelection?.name ||
+    ingredient.unitOriginalName ||
+    ingredient.unit ||
+    ingredient.unitMatch?.name ||
+    null;
+  if (!source) {
+    return null;
+  }
+  return normalizeKey(source) || source;
+};
+
+const isNewIngredient = (ingredient: ReviewIngredient): boolean => {
+  const status = (ingredient.foodStatus || "").toLowerCase();
+  return (
+    status === "new" ||
+    Boolean(ingredient.foodNewId) ||
+    (!ingredient.foodMatch?.id && Boolean(ingredient.foodSuggestion))
+  );
+};
+
+const isNewUnit = (ingredient: ReviewIngredient): boolean => {
+  const status = (ingredient.unitStatus || "").toLowerCase();
+  return (
+    status === "new" ||
+    Boolean(ingredient.unitNewId) ||
+    (!ingredient.unitMatch?.id && Boolean(ingredient.unitSuggestion))
+  );
+};
+
+const computeIngredientMetric = (data: ReviewData): MetricValue => {
+  const uniqueIngredients = new Set<string>();
+  const newIngredients = new Set<string>();
+  data.ingredients.forEach((ingredient) => {
+    const key = buildIngredientKey(ingredient);
+    uniqueIngredients.add(key);
+    if (isNewIngredient(ingredient)) {
+      newIngredients.add(key);
+    }
+  });
+  return { total: uniqueIngredients.size, newlyAdded: newIngredients.size };
+};
+
+const computeUnitMetric = (data: ReviewData): MetricValue => {
+  const uniqueUnits = new Set<string>();
+  const newUnits = new Set<string>();
+  data.ingredients.forEach((ingredient) => {
+    const key = buildUnitKey(ingredient);
+    if (!key) {
+      return;
+    }
+    uniqueUnits.add(key);
+    if (isNewUnit(ingredient)) {
+      newUnits.add(key);
+    }
+  });
+  return { total: uniqueUnits.size, newlyAdded: newUnits.size };
+};
+
+interface MetricCardProps {
+  title: string;
+  description: string;
+  value: number | null;
+  delta: number | null;
+}
+
+const MetricCard: React.FC<MetricCardProps> = ({ title, description, value, delta }) => (
+  <div
+    className={clsx(
+      "border border-border bg-panel shadow-sm",
+      layoutConfig.spacing.layout.container.x,
+      layoutConfig.spacing.layout.container.y,
+      layoutConfig.borderRadius.large
+    )}
+  >
+    <div className="text-xs font-semibold uppercase tracking-wide text-text/60">{title}</div>
+    <div className={clsx("mt-2 flex items-baseline", layoutConfig.spacing.item.gap)}>
+      <span className="text-3xl font-semibold text-primary">{value === null ? "–" : value}</span>
+      {delta !== null ? <span className="text-sm font-semibold text-success">+{delta}</span> : null}
+    </div>
+    <p className="mt-1 text-xs text-text/70">{description}</p>
+  </div>
+);

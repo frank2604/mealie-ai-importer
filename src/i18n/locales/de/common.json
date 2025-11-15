@@ -20,7 +20,7 @@
   "steps": {
     "select": {
       "title": "Auswählen",
-      "subtitle": "PDF importieren und vorbereiten"
+      "subtitle": "Rezept-PDF auswählen und hochladen"
     },
     "analyze": {
       "title": "Analysieren",
@@ -42,10 +42,12 @@
     "browse": "Datei auswählen"
   },
   "select": {
+    "pageTitle": "Willkommen zum Mealie AI-Importer",
+    "pageSubtitle": "PDF-Rezepte mit KI analysieren und strukturiert nach Mealie übertragen",
     "hints": [
-      "Mehrseitige PDFs mit Zutatenliste und Anleitung erzielen die besten Ergebnisse.",
-      "Verwende klare Mengenangaben – AI schlägt bei Unklarheiten Alternativen vor.",
-      "Sensible Daten bleiben lokal. Eine optionale Cloud-Anbindung folgt später."
+      "PDFs mit Bild, Zutatenliste und Anleitung erzielen die besten Ergebnisse.",
+      "Fehlende Einheiten oder Zutaten werden von der KI vorgeschlagen.",
+      "In Schritt 3 hast Du die Möglichkeit alles zu Prüfen und zu korrigieren."
     ],
     "selectedFile": "Ausgewählte Datei: {{fileName}}",
     "recipeName": "Ermittelter Rezeptname: {{recipeName}}",

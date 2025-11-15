@@ -175,10 +175,14 @@ const AppShell: React.FC = () => {
           )}
         </div>
 
-            <main className={clsx("flex w-full flex-1 flex-col overflow-hidden", layoutConfig.spacing.layout.page.x, layoutConfig.spacing.layout.page.y)}>
-              <div className="flex min-h-0 flex-1 flex-col">
-                <Outlet />
-              </div>
+            <main
+              className={clsx(
+                "flex w-full flex-1 min-h-0 flex-col overflow-y-auto",
+                layoutConfig.spacing.layout.page.x,
+                layoutConfig.spacing.layout.page.y
+              )}
+            >
+              <Outlet />
             </main>
         </div>
 

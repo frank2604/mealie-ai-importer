@@ -162,7 +162,12 @@ export const layoutConfig = {
   // STEP 2: Analysieren
   // ============================================================================
   step2: {
-    // Platzhalter für zukünftige Step-2-spezifische Konfiguration
+    grid: {
+      gridClasses:
+        'grid min-h-[400px] flex-1 grid-cols-1 grid-rows-[auto_minmax(0,1fr)] overflow-y-auto xl:grid-cols-[2fr_3fr] xl:grid-rows-none xl:overflow-visible',
+      rightColumnClasses: 'flex min-h-[400px] flex-col xl:h-full',
+      leftColumnClasses: 'flex flex-col',
+    },
   },
 
   // ============================================================================

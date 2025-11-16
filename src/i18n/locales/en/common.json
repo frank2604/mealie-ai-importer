@@ -92,7 +92,11 @@
       },
       "units": {
         "title": "Detected units",
-        "description": "Auto-harmonised with standard units."
+        "description": "Matched against your Mealie units."
+      },
+      "duration": {
+        "title": "Analysis duration",
+        "description": "Stopwatch from start until analysis completed."
       },
       "confidence": {
         "title": "AI confidence",
@@ -288,6 +292,12 @@
       "aborted": "Transfer aborted.",
       "polling": "Monitoring the Mealie API …",
       "noRun": "No active run. Start the transfer from step 3."
+    },
+    "metrics": {
+      "duration": {
+        "title": "Transfer duration",
+        "description": "Measured from start until transfer completed."
+      }
     },
     "actions": {
       "start": "Start transfer",

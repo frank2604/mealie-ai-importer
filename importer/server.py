@@ -670,6 +670,7 @@ def _current_recipe_title(run_id: str) -> Optional[str]:
     return None
 
 
+
 def _prepare_transfer_context(config: AppConfig, run_state: RunState) -> PipelineContext:
     review_context = _resolve_review_context(config, run_state.run_id)
     source_pdf = (

@@ -92,7 +92,11 @@
       },
       "units": {
         "title": "Erkannte Einheiten",
-        "description": "Automatisch harmonisiert mit Standard-Einheiten."
+        "description": "Abgleich mit Deinen Mealie-Einheiten."
+      },
+      "duration": {
+        "title": "Analysedauer",
+        "description": "Stoppuhr vom Start bis zum Analyse-Ende."
       },
       "confidence": {
         "title": "AI-Confidence",
@@ -285,8 +289,14 @@
       "completed": "Übertragung abgeschlossen.",
       "failed": "Übertragung fehlgeschlagen. Bitte prüfe das Log.",
       "aborted": "Übertragung abgebrochen.",
-      "polling": "Überwachung der Mealie-API …",
+      "polling": "Empfange Live-Log-Daten …",
       "noRun": "Kein aktiver Lauf. Starte die Übertragung in Schritt 3."
+    },
+    "metrics": {
+      "duration": {
+        "title": "Übertragungsdauer",
+        "description": "Gemessen vom Start bis zum Abschluss der Übertragung."
+      }
     },
     "actions": {
       "start": "Übertragung starten",

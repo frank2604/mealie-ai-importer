@@ -13,6 +13,23 @@ interface MetricValue {
   newlyAdded: number | null;
 }
 
+const formatDuration = (start: string | null, end: string | null, nowMs: number): string => {
+  if (!start) {
+    return "–";
+  }
+  const startMs = Date.parse(start);
+  const endMs = end ? Date.parse(end) : nowMs;
+  if (Number.isNaN(startMs) || Number.isNaN(endMs) || endMs <= startMs) {
+    return "00:00";
+  }
+  const totalSeconds = Math.floor((endMs - startMs) / 1000);
+  const minutes = Math.floor(totalSeconds / 60)
+    .toString()
+    .padStart(2, "0");
+  const seconds = (totalSeconds % 60).toString().padStart(2, "0");
+  return `${minutes}:${seconds}`;
+};
+
 export const Step2Analyze: React.FC = () => {
   const { t } = useTranslation();
   const {
@@ -30,6 +47,9 @@ export const Step2Analyze: React.FC = () => {
   const [isPolling, setIsPolling] = useState(false);
   const [ingredientMetric, setIngredientMetric] = useState<MetricValue>({ total: null, newlyAdded: null });
   const [unitMetric, setUnitMetric] = useState<MetricValue>({ total: null, newlyAdded: null });
+  const [analysisStart, setAnalysisStart] = useState<string | null>(null);
+  const [analysisEnd, setAnalysisEnd] = useState<string | null>(null);
+  const [nowMs, setNowMs] = useState<number>(Date.now());
   const logEntries = useMemo<LogEntry[]>(() => analysisLogs, [analysisLogs]);
   const refreshMetrics = useCallback(
     async (currentRunId: string) => {
@@ -102,6 +122,27 @@ export const Step2Analyze: React.FC = () => {
         } else if (statusResult.status === "aborted") {
           setStatus("aborted");
         }
+        if (statusResult.startedAt && !analysisStart) {
+          setAnalysisStart(statusResult.startedAt);
+        }
+        if (statusResult.completedAt && !analysisEnd) {
+          setAnalysisEnd(statusResult.completedAt);
+        }
+        if (
+          statusResult.ingredientsTotal !== undefined ||
+          statusResult.ingredientsNew !== undefined ||
+          statusResult.unitsTotal !== undefined ||
+          statusResult.unitsNew !== undefined
+        ) {
+          setIngredientMetric({
+            total: statusResult.ingredientsTotal ?? ingredientMetric.total,
+            newlyAdded: statusResult.ingredientsNew ?? ingredientMetric.newlyAdded
+          });
+          setUnitMetric({
+            total: statusResult.unitsTotal ?? unitMetric.total,
+            newlyAdded: statusResult.unitsNew ?? unitMetric.newlyAdded
+          });
+        }
         if (statusResult.error) {
           setError(statusResult.error);
         }
@@ -142,12 +183,28 @@ export const Step2Analyze: React.FC = () => {
     if (!runId) {
       setIngredientMetric({ total: null, newlyAdded: null });
       setUnitMetric({ total: null, newlyAdded: null });
+      setAnalysisStart(null);
+      setAnalysisEnd(null);
+      setNowMs(Date.now());
       return;
     }
     if (["review", "completed"].includes(status) && !isPolling) {
       void refreshMetrics(runId);
     }
   }, [isPolling, refreshMetrics, runId, status]);
+
+  useEffect(() => {
+    if (!analysisStart || analysisEnd) {
+      return;
+    }
+    const intervalId = window.setInterval(() => setNowMs(Date.now()), 1000);
+    return () => window.clearInterval(intervalId);
+  }, [analysisEnd, analysisStart]);
+
+  const analysisDuration = useMemo(
+    () => formatDuration(analysisStart, analysisEnd, nowMs),
+    [analysisEnd, analysisStart, nowMs]
+  );
 
   const statusLabel = useMemo(() => {
     switch (status) {
@@ -211,20 +268,25 @@ export const Step2Analyze: React.FC = () => {
               {!runId ? <div className="mt-2 text-xs text-text/60">{t("analyze.status.noRun")}</div> : null}
             </section>
 
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <DurationCard
+                title={t("analyze.metrics.duration.title")}
+                description={t("analyze.metrics.duration.description")}
+                value={analysisDuration}
+              />
               <MetricCard
                 title={t("analyze.metrics.ingredients.title")}
-              description={t("analyze.metrics.ingredients.description")}
-              value={ingredientMetric.total}
-              delta={ingredientMetric.newlyAdded}
-            />
-            <MetricCard
-              title={t("analyze.metrics.units.title")}
-              description={t("analyze.metrics.units.description")}
-              value={unitMetric.total}
-              delta={unitMetric.newlyAdded}
-            />
-          </div>
+                description={t("analyze.metrics.ingredients.description")}
+                value={ingredientMetric.total}
+                delta={ingredientMetric.newlyAdded}
+              />
+              <MetricCard
+                title={t("analyze.metrics.units.title")}
+                description={t("analyze.metrics.units.description")}
+                value={unitMetric.total}
+                delta={unitMetric.newlyAdded}
+              />
+            </div>
 
           </aside>
 
@@ -349,6 +411,27 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, description, value, delt
     <div className={clsx("mt-2 flex items-baseline", layoutConfig.spacing.item.gap)}>
       <span className="text-3xl font-semibold text-primary">{value === null ? "–" : value}</span>
       {delta !== null ? <span className="text-sm font-semibold text-success">+{delta}</span> : null}
+  </div>
+  <p className="mt-1 text-xs text-text/70">{description}</p>
+</div>
+);
+
+const DurationCard: React.FC<{ title: string; description: string; value: string }> = ({
+  title,
+  description,
+  value
+}) => (
+  <div
+    className={clsx(
+      "border border-border bg-panel shadow-sm",
+      layoutConfig.spacing.layout.container.x,
+      layoutConfig.spacing.layout.container.y,
+      layoutConfig.borderRadius.large
+    )}
+  >
+    <div className="text-xs font-semibold uppercase tracking-wide text-text/60">{title}</div>
+    <div className={clsx("mt-2 flex items-baseline", layoutConfig.spacing.item.gap)}>
+      <span className="text-3xl font-semibold text-primary">{value}</span>
     </div>
     <p className="mt-1 text-xs text-text/70">{description}</p>
   </div>

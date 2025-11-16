@@ -1,0 +1,76 @@
+{
+  "status": 200,
+  "body": {
+    "id": "cf1b96e4-c93a-4b8d-b638-b300c2b38b1c",
+    "userId": "48ff7261-817a-43a9-89de-63ee69dd4a3e",
+    "householdId": "68c99137-3b89-4a63-b504-97c353531455",
+    "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+    "name": "Hähnchenbrust in Wasabi-Sauce (1)",
+    "slug": "hahnchenbrust-in-wasabi-sauce-1",
+    "image": null,
+    "recipeServings": 0.0,
+    "recipeYieldQuantity": 0.0,
+    "recipeYield": null,
+    "totalTime": null,
+    "prepTime": null,
+    "cookTime": null,
+    "performTime": null,
+    "description": "",
+    "recipeCategory": [],
+    "tags": [],
+    "tools": [],
+    "rating": null,
+    "orgURL": null,
+    "dateAdded": "2025-11-16",
+    "dateUpdated": "2025-11-16T15:22:08.979311Z",
+    "createdAt": "2025-11-16T15:22:08.980641Z",
+    "updatedAt": "2025-11-16T15:22:08.980642Z",
+    "lastMade": null,
+    "recipeIngredient": [
+      {
+        "quantity": 0.0,
+        "unit": null,
+        "food": null,
+        "note": "1 Cup Flour",
+        "display": "1 Cup Flour",
+        "title": null,
+        "originalText": null,
+        "referenceId": "ec1a625f-090d-48a9-b788-6fcd3039d850"
+      }
+    ],
+    "recipeInstructions": [
+      {
+        "id": "6c669b33-d445-4f7c-8c95-4c6153a920d0",
+        "title": "",
+        "summary": "",
+        "text": "Recipe steps as well as other fields in the recipe page support markdown syntax.\n\n**Add a link**\n\n[My Link](https://demo.mealie.io)\n",
+        "ingredientReferences": []
+      }
+    ],
+    "nutrition": {
+      "calories": null,
+      "carbohydrateContent": null,
+      "cholesterolContent": null,
+      "fatContent": null,
+      "fiberContent": null,
+      "proteinContent": null,
+      "saturatedFatContent": null,
+      "sodiumContent": null,
+      "sugarContent": null,
+      "transFatContent": null,
+      "unsaturatedFatContent": null
+    },
+    "settings": {
+      "public": false,
+      "showNutrition": false,
+      "showAssets": false,
+      "landscapeView": false,
+      "disableComments": false,
+      "locked": false
+    },
+    "assets": [],
+    "notes": [],
+    "extras": {},
+    "comments": []
+  }
+}

@@ -1,41 +1,41 @@
 {
-  "generatedAt": "2025-11-16T15:21:35.711755",
+  "generatedAt": "2025-11-16T14:50:49.387016",
   "current": {
     "recipeServings": 4.0,
-    "totalTime": "30 Min.",
+    "totalTime": "40 Min.",
     "category": null,
     "tagIds": []
   },
   "proposal": {
     "recipeServings": 4.0,
-    "totalTime": "30 Min.",
+    "totalTime": "40 Min.",
     "categoryId": "c8b08673-ba91-4d4e-899b-77b9e9a4e733",
     "tagIds": [
       "6b6c225a-f74e-4366-a61b-deb6afccdb3c",
       "934e7b20-c521-40c9-a09c-5bc9706f9542",
-      "e2bbf7bb-c780-422d-a020-ef59b37daabc",
-      "44190fcc-9dd0-4ad8-b122-afd5d4148060",
-      "9e9364d5-650b-4a00-83d6-e9be8dbb13fc",
-      "62cf1ee1-75a7-4eeb-bfd7-bf1f7de26bf0",
-      "20529bfe-76e9-444e-984e-9be15e7a6eda",
+      "b224774e-2b68-4d0d-b439-d88bad5e4669",
+      "0f94c939-f5d1-482b-83de-331617c0965b",
+      "9063f3bf-6806-49fc-a925-378b15dcc154",
+      "f580714e-8ea4-47e6-a6be-2c7e133a52bb",
+      "d5a8b13a-11cb-4d0c-893f-d2c99204eaea",
       "539f721a-a8e8-4c15-a7b4-deefcfb27f3a",
-      "de422906-bd1d-4fc3-852f-a5e7b105a6e2"
+      "6d9ea018-b689-4ed0-88c0-1e2f5b78fd58"
     ]
   },
   "userDecision": {
     "recipeServings": 4.0,
-    "totalTime": "30 Min.",
+    "totalTime": "40 Min.",
     "categoryId": "c8b08673-ba91-4d4e-899b-77b9e9a4e733",
     "tagIds": [
       "6b6c225a-f74e-4366-a61b-deb6afccdb3c",
       "934e7b20-c521-40c9-a09c-5bc9706f9542",
-      "e2bbf7bb-c780-422d-a020-ef59b37daabc",
-      "44190fcc-9dd0-4ad8-b122-afd5d4148060",
-      "9e9364d5-650b-4a00-83d6-e9be8dbb13fc",
-      "62cf1ee1-75a7-4eeb-bfd7-bf1f7de26bf0",
-      "20529bfe-76e9-444e-984e-9be15e7a6eda",
+      "b224774e-2b68-4d0d-b439-d88bad5e4669",
+      "0f94c939-f5d1-482b-83de-331617c0965b",
+      "9063f3bf-6806-49fc-a925-378b15dcc154",
+      "f580714e-8ea4-47e6-a6be-2c7e133a52bb",
+      "d5a8b13a-11cb-4d0c-893f-d2c99204eaea",
       "539f721a-a8e8-4c15-a7b4-deefcfb27f3a",
-      "de422906-bd1d-4fc3-852f-a5e7b105a6e2"
+      "6d9ea018-b689-4ed0-88c0-1e2f5b78fd58"
     ]
   },
   "available": {

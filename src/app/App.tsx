@@ -7,7 +7,7 @@ import { StepTabs } from "./components/StepTabs";
 import { StickyFooter } from "./components/StickyFooter";
 import { getStepByPath, stepDefinitions } from "./stepConfig";
 import { layoutConfig } from "../config/layout.config";
-import { ImportFlowProvider, useImportFlow } from "./context/ImportFlowContext";
+import { useImportFlow } from "./context/ImportFlowContext";
 import { resetWorkspace as resetWorkspaceApi, archiveRun, resetWorkspace } from "./api/imports";
 
 const settingsPath = "/settings";
@@ -264,8 +264,4 @@ const AppShell: React.FC = () => {
   );
 };
 
-export const App: React.FC = () => (
-  <ImportFlowProvider>
-    <AppShell />
-  </ImportFlowProvider>
-);
+export const App: React.FC = () => <AppShell />;

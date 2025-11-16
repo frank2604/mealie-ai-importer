@@ -1,11 +1,11 @@
 {
-  "title": "Hähnchenbrustfilets im Schinkenmantel mit Champignon-Sahnesoße",
-  "description": "Saftige Hähnchenbrustfilets werden mit Salbei und Parma-Schinken umwickelt, kurz angebraten und in einer cremigen Champignon-Wermut-Soße im Ofen fertig gegart. Das Gericht ist aromatisch und schnell zuzubereiten. Es passt hervorragend zu Pellkartoffeln und grünem Salat.",
+  "title": "Hähnchenbrust in Wasabi-Sauce",
+  "description": "Zarte Hähnchenbrustfilets werden kurz angebraten und in einer aromatischen Orangen-Wasabi-Soße gezogen. Die Kombination aus frischer Orange, scharfem Wasabi und Sherry ergibt eine feine Balance aus Süße und Schärfe. Servieren Sie das Gericht mit Basmatireis und gehacktem Koriander.",
   "recipeServings": 4.0,
   "recipeYieldQuantity": 4.0,
   "recipeYield": "4 Portionen",
-  "totalTime": "35 Min.",
-  "prepTime": "15 Min.",
+  "totalTime": "30 Min.",
+  "prepTime": "10 Min.",
   "performTime": "20 Min.",
   "ingredients": [
     {
@@ -13,10 +13,10 @@
       "ingredients": [
         {
           "quantity": 4.0,
-          "note": null,
+          "note": "à 100 g",
           "food": {
-            "name": "Hähnchenbrustfilets",
-            "originalName": "Hähnchenbrustfilets",
+            "name": "Hähnchenbrustfilet",
+            "originalName": "Hähnchenbrustfilet",
             "mealieFoodId": "56d8f876-0110-410f-951e-7a4b365437ce",
             "badgeId": "found_word"
           },
@@ -28,44 +28,44 @@
           }
         },
         {
-          "quantity": 6.0,
-          "note": null,
+          "quantity": 1.0,
+          "note": "ca. 200 g, in feine Ringe schneiden",
           "food": {
-            "name": "Parma-Schinken",
-            "originalName": "Parma-Schinken",
-            "mealieFoodId": "2092d72d-0375-4ce9-b524-830a98107cf4",
+            "name": "Porree (Lauch)",
+            "originalName": "Porree (Lauch)",
+            "mealieFoodId": "157d1764-f24d-4c42-9cf7-9414528acad1",
+            "badgeId": "found_ai"
+          },
+          "unit": {
+            "name": "Stange",
+            "originalName": "Stange",
+            "mealieUnitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+            "badgeId": "found_ai"
+          }
+        },
+        {
+          "quantity": 1.0,
+          "note": "abgezogen und gewürfelt",
+          "food": {
+            "name": "Knoblauch",
+            "originalName": "Knoblauch",
+            "mealieFoodId": "b233c252-c1ac-4ae8-8c87-6e73a2f56534",
             "badgeId": "found_word"
           },
           "unit": {
-            "name": "Scheiben",
-            "originalName": "Scheiben",
-            "mealieUnitId": "2c3e0c93-592c-4759-bb3e-685a247b49b8",
+            "name": "Zehe",
+            "originalName": "Zehe",
+            "mealieUnitId": "b737ead9-f0b1-406d-8f33-d2ab44fd3a85",
             "badgeId": "found_word"
           }
         },
         {
-          "quantity": 500.0,
-          "note": null,
+          "quantity": 2.0,
+          "note": "dick schälen, weiße Teile entfernen, in einzelne Filets teilen",
           "food": {
-            "name": "Champignons",
-            "originalName": "Champignons",
-            "mealieFoodId": "60554611-f601-4d7f-b7dc-ce21c3462067",
-            "badgeId": "found_word"
-          },
-          "unit": {
-            "name": "g",
-            "originalName": "g",
-            "mealieUnitId": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
-            "badgeId": "found_word"
-          }
-        },
-        {
-          "quantity": 3.0,
-          "note": null,
-          "food": {
-            "name": "rote Zwiebeln",
-            "originalName": "rote Zwiebeln",
-            "mealieFoodId": "faec60df-abda-4f65-bed0-b81d47121a55",
+            "name": "Orangen",
+            "originalName": "Orangen",
+            "mealieFoodId": "e7e9520d-fe1e-4191-af2a-a23f2801aac8",
             "badgeId": "found_word"
           },
           "unit": {
@@ -76,18 +76,18 @@
           }
         },
         {
-          "quantity": 100.0,
-          "note": null,
+          "quantity": 1.0,
+          "note": "zum Braten",
           "food": {
-            "name": "trockener Wermut",
-            "originalName": "trockener Wermut",
-            "mealieFoodId": "cbcaa29b-a3b7-4615-89a7-a2691fef9e3f",
+            "name": "Butterschmalz",
+            "originalName": "Butterschmalz",
+            "mealieFoodId": "b5851479-b300-4250-a941-f3b3aa2f2a60",
             "badgeId": "found_word"
           },
           "unit": {
-            "name": "ml",
-            "originalName": "ml",
-            "mealieUnitId": "b558643c-bb92-479d-97ea-1337edc49d3b",
+            "name": "EL",
+            "originalName": "EL",
+            "mealieUnitId": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
             "badgeId": "found_word"
           }
         },
@@ -95,9 +95,9 @@
           "quantity": 200.0,
           "note": null,
           "food": {
-            "name": "süße Sahne",
-            "originalName": "süße Sahne",
-            "mealieFoodId": "ce7b4e53-b248-490e-953f-c4548bfb941a",
+            "name": "Orangensaft",
+            "originalName": "Orangensaft",
+            "mealieFoodId": "f1874357-d4fb-4461-bc74-65622071ed2d",
             "badgeId": "found_word"
           },
           "unit": {
@@ -108,64 +108,18 @@
           }
         },
         {
-          "quantity": 1.0,
-          "note": null,
+          "quantity": 50.0,
+          "note": "medium",
           "food": {
-            "name": "Mehl",
-            "originalName": "Mehl",
-            "mealieFoodId": "49ad74f8-8303-4fa3-8e31-0e5b0d55e12d",
+            "name": "Sherry",
+            "originalName": "Sherry",
+            "mealieFoodId": "3453bef7-46e7-4894-893a-dafc08123b2f",
             "badgeId": "found_word"
           },
           "unit": {
-            "name": "EL",
-            "originalName": "EL",
-            "mealieUnitId": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
-            "badgeId": "found_word"
-          }
-        },
-        {
-          "quantity": 1.0,
-          "note": null,
-          "food": {
-            "name": "heller Soßenbinder",
-            "originalName": "heller Soßenbinder",
-            "mealieFoodId": "16018665-3023-4213-aeb2-c8445dd699b6",
-            "badgeId": "found_word"
-          },
-          "unit": {
-            "name": "EL",
-            "originalName": "EL",
-            "mealieUnitId": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
-            "badgeId": "found_word"
-          }
-        },
-        {
-          "quantity": null,
-          "note": "zum Anbraten",
-          "food": {
-            "name": "Fett zum Braten",
-            "originalName": "Fett zum Braten",
-            "mealieFoodId": "1e9f9678-213c-477d-8c3a-7c5a7f365f32",
-            "badgeId": "found_word"
-          },
-          "unit": {
-            "name": null,
-            "originalName": null
-          }
-        },
-        {
-          "quantity": 6.0,
-          "note": null,
-          "food": {
-            "name": "Salbeiblätter",
-            "originalName": "Salbeiblätter",
-            "mealieFoodId": "31eedd6a-c57b-4979-8a9d-b7ff71663acc",
-            "badgeId": "found_word"
-          },
-          "unit": {
-            "name": "Blätter",
-            "originalName": "Blätter",
-            "mealieUnitId": "14bd13df-83f2-44e5-a326-abc2fb38c09b",
+            "name": "ml",
+            "originalName": "ml",
+            "mealieUnitId": "b558643c-bb92-479d-97ea-1337edc49d3b",
             "badgeId": "found_word"
           }
         },
@@ -184,12 +138,44 @@
           }
         },
         {
-          "quantity": null,
-          "note": "nach Geschmack",
+          "quantity": 3.0,
+          "note": "grüne Meerrettichpaste (Asialaden)",
           "food": {
-            "name": "Pfeffer",
-            "originalName": "Pfeffer",
-            "mealieFoodId": "baec189d-c87d-4e04-b972-db79b960e84e",
+            "name": "Wasabipaste",
+            "originalName": "Wasabipaste",
+            "mealieFoodId": "7d15c9d2-4fbb-458c-b031-fd9460fc657c",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": "TL",
+            "originalName": "TL",
+            "mealieUnitId": "190e0f06-fae8-4d6f-9009-a3c7b214434e",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": 1.0,
+          "note": "gehackt, zum Bestreuen",
+          "food": {
+            "name": "Koriander",
+            "originalName": "Koriander",
+            "mealieFoodId": "19273c85-bfe2-4188-9145-57f872582970",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": "Bund",
+            "originalName": "Bund",
+            "mealieUnitId": "18de6de3-b087-486e-90fc-20f1303030b3",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": null,
+          "note": "als Beilage zubereiten",
+          "food": {
+            "name": "Basmatireis",
+            "originalName": "Basmatireis",
+            "mealieFoodId": "dffc3cb6-a4c9-4f11-ad63-cc97119caa34",
             "badgeId": "found_word"
           },
           "unit": {
@@ -206,77 +192,125 @@
       "steps": [
         {
           "order": 1,
-          "instruction": "Hähnchenbrustfilets mit Pfeffer würzen. Jeweils ein Salbeiblatt auf das Filet legen und mit einer Scheibe Parma-Schinken umwickeln.",
+          "instruction": "Fleisch abtupfen. Porree putzen und in feine Ringe schneiden. Knoblauch abziehen und würfeln. Orangen dick schälen, weiße Teile entfernen und in einzelne Filets teilen. Koriander grob hacken.",
           "timer_minutes": null
         },
         {
           "order": 2,
-          "instruction": "Fett in einer Pfanne erhitzen. Die Filets leicht mit Mehl bestäuben und in der Pfanne rundherum anbraten, bis sie Farbe bekommen.",
-          "timer_minutes": null
+          "instruction": "Hähnchenbrustfilets im heißen Butterschmalz pro Seite 4 Minuten anbraten, dann herausnehmen und warm stellen.",
+          "timer_minutes": 4
         },
         {
           "order": 3,
-          "instruction": "Die angebratenen Filets aus der Pfanne nehmen und in eine feuerfeste Form legen.",
+          "instruction": "Knoblauch im Bratfett andünsten. Orangensaft und Sherry hinzufügen und etwas einkochen lassen.",
           "timer_minutes": null
         },
         {
           "order": 4,
-          "instruction": "Zwiebeln schälen und fein hacken. Champignons putzen und vierteln.",
+          "instruction": "Salz und Wasabipaste in die Soße einrühren, gut verrühren.",
           "timer_minutes": null
         },
         {
           "order": 5,
-          "instruction": "Zwiebeln und Champignons im verbliebenen Bratfett anbraten, bis sie leicht gebräunt sind.",
-          "timer_minutes": null
+          "instruction": "Hähnchenfleisch und Porree in die Soße geben und etwa 5 Minuten ziehen lassen, damit das Fleisch die Aromen aufnimmt.",
+          "timer_minutes": 5
         },
         {
           "order": 6,
-          "instruction": "Mit dem Wermut ablöschen und kurz einkochen lassen, damit der Alkohol verdampft und der Geschmack konzentriert wird.",
-          "timer_minutes": null
-        },
-        {
-          "order": 7,
-          "instruction": "Sahne zugießen und den hellen Soßenbinder einrühren. Die Soße kurz aufkochen lassen und mit Salz und Pfeffer abschmecken.",
-          "timer_minutes": null
-        },
-        {
-          "order": 8,
-          "instruction": "Die Soße über die Hähnchenfilets in der feuerfesten Form geben und alles bei 200 °C im vorgeheizten Backofen etwa 20 Minuten garen lassen.",
-          "timer_minutes": 20
-        },
-        {
-          "order": 9,
-          "instruction": "Herausnehmen und sofort servieren. Dazu passen Pellkartoffeln und grüner Salat.",
+          "instruction": "Orangenfilets zugeben und mit gehacktem Koriander bestreuen. Mit Basmatireis servieren.",
           "timer_minutes": null
         }
       ]
     }
   ],
-  "notes": "Ofentemperatur: 200 °C. Als Beilage passen Pellkartoffeln und ein frischer grüner Salat. Nach Belieben kann statt Parma-Schinken auch anderer luftgetrockneter Schinken verwendet werden.",
+  "notes": "Tipp: Wasabi-Meerrettich gibt es als Paste oder Pulver. Das schärfere Pulver wird mit Wasser verrührt. 3 TL Paste können durch 1 TL Pulver, vermischt mit 2 TL Wasser, ersetzt werden. Nährwerte pro Portion: ca. 230 Kalorien; 19 g Eiweiß; 6 g Fett; 22 g Kohlenhydrate.",
   "image_path": "data/pipeline/02_RecipeImage.jpg",
   "image_url": null,
   "metadata": {
-    "source": "data/uploads/4ed3b357e5e14d75ba1d0a3cc084efd7.pdf",
+    "source": "Journal für die Frau; datei: data/uploads/12d3f6e90f7e41d5a3ec280ffb36b5a8.pdf",
     "categories": [
       "Hauptgericht",
       "Geflügel"
     ],
-    "cuisine": "Deutsch",
+    "cuisine": "Asiatisch inspiriert",
     "tags": [
       "Hähnchen",
-      "Schinken",
-      "Champignons",
-      "Sahnesoße",
-      "Ofengericht",
-      "Salbei"
+      "Wasabi",
+      "Orange",
+      "Sherry",
+      "Porree",
+      "Koriander",
+      "Basmatireis"
     ],
-    "mealie_categories": [],
-    "mealie_tags": []
+    "mealie_categories": [
+      {
+        "id": "c8b08673-ba91-4d4e-899b-77b9e9a4e733",
+        "name": "Hauptgerichte – Fleisch 🥩",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "hauptgerichte-fleisch"
+      }
+    ],
+    "mealie_tags": [
+      {
+        "id": "6b6c225a-f74e-4366-a61b-deb6afccdb3c",
+        "name": "Ernährung | High-Protein 💪",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "ernahrung-high-protein"
+      },
+      {
+        "id": "934e7b20-c521-40c9-a09c-5bc9706f9542",
+        "name": "Form | Pfannengericht 🍳",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "form-pfannengericht"
+      },
+      {
+        "id": "e2bbf7bb-c780-422d-a020-ef59b37daabc",
+        "name": "Gerät | Reiskocher 🍚",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "gerat-reiskocher"
+      },
+      {
+        "id": "44190fcc-9dd0-4ad8-b122-afd5d4148060",
+        "name": "Hauptzutat | Reis 🍚",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "hauptzutat-reis"
+      },
+      {
+        "id": "9e9364d5-650b-4a00-83d6-e9be8dbb13fc",
+        "name": "Küche | Fusion 🧪",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "kuche-fusion"
+      },
+      {
+        "id": "62cf1ee1-75a7-4eeb-bfd7-bf1f7de26bf0",
+        "name": "Saison | Frühling 🌸",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "saison-fruhling"
+      },
+      {
+        "id": "20529bfe-76e9-444e-984e-9be15e7a6eda",
+        "name": "Schärfe | Scharf 🔥",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "scharfe-scharf"
+      },
+      {
+        "id": "539f721a-a8e8-4c15-a7b4-deefcfb27f3a",
+        "name": "Tageszeit | Dinner 🌙",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "tageszeit-dinner"
+      },
+      {
+        "id": "de422906-bd1d-4fc3-852f-a5e7b105a6e2",
+        "name": "Technik | Pfanne 🍳",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "technik-pfanne"
+      }
+    ]
   },
   "assets": [
     {
       "file_name": "02_RecipeImage.jpg",
-      "dataPath": null
+      "dataPath": "03_RecipeImage.json"
     }
   ]
 }

@@ -1,0 +1,13 @@
+{
+  "slug": "hahnchen-saltimbocca",
+  "data": {
+    "name": "01_Hahnchen_SaItimbocca",
+    "icon": "mdi-file-pdf-box",
+    "extension": "pdf"
+  },
+  "file": {
+    "fileName": "01_Hahnchen_SaItimbocca.pdf",
+    "mimeType": "application/pdf",
+    "sizeBytes": 405763
+  }
+}

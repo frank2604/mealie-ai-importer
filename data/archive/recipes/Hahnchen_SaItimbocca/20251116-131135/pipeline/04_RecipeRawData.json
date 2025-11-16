@@ -1,0 +1,142 @@
+{
+  "title": "Hähnchen-Saltimbocca",
+  "description": "Zarte Hähnchenbrustfilets werden mit frischen Salbeiblättern und Parma-Schinken umwickelt, mit Butter bepinselt und auf dem Grill saftig gegrillt. Dazu passt ein cremiger Zitronen-Dip mit Thymian, der frisch und aromatisch schmeckt. Dieses Gericht ist ideal für warme Grillabende und Partys.",
+  "recipeServings": 10.0,
+  "recipeYieldQuantity": 10.0,
+  "recipeYield": "10 Portionen",
+  "totalTime": "40-45 Min.",
+  "prepTime": "30 Min.",
+  "performTime": "10-15 Min.",
+  "ingredients": [
+    {
+      "name": "Hauptzutaten",
+      "ingredients": [
+        {
+          "name": "Hähnchenbrustfilets",
+          "quantity": 10.0,
+          "unit": "Stück",
+          "note": "je ca. 130 g"
+        },
+        {
+          "name": "Salbeiblätter",
+          "note": "frisch, pro Filet 1–2 Blätter"
+        },
+        {
+          "name": "Parmaschinken (Parma- oder Prosciutto)",
+          "quantity": 10.0,
+          "unit": "Scheiben",
+          "note": "insgesamt ca. 150 g"
+        },
+        {
+          "name": "Butter",
+          "quantity": 4.0,
+          "unit": "EL",
+          "note": "zum Zerlassen und Bepinseln"
+        },
+        {
+          "name": "Pfeffer",
+          "note": "frisch gemahlen, nach Geschmack"
+        }
+      ]
+    },
+    {
+      "name": "Zitronen-Dip",
+      "ingredients": [
+        {
+          "name": "Salat-Mayonnaise",
+          "quantity": 200.0,
+          "unit": "g"
+        },
+        {
+          "name": "Saure Sahne",
+          "quantity": 300.0,
+          "unit": "g"
+        },
+        {
+          "name": "Abgeriebene Schale von Zitrone",
+          "quantity": 1.0,
+          "unit": "Stück",
+          "note": "unbehandelte Zitrone"
+        },
+        {
+          "name": "Salz",
+          "note": "nach Geschmack"
+        },
+        {
+          "name": "Pfeffer",
+          "note": "nach Geschmack"
+        },
+        {
+          "name": "Zucker",
+          "quantity": 1.0,
+          "unit": "Prise"
+        },
+        {
+          "name": "Thymianblättchen",
+          "note": "frisch, fein gehackt"
+        }
+      ]
+    }
+  ],
+  "instructions": [
+    {
+      "name": "Zubereitung",
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "Am Morgen die Hähnchenbrustfilets abbrausen und trocken tupfen. Salbeiblätter von den Stielen zupfen."
+        },
+        {
+          "order": 2,
+          "instruction": "Auf jedes Hähnchenfilet 1–2 Salbeiblätter legen und jedes Filet fest mit jeweils einer Scheibe Parma‑/Prosciutto umwickeln."
+        },
+        {
+          "order": 3,
+          "instruction": "Butter zerlassen und die Hähnchenfilets damit rundherum bepinseln. Zugedeckt kalt stellen, bis sie gegrillt werden."
+        },
+        {
+          "order": 4,
+          "instruction": "Für den Dip Mayonnaise mit saurer Sahne und der abgeriebenen Zitronenschale verrühren. Mit Salz, Pfeffer und einer Prise Zucker abschmecken."
+        },
+        {
+          "order": 5,
+          "instruction": "Thymianblättchen abzupfen, fein hacken und unter den Dip rühren."
+        },
+        {
+          "order": 6,
+          "instruction": "Kurz bevor die Gäste kommen, die Hähnchen-Saltimbocca mit Pfeffer würzen. Auf dem Grillrost oder in einer Alu-Grillschale mit etwa 10 cm Abstand zur Glut auf jeder Seite 5–7 Minuten grillen, bis das Hähnchen durchgegart und der Schinken leicht knusprig ist.",
+          "timer_minutes": 6
+        },
+        {
+          "order": 7,
+          "instruction": "Die gegrillten Hähnchenfilets zusammen mit dem Zitronen-Dip servieren."
+        }
+      ]
+    }
+  ],
+  "notes": "Nährwerte pro Portion: 390 kcal / 1640 kJ; 1 g Kohlenhydrate, 40 g Eiweiß, 25 g Fett. Transporttipp: Hähnchenbrustfilets in verschließbaren Kunststoffdosen und Zitronen-Dip im Schraubglas oder einer verschließbaren Dose in der Kühltasche transportieren.",
+  "image_path": "data/pipeline/02_RecipeImage.jpg",
+  "metadata": {
+    "source": "data/uploads/7a3cd778040a41ad903e9b02c4b67ef1.pdf",
+    "categories": [
+      "Hauptgericht",
+      "Geflügel",
+      "Grill"
+    ],
+    "cuisine": "italienisch",
+    "tags": [
+      "Saltimbocca",
+      "Grillparty",
+      "Sommer",
+      "Dip",
+      "Partyessen"
+    ],
+    "mealie_categories": [],
+    "mealie_tags": []
+  },
+  "assets": [
+    {
+      "file_name": "02_RecipeImage.jpg"
+    }
+  ]
+}

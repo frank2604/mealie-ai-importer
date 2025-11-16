@@ -1,0 +1,15 @@
+{
+  "name": "Sherry",
+  "payload": {
+    "name": "Sherry",
+    "pluralName": "Sherry",
+    "extras": {},
+    "labelId": "7c260419-4a87-440b-8b4d-cec090a65078",
+    "aliases": [
+      {
+        "name": "sherry"
+      }
+    ],
+    "householdsWithIngredientFood": []
+  }
+}

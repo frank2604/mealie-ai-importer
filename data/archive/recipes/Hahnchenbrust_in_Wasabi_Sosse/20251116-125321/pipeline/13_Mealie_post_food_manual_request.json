@@ -1,0 +1,15 @@
+{
+  "name": "Butterschmalz",
+  "payload": {
+    "name": "Butterschmalz",
+    "pluralName": "Butterschmalz",
+    "extras": {},
+    "labelId": "0f05689c-83c0-41fc-92b8-4aedde885267",
+    "aliases": [
+      {
+        "name": "butterschmalz"
+      }
+    ],
+    "householdsWithIngredientFood": []
+  }
+}

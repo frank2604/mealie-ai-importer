@@ -1,0 +1,78 @@
+2025-11-16 14:11:35 [INFO] Pipeline: -----------------------------------------------
+2025-11-16 14:11:35 [INFO] Pipeline: Starting module Refresh Mealie caches
+2025-11-16 14:11:35 [INFO] Refresh Caches: Refreshing the ingredient and unit lists from Mealie
+2025-11-16 14:11:40 [INFO] httpx: HTTP Request: GET https://mealie.local/api/units?page=1&perPage=200 "HTTP/1.1 200 OK"
+2025-11-16 14:11:40 [INFO] httpx: HTTP Request: GET https://mealie.local/api/foods?page=1&perPage=200 "HTTP/1.1 200 OK"
+2025-11-16 14:11:40 [INFO] httpx: HTTP Request: GET https://mealie.local/api/groups/labels?page=1&perPage=200 "HTTP/1.1 200 OK"
+2025-11-16 14:11:40 [INFO] httpx: HTTP Request: GET https://mealie.local/api/organizers/categories?page=1&perPage=200 "HTTP/1.1 200 OK"
+2025-11-16 14:11:40 [INFO] httpx: HTTP Request: GET https://mealie.local/api/organizers/tags?page=1&perPage=200 "HTTP/1.1 200 OK"
+2025-11-16 14:11:40 [INFO] Refresh Caches: Finished refreshing the Mealie lists
+2025-11-16 14:11:40 [INFO] Pipeline: Finished module Refresh Mealie caches
+2025-11-16 14:11:40 [INFO] Pipeline: -----------------------------------------------
+2025-11-16 14:11:40 [INFO] Pipeline: Starting module Input
+2025-11-16 14:11:40 [INFO] PDF Input: Reading the recipe PDF from data/uploads/7a3cd778040a41ad903e9b02c4b67ef1.pdf
+2025-11-16 14:11:40 [INFO] Pipeline: Finished module Input
+2025-11-16 14:11:40 [INFO] Pipeline: -----------------------------------------------
+2025-11-16 14:11:40 [INFO] Pipeline: Starting module AI Analyser
+2025-11-16 14:11:40 [INFO] AI Analyser: Starting the AI analysis with 1438 characters of recipe text
+2025-11-16 14:12:55 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-16 14:13:04 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-16 14:13:04 [INFO] AI Analyser: Stored the selected image at data/pipeline/02_RecipeImage.jpg
+2025-11-16 14:13:04 [INFO] AI Analyser: Saved the raw recipe snapshot to data/pipeline/04_RecipeRawData.json
+2025-11-16 14:13:04 [INFO] AI Analyser: Saved RecipeData.json to data/pipeline/05_RecipeData.json
+2025-11-16 14:13:04 [INFO] Pipeline: Finished module AI Analyser
+2025-11-16 14:13:04 [INFO] Pipeline: -----------------------------------------------
+2025-11-16 14:13:04 [INFO] Pipeline: Starting module Food Checker
+2025-11-16 14:13:04 [INFO] Food Checker: Trying to match 12 ingredients to existing foods in Mealie [Hähnchenbrustfilets, Salbeiblätter, Parmaschinken (Parma- oder Prosciutto), Butter, Pfeffer, Salat-Mayonnaise, Saure Sahne, Abgeriebene Schale von Zitrone, Salz, Pfeffer, Zucker, Thymianblättchen]
+2025-11-16 14:13:05 [INFO] Food Checker: Matched 6 ingredients exact by words: [Hähnchenbrustfilets, Salbeiblätter, Butter, Pfeffer, Salz, Pfeffer]
+2025-11-16 14:13:05 [INFO] Food Checker: Try matching rest of the ingredients [Parmaschinken (Parma- oder Prosciutto), Salat-Mayonnaise, Saure Sahne, Abgeriebene Schale von Zitrone, Zucker, Thymianblättchen] with AI
+2025-11-16 14:13:05 [INFO] Food Checker: Ask AI to find [Parmaschinken (Parma- oder Prosciutto)] in existing foods in Mealie
+2025-11-16 14:13:09 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-16 14:13:09 [INFO] Food Checker: AI suggests [Parma-Schinken] from existing foods in Mealie
+2025-11-16 14:13:09 [INFO] Food Checker: Ask AI to find [Salat-Mayonnaise] in existing foods in Mealie
+2025-11-16 14:13:14 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-16 14:13:14 [INFO] Food Checker: AI could not find a matching ingredient for [Salat-Mayonnaise] in existing foods in Mealie
+2025-11-16 14:13:14 [INFO] Food Checker: Ask AI to find [Saure Sahne] in existing foods in Mealie
+2025-11-16 14:13:20 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-16 14:13:20 [INFO] Food Checker: AI could not find a matching ingredient for [Saure Sahne] in existing foods in Mealie
+2025-11-16 14:13:20 [INFO] Food Checker: Ask AI to find [Abgeriebene Schale von Zitrone] in existing foods in Mealie
+2025-11-16 14:13:28 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-16 14:13:28 [INFO] Food Checker: AI could not find a matching ingredient for [Abgeriebene Schale von Zitrone] in existing foods in Mealie
+2025-11-16 14:13:28 [INFO] Food Checker: Ask AI to find [Zucker] in existing foods in Mealie
+2025-11-16 14:13:34 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-16 14:13:34 [INFO] Food Checker: AI could not find a matching ingredient for [Zucker] in existing foods in Mealie
+2025-11-16 14:13:34 [INFO] Food Checker: Ask AI to find [Thymianblättchen] in existing foods in Mealie
+2025-11-16 14:13:41 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-16 14:13:41 [INFO] Food Checker: AI could not find a matching ingredient for [Thymianblättchen] in existing foods in Mealie
+2025-11-16 14:13:41 [INFO] Food Checker: Matched 7 ingredients so far; 5 still need attention
+2025-11-16 14:13:41 [INFO] Food Checker: Matched 1 ingredient with AI: [Parmaschinken (Parma- oder Prosciutto)]
+2025-11-16 14:13:41 [INFO] Food Checker: 5 ingredients need to be created in Mealie: [Salat-Mayonnaise, Saure Sahne, Abgeriebene Schale von Zitrone, Zucker, Thymianblättchen]
+2025-11-16 14:13:41 [INFO] Food Checker: Will ask AI for naming suggestions for missing ingredients
+2025-11-16 14:13:41 [INFO] Food Checker: Ask AI for singular, plural, aliases and mapping to existing food category for [Salat-Mayonnaise]
+2025-11-16 14:13:41 [INFO] Food Checker: Ask AI for singular, plural, aliases and mapping to existing food category for [Saure Sahne]
+2025-11-16 14:13:41 [INFO] Food Checker: Ask AI for singular, plural, aliases and mapping to existing food category for [Abgeriebene Schale von Zitrone]
+2025-11-16 14:13:41 [INFO] Food Checker: Ask AI for singular, plural, aliases and mapping to existing food category for [Zucker]
+2025-11-16 14:13:41 [INFO] Food Checker: Ask AI for singular, plural, aliases and mapping to existing food category for [Thymianblättchen]
+2025-11-16 14:14:30 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-16 14:14:30 [INFO] Food Checker: AI returns this suggestion for [Salat-Mayonnaise]: singular [Salat-Mayonnaise], plural [Salat-Mayonnaise], aliases [salat-mayonnaise, salat mayonnaise, salatmayonnaise], category [Würzmittel, Brühen & Soßen🧂]
+2025-11-16 14:14:30 [INFO] Food Checker: AI returns this suggestion for [Saure Sahne]: singular [Saure Sahne], plural [Saure Sahne], aliases [saure-sahne, saure sahne, sauerrahm], category [Milchprodukte 🥛]
+2025-11-16 14:14:30 [INFO] Food Checker: AI returns this suggestion for [Abgeriebene Schale von Zitrone]: singular [Zitronenschale], plural [Zitronenschalen], aliases [abgeriebene schale von zitrone, abgeriebene zitronenschale, zitronenschale], category [Obst & Gemüse 🍎]
+2025-11-16 14:14:30 [INFO] Food Checker: AI returns this suggestion for [Zucker]: singular [Zucker], plural [Zucker], aliases [zucker], category [Backzutaten 🧁]
+2025-11-16 14:14:30 [INFO] Food Checker: AI returns this suggestion for [Thymianblättchen]: singular [Thymianblättchen], plural [Thymianblättchen], aliases [thymianblättchen, thymian blättchen, thymian-blättchen], category [Gewürze 🌿]
+2025-11-16 14:14:30 [INFO] Food Checker: Saved the foods review to data/pipeline/06_FoodsReview.json
+2025-11-16 14:14:30 [INFO] Pipeline: Finished module Food Checker
+2025-11-16 14:14:30 [INFO] Pipeline: -----------------------------------------------
+2025-11-16 14:14:30 [INFO] Pipeline: Starting module Unit Checker
+2025-11-16 14:14:30 [INFO] Unit Checker: Trying to match 5 unique units (from 7 ingredient entries) to existing Mealie units [Stück, Scheiben, EL, g, Prise]
+2025-11-16 14:14:30 [INFO] Unit Checker: Matched 7 units exact by words: [EL, g, g, Prise, Scheiben, Stück, Stück]
+2025-11-16 14:14:30 [INFO] Unit Checker: Matched 7 units so far; 0 still need attention
+2025-11-16 14:14:30 [INFO] Unit Checker: Every unit now has a Mealie match
+2025-11-16 14:14:30 [INFO] Unit Checker: Saved the units review to data/pipeline/07_UnitsReview.json
+2025-11-16 14:14:30 [INFO] Pipeline: Finished module Unit Checker
+2025-11-16 14:14:30 [INFO] Pipeline: -----------------------------------------------
+2025-11-16 14:14:30 [INFO] Pipeline: Starting module Assign Metadata
+2025-11-16 14:14:59 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-16 14:14:59 [INFO] Assign Metadata: Saved the metadata review to data/pipeline/08_MetadataReview.json
+2025-11-16 14:15:18 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-16 14:15:18 [INFO] Pipeline: Finished module Assign Metadata
+2025-11-16 14:15:18 [INFO] Pipeline: -----------------------------------------------

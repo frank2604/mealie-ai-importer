@@ -1,0 +1,21 @@
+{
+  "name": "Basmatireis",
+  "payload": {
+    "name": "Basmatireis",
+    "pluralName": "Basmatireis",
+    "extras": {},
+    "labelId": "7a5188a1-c0fb-4527-910e-ee13f7c8b447",
+    "aliases": [
+      {
+        "name": "basmatireis"
+      },
+      {
+        "name": "basmati-reis"
+      },
+      {
+        "name": "basmati reis"
+      }
+    ],
+    "householdsWithIngredientFood": []
+  }
+}

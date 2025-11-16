@@ -1,0 +1,18 @@
+{
+  "name": "Orangensaft",
+  "payload": {
+    "name": "Orangensaft",
+    "pluralName": "Orangensaft",
+    "extras": {},
+    "labelId": "e2016681-434c-488e-aefa-5b9bece3bbd9",
+    "aliases": [
+      {
+        "name": "orangensaft"
+      },
+      {
+        "name": "apfelsinensaft"
+      }
+    ],
+    "householdsWithIngredientFood": []
+  }
+}

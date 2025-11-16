@@ -8,9 +8,10 @@ interface StepTabsProps {
   steps: StepDefinition[];
   currentStepId: StepId;
   onStepChange: (step: StepDefinition) => void;
+  isStepDisabled?: (step: StepDefinition, index: number) => boolean;
 }
 
-export const StepTabs: React.FC<StepTabsProps> = ({ steps, currentStepId, onStepChange }) => {
+export const StepTabs: React.FC<StepTabsProps> = ({ steps, currentStepId, onStepChange, isStepDisabled }) => {
   const { t } = useTranslation();
 
   const currentIndex = useMemo(() => steps.findIndex((step) => step.id === currentStepId), [steps, currentStepId]);
@@ -36,22 +37,28 @@ export const StepTabs: React.FC<StepTabsProps> = ({ steps, currentStepId, onStep
     >
       {steps.map((step, index) => {
         const isActive = step.id === currentStepId;
+        const disabled = isStepDisabled ? isStepDisabled(step, index) : false;
         const status = index < currentIndex ? "completed" : isActive ? "active" : "upcoming";
         return (
           <button
             key={step.id}
             role="tab"
             aria-selected={isActive}
-            tabIndex={isActive ? 0 : -1}
+            tabIndex={isActive || !disabled ? 0 : -1}
             onKeyDown={(event) => handleKeyDown(event, index)}
-            onClick={() => onStepChange(step)}
+            onClick={() => {
+              if (disabled) return;
+              onStepChange(step);
+            }}
             className={clsx(
               "focus-ring flex h-full w-full items-center gap-3 border px-4 py-3 text-left transition-colors",
               layoutConfig.borderRadius.medium,
               status === "completed" && "border-success/70 bg-success/10 text-success hover:border-success",
               status === "active" && "border-primary bg-primary/10 text-primary hover:border-primary",
-              status === "upcoming" && "border-border bg-panel hover:border-primary/50 hover:text-primary"
+              status === "upcoming" && "border-border bg-panel hover:border-primary/50 hover:text-primary",
+              disabled && "cursor-not-allowed opacity-50 hover:border-border hover:text-text"
             )}
+            disabled={disabled}
           >
             <span
               className={clsx(

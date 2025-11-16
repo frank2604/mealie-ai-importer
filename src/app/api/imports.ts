@@ -52,6 +52,10 @@ export interface ActiveRunResult {
   completedAt?: string;
 }
 
+export interface ArchiveRunResult {
+  status: string;
+}
+
 const mapLogLevel = (level: string | null | undefined): LogEntry["level"] => {
   const normalized = (level ?? "INFO").toString().toUpperCase();
   if (normalized === "WARN" || normalized === "WARNING") {
@@ -181,4 +185,15 @@ export const resetWorkspace = async (): Promise<void> => {
   if (!response.ok) {
     throw await parseError(response);
   }
+};
+
+export const archiveRun = async (runId: string): Promise<ArchiveRunResult> => {
+  const response = await fetch(`${BASE_URL}/imports/${encodeURIComponent(runId)}/archive`, {
+    method: "POST",
+    credentials: "same-origin"
+  });
+  if (!response.ok) {
+    throw await parseError(response);
+  }
+  return (await response.json()) as ArchiveRunResult;
 };

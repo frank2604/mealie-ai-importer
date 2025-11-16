@@ -8,7 +8,7 @@ import { StickyFooter } from "./components/StickyFooter";
 import { getStepByPath, stepDefinitions } from "./stepConfig";
 import { layoutConfig } from "../config/layout.config";
 import { ImportFlowProvider, useImportFlow } from "./context/ImportFlowContext";
-import { resetWorkspace as resetWorkspaceApi } from "./api/imports";
+import { resetWorkspace as resetWorkspaceApi, archiveRun, resetWorkspace } from "./api/imports";
 
 const settingsPath = "/settings";
 
@@ -17,6 +17,7 @@ type StepNextHandler = () => boolean | Promise<boolean>;
 interface StepNavigationContextValue {
   setNextHandler: (handler: StepNextHandler | null) => void;
   setNextDisabled: (disabled: boolean) => void;
+  setNextLabel: (label: string | null) => void;
 }
 
 const StepNavigationContext = createContext<StepNavigationContextValue | undefined>(undefined);
@@ -29,14 +30,35 @@ export function useStepNavigation(): StepNavigationContextValue {
   return context;
 }
 
+const statusToMaxStepIndex = (status: string | null): number => {
+  switch (status) {
+    case "review":
+      return 1; // Analyse abgeschlossen
+    case "transferring":
+      return 2; // Review abgeschlossen, Transfer läuft
+    case "completed":
+      return 3; // alles erledigt
+    case "failed":
+    case "aborted":
+      return 2; // bis Review fertig
+    case "starting":
+    case "analyzing":
+    case "uploading":
+    case "uploaded":
+    default:
+      return 0; // nur Auswahl abgeschlossen
+  }
+};
+
 const AppShell: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { reset: resetFlow } = useImportFlow();
+  const { reset: resetFlow, status: runStatus, runId } = useImportFlow();
   const nextHandlerRef = useRef<StepNextHandler | null>(null);
   const [isNextDisabled, setIsNextDisabled] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
+  const [nextLabelOverride, setNextLabelOverride] = useState<string | null>(null);
 
   const currentPath = location.pathname;
   const isOnSettings = currentPath.startsWith(settingsPath);
@@ -45,6 +67,9 @@ const AppShell: React.FC = () => {
   const currentStepIndex = currentStep.index;
   const isFirstStep = currentStepIndex === 0;
   const isLastStep = currentStepIndex === stepDefinitions.length - 1;
+  const isRunning = ["uploading", "starting", "analyzing", "transferring"].includes(runStatus);
+  const isBackDisabled = isRunning;
+  const maxStepIndex = statusToMaxStepIndex(runStatus);
   const settingsBackTarget =
     (location.state as { from?: string } | undefined)?.from ?? stepDefinitions[0].path;
   const navigationContextValue = useMemo(
@@ -55,11 +80,17 @@ const AppShell: React.FC = () => {
       setNextDisabled: (disabled: boolean) => {
         setIsNextDisabled(disabled);
       },
+      setNextLabel: (label: string | null) => {
+        setNextLabelOverride(label);
+      }
     }),
     []
   );
 
   const handleBack = () => {
+    if (isBackDisabled) {
+      return;
+    }
     if (isFirstStep) {
       return;
     }
@@ -68,18 +99,41 @@ const AppShell: React.FC = () => {
   };
 
   const handleNext = () => {
-    if (isLastStep) {
-      return;
-    }
     const maybeHandler = nextHandlerRef.current;
-    const result = maybeHandler ? maybeHandler() : true;
+    let result: boolean | Promise<boolean>;
+    try {
+      result = maybeHandler ? maybeHandler() : true;
+    } catch {
+      result = false;
+    }
     Promise.resolve(result)
       .then((shouldContinue) => {
         if (shouldContinue === false) {
           return;
         }
+        if (currentStep.id === "transfer" && runStatus === "completed" && runId) {
+          const confirmed = window.confirm(
+            t("transfer.confirmArchive", {
+              defaultValue: "Der Lauf wird archiviert und alle Schritte werden geleert. Möchtest du fortfahren?"
+            })
+          );
+          if (!confirmed) {
+            return;
+          }
+          archiveRun(runId)
+            .catch(() => {})
+            .finally(() => {
+              resetFlow();
+              resetWorkspace().finally(() => {
+                navigate("/", { replace: true });
+              });
+            });
+          return;
+        }
         const nextStep = stepDefinitions[currentStepIndex + 1];
-        navigate(nextStep.path);
+        if (nextStep) {
+          navigate(nextStep.path);
+        }
       })
       .catch((error) => {
         // eslint-disable-next-line no-console
@@ -164,6 +218,12 @@ const AppShell: React.FC = () => {
                   <StepTabs
                     currentStepId={currentStep.id}
                     steps={stepDefinitions}
+                    isStepDisabled={(_, index) => {
+                      if (index === currentStepIndex) return false;
+                      if (!runId) return true;
+                      if (isRunning) return true;
+                      return index > maxStepIndex;
+                    }}
                     onStepChange={(step) => {
                       nextHandlerRef.current = null;
                       navigate(step.path);
@@ -192,6 +252,8 @@ const AppShell: React.FC = () => {
             isLastStep={isLastStep}
             isNextDisabled={isNextDisabled}
             isCancelDisabled={isCancelling}
+            isBackDisabled={isBackDisabled}
+            nextLabelOverride={nextLabelOverride}
             onBack={handleBack}
             onNext={handleNext}
             onCancel={handleCancel}

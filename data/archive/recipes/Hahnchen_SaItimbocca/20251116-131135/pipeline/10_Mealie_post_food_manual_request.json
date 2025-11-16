@@ -1,0 +1,21 @@
+{
+  "name": "Salat-Mayonnaise",
+  "payload": {
+    "name": "Salat-Mayonnaise",
+    "pluralName": "Salat-Mayonnaise",
+    "extras": {},
+    "labelId": "36be9b8c-4dd6-4f59-abc0-4715a742566d",
+    "aliases": [
+      {
+        "name": "salat-mayonnaise"
+      },
+      {
+        "name": "salat mayonnaise"
+      },
+      {
+        "name": "salatmayonnaise"
+      }
+    ],
+    "householdsWithIngredientFood": []
+  }
+}

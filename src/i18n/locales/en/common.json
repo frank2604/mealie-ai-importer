@@ -275,7 +275,7 @@
   },
   "transfer": {
     "logTitle": "Transfer Log",
-    "archive": "Archive log",
+    "archive": "Archive run",
     "summary": "Live log of everything sent to Mealie. Archive the log after a successful transfer.",
     "recipeLabel": "Recipe: {{recipeName}}",
     "runIdLabel": "Run ID: {{runId}}",
@@ -291,8 +291,10 @@
     },
     "actions": {
       "start": "Start transfer",
-      "retry": "Restart transfer"
-    }
+      "retry": "Restart transfer",
+      "newImport": "Start new import"
+    },
+    "confirmArchive": "The run will be archived and all steps cleared. Do you want to continue?"
   },
   "settings": {
     "title": "Settings",

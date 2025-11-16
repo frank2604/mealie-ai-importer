@@ -1,0 +1,15 @@
+{
+  "name": "Zucker",
+  "payload": {
+    "name": "Zucker",
+    "pluralName": "Zucker",
+    "extras": {},
+    "labelId": "5c0671c9-16ee-40fb-b721-0401e9b2267f",
+    "aliases": [
+      {
+        "name": "zucker"
+      }
+    ],
+    "householdsWithIngredientFood": []
+  }
+}

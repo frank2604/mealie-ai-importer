@@ -1,16 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ArrowPathIcon, ArrowDownTrayIcon } from "@heroicons/react/24/outline";
+import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { LogViewer } from "../components/LogViewer";
 import { layoutConfig } from "../../config/layout.config";
 import { useImportFlow, type ImportStatus } from "../context/ImportFlowContext";
 import { useStepNavigation } from "../App";
-import { fetchRunLogs, fetchRunStatus, mapApiLogEntries, startTransfer } from "../api/imports";
+import { archiveRun, fetchRunLogs, fetchRunStatus, mapApiLogEntries, startTransfer, resetWorkspace } from "../api/imports";
 
 export const Step4Transfer: React.FC = () => {
   const { t } = useTranslation();
-  const { setNextHandler, setNextDisabled } = useStepNavigation();
+  const { setNextHandler, setNextDisabled, setNextLabel } = useStepNavigation();
+  const navigate = useNavigate();
   const {
     runId,
     recipeName,
@@ -22,21 +24,80 @@ export const Step4Transfer: React.FC = () => {
     setError,
     setStatus,
     resetTransferLogs,
-    setRecipeNameValue
+    setRecipeNameValue,
+    reset: resetFlow,
+    setRunId
   } = useImportFlow();
   const [isPolling, setIsPolling] = useState(false);
   const [isStartingTransfer, setIsStartingTransfer] = useState(false);
+  const [isArchiving, setIsArchiving] = useState(false);
   const transferRequestedRef = useRef(false);
 
   const logEntries = useMemo(() => transferLogs, [transferLogs]);
 
+  const archiveAndReset = useCallback(
+    async (navigateHome: boolean) => {
+      if (!runId) {
+        return;
+      }
+      setIsArchiving(true);
+      try {
+        setError(null);
+        await archiveRun(runId);
+        resetTransferLogs();
+        resetFlow();
+        setRunId(null);
+        setStatus("idle");
+        try {
+          await resetWorkspace();
+        } catch {
+          // ignore reset errors
+        }
+        if (navigateHome) {
+          navigate("/", { replace: true });
+        }
+      } catch (archiveError) {
+        const message = archiveError instanceof Error ? archiveError.message : String(archiveError);
+        setError(message);
+      } finally {
+        setIsArchiving(false);
+      }
+    },
+    [navigate, resetFlow, resetTransferLogs, runId, setError, setRunId, setStatus]
+  );
+
+  const confirmAndArchive = useCallback(
+    async (navigateHome: boolean) => {
+      const confirmed = window.confirm(
+        t("transfer.confirmArchive", {
+          defaultValue: "Der Lauf wird archiviert und alle Schritte werden geleert. Möchtest du fortfahren?"
+        })
+      );
+      if (!confirmed) {
+        return;
+      }
+      await archiveAndReset(navigateHome);
+    },
+    [archiveAndReset, t]
+  );
+
   useEffect(() => {
-    setNextHandler(null);
-    setNextDisabled(true);
+    setNextHandler(() => async () => {
+      if (!runId || status !== "completed") {
+        navigate("/", { replace: true });
+        return false;
+      }
+      await confirmAndArchive(true);
+      return true;
+    });
+    setNextLabel(t("transfer.actions.newImport"));
+    setNextDisabled(status !== "completed" || !runId || isArchiving);
     return () => {
       setNextDisabled(false);
+      setNextLabel(null);
+      setNextHandler(null);
     };
-  }, [setNextDisabled, setNextHandler]);
+  }, [archiveAndReset, navigate, runId, setNextDisabled, setNextHandler, setNextLabel, status, t, isArchiving]);
 
   useEffect(() => {
     transferRequestedRef.current = false;
@@ -165,8 +226,6 @@ export const Step4Transfer: React.FC = () => {
   const showActivityBar = status === "transferring" || status === "starting";
 
   const helperText = !runId ? t("transfer.status.noRun") : isPolling ? t("transfer.status.polling") : undefined;
-  const canStartTransfer = Boolean(runId) && !isStartingTransfer && status !== "transferring" && status !== "completed";
-  const startButtonLabel = status === "failed" ? t("transfer.actions.retry") : t("transfer.actions.start");
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -210,42 +269,7 @@ export const Step4Transfer: React.FC = () => {
                 </div>
               ) : null}
             </section>
-            <div className="mt-auto">
-              {status === "completed" ? (
-                <button
-                  type="button"
-                  className={clsx(
-                    "focus-ring inline-flex w-full items-center justify-center border border-border bg-panel text-sm font-semibold text-text hover:border-primary/60 hover:text-primary",
-                    layoutConfig.spacing.item.gap,
-                    layoutConfig.spacing.button.default.x,
-                    layoutConfig.spacing.button.default.y,
-                    layoutConfig.borderRadius.small
-                  )}
-                >
-                  <ArrowDownTrayIcon className="h-4 w-4" aria-hidden="true" />
-                  {t("transfer.archive")}
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => {
-                    transferRequestedRef.current = false;
-                    void triggerTransfer();
-                  }}
-                  disabled={!canStartTransfer}
-                  className={clsx(
-                    "focus-ring inline-flex w-full items-center justify-center border border-border bg-panel text-sm font-semibold text-text hover:border-primary/60 hover:text-primary disabled:cursor-not-allowed disabled:opacity-50",
-                    layoutConfig.spacing.item.gap,
-                    layoutConfig.spacing.button.default.x,
-                    layoutConfig.spacing.button.default.y,
-                    layoutConfig.borderRadius.small
-                  )}
-                >
-                  <ArrowPathIcon className={clsx("h-4 w-4", isStartingTransfer && "animate-spin")} aria-hidden="true" />
-                  {startButtonLabel}
-                </button>
-              )}
-            </div>
+            {/* Footer actions removed from left column; archive via footer button */}
           </aside>
           <section
             className={clsx(

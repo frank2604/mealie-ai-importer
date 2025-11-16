@@ -1454,6 +1454,18 @@ async def get_run_status(run_id: str) -> RunStatusResponse:
     )
 
 
+@app.post("/api/imports/{run_id}/archive", response_model=ResetWorkspaceResponse)
+async def archive_run(run_id: str) -> ResetWorkspaceResponse:
+    config = _load_app_config()
+    workspace = _build_workspace(config)
+    run_info = workspace.load_run_info()
+    if not run_info or run_info.run_id != run_id:
+        raise HTTPException(status_code=404, detail="Importlauf nicht gefunden oder bereits archiviert.")
+    workspace.archive_current_run(run_info)
+    with RUN_STATE_LOCK:
+        ACTIVE_RUNS.pop(run_id, None)
+    return ResetWorkspaceResponse(status="archived")
+
 @app.get("/api/imports/{run_id}/logs", response_model=LogResponse)
 async def get_run_logs(run_id: str, after: int = 0, phase: Optional[str] = None) -> LogResponse:
     state = _read_run_state(run_id)

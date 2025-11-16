@@ -32,6 +32,15 @@ module.exports = {
       },
       boxShadow: {
         focus: "0 0 0 3px var(--primary)"
+      },
+      keyframes: {
+        indeterminate: {
+          "0%": { transform: "translateX(-120%)" },
+          "100%": { transform: "translateX(220%)" }
+        }
+      },
+      animation: {
+        indeterminate: "indeterminate 1.6s linear infinite"
       }
     }
   },

@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field, HttpUrl, validator, ConfigDict
 
 
 class Ingredient(BaseModel):
+    id: Optional[str] = None
     name: str
     quantity: Optional[float] = None
     unit: Optional[str] = None
@@ -19,6 +20,7 @@ class Ingredient(BaseModel):
     unit_original_name: Optional[str] = Field(default=None, alias="unitOriginalName")
     food_new_id: Optional[str] = Field(default=None, alias="foodNewId")
     unit_new_id: Optional[str] = Field(default=None, alias="unitNewId")
+    reference_id: Optional[str] = Field(default=None, alias="referenceId")
     model_config = ConfigDict(populate_by_name=True)
 
     @validator("name")
@@ -34,9 +36,12 @@ class IngredientSection(BaseModel):
 
 
 class InstructionStep(BaseModel):
+    id: Optional[str] = None
     order: int
     instruction: str
     timer_minutes: Optional[int] = None
+    ingredient_ids: List[str] = Field(default_factory=list, alias="ingredientIds")
+    ingredient_reference_ids: List[str] = Field(default_factory=list, alias="ingredientReferenceIds")
 
     @validator("instruction")
     def instruction_must_not_be_blank(cls, value: str) -> str:  # noqa: N805

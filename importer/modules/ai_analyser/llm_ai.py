@@ -5,8 +5,10 @@ import json
 import logging
 import time
 from pathlib import Path
-from typing import Optional
-from ..context import PipelineContext, build_recipe_data_payload
+from typing import Any, Dict, List, Optional
+
+import httpx
+from ..context import PipelineContext, build_recipe_data_payload, auto_link_ingredients_to_instructions
 from ...config import LlmConfig
 from ...image_utils import prepare_image_asset, select_best_image
 from ...llm_parser import LlmParsingError, OpenAiClient, parse_with_llm
@@ -50,7 +52,21 @@ class AiAnalyserModule:
         recorder = context.pipeline_recorder
         requested_output = context.recipe_output_path
         raw_payload = recipe.dict(by_alias=True, exclude_none=True)
+        # Build RecipeData payload and pre-fill instruction->ingredient links (LLM first, fallback heuristics).
         recipe_payload = build_recipe_data_payload(recipe)
+        linked_payload = self._link_ingredients_with_llm(recipe_payload)
+        if linked_payload:
+            logger.info("LLM ingredient linking succeeded")
+        else:
+            logger.info("LLM ingredient linking missing/failed, using heuristic fallback")
+        recipe_payload = linked_payload or auto_link_ingredients_to_instructions(recipe_payload)
+        # Keep a normalized recipe model for downstream modules
+        try:
+            from ..context import normalize_recipe_payload
+            normalized = normalize_recipe_payload(recipe_payload)
+            context.recipe = Recipe.parse_obj(normalized)
+        except Exception as exc:  # pragma: no cover - defensive fallback
+            logger.warning("Could not hydrate linked payload back into Recipe model: %s", exc)
         raw_payload_text = json.dumps(raw_payload, ensure_ascii=False, indent=2)
         recipe_payload_text = json.dumps(recipe_payload, ensure_ascii=False, indent=2)
         raw_path: Optional[Path] = None
@@ -59,7 +75,7 @@ class AiAnalyserModule:
         if recorder:
             raw_path = recorder.write_json("RecipeRawData", raw_payload)
             recipe_path = recorder.write_json("RecipeData", recipe_payload)
-            context.save_recipe(recipe, destination=recipe_path, overwrite=False)
+            context.recipe_data_path = recipe_path
         else:
             raw_path = context.output_dir / "RecipeRawData.json"
             raw_path.parent.mkdir(parents=True, exist_ok=True)
@@ -69,7 +85,7 @@ class AiAnalyserModule:
             recipe_target.parent.mkdir(parents=True, exist_ok=True)
             recipe_target.write_text(recipe_payload_text, encoding="utf-8")
             recipe_path = recipe_target
-            context.save_recipe(recipe, destination=recipe_path, overwrite=False)
+            context.recipe_data_path = recipe_path
 
         final_output = recipe_path
         if requested_output and recipe_path and requested_output != recipe_path:
@@ -87,6 +103,105 @@ class AiAnalyserModule:
             context.recipe_output_path = final_output
             if final_output != recipe_path:
                 logger.info("Copied RecipeData.json to %s", final_output)
+
+    def _link_ingredients_with_llm(self, recipe_payload: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """Ask the LLM to map ingredients to instructions; return updated payload or None on failure."""
+        if not self._llm_config.api_key:
+            return None
+        try:
+            ingredients: List[Dict[str, str]] = []
+            for section in recipe_payload.get("ingredients") or []:
+                for item in section.get("ingredients") or []:
+                    ing_id = item.get("id")
+                    food = item.get("food") or {}
+                    if not ing_id:
+                        continue
+                    candidates = [
+                        food.get("name"),
+                        food.get("originalName"),
+                        item.get("name"),
+                    ]
+                    name = next((c for c in candidates if isinstance(c, str) and c.strip()), "")
+                    ingredients.append({"id": ing_id, "name": name})
+            steps: List[Dict[str, str]] = []
+            for section in recipe_payload.get("instructions") or []:
+                for step in section.get("steps") or []:
+                    step_id = step.get("id")
+                    if not step_id:
+                        continue
+                    steps.append(
+                        {
+                            "id": step_id,
+                            "text": step.get("instruction") or "",
+                        }
+                    )
+            if not ingredients or not steps:
+                return None
+
+            system_prompt = (
+                "Du ordnest Zutaten den Zubereitungsschritten zu. "
+                "Gib JSON mit Feld 'links': [{stepId, ingredientIds[]}]. "
+                "Nutze nur die gelieferten IDs; keine Freitext-Beschreibungen. "
+                "Lasse ein Feld leer, wenn nichts passt."
+            )
+            user_prompt = {
+                "ingredients": ingredients,
+                "steps": steps,
+            }
+            payload = {
+                "model": self._llm_config.model,
+                "response_format": {"type": "json_object"},
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": json.dumps(user_prompt, ensure_ascii=False)},
+                ],
+                "temperature": 0,
+            }
+            headers = {
+                "Authorization": f"Bearer {self._llm_config.api_key}",
+                "Content-Type": "application/json",
+            }
+            endpoint = f"{self._client.base_url}/chat/completions"
+            response = httpx.post(endpoint, headers=headers, json=payload, timeout=self._client.timeout)
+            response.raise_for_status()
+            data = response.json()
+            content = data.get("choices", [{}])[0].get("message", {}).get("content") or ""
+            if not content:
+                return None
+            parsed = json.loads(content)
+            links = parsed.get("links") if isinstance(parsed, dict) else None
+            if not isinstance(links, list):
+                return None
+            recipe = deepcopy(recipe_payload)
+            mapping: Dict[str, List[str]] = {}
+            for link in links:
+                if not isinstance(link, dict):
+                    continue
+                step_id = link.get("stepId")
+                ing_ids = link.get("ingredientIds") if isinstance(link.get("ingredientIds"), list) else []
+                if not step_id:
+                    continue
+                mapping[step_id] = [str(x) for x in ing_ids if isinstance(x, (str, int))]
+            if not mapping:
+                return None
+
+            matched_steps = 0
+            for section in recipe.get("instructions") or []:
+                for step in section.get("steps") or []:
+                    sid = step.get("id")
+                    if sid and sid in mapping:
+                        step["ingredientIds"] = mapping[sid]
+                        matched_steps += 1
+            logger.info(
+                "LLM ingredient linking: %d ingredients, %d steps, %d steps matched",
+                len(ingredients),
+                len(steps),
+                matched_steps,
+            )
+            return recipe
+        except Exception as exc:  # pragma: no cover - defensive
+            logger.warning("LLM ingredient linking failed, falling back to heuristics: %s", exc)
+            return None
 
     def _parse_recipe_with_retry(self, extraction: PdfExtractionResult, context: PipelineContext) -> Recipe:
         attempts = 5

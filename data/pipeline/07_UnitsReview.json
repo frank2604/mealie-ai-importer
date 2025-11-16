@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2025-11-16T15:34:08.999466",
+  "generatedAt": "2025-11-16T18:56:39.366487",
   "units": [
     {
       "key": "0:0",
@@ -138,92 +138,7 @@
       }
     },
     {
-      "key": "0:8",
-      "newId": null,
-      "suggestion": null,
-      "userDecision": {
-        "action": "auto",
-        "useUnitId": null,
-        "create": {
-          "name": null,
-          "pluralName": null,
-          "abbreviation": null,
-          "pluralAbbreviation": null,
-          "useAbbreviation": false
-        },
-        "notes": ""
-      }
-    },
-    {
       "key": "0:9",
-      "newId": null,
-      "suggestion": null,
-      "userDecision": {
-        "action": "auto",
-        "useUnitId": null,
-        "create": {
-          "name": null,
-          "pluralName": null,
-          "abbreviation": null,
-          "pluralAbbreviation": null,
-          "useAbbreviation": false
-        },
-        "notes": ""
-      }
-    },
-    {
-      "key": "0:10",
-      "newId": null,
-      "suggestion": null,
-      "userDecision": {
-        "action": "auto",
-        "useUnitId": null,
-        "create": {
-          "name": null,
-          "pluralName": null,
-          "abbreviation": null,
-          "pluralAbbreviation": null,
-          "useAbbreviation": false
-        },
-        "notes": ""
-      }
-    },
-    {
-      "key": "0:11",
-      "newId": null,
-      "suggestion": null,
-      "userDecision": {
-        "action": "auto",
-        "useUnitId": null,
-        "create": {
-          "name": null,
-          "pluralName": null,
-          "abbreviation": null,
-          "pluralAbbreviation": null,
-          "useAbbreviation": false
-        },
-        "notes": ""
-      }
-    },
-    {
-      "key": "0:12",
-      "newId": null,
-      "suggestion": null,
-      "userDecision": {
-        "action": "auto",
-        "useUnitId": null,
-        "create": {
-          "name": null,
-          "pluralName": null,
-          "abbreviation": null,
-          "pluralAbbreviation": null,
-          "useAbbreviation": false
-        },
-        "notes": ""
-      }
-    },
-    {
-      "key": "0:13",
       "newId": null,
       "suggestion": null,
       "userDecision": {

@@ -1,184 +1,98 @@
 {
-  "title": "Asia-Gemüse-Suppe mit Lachs",
-  "description": "Aromatische, leichte Asia-Gemüse-Suppe mit zartem Lachs, Ingwer und frischem Koriander. Die Suppe verbindet würzige Aromen mit knackigem Gemüse und ist in kurzer Zeit zubereitet.",
-  "recipeServings": 2.0,
-  "recipeYieldQuantity": 2.0,
-  "recipeYield": "2 Portionen",
-  "totalTime": "30 Min.",
-  "prepTime": "10 Min.",
+  "title": "Hähnchenbrust im Schinkenmantel mit Champignon-Sahne-Soße",
+  "description": "Zarte Hähnchenbrustfilets werden mit Salbeiblättern und Parma-Schinken umwickelt und in einer cremigen Champignon-Sahne-Soße im Ofen fertig gegart. Die aromatische Kombination aus Wermut, Sahne und frischen Pilzen sorgt für ein vollmundiges Geschmackserlebnis. Dazu passen Pellkartoffeln und ein grüner Salat.",
+  "recipeServings": 4.0,
+  "recipeYieldQuantity": 4.0,
+  "recipeYield": "4 Portionen",
+  "totalTime": "40 Min.",
+  "prepTime": "20 Min.",
   "performTime": "20 Min.",
   "ingredients": [
     {
       "name": null,
       "ingredients": [
         {
-          "quantity": 30.0,
-          "note": "geschält und gewürfelt",
-          "food": {
-            "name": "Ingwer",
-            "originalName": "Ingwer",
-            "badgeId": "new",
-            "newId": "food-new-0-0"
-          },
-          "unit": {
-            "name": "g",
-            "originalName": "g",
-            "mealieUnitId": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
-            "badgeId": "found_word"
-          }
-        },
-        {
-          "quantity": 1.0,
-          "note": "geschält und gewürfelt",
-          "food": {
-            "name": "Knoblauch",
-            "originalName": "Knoblauch",
-            "mealieFoodId": "b233c252-c1ac-4ae8-8c87-6e73a2f56534",
-            "badgeId": "found_word"
-          },
-          "unit": {
-            "name": "Zehe",
-            "originalName": "Zehe",
-            "mealieUnitId": "b737ead9-f0b1-406d-8f33-d2ab44fd3a85",
-            "badgeId": "found_word"
-          }
-        },
-        {
-          "quantity": 0.5,
-          "note": "entkernt und gewaschen",
-          "food": {
-            "name": "rote Chilischote",
-            "originalName": "rote Chilischote",
-            "badgeId": "new",
-            "newId": "food-new-0-2"
-          },
-          "unit": {
-            "name": "Stück",
-            "originalName": "Stück",
-            "mealieUnitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
-            "badgeId": "found_word"
-          }
-        },
-        {
-          "quantity": 1.0,
-          "note": "geputzt, geschält und in ca. 0.5 cm dicke Spalten geschnitten",
-          "food": {
-            "name": "Kohlrabi",
-            "originalName": "Kohlrabi",
-            "badgeId": "new",
-            "newId": "food-new-0-3"
-          },
-          "unit": {
-            "name": "Stück",
-            "originalName": "Stück",
-            "mealieUnitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
-            "badgeId": "found_word"
-          }
-        },
-        {
-          "quantity": 150.0,
-          "note": "geputzt, geschält und schräg in ca. 0.5 cm dicke Scheiben geschnitten",
-          "food": {
-            "name": "Möhren",
-            "originalName": "Möhren",
-            "mealieFoodId": "a89d7c25-26dc-4258-9891-d5718371fc6e",
-            "badgeId": "found_word"
-          },
-          "unit": {
-            "name": "g",
-            "originalName": "g",
-            "mealieUnitId": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
-            "badgeId": "found_word"
-          }
-        },
-        {
-          "quantity": 100.0,
-          "note": "Stiele entfernt, je nach Größe halbiert oder geviertelt",
-          "food": {
-            "name": "Shiitake-Pilze",
-            "originalName": "Shiitake-Pilze",
-            "badgeId": "new",
-            "newId": "food-new-0-5"
-          },
-          "unit": {
-            "name": "g",
-            "originalName": "g",
-            "mealieUnitId": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
-            "badgeId": "found_word"
-          }
-        },
-        {
-          "quantity": 100.0,
-          "note": "in ca. 2 cm große Würfel geschnitten; alternativ anderer Fisch",
-          "food": {
-            "name": "Lachs",
-            "originalName": "Lachs",
-            "badgeId": "new",
-            "newId": "food-new-0-6"
-          },
-          "unit": {
-            "name": "g",
-            "originalName": "g",
-            "mealieUnitId": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
-            "badgeId": "found_word"
-          }
-        },
-        {
+          "id": "ing-0-0",
           "quantity": 4.0,
-          "note": "Blätter abzupfen und frisch verwenden",
+          "note": "pfeffern",
+          "referenceId": null,
           "food": {
-            "name": "Koriander",
-            "originalName": "Koriander",
-            "mealieFoodId": "19273c85-bfe2-4188-9145-57f872582970",
+            "name": "Hähnchenbrustfilets",
+            "originalName": "Hähnchenbrustfilets",
+            "mealieFoodId": "56d8f876-0110-410f-951e-7a4b365437ce",
             "badgeId": "found_word"
           },
           "unit": {
-            "name": "Stiele",
-            "originalName": "Stiele",
+            "name": "Stück",
+            "originalName": "Stück",
             "mealieUnitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
-            "badgeId": "found_ai"
-          }
-        },
-        {
-          "quantity": 1.0,
-          "note": null,
-          "food": {
-            "name": "Kokosöl",
-            "originalName": "Kokosöl",
-            "badgeId": "new",
-            "newId": "food-new-0-8"
-          },
-          "unit": {
-            "name": "Esslöffel",
-            "originalName": "Esslöffel",
-            "mealieUnitId": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
             "badgeId": "found_word"
           }
         },
         {
-          "quantity": 2.0,
-          "note": null,
+          "id": "ing-0-1",
+          "quantity": 6.0,
+          "note": "zum Umwickeln",
+          "referenceId": null,
           "food": {
-            "name": "geröstetes Sesamöl",
-            "originalName": "geröstetes Sesamöl",
-            "badgeId": "new",
-            "newId": "food-new-0-9"
+            "name": "Parma-Schinken",
+            "originalName": "Parma-Schinken",
+            "mealieFoodId": "2092d72d-0375-4ce9-b524-830a98107cf4",
+            "badgeId": "found_word"
           },
           "unit": {
-            "name": "Teelöffel",
-            "originalName": "Teelöffel",
-            "mealieUnitId": "190e0f06-fae8-4d6f-9009-a3c7b214434e",
+            "name": "Scheiben",
+            "originalName": "Scheiben",
+            "mealieUnitId": "2c3e0c93-592c-4759-bb3e-685a247b49b8",
             "badgeId": "found_word"
           }
         },
         {
-          "quantity": 750.0,
-          "note": null,
+          "id": "ing-0-2",
+          "quantity": 500.0,
+          "note": "geputzt, geviertelt",
+          "referenceId": null,
           "food": {
-            "name": "glutenfreie Gemüsebrühe",
-            "originalName": "glutenfreie Gemüsebrühe",
-            "badgeId": "new",
-            "newId": "food-new-0-10"
+            "name": "Champignons",
+            "originalName": "Champignons",
+            "mealieFoodId": "60554611-f601-4d7f-b7dc-ce21c3462067",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": "g",
+            "originalName": "g",
+            "mealieUnitId": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "id": "ing-0-3",
+          "quantity": 3.0,
+          "note": "geschält und klein gehackt",
+          "referenceId": null,
+          "food": {
+            "name": "rote Zwiebeln",
+            "originalName": "rote Zwiebeln",
+            "mealieFoodId": "faec60df-abda-4f65-bed0-b81d47121a55",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": "Stück",
+            "originalName": "Stück",
+            "mealieUnitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "id": "ing-0-4",
+          "quantity": 100.0,
+          "note": null,
+          "referenceId": null,
+          "food": {
+            "name": "trockener Wermut",
+            "originalName": "trockener Wermut",
+            "mealieFoodId": "cbcaa29b-a3b7-4615-89a7-a2691fef9e3f",
+            "badgeId": "found_word"
           },
           "unit": {
             "name": "ml",
@@ -188,51 +102,123 @@
           }
         },
         {
-          "quantity": 4.0,
-          "note": "halb für das Kochwasser, halb zum Abschmecken verwenden",
-          "food": {
-            "name": "Sojasoße",
-            "originalName": "Sojasoße",
-            "mealieFoodId": "b1437ce2-420e-4af6-94d2-0e291d5c3c44",
-            "badgeId": "found_ai"
-          },
-          "unit": {
-            "name": "Esslöffel",
-            "originalName": "Esslöffel",
-            "mealieUnitId": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
-            "badgeId": "found_word"
-          }
-        },
-        {
-          "quantity": 2.0,
+          "id": "ing-0-5",
+          "quantity": 200.0,
           "note": null,
+          "referenceId": null,
           "food": {
-            "name": "Limettensaft",
-            "originalName": "Limettensaft",
-            "badgeId": "new",
-            "newId": "food-new-0-12"
+            "name": "süße Sahne",
+            "originalName": "süße Sahne",
+            "mealieFoodId": "ce7b4e53-b248-490e-953f-c4548bfb941a",
+            "badgeId": "found_word"
           },
           "unit": {
-            "name": "Teelöffel",
-            "originalName": "Teelöffel",
-            "mealieUnitId": "190e0f06-fae8-4d6f-9009-a3c7b214434e",
+            "name": "ml",
+            "originalName": "ml",
+            "mealieUnitId": "b558643c-bb92-479d-97ea-1337edc49d3b",
             "badgeId": "found_word"
           }
         },
         {
+          "id": "ing-0-6",
           "quantity": 1.0,
-          "note": "optional zum Garnieren",
+          "note": "zum Bestäuben der Filets",
+          "referenceId": null,
           "food": {
-            "name": "geröstete Sesamsamen",
-            "originalName": "geröstete Sesamsamen",
-            "badgeId": "new",
-            "newId": "food-new-0-13"
+            "name": "Mehl",
+            "originalName": "Mehl",
+            "mealieFoodId": "49ad74f8-8303-4fa3-8e31-0e5b0d55e12d",
+            "badgeId": "found_word"
           },
           "unit": {
-            "name": "Esslöffel",
-            "originalName": "Esslöffel",
+            "name": "EL",
+            "originalName": "EL",
             "mealieUnitId": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
             "badgeId": "found_word"
+          }
+        },
+        {
+          "id": "ing-0-7",
+          "quantity": 1.0,
+          "note": null,
+          "referenceId": null,
+          "food": {
+            "name": "heller Soßenbinder",
+            "originalName": "heller Soßenbinder",
+            "mealieFoodId": "16018665-3023-4213-aeb2-c8445dd699b6",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": "EL",
+            "originalName": "EL",
+            "mealieUnitId": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "id": "ing-0-8",
+          "quantity": null,
+          "note": "zum Anbraten",
+          "referenceId": null,
+          "food": {
+            "name": "Fett zum Braten",
+            "originalName": "Fett zum Braten",
+            "mealieFoodId": "1e9f9678-213c-477d-8c3a-7c5a7f365f32",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": null,
+            "originalName": null
+          }
+        },
+        {
+          "id": "ing-0-9",
+          "quantity": 6.0,
+          "note": "jeweils ein Blatt pro Filet",
+          "referenceId": null,
+          "food": {
+            "name": "Salbeiblätter",
+            "originalName": "Salbeiblätter",
+            "mealieFoodId": "31eedd6a-c57b-4979-8a9d-b7ff71663acc",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": "Blätter",
+            "originalName": "Blätter",
+            "mealieUnitId": "14bd13df-83f2-44e5-a326-abc2fb38c09b",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "id": "ing-0-10",
+          "quantity": null,
+          "note": "nach Geschmack",
+          "referenceId": null,
+          "food": {
+            "name": "Salz",
+            "originalName": "Salz",
+            "mealieFoodId": "aeb19e8c-cc64-4a19-a216-182b40e0852e",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": null,
+            "originalName": null
+          }
+        },
+        {
+          "id": "ing-0-11",
+          "quantity": null,
+          "note": "nach Geschmack",
+          "referenceId": null,
+          "food": {
+            "name": "Pfeffer",
+            "originalName": "Pfeffer",
+            "mealieFoodId": "baec189d-c87d-4e04-b972-db79b960e84e",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": null,
+            "originalName": null
           }
         }
       ]
@@ -240,61 +226,96 @@
   ],
   "instructions": [
     {
-      "name": "Zubereitung",
+      "name": null,
       "steps": [
         {
+          "id": "step-0-0",
           "order": 1,
-          "instruction": "Ingwer und Knoblauch schälen. Chili entkernen und waschen. Alles in kleine Würfel schneiden. Kohlrabi putzen, schälen, halbieren und in etwa 0.5 cm dicke Spalten schneiden. Möhren putzen, schälen und schräg in etwa 0.5 cm dicke Scheiben schneiden. Pilze gegebenenfalls halbieren oder vierteln. Fisch waschen und in circa 2 cm große Würfel schneiden. Koriander waschen, trocken tupfen und die Blätter abzupfen.",
-          "timer_minutes": null
+          "instruction": "Die Hähnchenbrustfilets mit Pfeffer würzen. Jeweils ein Salbeiblatt auf jedes Filet legen und die Filets mit Parma-Schinken umwickeln.",
+          "timer_minutes": null,
+          "ingredientIds": [
+            "ing-0-0",
+            "ing-0-1",
+            "ing-0-11"
+          ],
+          "ingredientReferenceIds": []
         },
         {
+          "id": "step-0-1",
           "order": 2,
-          "instruction": "In einer Pfanne oder einem Topf Kokosöl und geröstetes Sesamöl bei mittlerer Hitze erhitzen und Ingwer, Knoblauch und Chili darin andünsten.",
-          "timer_minutes": 3
+          "instruction": "Fett in einer Pfanne erhitzen. Die Filets leicht mit Mehl bestäuben und rundherum anbraten, bis sie Farbe bekommen.",
+          "timer_minutes": null,
+          "ingredientIds": [
+            "ing-0-6"
+          ],
+          "ingredientReferenceIds": []
         },
         {
+          "id": "step-0-2",
           "order": 3,
-          "instruction": "Kohlrabi und Möhren dazugeben und kurz mitdünsten, bis das Gemüse leicht glasig ist.",
-          "timer_minutes": null
+          "instruction": "Die angebratenen Filets aus der Pfanne nehmen und in eine feuerfeste Form legen.",
+          "timer_minutes": null,
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
         },
         {
+          "id": "step-0-3",
           "order": 4,
-          "instruction": "Gemüsebrühe und die Hälfte der Sojasoße dazugeben, alles aufkochen lassen. Mit geschlossenem Deckel bei mittlerer Hitze etwa 7 Minuten garen, bis das Gemüse bissfest ist.",
-          "timer_minutes": 7
+          "instruction": "Zwiebeln schälen und klein hacken. Zwiebeln zusammen mit den geputzten und geviertelten Champignons in der Pfanne anbraten.",
+          "timer_minutes": null,
+          "ingredientIds": [
+            "ing-0-2"
+          ],
+          "ingredientReferenceIds": []
         },
         {
+          "id": "step-0-4",
           "order": 5,
-          "instruction": "Shiitake-Pilze und Fischwürfel in die Suppe geben, nochmals aufkochen und bei mittlerer Hitze etwa 4 bis 5 Minuten garen, bis der Fisch durch ist.",
-          "timer_minutes": 5
+          "instruction": "Mit Wermut ablöschen, etwas einkochen lassen und dann die süße Sahne angießen. Den hellen Soßenbinder einrühren, kurz aufkochen lassen und die Soße mit Salz und Pfeffer abschmecken.",
+          "timer_minutes": null,
+          "ingredientIds": [
+            "ing-0-5",
+            "ing-0-10",
+            "ing-0-11"
+          ],
+          "ingredientReferenceIds": []
         },
         {
+          "id": "step-0-5",
           "order": 6,
-          "instruction": "Mit der übrigen Sojasoße und Limettensaft würzen. Suppe sofort auf Suppenschalen verteilen, mit Korianderblättern bestreuen und nach Belieben mit gerösteten Sesamsamen garnieren.",
-          "timer_minutes": null
+          "instruction": "Die Soße über die Hähnchenfilets in der Form gießen und alles im vorgeheizten Backofen bei 200 °C etwa 20 Minuten garen lassen.",
+          "timer_minutes": 20,
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "id": "step-0-6",
+          "order": 7,
+          "instruction": "Die Hähnchenfilets aus dem Ofen nehmen und servieren. Dazu passen Pellkartoffeln und grüner Salat.",
+          "timer_minutes": null,
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
         }
       ]
     }
   ],
-  "notes": "Nährwerte pro Portion: circa 340 kcal, 19 g Kohlenhydrate, 23 g Fett, 16 g Eiweiß, 7 g Ballaststoffe. Achten Sie bei industriell verarbeiteten Zutaten auf Glutenfreiheit, wenn nötig.",
+  "notes": "Dazu passen Pellkartoffeln und grüner Salat. Die Garzeit kann je nach Ofen und Dicke der Filets variieren.",
   "image_path": "data/pipeline/02_RecipeImage.jpg",
   "image_url": null,
   "metadata": {
-    "source": "https://www.ndr.de/ratgeber/kochen/rezepte/Asia-Gemuese-Suppe-mit-Lachs,rezept3448.html",
+    "source": "data/uploads/87c8153f588a4bf3a8e27582a92d2b99.pdf",
     "categories": [
-      "Suppe",
-      "Fisch",
-      "Asiatisch",
       "Hauptgericht",
-      "Leicht"
+      "Geflügel"
     ],
-    "cuisine": "Asiatisch",
+    "cuisine": "deutsch",
     "tags": [
-      "Lachs",
-      "Glutenfrei",
-      "Schnell",
-      "Gesund",
-      "Ingwer",
-      "Koriander"
+      "Hähnchen",
+      "Champignons",
+      "Sahnesoße",
+      "Schinkenmantel",
+      "Salbei",
+      "Backofen"
     ],
     "mealie_categories": [],
     "mealie_tags": []

@@ -1,0 +1,76 @@
+{
+  "status": 200,
+  "body": {
+    "id": "f6b2ccef-b8ea-407a-995f-3438a120aaf5",
+    "userId": "48ff7261-817a-43a9-89de-63ee69dd4a3e",
+    "householdId": "68c99137-3b89-4a63-b504-97c353531455",
+    "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+    "name": "Hähnchenbrustfilets im Parma-Schinken mit Champignon-Sahnesoße",
+    "slug": "hahnchenbrustfilets-im-parma-schinken-mit-champignon-sahnesosse",
+    "image": null,
+    "recipeServings": 0.0,
+    "recipeYieldQuantity": 0.0,
+    "recipeYield": null,
+    "totalTime": null,
+    "prepTime": null,
+    "cookTime": null,
+    "performTime": null,
+    "description": "",
+    "recipeCategory": [],
+    "tags": [],
+    "tools": [],
+    "rating": null,
+    "orgURL": null,
+    "dateAdded": "2025-11-16",
+    "dateUpdated": "2025-11-16T10:04:17.365518Z",
+    "createdAt": "2025-11-16T10:04:17.366393Z",
+    "updatedAt": "2025-11-16T10:04:17.366394Z",
+    "lastMade": null,
+    "recipeIngredient": [
+      {
+        "quantity": 0.0,
+        "unit": null,
+        "food": null,
+        "note": "1 Cup Flour",
+        "display": "1 Cup Flour",
+        "title": null,
+        "originalText": null,
+        "referenceId": "65d7f2f0-7a7b-46a3-806c-b455d505dd7d"
+      }
+    ],
+    "recipeInstructions": [
+      {
+        "id": "f8cc5676-5f11-4ae5-9111-98e7b71b59ae",
+        "title": "",
+        "summary": "",
+        "text": "Recipe steps as well as other fields in the recipe page support markdown syntax.\n\n**Add a link**\n\n[My Link](https://demo.mealie.io)\n",
+        "ingredientReferences": []
+      }
+    ],
+    "nutrition": {
+      "calories": null,
+      "carbohydrateContent": null,
+      "cholesterolContent": null,
+      "fatContent": null,
+      "fiberContent": null,
+      "proteinContent": null,
+      "saturatedFatContent": null,
+      "sodiumContent": null,
+      "sugarContent": null,
+      "transFatContent": null,
+      "unsaturatedFatContent": null
+    },
+    "settings": {
+      "public": false,
+      "showNutrition": false,
+      "showAssets": false,
+      "landscapeView": false,
+      "disableComments": false,
+      "locked": false
+    },
+    "assets": [],
+    "notes": [],
+    "extras": {},
+    "comments": []
+  }
+}

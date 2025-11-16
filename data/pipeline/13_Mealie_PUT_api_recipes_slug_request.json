@@ -1,0 +1,234 @@
+{
+  "id": "cf1b96e4-c93a-4b8d-b638-b300c2b38b1c",
+  "userId": "48ff7261-817a-43a9-89de-63ee69dd4a3e",
+  "householdId": "68c99137-3b89-4a63-b504-97c353531455",
+  "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+  "name": "Hähnchenbrust in Wasabi-Sauce (1)",
+  "slug": "hahnchenbrust-in-wasabi-sauce-1",
+  "image": null,
+  "recipeServings": 4.0,
+  "recipeYieldQuantity": 4.0,
+  "recipeYield": "4 Portionen",
+  "totalTime": "30 Min.",
+  "prepTime": "10 Min.",
+  "cookTime": null,
+  "performTime": "20 Min.",
+  "description": "Zarte Hähnchenbrustfilets werden kurz angebraten und in einer aromatischen Orangen-Wasabi-Soße gezogen. Die Kombination aus frischer Orange, scharfem Wasabi und Sherry ergibt eine feine Balance aus Süße und Schärfe. Servieren Sie das Gericht mit Basmatireis und gehacktem Koriander.",
+  "recipeCategory": [
+    {
+      "id": "c8b08673-ba91-4d4e-899b-77b9e9a4e733",
+      "name": "Hauptgerichte – Fleisch 🥩",
+      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+      "slug": "hauptgerichte-fleisch"
+    }
+  ],
+  "tags": [
+    {
+      "id": "6b6c225a-f74e-4366-a61b-deb6afccdb3c",
+      "name": "Ernährung | High-Protein 💪",
+      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+      "slug": "ernahrung-high-protein"
+    },
+    {
+      "id": "934e7b20-c521-40c9-a09c-5bc9706f9542",
+      "name": "Form | Pfannengericht 🍳",
+      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+      "slug": "form-pfannengericht"
+    },
+    {
+      "id": "e2bbf7bb-c780-422d-a020-ef59b37daabc",
+      "name": "Gerät | Reiskocher 🍚",
+      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+      "slug": "gerat-reiskocher"
+    },
+    {
+      "id": "44190fcc-9dd0-4ad8-b122-afd5d4148060",
+      "name": "Hauptzutat | Reis 🍚",
+      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+      "slug": "hauptzutat-reis"
+    },
+    {
+      "id": "9e9364d5-650b-4a00-83d6-e9be8dbb13fc",
+      "name": "Küche | Fusion 🧪",
+      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+      "slug": "kuche-fusion"
+    },
+    {
+      "id": "62cf1ee1-75a7-4eeb-bfd7-bf1f7de26bf0",
+      "name": "Saison | Frühling 🌸",
+      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+      "slug": "saison-fruhling"
+    },
+    {
+      "id": "20529bfe-76e9-444e-984e-9be15e7a6eda",
+      "name": "Schärfe | Scharf 🔥",
+      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+      "slug": "scharfe-scharf"
+    },
+    {
+      "id": "539f721a-a8e8-4c15-a7b4-deefcfb27f3a",
+      "name": "Tageszeit | Dinner 🌙",
+      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+      "slug": "tageszeit-dinner"
+    },
+    {
+      "id": "de422906-bd1d-4fc3-852f-a5e7b105a6e2",
+      "name": "Technik | Pfanne 🍳",
+      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+      "slug": "technik-pfanne"
+    }
+  ],
+  "tools": [],
+  "rating": null,
+  "orgURL": "Journal für die Frau; datei: data/uploads/12d3f6e90f7e41d5a3ec280ffb36b5a8.pdf",
+  "dateAdded": "2025-11-16",
+  "dateUpdated": "2025-11-16T15:22:08.979311Z",
+  "createdAt": "2025-11-16T15:22:08.980641Z",
+  "updatedAt": "2025-11-16T15:22:08.980642Z",
+  "lastMade": null,
+  "recipeIngredient": [
+    {
+      "quantity": 4.0,
+      "note": "à 100 g",
+      "unit": {
+        "id": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+        "name": "Stück"
+      },
+      "food": {
+        "id": "56d8f876-0110-410f-951e-7a4b365437ce",
+        "name": "Hähnchenbrustfilet"
+      }
+    },
+    {
+      "quantity": 1.0,
+      "note": "ca. 200 g, in feine Ringe schneiden",
+      "unit": {
+        "id": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+        "name": "Stück"
+      },
+      "food": {
+        "id": "157d1764-f24d-4c42-9cf7-9414528acad1",
+        "name": "Porree"
+      }
+    },
+    {
+      "quantity": 1.0,
+      "note": "abgezogen und gewürfelt",
+      "unit": {
+        "id": "b737ead9-f0b1-406d-8f33-d2ab44fd3a85",
+        "name": "Zehe"
+      },
+      "food": {
+        "id": "b233c252-c1ac-4ae8-8c87-6e73a2f56534",
+        "name": "Knoblauch"
+      }
+    },
+    {
+      "quantity": 2.0,
+      "note": "dick schälen, weiße Teile entfernen, in einzelne Filets teilen",
+      "unit": {
+        "id": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+        "name": "Stück"
+      },
+      "food": {
+        "id": "e7e9520d-fe1e-4191-af2a-a23f2801aac8",
+        "name": "Orange"
+      }
+    },
+    {
+      "quantity": 1.0,
+      "note": "zum Braten",
+      "unit": {
+        "id": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+        "name": "Esslöffel"
+      },
+      "food": {
+        "id": "b5851479-b300-4250-a941-f3b3aa2f2a60",
+        "name": "Butterschmalz"
+      }
+    },
+    {
+      "quantity": 200.0,
+      "unit": {
+        "id": "b558643c-bb92-479d-97ea-1337edc49d3b",
+        "name": "Milliliter"
+      },
+      "food": {
+        "id": "f1874357-d4fb-4461-bc74-65622071ed2d",
+        "name": "Orangensaft"
+      }
+    },
+    {
+      "quantity": 50.0,
+      "note": "medium",
+      "unit": {
+        "id": "b558643c-bb92-479d-97ea-1337edc49d3b",
+        "name": "Milliliter"
+      },
+      "food": {
+        "id": "3453bef7-46e7-4894-893a-dafc08123b2f",
+        "name": "Sherry"
+      }
+    },
+    {
+      "note": "Salz (nach Geschmack)"
+    },
+    {
+      "quantity": 3.0,
+      "note": "grüne Meerrettichpaste (Asialaden)",
+      "unit": {
+        "id": "190e0f06-fae8-4d6f-9009-a3c7b214434e",
+        "name": "Teelöffel"
+      },
+      "food": {
+        "id": "7d15c9d2-4fbb-458c-b031-fd9460fc657c",
+        "name": "Wasabipaste"
+      }
+    },
+    {
+      "quantity": 1.0,
+      "note": "gehackt, zum Bestreuen",
+      "unit": {
+        "id": "18de6de3-b087-486e-90fc-20f1303030b3",
+        "name": "Bund"
+      },
+      "food": {
+        "id": "19273c85-bfe2-4188-9145-57f872582970",
+        "name": "Koriander"
+      }
+    },
+    {
+      "note": "Basmatireis (als Beilage zubereiten)"
+    }
+  ],
+  "recipeInstructions": [],
+  "nutrition": {
+    "calories": null,
+    "carbohydrateContent": null,
+    "cholesterolContent": null,
+    "fatContent": null,
+    "fiberContent": null,
+    "proteinContent": null,
+    "saturatedFatContent": null,
+    "sodiumContent": null,
+    "sugarContent": null,
+    "transFatContent": null,
+    "unsaturatedFatContent": null
+  },
+  "settings": {
+    "public": false,
+    "showNutrition": false,
+    "showAssets": true,
+    "landscapeView": false,
+    "disableComments": false,
+    "locked": false
+  },
+  "notes": [
+    {
+      "title": "Hinweis",
+      "text": "Tipp: Wasabi-Meerrettich gibt es als Paste oder Pulver. Das schärfere Pulver wird mit Wasser verrührt. 3 TL Paste können durch 1 TL Pulver, vermischt mit 2 TL Wasser, ersetzt werden. Nährwerte pro Portion: ca. 230 Kalorien; 19 g Eiweiß; 6 g Fett; 22 g Kohlenhydrate."
+    }
+  ],
+  "extras": {},
+  "comments": []
+}

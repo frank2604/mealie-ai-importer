@@ -1,0 +1,56 @@
+2025-11-16 16:20:00 [INFO] Pipeline: -----------------------------------------------
+2025-11-16 16:20:00 [INFO] Pipeline: Starting module Refresh Mealie caches
+2025-11-16 16:20:00 [INFO] Refresh Caches: Refreshing the ingredient and unit lists from Mealie
+2025-11-16 16:20:05 [INFO] httpx: HTTP Request: GET https://mealie.local/api/units?page=1&perPage=200 "HTTP/1.1 200 OK"
+2025-11-16 16:20:05 [INFO] httpx: HTTP Request: GET https://mealie.local/api/foods?page=1&perPage=200 "HTTP/1.1 200 OK"
+2025-11-16 16:20:05 [INFO] httpx: HTTP Request: GET https://mealie.local/api/groups/labels?page=1&perPage=200 "HTTP/1.1 200 OK"
+2025-11-16 16:20:05 [INFO] httpx: HTTP Request: GET https://mealie.local/api/organizers/categories?page=1&perPage=200 "HTTP/1.1 200 OK"
+2025-11-16 16:20:05 [INFO] httpx: HTTP Request: GET https://mealie.local/api/organizers/tags?page=1&perPage=200 "HTTP/1.1 200 OK"
+2025-11-16 16:20:05 [INFO] Refresh Caches: Finished refreshing the Mealie lists
+2025-11-16 16:20:05 [INFO] Pipeline: Finished module Refresh Mealie caches
+2025-11-16 16:20:05 [INFO] Pipeline: -----------------------------------------------
+2025-11-16 16:20:05 [INFO] Pipeline: Starting module Input
+2025-11-16 16:20:05 [INFO] PDF Input: Reading the recipe PDF from data/uploads/12d3f6e90f7e41d5a3ec280ffb36b5a8.pdf
+2025-11-16 16:20:05 [INFO] Pipeline: Finished module Input
+2025-11-16 16:20:05 [INFO] Pipeline: -----------------------------------------------
+2025-11-16 16:20:05 [INFO] Pipeline: Starting module AI Analyser
+2025-11-16 16:20:05 [INFO] AI Analyser: Starting the AI analysis with 1461 characters of recipe text
+2025-11-16 16:20:43 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-16 16:20:50 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-16 16:20:50 [INFO] AI Analyser: Stored the selected image at data/pipeline/02_RecipeImage.jpg
+2025-11-16 16:20:50 [INFO] AI Analyser: Saved the raw recipe snapshot to data/pipeline/04_RecipeRawData.json
+2025-11-16 16:20:50 [INFO] AI Analyser: Saved RecipeData.json to data/pipeline/05_RecipeData.json
+2025-11-16 16:20:50 [INFO] Pipeline: Finished module AI Analyser
+2025-11-16 16:20:50 [INFO] Pipeline: -----------------------------------------------
+2025-11-16 16:20:50 [INFO] Pipeline: Starting module Food Checker
+2025-11-16 16:20:50 [INFO] Food Checker: Trying to match 11 ingredients to existing foods in Mealie [Hähnchenbrustfilet, Porree (Lauch), Knoblauch, Orangen, Butterschmalz, Orangensaft, Sherry, Salz, Wasabipaste, Koriander, Basmatireis]
+2025-11-16 16:20:50 [INFO] Food Checker: Matched 10 ingredients exact by words: [Hähnchenbrustfilet, Knoblauch, Orangen, Butterschmalz, Orangensaft, Sherry, Salz, Wasabipaste, Koriander, Basmatireis]
+2025-11-16 16:20:50 [INFO] Food Checker: Try matching rest of the ingredients [Porree (Lauch)] with AI
+2025-11-16 16:20:50 [INFO] Food Checker: Ask AI to find [Porree (Lauch)] in existing foods in Mealie
+2025-11-16 16:20:55 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-16 16:20:55 [INFO] Food Checker: AI suggests [Porree] from existing foods in Mealie
+2025-11-16 16:20:55 [INFO] Food Checker: Matched 11 ingredients so far; 0 still need attention
+2025-11-16 16:20:55 [INFO] Food Checker: Matched 1 ingredient with AI: [Porree (Lauch)]
+2025-11-16 16:20:55 [INFO] Food Checker: Every ingredient now has a Mealie food match
+2025-11-16 16:20:55 [INFO] Food Checker: Saved the foods review to data/pipeline/06_FoodsReview.json
+2025-11-16 16:20:55 [INFO] Pipeline: Finished module Food Checker
+2025-11-16 16:20:55 [INFO] Pipeline: -----------------------------------------------
+2025-11-16 16:20:55 [INFO] Pipeline: Starting module Unit Checker
+2025-11-16 16:20:55 [INFO] Unit Checker: Trying to match 7 unique units (from 9 ingredient entries) to existing Mealie units [Stück, Stange, Zehe, EL, ml, TL, Bund]
+2025-11-16 16:20:55 [INFO] Unit Checker: Matched 8 units exact by words: [Bund, EL, ml, ml, Stück, Stück, TL, Zehe]
+2025-11-16 16:20:55 [INFO] Unit Checker: Try matching rest of the units [Stange] with AI
+2025-11-16 16:20:55 [INFO] Unit Checker: Ask AI to find [Stange] in existing units in Mealie
+2025-11-16 16:21:00 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-16 16:21:00 [INFO] Unit Checker: AI suggests [Stück] from existing units in Mealie
+2025-11-16 16:21:00 [INFO] Unit Checker: Matched 9 units so far; 0 still need attention
+2025-11-16 16:21:00 [INFO] Unit Checker: Matched 1 unit with AI: [Stange] -> [Stück]
+2025-11-16 16:21:00 [INFO] Unit Checker: Every unit now has a Mealie match
+2025-11-16 16:21:00 [INFO] Unit Checker: Saved the units review to data/pipeline/07_UnitsReview.json
+2025-11-16 16:21:00 [INFO] Pipeline: Finished module Unit Checker
+2025-11-16 16:21:00 [INFO] Pipeline: -----------------------------------------------
+2025-11-16 16:21:00 [INFO] Pipeline: Starting module Assign Metadata
+2025-11-16 16:21:35 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-16 16:21:35 [INFO] Assign Metadata: Saved the metadata review to data/pipeline/08_MetadataReview.json
+2025-11-16 16:21:54 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-16 16:21:54 [INFO] Pipeline: Finished module Assign Metadata
+2025-11-16 16:21:54 [INFO] Pipeline: -----------------------------------------------

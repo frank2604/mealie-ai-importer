@@ -5,6 +5,7 @@ import "./styles/index.css";
 import "./i18n/i18n";
 import { ThemeProvider } from "./theme/useTheme";
 import { App } from "./app/App";
+import { ImportFlowProvider } from "./app/context/ImportFlowContext";
 import { Step1Select } from "./app/routes/Step1Select";
 import { Step2Analyze } from "./app/routes/Step2Analyze";
 import { Step3Review } from "./app/routes/Step3Review";
@@ -43,7 +44,9 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ThemeProvider>
-      <RouterProvider router={router} />
+      <ImportFlowProvider>
+        <RouterProvider router={router} />
+      </ImportFlowProvider>
     </ThemeProvider>
   </React.StrictMode>
 );

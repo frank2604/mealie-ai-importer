@@ -9,6 +9,23 @@ import { useImportFlow, type ImportStatus } from "../context/ImportFlowContext";
 import { useStepNavigation } from "../App";
 import { archiveRun, fetchRunLogs, fetchRunStatus, mapApiLogEntries, startTransfer, resetWorkspace } from "../api/imports";
 
+const formatDuration = (start: string | null, end: string | null, nowMs: number): string => {
+  if (!start) {
+    return "–";
+  }
+  const startMs = Date.parse(start);
+  const endMs = end ? Date.parse(end) : nowMs;
+  if (Number.isNaN(startMs) || Number.isNaN(endMs) || endMs <= startMs) {
+    return "00:00";
+  }
+  const totalSeconds = Math.floor((endMs - startMs) / 1000);
+  const minutes = Math.floor(totalSeconds / 60)
+    .toString()
+    .padStart(2, "0");
+  const seconds = (totalSeconds % 60).toString().padStart(2, "0");
+  return `${minutes}:${seconds}`;
+};
+
 export const Step4Transfer: React.FC = () => {
   const { t } = useTranslation();
   const { setNextHandler, setNextDisabled, setNextLabel } = useStepNavigation();
@@ -31,7 +48,11 @@ export const Step4Transfer: React.FC = () => {
   const [isPolling, setIsPolling] = useState(false);
   const [isStartingTransfer, setIsStartingTransfer] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
+  const [transferStart, setTransferStart] = useState<string | null>(null);
+  const [transferEnd, setTransferEnd] = useState<string | null>(null);
+  const [nowMs, setNowMs] = useState<number>(Date.now());
   const transferRequestedRef = useRef(false);
+  const previousStatusRef = useRef<ImportStatus | null>(null);
 
   const logEntries = useMemo(() => transferLogs, [transferLogs]);
 
@@ -101,6 +122,10 @@ export const Step4Transfer: React.FC = () => {
 
   useEffect(() => {
     transferRequestedRef.current = false;
+    setTransferStart(null);
+    setTransferEnd(null);
+    setNowMs(Date.now());
+    previousStatusRef.current = null;
   }, [runId]);
 
   const triggerTransfer = useCallback(async () => {
@@ -165,7 +190,16 @@ export const Step4Transfer: React.FC = () => {
         };
         const mapped = statusMap[statusResult.status];
         if (mapped) {
+          const prev = previousStatusRef.current;
           setStatus(mapped);
+          if (mapped === "transferring" && prev !== "transferring") {
+            setTransferStart(new Date().toISOString());
+            setTransferEnd(null);
+          }
+          if (["completed", "failed", "aborted"].includes(mapped) && transferStart && !transferEnd) {
+            setTransferEnd(new Date().toISOString());
+          }
+          previousStatusRef.current = mapped;
         }
         if (statusResult.recipeName) {
           setRecipeNameValue(statusResult.recipeName);
@@ -207,6 +241,14 @@ export const Step4Transfer: React.FC = () => {
     };
   }, [appendTransferLogs, runId, setError, setStatus, t, transferCursor]);
 
+  useEffect(() => {
+    if (!transferStart || transferEnd) {
+      return;
+    }
+    const intervalId = window.setInterval(() => setNowMs(Date.now()), 1000);
+    return () => window.clearInterval(intervalId);
+  }, [transferEnd, transferStart]);
+
   const statusLabel = useMemo(() => {
     switch (status) {
       case "transferring":
@@ -223,6 +265,10 @@ export const Step4Transfer: React.FC = () => {
         return t("transfer.status.idle");
     }
   }, [status, t]);
+  const transferDuration = useMemo(
+    () => formatDuration(transferStart, transferEnd, nowMs),
+    [nowMs, transferEnd, transferStart]
+  );
   const showActivityBar = status === "transferring" || status === "starting";
 
   const helperText = !runId ? t("transfer.status.noRun") : isPolling ? t("transfer.status.polling") : undefined;
@@ -268,6 +314,20 @@ export const Step4Transfer: React.FC = () => {
                   {error}
                 </div>
               ) : null}
+            </section>
+            <section
+              className={clsx(
+                "border border-border bg-background/70",
+                layoutConfig.spacing.element.padding.x,
+                layoutConfig.spacing.element.padding.y,
+                layoutConfig.borderRadius.medium
+              )}
+            >
+              <div className="text-xs font-semibold uppercase tracking-wide text-text/60">
+                {t("transfer.metrics.duration.title")}
+              </div>
+              <div className="mt-2 text-3xl font-semibold text-primary">{transferDuration}</div>
+              <p className="mt-1 text-xs text-text/70">{t("transfer.metrics.duration.description")}</p>
             </section>
             {/* Footer actions removed from left column; archive via footer button */}
           </aside>

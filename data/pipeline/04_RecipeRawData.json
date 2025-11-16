@@ -1,71 +1,75 @@
 {
-  "title": "Hähnchenbrustfilets im Schinkenmantel mit Champignon-Sahnesoße",
-  "description": "Saftige Hähnchenbrustfilets werden mit Salbei und Parma-Schinken umwickelt, kurz angebraten und in einer cremigen Champignon-Wermut-Soße im Ofen fertig gegart. Das Gericht ist aromatisch und schnell zuzubereiten. Es passt hervorragend zu Pellkartoffeln und grünem Salat.",
+  "title": "Hähnchenbrust in Wasabi-Sauce",
+  "description": "Zarte Hähnchenbrustfilets werden kurz angebraten und in einer aromatischen Orangen-Wasabi-Soße gezogen. Die Kombination aus frischer Orange, scharfem Wasabi und Sherry ergibt eine feine Balance aus Süße und Schärfe. Servieren Sie das Gericht mit Basmatireis und gehacktem Koriander.",
   "recipeServings": 4.0,
   "recipeYieldQuantity": 4.0,
   "recipeYield": "4 Portionen",
-  "totalTime": "35 Min.",
-  "prepTime": "15 Min.",
+  "totalTime": "30 Min.",
+  "prepTime": "10 Min.",
   "performTime": "20 Min.",
   "ingredients": [
     {
       "ingredients": [
         {
-          "name": "Hähnchenbrustfilets",
+          "name": "Hähnchenbrustfilet",
           "quantity": 4.0,
-          "unit": "Stück"
+          "unit": "Stück",
+          "note": "à 100 g"
         },
         {
-          "name": "Parma-Schinken",
-          "quantity": 6.0,
-          "unit": "Scheiben"
+          "name": "Porree (Lauch)",
+          "quantity": 1.0,
+          "unit": "Stange",
+          "note": "ca. 200 g, in feine Ringe schneiden"
         },
         {
-          "name": "Champignons",
-          "quantity": 500.0,
-          "unit": "g"
+          "name": "Knoblauch",
+          "quantity": 1.0,
+          "unit": "Zehe",
+          "note": "abgezogen und gewürfelt"
         },
         {
-          "name": "rote Zwiebeln",
-          "quantity": 3.0,
-          "unit": "Stück"
+          "name": "Orangen",
+          "quantity": 2.0,
+          "unit": "Stück",
+          "note": "dick schälen, weiße Teile entfernen, in einzelne Filets teilen"
         },
         {
-          "name": "trockener Wermut",
-          "quantity": 100.0,
-          "unit": "ml"
+          "name": "Butterschmalz",
+          "quantity": 1.0,
+          "unit": "EL",
+          "note": "zum Braten"
         },
         {
-          "name": "süße Sahne",
+          "name": "Orangensaft",
           "quantity": 200.0,
           "unit": "ml"
         },
         {
-          "name": "Mehl",
-          "quantity": 1.0,
-          "unit": "EL"
-        },
-        {
-          "name": "heller Soßenbinder",
-          "quantity": 1.0,
-          "unit": "EL"
-        },
-        {
-          "name": "Fett zum Braten",
-          "note": "zum Anbraten"
-        },
-        {
-          "name": "Salbeiblätter",
-          "quantity": 6.0,
-          "unit": "Blätter"
+          "name": "Sherry",
+          "quantity": 50.0,
+          "unit": "ml",
+          "note": "medium"
         },
         {
           "name": "Salz",
           "note": "nach Geschmack"
         },
         {
-          "name": "Pfeffer",
-          "note": "nach Geschmack"
+          "name": "Wasabipaste",
+          "quantity": 3.0,
+          "unit": "TL",
+          "note": "grüne Meerrettichpaste (Asialaden)"
+        },
+        {
+          "name": "Koriander",
+          "quantity": 1.0,
+          "unit": "Bund",
+          "note": "gehackt, zum Bestreuen"
+        },
+        {
+          "name": "Basmatireis",
+          "note": "als Beilage zubereiten"
         }
       ]
     }
@@ -75,60 +79,50 @@
       "steps": [
         {
           "order": 1,
-          "instruction": "Hähnchenbrustfilets mit Pfeffer würzen. Jeweils ein Salbeiblatt auf das Filet legen und mit einer Scheibe Parma-Schinken umwickeln."
+          "instruction": "Fleisch abtupfen. Porree putzen und in feine Ringe schneiden. Knoblauch abziehen und würfeln. Orangen dick schälen, weiße Teile entfernen und in einzelne Filets teilen. Koriander grob hacken."
         },
         {
           "order": 2,
-          "instruction": "Fett in einer Pfanne erhitzen. Die Filets leicht mit Mehl bestäuben und in der Pfanne rundherum anbraten, bis sie Farbe bekommen."
+          "instruction": "Hähnchenbrustfilets im heißen Butterschmalz pro Seite 4 Minuten anbraten, dann herausnehmen und warm stellen.",
+          "timer_minutes": 4
         },
         {
           "order": 3,
-          "instruction": "Die angebratenen Filets aus der Pfanne nehmen und in eine feuerfeste Form legen."
+          "instruction": "Knoblauch im Bratfett andünsten. Orangensaft und Sherry hinzufügen und etwas einkochen lassen."
         },
         {
           "order": 4,
-          "instruction": "Zwiebeln schälen und fein hacken. Champignons putzen und vierteln."
+          "instruction": "Salz und Wasabipaste in die Soße einrühren, gut verrühren."
         },
         {
           "order": 5,
-          "instruction": "Zwiebeln und Champignons im verbliebenen Bratfett anbraten, bis sie leicht gebräunt sind."
+          "instruction": "Hähnchenfleisch und Porree in die Soße geben und etwa 5 Minuten ziehen lassen, damit das Fleisch die Aromen aufnimmt.",
+          "timer_minutes": 5
         },
         {
           "order": 6,
-          "instruction": "Mit dem Wermut ablöschen und kurz einkochen lassen, damit der Alkohol verdampft und der Geschmack konzentriert wird."
-        },
-        {
-          "order": 7,
-          "instruction": "Sahne zugießen und den hellen Soßenbinder einrühren. Die Soße kurz aufkochen lassen und mit Salz und Pfeffer abschmecken."
-        },
-        {
-          "order": 8,
-          "instruction": "Die Soße über die Hähnchenfilets in der feuerfesten Form geben und alles bei 200 °C im vorgeheizten Backofen etwa 20 Minuten garen lassen.",
-          "timer_minutes": 20
-        },
-        {
-          "order": 9,
-          "instruction": "Herausnehmen und sofort servieren. Dazu passen Pellkartoffeln und grüner Salat."
+          "instruction": "Orangenfilets zugeben und mit gehacktem Koriander bestreuen. Mit Basmatireis servieren."
         }
       ]
     }
   ],
-  "notes": "Ofentemperatur: 200 °C. Als Beilage passen Pellkartoffeln und ein frischer grüner Salat. Nach Belieben kann statt Parma-Schinken auch anderer luftgetrockneter Schinken verwendet werden.",
+  "notes": "Tipp: Wasabi-Meerrettich gibt es als Paste oder Pulver. Das schärfere Pulver wird mit Wasser verrührt. 3 TL Paste können durch 1 TL Pulver, vermischt mit 2 TL Wasser, ersetzt werden. Nährwerte pro Portion: ca. 230 Kalorien; 19 g Eiweiß; 6 g Fett; 22 g Kohlenhydrate.",
   "image_path": "data/pipeline/02_RecipeImage.jpg",
   "metadata": {
-    "source": "data/uploads/4ed3b357e5e14d75ba1d0a3cc084efd7.pdf",
+    "source": "Journal für die Frau; datei: data/uploads/12d3f6e90f7e41d5a3ec280ffb36b5a8.pdf",
     "categories": [
       "Hauptgericht",
       "Geflügel"
     ],
-    "cuisine": "Deutsch",
+    "cuisine": "Asiatisch inspiriert",
     "tags": [
       "Hähnchen",
-      "Schinken",
-      "Champignons",
-      "Sahnesoße",
-      "Ofengericht",
-      "Salbei"
+      "Wasabi",
+      "Orange",
+      "Sherry",
+      "Porree",
+      "Koriander",
+      "Basmatireis"
     ],
     "mealie_categories": [],
     "mealie_tags": []

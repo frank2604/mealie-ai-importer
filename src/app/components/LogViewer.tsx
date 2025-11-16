@@ -19,7 +19,8 @@ interface LogViewerProps {
   className?: string;
 }
 
-const levelOrder: LogLevel[] = ["INFO", "OK", "WARN", "ERROR", "AI"];
+// Only expose filters for levels that can currently occur in the backend logs.
+const levelOrder: LogLevel[] = ["INFO", "OK", "WARN", "ERROR"];
 
 const levelColor: Record<LogLevel, string> = {
   INFO: "bg-info/10 text-info border-info/40",

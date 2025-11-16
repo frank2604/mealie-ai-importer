@@ -1,12 +1,12 @@
 {
-  "title": "Hähnchenbrustfilets mit Parma-Schinken und Champignon-Sahnesoße",
-  "description": "Zarte Hähnchenbrustfilets werden mit Salbeiblättern belegt, mit Parma-Schinken umwickelt und in einer cremigen Champignon-Sahnesoße im Ofen fertig gegart. Das Gericht verbindet kräftigen Wermutgeschmack mit sahniger Würze und passt hervorragend zu Kartoffeln und frischem Salat.",
+  "title": "Hähnchenbrustfilets mit Parma-Schinken, Salbei und Champignon-Sahne-Soße",
+  "description": "Zarte Hähnchenbrustfilets werden mit Salbeiblättern belegt, in Parma-Schinken gewickelt und knusprig angebraten. Eine cremige Champignon-Sahne-Soße mit trockenem Wermut rundet das Gericht ab und wird im Ofen fertig gegart. Ein herzhaftes Hauptgericht, das sich gut mit Pellkartoffeln und grünem Salat kombinieren lässt.",
   "recipeServings": 4.0,
   "recipeYieldQuantity": 4.0,
   "recipeYield": "4 Portionen",
   "totalTime": "50 Min.",
-  "prepTime": "30 Min.",
-  "performTime": "20 Min.",
+  "prepTime": "20 Min.",
+  "performTime": "30 Min.",
   "ingredients": [
     {
       "ingredients": [
@@ -30,7 +30,7 @@
           "name": "rote Zwiebeln",
           "quantity": 3.0,
           "unit": "Stück",
-          "note": "geschält und fein gehackt"
+          "note": "geschält und klein gehackt"
         },
         {
           "name": "trockener Wermut",
@@ -45,29 +45,30 @@
         {
           "name": "Mehl",
           "quantity": 1.0,
-          "unit": "EL",
+          "unit": "Esslöffel",
           "note": "zum Bestäuben"
         },
         {
           "name": "heller Soßenbinder",
           "quantity": 1.0,
-          "unit": "EL"
+          "unit": "Esslöffel"
         },
         {
-          "name": "Fett zum Braten"
+          "name": "Fett",
+          "note": "zum Braten"
         },
         {
           "name": "Salbeiblätter",
           "quantity": 6.0,
-          "unit": "Blätter"
+          "unit": "Blatt"
         },
         {
           "name": "Salz",
-          "note": "zum Abschmecken"
+          "note": "nach Geschmack"
         },
         {
           "name": "Pfeffer",
-          "note": "zum Abschmecken"
+          "note": "nach Geschmack"
         }
       ]
     }
@@ -77,52 +78,48 @@
       "steps": [
         {
           "order": 1,
-          "instruction": "Die Hähnchenbrustfilets mit Salz und Pfeffer würzen."
+          "instruction": "Hähnchenbrustfilets mit Pfeffer würzen. Jeweils ein Salbeiblatt auf das Filet legen und das Filet mit je eineinhalb Scheiben Parma-Schinken (insgesamt eine Scheibe pro Seite) oder einer Scheibe umwickeln."
         },
         {
           "order": 2,
-          "instruction": "Jeweils ein Salbeiblatt auf ein Filet legen und die Filets mit jeweils einer Scheibe Parma-Schinken umwickeln."
+          "instruction": "Fett in einer Pfanne erhitzen. Die umwickelten Filets leicht mit Mehl bestäuben und von allen Seiten kurz anbraten, bis sie Farbe bekommen."
         },
         {
           "order": 3,
-          "instruction": "Fett in einer Pfanne erhitzen. Die Filets leicht mit Mehl bestäuben und rundherum anbraten, bis sie Farbe bekommen."
+          "instruction": "Die angebratenen Filets aus der Pfanne nehmen und in eine feuerfeste Form legen."
         },
         {
           "order": 4,
-          "instruction": "Die angebratenen Filets herausnehmen und in eine feuerfeste Form legen."
+          "instruction": "Zwiebeln schälen und klein hacken. Die Champignons putzen und vierteln. Beides in der Pfanne anbraten, bis sie leicht gebräunt sind."
         },
         {
           "order": 5,
-          "instruction": "Zwiebeln schälen und fein hacken. In derselben Pfanne Zwiebeln und die geputzten, geviertelten Champignons anbraten."
+          "instruction": "Mit trockenem Wermut ablöschen und etwas einkochen lassen, damit der Alkohol verkocht."
         },
         {
           "order": 6,
-          "instruction": "Mit Wermut ablöschen und etwas einkochen lassen."
-        },
-        {
-          "order": 7,
           "instruction": "Sahne angießen und den hellen Soßenbinder einrühren. Die Soße kurz aufkochen lassen und mit Salz und Pfeffer abschmecken."
         },
         {
-          "order": 8,
-          "instruction": "Die Soße über die Hähnchenbrustfilets in der feuerfesten Form geben."
+          "order": 7,
+          "instruction": "Die Soße über die Hähnchenbrustfilets in der feuerfesten Form gießen."
         },
         {
-          "order": 9,
-          "instruction": "Die Form in den vorgeheizten Ofen bei 200 °C stellen und alles etwa 20 Minuten garen lassen, bis das Fleisch durchgegart ist.",
+          "order": 8,
+          "instruction": "Die Form in den auf 200° C vorgeheizten Backofen geben und das Gericht etwa 20 Minuten garen, bis das Hähnchen durchgegart ist.",
           "timer_minutes": 20
         },
         {
-          "order": 10,
-          "instruction": "Servieren Sie die Filets mit der Champignon-Sahnesoße. Dazu passen Pellkartoffeln und ein grüner Salat."
+          "order": 9,
+          "instruction": "Herausnehmen und heiß servieren. Dazu passen Pellkartoffeln und ein grüner Salat."
         }
       ]
     }
   ],
-  "notes": "Dazu passen Pellkartoffeln und grüner Salat. Falls gewünscht, können Champignons zuvor mit etwas Knoblauch verfeinert werden.",
+  "notes": "Als Beilage passen Pellkartoffeln und grüner Salat sehr gut. Bei Bedarf die Soße mit etwas mehr Soßenbinder andicken oder mit Muskatnuss verfeinern.",
   "image_path": "data/pipeline/02_RecipeImage.jpg",
   "metadata": {
-    "source": "data/uploads/bc9f30d311964556958c9d98a1672b3d.pdf",
+    "source": "data/uploads/430bdc34c6564a3199cbc741386915f5.pdf",
     "categories": [
       "Hauptgericht",
       "Geflügel"
@@ -130,9 +127,10 @@
     "cuisine": "Deutsch",
     "tags": [
       "Hähnchen",
+      "Parma-Schinken",
       "Champignons",
       "Sahne",
-      "Parmaschinken",
+      "Salbei",
       "Ofengericht"
     ],
     "mealie_categories": [],

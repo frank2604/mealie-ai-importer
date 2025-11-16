@@ -423,6 +423,7 @@ def _update_run_state(
     error: Optional[str] = None,
     completed_at: Optional[str] = None,
     clear_error: bool = False,
+    recipe_name: Optional[str] = None,
 ) -> None:
     with RUN_STATE_LOCK:
         state = ACTIVE_RUNS.get(run_id)
@@ -436,6 +437,8 @@ def _update_run_state(
             state.error = None
         if completed_at:
             state.completed_at = completed_at
+        if recipe_name:
+            state.recipe_name = recipe_name
 
 
 def _read_run_state(run_id: str) -> RunState:
@@ -651,6 +654,20 @@ def _resolve_review_context(config: AppConfig, run_id: str) -> ReviewContext:
         pdf_path=pdf_path,
         image_path=image_path,
     )
+
+
+def _current_recipe_title(run_id: str) -> Optional[str]:
+    """Lese den aktuellen Rezepttitel aus der RecipeData.json, falls vorhanden."""
+    try:
+        config = _load_app_config()
+        review_context = _resolve_review_context(config, run_id)
+        recipe_payload = _load_json_file(review_context.recipe_path)
+        title = recipe_payload.get("title")
+        if isinstance(title, str) and title.strip():
+            return title.strip()
+    except Exception:  # pragma: no cover - defensive fallback
+        return None
+    return None
 
 
 def _prepare_transfer_context(config: AppConfig, run_state: RunState) -> PipelineContext:
@@ -948,6 +965,7 @@ def _build_review_payload(run_id: str, config: AppConfig) -> ReviewDataResponse:
 
 def _apply_review_update(run_id: str, config: AppConfig, payload: ReviewUpdateRequest) -> None:
     context = _resolve_review_context(config, run_id)
+    workspace = _build_workspace(config)
 
     raw_snapshot = normalize_recipe_payload(_load_json_file(context.raw_path))
     recipe_data = normalize_recipe_payload(_load_json_file(context.recipe_path))
@@ -974,6 +992,8 @@ def _apply_review_update(run_id: str, config: AppConfig, payload: ReviewUpdateRe
         recipe_data["prepTime"] = payload.summary.prepTime
     if payload.summary.performTime is not None:
         recipe_data["performTime"] = payload.summary.performTime
+    if payload.summary.title:
+        context.run_info.recipe_name = payload.summary.title
 
     # Update metadata review selections
     user_decision = metadata_review.setdefault("userDecision", {})
@@ -1090,6 +1110,8 @@ def _apply_review_update(run_id: str, config: AppConfig, payload: ReviewUpdateRe
         _write_json_file(context.units_path, units_review)
     if context.metadata_path:
         _write_json_file(context.metadata_path, metadata_review)
+    workspace.save_run_info(context.run_info)
+    _update_run_state(run_id, recipe_name=context.run_info.recipe_name)
 
 
 def _run_analysis(run_state: RunState, pending: PendingUpload, config: AppConfig, workspace: RunWorkspace, run_info: RunInfo) -> None:
@@ -1421,10 +1443,11 @@ async def update_review_data(run_id: str, update: ReviewUpdateRequest) -> Review
 @app.get("/api/imports/{run_id}", response_model=RunStatusResponse)
 async def get_run_status(run_id: str) -> RunStatusResponse:
     state = _read_run_state(run_id)
+    recipe_title = _current_recipe_title(run_id) or state.recipe_name
     return RunStatusResponse(
         runId=state.run_id,
         status=state.status,
-        recipeName=state.recipe_name,
+        recipeName=recipe_title,
         startedAt=state.started_at,
         completedAt=state.completed_at,
         error=state.error,

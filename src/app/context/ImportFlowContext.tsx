@@ -41,6 +41,9 @@ interface ImportFlowContextValue {
   resetLogs: () => void;
   resetTransferLogs: () => void;
   reset: () => void;
+  setRecipeNameValue: (name: string | null) => void;
+  hasExternalUpdate: boolean;
+  acknowledgeExternalUpdate: () => void;
 }
 
 const STORAGE_KEY = "import-flow-state";
@@ -117,6 +120,7 @@ export const ImportFlowProvider: React.FC<{ children: ReactNode }> = ({ children
   const [analysisCursor, setAnalysisCursor] = useState(0);
   const [transferLogs, setTransferLogs] = useState<LogEntry[]>([]);
   const [transferCursor, setTransferCursor] = useState(0);
+  const [hasExternalUpdate, setHasExternalUpdate] = useState(false);
 
   const setUploadInfo = useCallback(({ uploadId: id, fileName: name, recipeName: recipe }: UploadInfo) => {
     setUploadId(id);
@@ -141,6 +145,10 @@ export const ImportFlowProvider: React.FC<{ children: ReactNode }> = ({ children
 
   const setError = useCallback((message: string | null) => {
     setErrorState(message);
+  }, []);
+
+  const setRecipeNameValue = useCallback((name: string | null) => {
+    setRecipeName(name);
   }, []);
 
   const appendAnalysisLogs = useCallback(
@@ -215,6 +223,10 @@ export const ImportFlowProvider: React.FC<{ children: ReactNode }> = ({ children
     clearPersistedState();
   }, []);
 
+  const acknowledgeExternalUpdate = useCallback(() => {
+    setHasExternalUpdate(false);
+  }, []);
+
   useEffect(() => {
     let active = true;
     fetchActiveRun()
@@ -258,6 +270,39 @@ export const ImportFlowProvider: React.FC<{ children: ReactNode }> = ({ children
     });
   }, [uploadId, fileName, recipeName, runId, status]);
 
+  useEffect(() => {
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key !== STORAGE_KEY || !event.newValue) {
+        return;
+      }
+      try {
+        const parsed = JSON.parse(event.newValue);
+        if (parsed.runId && parsed.runId !== runId) {
+          setRunIdState(parsed.runId);
+        }
+        if (parsed.status && parsed.status !== status) {
+          setStatusState(parsed.status as ImportStatus);
+        }
+        if (parsed.recipeName && parsed.recipeName !== recipeName) {
+          setRecipeName(parsed.recipeName);
+        }
+        if (parsed.uploadId && parsed.uploadId !== uploadId) {
+          setUploadId(parsed.uploadId);
+        }
+        if (parsed.fileName && parsed.fileName !== fileName) {
+          setFileName(parsed.fileName);
+        }
+        setHasExternalUpdate(true);
+      } catch {
+        // ignore
+      }
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+    };
+  }, [fileName, recipeName, runId, status, uploadId]);
+
   const value = useMemo(
     () => ({
       uploadId,
@@ -278,7 +323,10 @@ export const ImportFlowProvider: React.FC<{ children: ReactNode }> = ({ children
       appendTransferLogs,
       resetLogs,
       resetTransferLogs,
-      reset
+      reset,
+      setRecipeNameValue,
+      hasExternalUpdate,
+      acknowledgeExternalUpdate
     }),
     [
       analysisCursor,
@@ -291,10 +339,13 @@ export const ImportFlowProvider: React.FC<{ children: ReactNode }> = ({ children
       reset,
       resetLogs,
       resetTransferLogs,
+      setRecipeNameValue,
       runId,
       setError,
+      acknowledgeExternalUpdate,
       setRunId,
       setStatus,
+      hasExternalUpdate,
       setUploadInfo,
       status,
       transferCursor,

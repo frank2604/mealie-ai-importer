@@ -21,7 +21,8 @@ export const Step4Transfer: React.FC = () => {
     appendTransferLogs,
     setError,
     setStatus,
-    resetTransferLogs
+    resetTransferLogs,
+    setRecipeNameValue
   } = useImportFlow();
   const [isPolling, setIsPolling] = useState(false);
   const [isStartingTransfer, setIsStartingTransfer] = useState(false);
@@ -104,6 +105,9 @@ export const Step4Transfer: React.FC = () => {
         const mapped = statusMap[statusResult.status];
         if (mapped) {
           setStatus(mapped);
+        }
+        if (statusResult.recipeName) {
+          setRecipeNameValue(statusResult.recipeName);
         }
         if (statusResult.error) {
           setError(statusResult.error);

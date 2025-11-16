@@ -538,7 +538,7 @@ const buildUpdatePayload = (data: ReviewData) => ({
 
 export const Step3Review: React.FC = () => {
   const { t } = useTranslation();
-  const { runId, status, setError } = useImportFlow();
+  const { runId, status, setError, setRecipeNameValue } = useImportFlow();
   const { setNextHandler, setNextDisabled } = useStepNavigation();
   const unitPlaceholder = t("review.selection.unitPlaceholder");
   const foodPlaceholder = t("review.selection.foodPlaceholder");
@@ -754,6 +754,7 @@ export const Step3Review: React.FC = () => {
         setSummaryForm(createSummaryForm(enriched.summary));
         setPreparationSteps(createPreparationSteps(enriched.instructions));
         setStepIngredients({});
+        setRecipeNameValue(enriched.summary.title);
       })
       .catch((error: Error) => {
         if (!isActive) return;
@@ -769,7 +770,13 @@ export const Step3Review: React.FC = () => {
     return () => {
       isActive = false;
     };
-  }, [runId]);
+  }, [runId, setRecipeNameValue]);
+
+  useEffect(() => {
+    if (reviewData?.summary.title) {
+      setRecipeNameValue(reviewData.summary.title);
+    }
+  }, [reviewData?.summary.title, setRecipeNameValue]);
 
   const persistChanges = useCallback(async (overrideData?: ReviewData | null) => {
     const snapshot = overrideData ?? reviewData;

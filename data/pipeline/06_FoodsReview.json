@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2025-11-15T13:14:59.846709",
+  "generatedAt": "2025-11-16T09:32:29.334124",
   "ingredients": [
     {
       "key": "0:0",
@@ -147,17 +147,27 @@
     },
     {
       "key": "0:8",
-      "newId": null,
-      "suggestion": null,
+      "newId": "food-new-0-8",
+      "suggestion": {
+        "nameSingular": "Fett",
+        "namePlural": "Fett",
+        "aliases": [
+          "fett"
+        ],
+        "categoryId": "0f05689c-83c0-41fc-92b8-4aedde885267",
+        "categoryName": "Öle & Fette 🧈"
+      },
       "userDecision": {
         "action": "auto",
         "useFoodId": null,
         "create": {
-          "nameSingular": null,
-          "namePlural": null,
-          "aliases": [],
-          "categoryId": null,
-          "categoryName": null,
+          "nameSingular": "Fett",
+          "namePlural": "Fett",
+          "aliases": [
+            "fett"
+          ],
+          "categoryId": "0f05689c-83c0-41fc-92b8-4aedde885267",
+          "categoryName": "Öle & Fette 🧈",
           "description": null
         },
         "notes": ""

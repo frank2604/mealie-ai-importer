@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2025-11-15T13:15:21.216900",
+  "generatedAt": "2025-11-16T09:32:29.336183",
   "units": [
     {
       "key": "0:0",
@@ -139,23 +139,17 @@
     },
     {
       "key": "0:9",
-      "newId": "unit-new-0-9",
-      "suggestion": {
-        "name": "Blatt",
-        "pluralName": "Blätter",
-        "abbreviation": "Bl.",
-        "pluralAbbreviation": null,
-        "useAbbreviation": true
-      },
+      "newId": null,
+      "suggestion": null,
       "userDecision": {
         "action": "auto",
         "useUnitId": null,
         "create": {
-          "name": "Blatt",
-          "pluralName": "Blätter",
-          "abbreviation": "Bl.",
+          "name": null,
+          "pluralName": null,
+          "abbreviation": null,
           "pluralAbbreviation": null,
-          "useAbbreviation": true
+          "useAbbreviation": false
         },
         "notes": ""
       }

@@ -1,0 +1,15 @@
+{
+  "name": "Fett",
+  "payload": {
+    "name": "Fett",
+    "pluralName": "Fett",
+    "extras": {},
+    "labelId": "0f05689c-83c0-41fc-92b8-4aedde885267",
+    "aliases": [
+      {
+        "name": "fett"
+      }
+    ],
+    "householdsWithIngredientFood": []
+  }
+}

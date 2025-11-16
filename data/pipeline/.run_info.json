@@ -1,11 +1,11 @@
 {
-  "run_id": "20251115-131407",
+  "run_id": "20251116-093103",
   "recipe_name": "Hähnchenbrustfilet im Schinkenmantel",
-  "started_at": "2025-11-15T13:14:07Z",
-  "status": "review",
-  "completed_at": "2025-11-15T13:16:21Z",
-  "source_pdf": "data/uploads/bc9f30d311964556958c9d98a1672b3d.pdf",
-  "log_file": "data/pipeline/20251115-131407_analysis.log",
-  "analysis_log_file": "data/pipeline/20251115-131407_analysis.log",
-  "transfer_log_file": "data/pipeline/20251115-131407_transfer.log"
+  "started_at": "2025-11-16T09:31:03Z",
+  "status": "completed",
+  "completed_at": "2025-11-16T09:34:24Z",
+  "source_pdf": "data/uploads/430bdc34c6564a3199cbc741386915f5.pdf",
+  "log_file": "data/pipeline/20251116-093103_analysis.log",
+  "analysis_log_file": "data/pipeline/20251116-093103_analysis.log",
+  "transfer_log_file": "data/pipeline/20251116-093103_transfer.log"
 }

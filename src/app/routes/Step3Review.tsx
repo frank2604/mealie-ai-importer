@@ -1374,7 +1374,7 @@ export const Step3Review: React.FC = () => {
     <div className={clsx(layoutConfig.step3.grid.gridClasses, layoutConfig.spacing.layout.columns)}>
       <div
         className={clsx(
-          "flex flex-col overflow-hidden border border-border bg-panel xl:min-h-0 xl:h-full",
+          "flex flex-col border border-border bg-panel xl:min-h-0 xl:h-full xl:overflow-hidden",
           layoutConfig.borderRadius.large,
           layoutConfig.shadow.panel
         )}

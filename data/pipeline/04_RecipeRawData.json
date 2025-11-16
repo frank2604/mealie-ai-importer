@@ -1,0 +1,141 @@
+{
+  "title": "Hähnchenbrustfilets im Schinkenmantel mit Champignon-Sahnesoße",
+  "description": "Saftige Hähnchenbrustfilets werden mit Salbei und Parma-Schinken umwickelt, kurz angebraten und in einer cremigen Champignon-Wermut-Soße im Ofen fertig gegart. Das Gericht ist aromatisch und schnell zuzubereiten. Es passt hervorragend zu Pellkartoffeln und grünem Salat.",
+  "recipeServings": 4.0,
+  "recipeYieldQuantity": 4.0,
+  "recipeYield": "4 Portionen",
+  "totalTime": "35 Min.",
+  "prepTime": "15 Min.",
+  "performTime": "20 Min.",
+  "ingredients": [
+    {
+      "ingredients": [
+        {
+          "name": "Hähnchenbrustfilets",
+          "quantity": 4.0,
+          "unit": "Stück"
+        },
+        {
+          "name": "Parma-Schinken",
+          "quantity": 6.0,
+          "unit": "Scheiben"
+        },
+        {
+          "name": "Champignons",
+          "quantity": 500.0,
+          "unit": "g"
+        },
+        {
+          "name": "rote Zwiebeln",
+          "quantity": 3.0,
+          "unit": "Stück"
+        },
+        {
+          "name": "trockener Wermut",
+          "quantity": 100.0,
+          "unit": "ml"
+        },
+        {
+          "name": "süße Sahne",
+          "quantity": 200.0,
+          "unit": "ml"
+        },
+        {
+          "name": "Mehl",
+          "quantity": 1.0,
+          "unit": "EL"
+        },
+        {
+          "name": "heller Soßenbinder",
+          "quantity": 1.0,
+          "unit": "EL"
+        },
+        {
+          "name": "Fett zum Braten",
+          "note": "zum Anbraten"
+        },
+        {
+          "name": "Salbeiblätter",
+          "quantity": 6.0,
+          "unit": "Blätter"
+        },
+        {
+          "name": "Salz",
+          "note": "nach Geschmack"
+        },
+        {
+          "name": "Pfeffer",
+          "note": "nach Geschmack"
+        }
+      ]
+    }
+  ],
+  "instructions": [
+    {
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "Hähnchenbrustfilets mit Pfeffer würzen. Jeweils ein Salbeiblatt auf das Filet legen und mit einer Scheibe Parma-Schinken umwickeln."
+        },
+        {
+          "order": 2,
+          "instruction": "Fett in einer Pfanne erhitzen. Die Filets leicht mit Mehl bestäuben und in der Pfanne rundherum anbraten, bis sie Farbe bekommen."
+        },
+        {
+          "order": 3,
+          "instruction": "Die angebratenen Filets aus der Pfanne nehmen und in eine feuerfeste Form legen."
+        },
+        {
+          "order": 4,
+          "instruction": "Zwiebeln schälen und fein hacken. Champignons putzen und vierteln."
+        },
+        {
+          "order": 5,
+          "instruction": "Zwiebeln und Champignons im verbliebenen Bratfett anbraten, bis sie leicht gebräunt sind."
+        },
+        {
+          "order": 6,
+          "instruction": "Mit dem Wermut ablöschen und kurz einkochen lassen, damit der Alkohol verdampft und der Geschmack konzentriert wird."
+        },
+        {
+          "order": 7,
+          "instruction": "Sahne zugießen und den hellen Soßenbinder einrühren. Die Soße kurz aufkochen lassen und mit Salz und Pfeffer abschmecken."
+        },
+        {
+          "order": 8,
+          "instruction": "Die Soße über die Hähnchenfilets in der feuerfesten Form geben und alles bei 200 °C im vorgeheizten Backofen etwa 20 Minuten garen lassen.",
+          "timer_minutes": 20
+        },
+        {
+          "order": 9,
+          "instruction": "Herausnehmen und sofort servieren. Dazu passen Pellkartoffeln und grüner Salat."
+        }
+      ]
+    }
+  ],
+  "notes": "Ofentemperatur: 200 °C. Als Beilage passen Pellkartoffeln und ein frischer grüner Salat. Nach Belieben kann statt Parma-Schinken auch anderer luftgetrockneter Schinken verwendet werden.",
+  "image_path": "data/pipeline/02_RecipeImage.jpg",
+  "metadata": {
+    "source": "data/uploads/4ed3b357e5e14d75ba1d0a3cc084efd7.pdf",
+    "categories": [
+      "Hauptgericht",
+      "Geflügel"
+    ],
+    "cuisine": "Deutsch",
+    "tags": [
+      "Hähnchen",
+      "Schinken",
+      "Champignons",
+      "Sahnesoße",
+      "Ofengericht",
+      "Salbei"
+    ],
+    "mealie_categories": [],
+    "mealie_tags": []
+  },
+  "assets": [
+    {
+      "file_name": "02_RecipeImage.jpg"
+    }
+  ]
+}

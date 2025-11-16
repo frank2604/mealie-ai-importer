@@ -1,0 +1,340 @@
+{
+  "updated_at": "2025-11-16T13:24:03.835029",
+  "foods": [
+    {
+      "id": "a884cc29-5a5f-4298-b0c7-2a7c5d4c5a6e",
+      "name": "Thymianblättchen",
+      "pluralName": "Thymianblättchen",
+      "aliases": [
+        "{'name': 'thymianblättchen'}",
+        "{'name': 'thymian blättchen'}",
+        "{'name': 'thymian-blättchen'}"
+      ]
+    },
+    {
+      "id": "8ba7ccd4-bf48-4e61-9aa4-2af9cf62fb90",
+      "name": "Zucker",
+      "pluralName": "Zucker",
+      "aliases": [
+        "{'name': 'zucker'}"
+      ]
+    },
+    {
+      "id": "863eab63-a067-4e4d-9bbd-3bc88ae77955",
+      "name": "Zitronenschale",
+      "pluralName": "Zitronenschalen",
+      "aliases": [
+        "{'name': 'abgeriebene schale von zitrone'}",
+        "{'name': 'abgeriebene zitronenschale'}",
+        "{'name': 'zitronenschale'}"
+      ]
+    },
+    {
+      "id": "a0ac0082-8ef1-4462-8fbc-51cde41371b9",
+      "name": "Saure Sahne",
+      "pluralName": "Saure Sahne",
+      "aliases": [
+        "{'name': 'saure-sahne'}",
+        "{'name': 'saure sahne'}",
+        "{'name': 'sauerrahm'}"
+      ]
+    },
+    {
+      "id": "d9c19105-2363-411d-b3c8-12e74deba82e",
+      "name": "Salat-Mayonnaise",
+      "pluralName": "Salat-Mayonnaise",
+      "aliases": [
+        "{'name': 'salat-mayonnaise'}",
+        "{'name': 'salat mayonnaise'}",
+        "{'name': 'salatmayonnaise'}"
+      ]
+    },
+    {
+      "id": "dffc3cb6-a4c9-4f11-ad63-cc97119caa34",
+      "name": "Basmatireis",
+      "pluralName": "Basmatireis",
+      "aliases": [
+        "{'name': 'basmatireis'}",
+        "{'name': 'basmati-reis'}",
+        "{'name': 'basmati reis'}"
+      ]
+    },
+    {
+      "id": "7d15c9d2-4fbb-458c-b031-fd9460fc657c",
+      "name": "Wasabipaste",
+      "pluralName": "Wasabipaste",
+      "aliases": [
+        "{'name': 'wasabipaste'}",
+        "{'name': 'wasabi'}",
+        "{'name': 'wasabi-paste'}"
+      ]
+    },
+    {
+      "id": "3453bef7-46e7-4894-893a-dafc08123b2f",
+      "name": "Sherry",
+      "pluralName": "Sherry",
+      "aliases": [
+        "{'name': 'sherry'}"
+      ]
+    },
+    {
+      "id": "f1874357-d4fb-4461-bc74-65622071ed2d",
+      "name": "Orangensaft",
+      "pluralName": "Orangensaft",
+      "aliases": [
+        "{'name': 'orangensaft'}",
+        "{'name': 'apfelsinensaft'}"
+      ]
+    },
+    {
+      "id": "b5851479-b300-4250-a941-f3b3aa2f2a60",
+      "name": "Butterschmalz",
+      "pluralName": "Butterschmalz",
+      "aliases": [
+        "{'name': 'butterschmalz'}"
+      ]
+    },
+    {
+      "id": "e7e9520d-fe1e-4191-af2a-a23f2801aac8",
+      "name": "Orange",
+      "pluralName": "Orangen",
+      "aliases": [
+        "{'name': 'orange'}",
+        "{'name': 'apfelsine'}"
+      ]
+    },
+    {
+      "id": "b233c252-c1ac-4ae8-8c87-6e73a2f56534",
+      "name": "Knoblauch",
+      "pluralName": "Knoblauch",
+      "aliases": [
+        "{'name': 'knoblauch'}"
+      ]
+    },
+    {
+      "id": "157d1764-f24d-4c42-9cf7-9414528acad1",
+      "name": "Porree",
+      "pluralName": "Porrees",
+      "aliases": [
+        "{'name': 'porree'}",
+        "{'name': 'lauch'}"
+      ]
+    },
+    {
+      "id": "e0a2b2e6-ad2c-4054-b7f5-c611803dcd84",
+      "name": "Wermut",
+      "pluralName": "Wermut",
+      "aliases": [
+        "{'name': 'wermutwein'}",
+        "{'name': 'vermouth'}"
+      ]
+    },
+    {
+      "id": "2b4654bc-1ed3-4cdf-a879-55ce3dd2061b",
+      "name": "Fett",
+      "pluralName": "Fett",
+      "aliases": [
+        "{'name': 'fett'}"
+      ]
+    },
+    {
+      "id": "cbcaa29b-a3b7-4615-89a7-a2691fef9e3f",
+      "name": "Trockener Wermut",
+      "pluralName": "Trockener Wermut",
+      "aliases": [
+        "{'name': 'trockener wermut'}",
+        "{'name': 'trockener-wermut'}"
+      ]
+    },
+    {
+      "id": "0bb022f0-4715-4bdf-8938-7be3b867d3ab",
+      "name": "Wan Tan Tasche",
+      "pluralName": "Wan Tan Taschen",
+      "aliases": []
+    },
+    {
+      "id": "bef85ad9-55fb-494a-9327-83497d515a6c",
+      "name": "Sojasprossen",
+      "pluralName": "Sojasprossen",
+      "aliases": []
+    },
+    {
+      "id": "19273c85-bfe2-4188-9145-57f872582970",
+      "name": "Koriander",
+      "pluralName": "Koriander",
+      "aliases": []
+    },
+    {
+      "id": "a89d7c25-26dc-4258-9891-d5718371fc6e",
+      "name": "Möhre",
+      "pluralName": "Möhren",
+      "aliases": []
+    },
+    {
+      "id": "7c8bd9d5-cc9c-4733-94ca-c29ceeb5dd1a",
+      "name": "Frühlingszwiebel",
+      "pluralName": "Frühlingszwiebeln",
+      "aliases": []
+    },
+    {
+      "id": "c49cdec0-c358-4524-8229-f6867e1b3212",
+      "name": "Baby Pak Choi",
+      "pluralName": "Baby Pak Choi",
+      "aliases": []
+    },
+    {
+      "id": "794081aa-5f3c-4448-a2dd-bbbe1818c6a4",
+      "name": "Sesamöl",
+      "pluralName": "Sesamöl",
+      "aliases": []
+    },
+    {
+      "id": "b1437ce2-420e-4af6-94d2-0e291d5c3c44",
+      "name": "Sojasauce",
+      "pluralName": "Sojasauce",
+      "aliases": []
+    },
+    {
+      "id": "d9eba0f7-27ac-40b9-ac5a-c47d14f705be",
+      "name": "Agavendicksaft",
+      "pluralName": "Agavendicksaft",
+      "aliases": []
+    },
+    {
+      "id": "0e037beb-19bc-4fb8-af86-c39fe82638fe",
+      "name": "Wan Tan Instant Pulver",
+      "pluralName": "Wan Tan Instant Pulver",
+      "aliases": []
+    },
+    {
+      "id": "88528732-68fa-4982-b556-17f277043eb9",
+      "name": "Wasser",
+      "pluralName": "Wasser",
+      "aliases": []
+    },
+    {
+      "id": "31eedd6a-c57b-4979-8a9d-b7ff71663acc",
+      "name": "Salbeiblatt",
+      "pluralName": "Salbeiblätter",
+      "aliases": []
+    },
+    {
+      "id": "faec60df-abda-4f65-bed0-b81d47121a55",
+      "name": "Rote Zwiebel",
+      "pluralName": "Rote Zwiebeln",
+      "aliases": []
+    },
+    {
+      "id": "1e9f9678-213c-477d-8c3a-7c5a7f365f32",
+      "name": "Fett zum Braten",
+      "pluralName": "Fett zum Braten",
+      "aliases": [
+        "{'name': 'bratfett'}"
+      ]
+    },
+    {
+      "id": "16018665-3023-4213-aeb2-c8445dd699b6",
+      "name": "Heller Soßenbinder",
+      "pluralName": "Heller Soßenbinder",
+      "aliases": []
+    },
+    {
+      "id": "56d8f876-0110-410f-951e-7a4b365437ce",
+      "name": "Hähnchenbrustfilet",
+      "pluralName": "Hähnchenbrustfilets",
+      "aliases": [
+        "{'name': 'hähnchen-brustfilet'}",
+        "{'name': 'hähnchenbrust-filet'}",
+        "{'name': 'haehnchenbrustfilet'}",
+        "{'name': 'haehnchenbrustfilets'}"
+      ]
+    },
+    {
+      "id": "baec189d-c87d-4e04-b972-db79b960e84e",
+      "name": "Pfeffer",
+      "pluralName": "Pfeffer",
+      "aliases": []
+    },
+    {
+      "id": "aeb19e8c-cc64-4a19-a216-182b40e0852e",
+      "name": "Salz",
+      "pluralName": "Salz",
+      "aliases": []
+    },
+    {
+      "id": "ce7b4e53-b248-490e-953f-c4548bfb941a",
+      "name": "Süße Sahne",
+      "pluralName": "Süße Sahne",
+      "aliases": [
+        "{'name': 'suesse sahne'}"
+      ]
+    },
+    {
+      "id": "60554611-f601-4d7f-b7dc-ce21c3462067",
+      "name": "Champignon",
+      "pluralName": "Champignons",
+      "aliases": []
+    },
+    {
+      "id": "2092d72d-0375-4ce9-b524-830a98107cf4",
+      "name": "Parma-Schinken",
+      "pluralName": "Parma-Schinken",
+      "aliases": [
+        "{'name': 'parma schinken'}",
+        "{'name': 'parmaschinken'}"
+      ]
+    },
+    {
+      "id": "e05b0a19-e240-4b42-94b9-509e485d60b0",
+      "name": "Gruyere",
+      "pluralName": "Gruyere",
+      "aliases": []
+    },
+    {
+      "id": "ddb8a0cf-cbaf-46bf-9069-233386e3d7bc",
+      "name": "Knoblauchzehe",
+      "pluralName": "Knoblauchzehen",
+      "aliases": []
+    },
+    {
+      "id": "1e788050-8eef-433d-850c-6ededd09e367",
+      "name": "Baguette",
+      "pluralName": "Baguette",
+      "aliases": []
+    },
+    {
+      "id": "b7e2a76d-d763-4ab6-8a71-f099511c4d3d",
+      "name": "Rinderbrühe",
+      "pluralName": "Rinderbrühe",
+      "aliases": []
+    },
+    {
+      "id": "49ad74f8-8303-4fa3-8e31-0e5b0d55e12d",
+      "name": "Mehl",
+      "pluralName": "Mehl",
+      "aliases": []
+    },
+    {
+      "id": "d234d031-dc3c-49a1-a23c-6428cb06d61a",
+      "name": "Olivenöl",
+      "pluralName": "Olivenöl",
+      "aliases": []
+    },
+    {
+      "id": "4df85f09-2b50-4d36-a9f2-09ffee8ca8d1",
+      "name": "Butter",
+      "pluralName": "Butter",
+      "aliases": []
+    },
+    {
+      "id": "53fed768-728a-4b51-aff1-ca5a1857b6dc",
+      "name": "Zwiebel",
+      "pluralName": "Zwiebeln",
+      "aliases": [
+        "{'name': 'Onions'}",
+        "{'name': 'Speisezwiebel'}",
+        "{'name': 'Küchenzwiebel'}"
+      ]
+    }
+  ]
+}

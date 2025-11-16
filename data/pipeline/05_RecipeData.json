@@ -1,0 +1,308 @@
+{
+  "title": "Asia-Gemüse-Suppe mit Lachs",
+  "description": "Aromatische, leichte Asia-Gemüse-Suppe mit zartem Lachs, Ingwer und frischem Koriander. Die Suppe verbindet würzige Aromen mit knackigem Gemüse und ist in kurzer Zeit zubereitet.",
+  "recipeServings": 2.0,
+  "recipeYieldQuantity": 2.0,
+  "recipeYield": "2 Portionen",
+  "totalTime": "30 Min.",
+  "prepTime": "10 Min.",
+  "performTime": "20 Min.",
+  "ingredients": [
+    {
+      "name": null,
+      "ingredients": [
+        {
+          "quantity": 30.0,
+          "note": "geschält und gewürfelt",
+          "food": {
+            "name": "Ingwer",
+            "originalName": "Ingwer",
+            "badgeId": "new",
+            "newId": "food-new-0-0"
+          },
+          "unit": {
+            "name": "g",
+            "originalName": "g",
+            "mealieUnitId": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": 1.0,
+          "note": "geschält und gewürfelt",
+          "food": {
+            "name": "Knoblauch",
+            "originalName": "Knoblauch",
+            "mealieFoodId": "b233c252-c1ac-4ae8-8c87-6e73a2f56534",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": "Zehe",
+            "originalName": "Zehe",
+            "mealieUnitId": "b737ead9-f0b1-406d-8f33-d2ab44fd3a85",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": 0.5,
+          "note": "entkernt und gewaschen",
+          "food": {
+            "name": "rote Chilischote",
+            "originalName": "rote Chilischote",
+            "badgeId": "new",
+            "newId": "food-new-0-2"
+          },
+          "unit": {
+            "name": "Stück",
+            "originalName": "Stück",
+            "mealieUnitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": 1.0,
+          "note": "geputzt, geschält und in ca. 0.5 cm dicke Spalten geschnitten",
+          "food": {
+            "name": "Kohlrabi",
+            "originalName": "Kohlrabi",
+            "badgeId": "new",
+            "newId": "food-new-0-3"
+          },
+          "unit": {
+            "name": "Stück",
+            "originalName": "Stück",
+            "mealieUnitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": 150.0,
+          "note": "geputzt, geschält und schräg in ca. 0.5 cm dicke Scheiben geschnitten",
+          "food": {
+            "name": "Möhren",
+            "originalName": "Möhren",
+            "mealieFoodId": "a89d7c25-26dc-4258-9891-d5718371fc6e",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": "g",
+            "originalName": "g",
+            "mealieUnitId": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": 100.0,
+          "note": "Stiele entfernt, je nach Größe halbiert oder geviertelt",
+          "food": {
+            "name": "Shiitake-Pilze",
+            "originalName": "Shiitake-Pilze",
+            "badgeId": "new",
+            "newId": "food-new-0-5"
+          },
+          "unit": {
+            "name": "g",
+            "originalName": "g",
+            "mealieUnitId": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": 100.0,
+          "note": "in ca. 2 cm große Würfel geschnitten; alternativ anderer Fisch",
+          "food": {
+            "name": "Lachs",
+            "originalName": "Lachs",
+            "badgeId": "new",
+            "newId": "food-new-0-6"
+          },
+          "unit": {
+            "name": "g",
+            "originalName": "g",
+            "mealieUnitId": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": 4.0,
+          "note": "Blätter abzupfen und frisch verwenden",
+          "food": {
+            "name": "Koriander",
+            "originalName": "Koriander",
+            "mealieFoodId": "19273c85-bfe2-4188-9145-57f872582970",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": "Stiele",
+            "originalName": "Stiele",
+            "mealieUnitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+            "badgeId": "found_ai"
+          }
+        },
+        {
+          "quantity": 1.0,
+          "note": null,
+          "food": {
+            "name": "Kokosöl",
+            "originalName": "Kokosöl",
+            "badgeId": "new",
+            "newId": "food-new-0-8"
+          },
+          "unit": {
+            "name": "Esslöffel",
+            "originalName": "Esslöffel",
+            "mealieUnitId": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": 2.0,
+          "note": null,
+          "food": {
+            "name": "geröstetes Sesamöl",
+            "originalName": "geröstetes Sesamöl",
+            "badgeId": "new",
+            "newId": "food-new-0-9"
+          },
+          "unit": {
+            "name": "Teelöffel",
+            "originalName": "Teelöffel",
+            "mealieUnitId": "190e0f06-fae8-4d6f-9009-a3c7b214434e",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": 750.0,
+          "note": null,
+          "food": {
+            "name": "glutenfreie Gemüsebrühe",
+            "originalName": "glutenfreie Gemüsebrühe",
+            "badgeId": "new",
+            "newId": "food-new-0-10"
+          },
+          "unit": {
+            "name": "ml",
+            "originalName": "ml",
+            "mealieUnitId": "b558643c-bb92-479d-97ea-1337edc49d3b",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": 4.0,
+          "note": "halb für das Kochwasser, halb zum Abschmecken verwenden",
+          "food": {
+            "name": "Sojasoße",
+            "originalName": "Sojasoße",
+            "mealieFoodId": "b1437ce2-420e-4af6-94d2-0e291d5c3c44",
+            "badgeId": "found_ai"
+          },
+          "unit": {
+            "name": "Esslöffel",
+            "originalName": "Esslöffel",
+            "mealieUnitId": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": 2.0,
+          "note": null,
+          "food": {
+            "name": "Limettensaft",
+            "originalName": "Limettensaft",
+            "badgeId": "new",
+            "newId": "food-new-0-12"
+          },
+          "unit": {
+            "name": "Teelöffel",
+            "originalName": "Teelöffel",
+            "mealieUnitId": "190e0f06-fae8-4d6f-9009-a3c7b214434e",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": 1.0,
+          "note": "optional zum Garnieren",
+          "food": {
+            "name": "geröstete Sesamsamen",
+            "originalName": "geröstete Sesamsamen",
+            "badgeId": "new",
+            "newId": "food-new-0-13"
+          },
+          "unit": {
+            "name": "Esslöffel",
+            "originalName": "Esslöffel",
+            "mealieUnitId": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+            "badgeId": "found_word"
+          }
+        }
+      ]
+    }
+  ],
+  "instructions": [
+    {
+      "name": "Zubereitung",
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "Ingwer und Knoblauch schälen. Chili entkernen und waschen. Alles in kleine Würfel schneiden. Kohlrabi putzen, schälen, halbieren und in etwa 0.5 cm dicke Spalten schneiden. Möhren putzen, schälen und schräg in etwa 0.5 cm dicke Scheiben schneiden. Pilze gegebenenfalls halbieren oder vierteln. Fisch waschen und in circa 2 cm große Würfel schneiden. Koriander waschen, trocken tupfen und die Blätter abzupfen.",
+          "timer_minutes": null
+        },
+        {
+          "order": 2,
+          "instruction": "In einer Pfanne oder einem Topf Kokosöl und geröstetes Sesamöl bei mittlerer Hitze erhitzen und Ingwer, Knoblauch und Chili darin andünsten.",
+          "timer_minutes": 3
+        },
+        {
+          "order": 3,
+          "instruction": "Kohlrabi und Möhren dazugeben und kurz mitdünsten, bis das Gemüse leicht glasig ist.",
+          "timer_minutes": null
+        },
+        {
+          "order": 4,
+          "instruction": "Gemüsebrühe und die Hälfte der Sojasoße dazugeben, alles aufkochen lassen. Mit geschlossenem Deckel bei mittlerer Hitze etwa 7 Minuten garen, bis das Gemüse bissfest ist.",
+          "timer_minutes": 7
+        },
+        {
+          "order": 5,
+          "instruction": "Shiitake-Pilze und Fischwürfel in die Suppe geben, nochmals aufkochen und bei mittlerer Hitze etwa 4 bis 5 Minuten garen, bis der Fisch durch ist.",
+          "timer_minutes": 5
+        },
+        {
+          "order": 6,
+          "instruction": "Mit der übrigen Sojasoße und Limettensaft würzen. Suppe sofort auf Suppenschalen verteilen, mit Korianderblättern bestreuen und nach Belieben mit gerösteten Sesamsamen garnieren.",
+          "timer_minutes": null
+        }
+      ]
+    }
+  ],
+  "notes": "Nährwerte pro Portion: circa 340 kcal, 19 g Kohlenhydrate, 23 g Fett, 16 g Eiweiß, 7 g Ballaststoffe. Achten Sie bei industriell verarbeiteten Zutaten auf Glutenfreiheit, wenn nötig.",
+  "image_path": "data/pipeline/02_RecipeImage.jpg",
+  "image_url": null,
+  "metadata": {
+    "source": "https://www.ndr.de/ratgeber/kochen/rezepte/Asia-Gemuese-Suppe-mit-Lachs,rezept3448.html",
+    "categories": [
+      "Suppe",
+      "Fisch",
+      "Asiatisch",
+      "Hauptgericht",
+      "Leicht"
+    ],
+    "cuisine": "Asiatisch",
+    "tags": [
+      "Lachs",
+      "Glutenfrei",
+      "Schnell",
+      "Gesund",
+      "Ingwer",
+      "Koriander"
+    ],
+    "mealie_categories": [],
+    "mealie_tags": []
+  },
+  "assets": [
+    {
+      "file_name": "02_RecipeImage.jpg",
+      "dataPath": null
+    }
+  ]
+}

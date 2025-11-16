@@ -1,0 +1,317 @@
+{
+  "generatedAt": "2025-11-16T15:34:02.331248",
+  "ingredients": [
+    {
+      "key": "0:0",
+      "newId": "food-new-0-0",
+      "suggestion": {
+        "nameSingular": "Ingwer",
+        "namePlural": "Ingwer",
+        "aliases": [],
+        "categoryId": null,
+        "categoryName": null
+      },
+      "userDecision": {
+        "action": "auto",
+        "useFoodId": null,
+        "create": {
+          "nameSingular": "Ingwer",
+          "namePlural": "Ingwer",
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
+          "description": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:1",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useFoodId": null,
+        "create": {
+          "nameSingular": null,
+          "namePlural": null,
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
+          "description": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:2",
+      "newId": "food-new-0-2",
+      "suggestion": {
+        "nameSingular": "Rote Chilischote",
+        "namePlural": "Rote Chilischoten",
+        "aliases": [],
+        "categoryId": null,
+        "categoryName": null
+      },
+      "userDecision": {
+        "action": "auto",
+        "useFoodId": null,
+        "create": {
+          "nameSingular": "Rote Chilischote",
+          "namePlural": "Rote Chilischoten",
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
+          "description": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:3",
+      "newId": "food-new-0-3",
+      "suggestion": {
+        "nameSingular": "Kohlrabi",
+        "namePlural": "Kohlrabie",
+        "aliases": [],
+        "categoryId": null,
+        "categoryName": null
+      },
+      "userDecision": {
+        "action": "auto",
+        "useFoodId": null,
+        "create": {
+          "nameSingular": "Kohlrabi",
+          "namePlural": "Kohlrabie",
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
+          "description": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:4",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useFoodId": null,
+        "create": {
+          "nameSingular": null,
+          "namePlural": null,
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
+          "description": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:5",
+      "newId": "food-new-0-5",
+      "suggestion": {
+        "nameSingular": "Shiitake-Pilze",
+        "namePlural": "Shiitake-Pilzen",
+        "aliases": [],
+        "categoryId": null,
+        "categoryName": null
+      },
+      "userDecision": {
+        "action": "auto",
+        "useFoodId": null,
+        "create": {
+          "nameSingular": "Shiitake-Pilze",
+          "namePlural": "Shiitake-Pilzen",
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
+          "description": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:6",
+      "newId": "food-new-0-6",
+      "suggestion": {
+        "nameSingular": "Lachs",
+        "namePlural": "Lachs",
+        "aliases": [],
+        "categoryId": null,
+        "categoryName": null
+      },
+      "userDecision": {
+        "action": "auto",
+        "useFoodId": null,
+        "create": {
+          "nameSingular": "Lachs",
+          "namePlural": "Lachs",
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
+          "description": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:7",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useFoodId": null,
+        "create": {
+          "nameSingular": null,
+          "namePlural": null,
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
+          "description": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:8",
+      "newId": "food-new-0-8",
+      "suggestion": {
+        "nameSingular": "Kokosöl",
+        "namePlural": "Kokosöle",
+        "aliases": [],
+        "categoryId": null,
+        "categoryName": null
+      },
+      "userDecision": {
+        "action": "auto",
+        "useFoodId": null,
+        "create": {
+          "nameSingular": "Kokosöl",
+          "namePlural": "Kokosöle",
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
+          "description": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:9",
+      "newId": "food-new-0-9",
+      "suggestion": {
+        "nameSingular": "Geröstetes Sesamöl",
+        "namePlural": "Geröstetes Sesamöle",
+        "aliases": [],
+        "categoryId": null,
+        "categoryName": null
+      },
+      "userDecision": {
+        "action": "auto",
+        "useFoodId": null,
+        "create": {
+          "nameSingular": "Geröstetes Sesamöl",
+          "namePlural": "Geröstetes Sesamöle",
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
+          "description": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:10",
+      "newId": "food-new-0-10",
+      "suggestion": {
+        "nameSingular": "Glutenfreie Gemüsebrühe",
+        "namePlural": "Glutenfreie Gemüsebrühen",
+        "aliases": [],
+        "categoryId": null,
+        "categoryName": null
+      },
+      "userDecision": {
+        "action": "auto",
+        "useFoodId": null,
+        "create": {
+          "nameSingular": "Glutenfreie Gemüsebrühe",
+          "namePlural": "Glutenfreie Gemüsebrühen",
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
+          "description": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:11",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useFoodId": null,
+        "create": {
+          "nameSingular": null,
+          "namePlural": null,
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
+          "description": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:12",
+      "newId": "food-new-0-12",
+      "suggestion": {
+        "nameSingular": "Limettensaft",
+        "namePlural": "Limettensafte",
+        "aliases": [],
+        "categoryId": null,
+        "categoryName": null
+      },
+      "userDecision": {
+        "action": "auto",
+        "useFoodId": null,
+        "create": {
+          "nameSingular": "Limettensaft",
+          "namePlural": "Limettensafte",
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
+          "description": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:13",
+      "newId": "food-new-0-13",
+      "suggestion": {
+        "nameSingular": "Geröstete Sesamsame",
+        "namePlural": "Geröstete Sesamsamen",
+        "aliases": [],
+        "categoryId": null,
+        "categoryName": null
+      },
+      "userDecision": {
+        "action": "auto",
+        "useFoodId": null,
+        "create": {
+          "nameSingular": "Geröstete Sesamsame",
+          "namePlural": "Geröstete Sesamsamen",
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
+          "description": null
+        },
+        "notes": ""
+      }
+    }
+  ]
+}

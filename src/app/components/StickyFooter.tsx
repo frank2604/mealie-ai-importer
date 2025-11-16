@@ -8,6 +8,8 @@ interface StickyFooterProps {
   isLastStep: boolean;
   isNextDisabled?: boolean;
   isCancelDisabled?: boolean;
+  isBackDisabled?: boolean;
+  nextLabelOverride?: string | null;
   onBack: () => void;
   onNext: () => void;
   onCancel: () => void;
@@ -18,11 +20,14 @@ export const StickyFooter: React.FC<StickyFooterProps> = ({
   isLastStep,
   isNextDisabled = false,
   isCancelDisabled = false,
+  isBackDisabled = false,
+  nextLabelOverride = null,
   onBack,
   onNext,
   onCancel
 }) => {
   const { t } = useTranslation();
+  const nextLabel = nextLabelOverride ?? (isLastStep ? t("buttons.finish") : t("buttons.next"));
 
   return (
     <footer className="border-t border-border bg-panel/95 backdrop-blur">
@@ -46,11 +51,11 @@ export const StickyFooter: React.FC<StickyFooterProps> = ({
           <button
             type="button"
             onClick={onBack}
-            disabled={isFirstStep}
+            disabled={isFirstStep || isBackDisabled}
             className={clsx(
               "focus-ring inline-flex items-center gap-2 border border-border px-4 py-2 text-sm font-semibold",
               layoutConfig.borderRadius.small,
-              isFirstStep
+              isFirstStep || isBackDisabled
                 ? "cursor-not-allowed opacity-50"
                 : "text-text hover:border-primary/60 hover:text-primary"
             )}
@@ -67,7 +72,7 @@ export const StickyFooter: React.FC<StickyFooterProps> = ({
               layoutConfig.borderRadius.small
             )}
           >
-            {isLastStep ? t("buttons.finish") : t("buttons.next")}
+            {nextLabel}
             <ArrowRightIcon className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>

@@ -1,0 +1,187 @@
+{
+  "updated_at": "2025-11-16T12:16:37.415886",
+  "units": [
+    {
+      "id": "14bd13df-83f2-44e5-a326-abc2fb38c09b",
+      "name": "Blatt",
+      "pluralName": "Blätter",
+      "abbreviation": "Bl.",
+      "pluralAbbreviation": ""
+    },
+    {
+      "id": "2c3e0c93-592c-4759-bb3e-685a247b49b8",
+      "name": "Scheibe",
+      "pluralName": "Scheiben",
+      "abbreviation": "",
+      "pluralAbbreviation": ""
+    },
+    {
+      "id": "b558643c-bb92-479d-97ea-1337edc49d3b",
+      "name": "Milliliter",
+      "pluralName": "Milliliter",
+      "abbreviation": "ml",
+      "pluralAbbreviation": "ml"
+    },
+    {
+      "id": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+      "name": "Stück",
+      "pluralName": "Stücke",
+      "abbreviation": "Stk.",
+      "pluralAbbreviation": ""
+    },
+    {
+      "id": "8867a997-b6df-4012-baf2-c4f6987208b7",
+      "name": "Prise",
+      "pluralName": "Prisen",
+      "abbreviation": "",
+      "pluralAbbreviation": ""
+    },
+    {
+      "id": "39f5c698-554c-4be9-84b6-83e53bde8086",
+      "name": "Packung",
+      "pluralName": "Packungen",
+      "abbreviation": "",
+      "pluralAbbreviation": ""
+    },
+    {
+      "id": "18de6de3-b087-486e-90fc-20f1303030b3",
+      "name": "Bund",
+      "pluralName": "Bund",
+      "abbreviation": "",
+      "pluralAbbreviation": ""
+    },
+    {
+      "id": "2ecfc79c-9348-42d4-8e15-8e329ed1f7aa",
+      "name": "Dose",
+      "pluralName": "Dosen",
+      "abbreviation": "",
+      "pluralAbbreviation": ""
+    },
+    {
+      "id": "b737ead9-f0b1-406d-8f33-d2ab44fd3a85",
+      "name": "Zehe",
+      "pluralName": "Zehen",
+      "abbreviation": "",
+      "pluralAbbreviation": ""
+    },
+    {
+      "id": "be7bea41-3db8-4e09-921e-95370e4ad273",
+      "name": "Kopf",
+      "pluralName": "Köpfe",
+      "abbreviation": "",
+      "pluralAbbreviation": ""
+    },
+    {
+      "id": "2216e171-6984-4094-9b6d-f6ccb841978d",
+      "name": "Portion",
+      "pluralName": "Portionen",
+      "abbreviation": "",
+      "pluralAbbreviation": ""
+    },
+    {
+      "id": "17a89f14-fa36-43ad-a56b-8a096325ec25",
+      "name": "Schuss",
+      "pluralName": "Schuss",
+      "abbreviation": "",
+      "pluralAbbreviation": ""
+    },
+    {
+      "id": "03f9677e-a261-47ee-84e2-83f2d6fac9c5",
+      "name": "Spritzer",
+      "pluralName": "Spritzer",
+      "abbreviation": "",
+      "pluralAbbreviation": ""
+    },
+    {
+      "id": "8ed1a825-51f2-4d54-b244-d44bcdcd4f99",
+      "name": "Milligramm",
+      "pluralName": "Milligramm",
+      "abbreviation": "mg",
+      "pluralAbbreviation": ""
+    },
+    {
+      "id": "cdcbfa6e-9a7d-4cc3-bf8b-4a007dda1737",
+      "name": "Kilogramm",
+      "pluralName": "Kilogramm",
+      "abbreviation": "kg",
+      "pluralAbbreviation": ""
+    },
+    {
+      "id": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
+      "name": "Gramm",
+      "pluralName": "Gramm",
+      "abbreviation": "g",
+      "pluralAbbreviation": ""
+    },
+    {
+      "id": "e2be0c96-d1a9-408e-b031-fd270a73dc5b",
+      "name": "Unze",
+      "pluralName": "Unzen",
+      "abbreviation": "oz",
+      "pluralAbbreviation": ""
+    },
+    {
+      "id": "b3604b98-4746-4ca1-a989-a9ca8e6e7484",
+      "name": "Pfund",
+      "pluralName": "Pfund",
+      "abbreviation": "Pfd.",
+      "pluralAbbreviation": ""
+    },
+    {
+      "id": "3b04677f-506d-4519-8b16-be376e35a159",
+      "name": "Liter",
+      "pluralName": "Liter",
+      "abbreviation": "L",
+      "pluralAbbreviation": ""
+    },
+    {
+      "id": "302d0411-3e0f-464a-ba90-797821381c03",
+      "name": "Gallone",
+      "pluralName": "Gallonen",
+      "abbreviation": "gal",
+      "pluralAbbreviation": ""
+    },
+    {
+      "id": "13736d8c-269c-4045-8453-474d109d4f5d",
+      "name": "Quart",
+      "pluralName": "Quarts",
+      "abbreviation": "qt",
+      "pluralAbbreviation": ""
+    },
+    {
+      "id": "28ea4d64-6942-4713-ac19-1f223bca5da0",
+      "name": "Pint",
+      "pluralName": "Pints",
+      "abbreviation": "pt",
+      "pluralAbbreviation": ""
+    },
+    {
+      "id": "4728bd76-0613-4bb7-9fbb-b83363173584",
+      "name": "Flüssigunze",
+      "pluralName": "Flüssigunzen",
+      "abbreviation": "fl oz",
+      "pluralAbbreviation": ""
+    },
+    {
+      "id": "e6711358-ba95-4a63-8824-a784977fba14",
+      "name": "Tasse",
+      "pluralName": "Tassen",
+      "abbreviation": "c",
+      "pluralAbbreviation": ""
+    },
+    {
+      "id": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+      "name": "Esslöffel",
+      "pluralName": "Esslöffel",
+      "abbreviation": "EL",
+      "pluralAbbreviation": ""
+    },
+    {
+      "id": "190e0f06-fae8-4d6f-9009-a3c7b214434e",
+      "name": "Teelöffel",
+      "pluralName": "Teelöffel",
+      "abbreviation": "TL",
+      "pluralAbbreviation": ""
+    }
+  ]
+}

@@ -1,0 +1,340 @@
+{
+  "title": "Hähnchen-Saltimbocca",
+  "description": "Zarte Hähnchenbrustfilets werden mit frischen Salbeiblättern und Parma-Schinken umwickelt, mit Butter bepinselt und auf dem Grill saftig gegrillt. Dazu passt ein cremiger Zitronen-Dip mit Thymian, der frisch und aromatisch schmeckt. Dieses Gericht ist ideal für warme Grillabende und Partys.",
+  "recipeServings": 10.0,
+  "recipeYieldQuantity": 10.0,
+  "recipeYield": "10 Portionen",
+  "totalTime": "40-45 Min.",
+  "prepTime": "30 Min.",
+  "performTime": "10-15 Min.",
+  "ingredients": [
+    {
+      "name": "Hauptzutaten",
+      "ingredients": [
+        {
+          "quantity": 10.0,
+          "note": "je ca. 130 g",
+          "food": {
+            "name": "Hähnchenbrustfilets",
+            "originalName": "Hähnchenbrustfilets",
+            "mealieFoodId": "56d8f876-0110-410f-951e-7a4b365437ce",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": "Stück",
+            "originalName": "Stück",
+            "mealieUnitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": null,
+          "note": "frisch, pro Filet 1–2 Blätter",
+          "food": {
+            "name": "Salbeiblätter",
+            "originalName": "Salbeiblätter",
+            "mealieFoodId": "31eedd6a-c57b-4979-8a9d-b7ff71663acc",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": null,
+            "originalName": null
+          }
+        },
+        {
+          "quantity": 10.0,
+          "note": "insgesamt ca. 150 g",
+          "food": {
+            "name": "Parmaschinken (Parma- oder Prosciutto)",
+            "originalName": "Parmaschinken (Parma- oder Prosciutto)",
+            "mealieFoodId": "2092d72d-0375-4ce9-b524-830a98107cf4",
+            "badgeId": "found_ai"
+          },
+          "unit": {
+            "name": "Scheiben",
+            "originalName": "Scheiben",
+            "mealieUnitId": "2c3e0c93-592c-4759-bb3e-685a247b49b8",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": 4.0,
+          "note": "zum Zerlassen und Bepinseln",
+          "food": {
+            "name": "Butter",
+            "originalName": "Butter",
+            "mealieFoodId": "4df85f09-2b50-4d36-a9f2-09ffee8ca8d1",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": "EL",
+            "originalName": "EL",
+            "mealieUnitId": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": null,
+          "note": "frisch gemahlen, nach Geschmack",
+          "food": {
+            "name": "Pfeffer",
+            "originalName": "Pfeffer",
+            "mealieFoodId": "baec189d-c87d-4e04-b972-db79b960e84e",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": null,
+            "originalName": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "Zitronen-Dip",
+      "ingredients": [
+        {
+          "quantity": 200.0,
+          "note": null,
+          "food": {
+            "name": "Salat-Mayonnaise",
+            "originalName": "Salat-Mayonnaise",
+            "mealieFoodId": "d9c19105-2363-411d-b3c8-12e74deba82e",
+            "badgeId": "new",
+            "newId": "food-new-1-0"
+          },
+          "unit": {
+            "name": "g",
+            "originalName": "g",
+            "mealieUnitId": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": 300.0,
+          "note": null,
+          "food": {
+            "name": "Saure Sahne",
+            "originalName": "Saure Sahne",
+            "mealieFoodId": "a0ac0082-8ef1-4462-8fbc-51cde41371b9",
+            "badgeId": "new",
+            "newId": "food-new-1-1"
+          },
+          "unit": {
+            "name": "g",
+            "originalName": "g",
+            "mealieUnitId": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": 1.0,
+          "note": "unbehandelte Zitrone",
+          "food": {
+            "name": "Abgeriebene Schale von Zitrone",
+            "originalName": "Abgeriebene Schale von Zitrone",
+            "mealieFoodId": "863eab63-a067-4e4d-9bbd-3bc88ae77955",
+            "badgeId": "new",
+            "newId": "food-new-1-2"
+          },
+          "unit": {
+            "name": "Stück",
+            "originalName": "Stück",
+            "mealieUnitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": null,
+          "note": "nach Geschmack",
+          "food": {
+            "name": "Salz",
+            "originalName": "Salz",
+            "mealieFoodId": "aeb19e8c-cc64-4a19-a216-182b40e0852e",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": null,
+            "originalName": null
+          }
+        },
+        {
+          "quantity": null,
+          "note": "nach Geschmack",
+          "food": {
+            "name": "Pfeffer",
+            "originalName": "Pfeffer",
+            "mealieFoodId": "baec189d-c87d-4e04-b972-db79b960e84e",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": null,
+            "originalName": null
+          }
+        },
+        {
+          "quantity": 1.0,
+          "note": null,
+          "food": {
+            "name": "Zucker",
+            "originalName": "Zucker",
+            "mealieFoodId": "8ba7ccd4-bf48-4e61-9aa4-2af9cf62fb90",
+            "badgeId": "new",
+            "newId": "food-new-1-5"
+          },
+          "unit": {
+            "name": "Prise",
+            "originalName": "Prise",
+            "mealieUnitId": "8867a997-b6df-4012-baf2-c4f6987208b7",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": null,
+          "note": "frisch, fein gehackt",
+          "food": {
+            "name": "Thymianblättchen",
+            "originalName": "Thymianblättchen",
+            "mealieFoodId": "a884cc29-5a5f-4298-b0c7-2a7c5d4c5a6e",
+            "badgeId": "new",
+            "newId": "food-new-1-6"
+          },
+          "unit": {
+            "name": null,
+            "originalName": null
+          }
+        }
+      ]
+    }
+  ],
+  "instructions": [
+    {
+      "name": "Zubereitung",
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "Am Morgen die Hähnchenbrustfilets abbrausen und trocken tupfen. Salbeiblätter von den Stielen zupfen.",
+          "timer_minutes": null
+        },
+        {
+          "order": 2,
+          "instruction": "Auf jedes Hähnchenfilet 1–2 Salbeiblätter legen und jedes Filet fest mit jeweils einer Scheibe Parma‑/Prosciutto umwickeln.",
+          "timer_minutes": null
+        },
+        {
+          "order": 3,
+          "instruction": "Butter zerlassen und die Hähnchenfilets damit rundherum bepinseln. Zugedeckt kalt stellen, bis sie gegrillt werden.",
+          "timer_minutes": null
+        },
+        {
+          "order": 4,
+          "instruction": "Für den Dip Mayonnaise mit saurer Sahne und der abgeriebenen Zitronenschale verrühren. Mit Salz, Pfeffer und einer Prise Zucker abschmecken.",
+          "timer_minutes": null
+        },
+        {
+          "order": 5,
+          "instruction": "Thymianblättchen abzupfen, fein hacken und unter den Dip rühren.",
+          "timer_minutes": null
+        },
+        {
+          "order": 6,
+          "instruction": "Kurz bevor die Gäste kommen, die Hähnchen-Saltimbocca mit Pfeffer würzen. Auf dem Grillrost oder in einer Alu-Grillschale mit etwa 10 cm Abstand zur Glut auf jeder Seite 5–7 Minuten grillen, bis das Hähnchen durchgegart und der Schinken leicht knusprig ist.",
+          "timer_minutes": 6
+        },
+        {
+          "order": 7,
+          "instruction": "Die gegrillten Hähnchenfilets zusammen mit dem Zitronen-Dip servieren.",
+          "timer_minutes": null
+        }
+      ]
+    }
+  ],
+  "notes": "Nährwerte pro Portion: 390 kcal / 1640 kJ; 1 g Kohlenhydrate, 40 g Eiweiß, 25 g Fett. Transporttipp: Hähnchenbrustfilets in verschließbaren Kunststoffdosen und Zitronen-Dip im Schraubglas oder einer verschließbaren Dose in der Kühltasche transportieren.",
+  "image_path": "data/pipeline/02_RecipeImage.jpg",
+  "image_url": null,
+  "metadata": {
+    "source": "data/uploads/7a3cd778040a41ad903e9b02c4b67ef1.pdf",
+    "categories": [
+      "Hauptgericht",
+      "Geflügel",
+      "Grill"
+    ],
+    "cuisine": "italienisch",
+    "tags": [
+      "Saltimbocca",
+      "Grillparty",
+      "Sommer",
+      "Dip",
+      "Partyessen"
+    ],
+    "mealie_categories": [
+      {
+        "id": "c8b08673-ba91-4d4e-899b-77b9e9a4e733",
+        "name": "Hauptgerichte – Fleisch 🥩",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "hauptgerichte-fleisch"
+      }
+    ],
+    "mealie_tags": [
+      {
+        "id": "6b6c225a-f74e-4366-a61b-deb6afccdb3c",
+        "name": "Ernährung | High-Protein 💪",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "ernahrung-high-protein"
+      },
+      {
+        "id": "e109d7e2-dbad-4bd7-88b9-e0187c06853c",
+        "name": "Form | Tapas/Mezze 🍢",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "form-tapas-mezze"
+      },
+      {
+        "id": "b673c7a1-12e3-43cf-a817-914b92e7a124",
+        "name": "Gerät | Grill 🔥",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "gerat-grill"
+      },
+      {
+        "id": "5a37d6eb-8601-432c-b42a-9bcc6787722a",
+        "name": "Hauptzutat | Tomate 🍅",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "hauptzutat-tomate"
+      },
+      {
+        "id": "9063f3bf-6806-49fc-a925-378b15dcc154",
+        "name": "Küche | Italienisch 🇮🇹",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "kuche-italienisch"
+      },
+      {
+        "id": "62cf1ee1-75a7-4eeb-bfd7-bf1f7de26bf0",
+        "name": "Saison | Frühling 🌸",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "saison-fruhling"
+      },
+      {
+        "id": "d5a8b13a-11cb-4d0c-893f-d2c99204eaea",
+        "name": "Schärfe | Mild 🙂",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "scharfe-mild"
+      },
+      {
+        "id": "539f721a-a8e8-4c15-a7b4-deefcfb27f3a",
+        "name": "Tageszeit | Dinner 🌙",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "tageszeit-dinner"
+      },
+      {
+        "id": "aa23235b-594b-48d0-87bc-b5d1de454196",
+        "name": "Technik | Grill 🔥",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "technik-grill"
+      }
+    ]
+  },
+  "assets": [
+    {
+      "file_name": "02_RecipeImage.jpg",
+      "dataPath": "03_RecipeImage.json"
+    }
+  ]
+}

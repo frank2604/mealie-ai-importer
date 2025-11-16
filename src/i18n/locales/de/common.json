@@ -274,7 +274,7 @@
   },
   "transfer": {
     "logTitle": "Übertragungs-Protokoll",
-    "archive": "Log archivieren",
+    "archive": "Lauf archivieren",
     "summary": "Zusammenfassung der übertragenen Elemente. Nutze das Archiv, um die Ergebnisse später nachzuvollziehen.",
     "recipeLabel": "Rezept: {{recipeName}}",
     "runIdLabel": "Lauf-ID: {{runId}}",
@@ -290,8 +290,10 @@
     },
     "actions": {
       "start": "Übertragung starten",
-      "retry": "Übertragung erneut starten"
-    }
+      "retry": "Übertragung erneut starten",
+      "newImport": "Neuen Import starten"
+    },
+    "confirmArchive": "Der Lauf wird archiviert und alle Schritte werden geleert. Möchtest du fortfahren?"
   },
   "settings": {
     "title": "Einstellungen",

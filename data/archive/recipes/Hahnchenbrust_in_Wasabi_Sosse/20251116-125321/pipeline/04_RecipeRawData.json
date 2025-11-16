@@ -1,0 +1,132 @@
+{
+  "title": "Hähnchenbrust in Wasabi-Sauce",
+  "description": "Zart gebratene Hähnchenbrust in einer fruchtig-würzigen Wasabi-Orangen-Sauce. Lauch und Orangenfilets verleihen Frische, während Koriander das Gericht aromatisch abrundet. Schnell zubereitet eignet sich das Rezept hervorragend mit Basmatireis.",
+  "recipeServings": 4.0,
+  "recipeYieldQuantity": 4.0,
+  "recipeYield": "4 Portionen",
+  "totalTime": "ca. 30 Minuten",
+  "prepTime": "ca. 30 Minuten",
+  "ingredients": [
+    {
+      "ingredients": [
+        {
+          "name": "Hähnchenbrustfilet",
+          "quantity": 4.0,
+          "unit": "Stück",
+          "note": "à 100 g"
+        },
+        {
+          "name": "Porree (Lauch)",
+          "quantity": 1.0,
+          "unit": "Stange",
+          "note": "ca. 200 g, in feine Ringe schneiden"
+        },
+        {
+          "name": "Knoblauch",
+          "quantity": 1.0,
+          "unit": "Zehe",
+          "note": "geschält und gewürfelt"
+        },
+        {
+          "name": "Orangen",
+          "quantity": 2.0,
+          "unit": "Stück",
+          "note": "dick schälen, weiße Teile entfernen und in Filets teilen"
+        },
+        {
+          "name": "Butterschmalz",
+          "quantity": 1.0,
+          "unit": "Esslöffel"
+        },
+        {
+          "name": "Orangensaft",
+          "quantity": 200.0,
+          "unit": "ml"
+        },
+        {
+          "name": "Sherry (medium)",
+          "quantity": 50.0,
+          "unit": "ml"
+        },
+        {
+          "name": "Salz",
+          "note": "nach Geschmack"
+        },
+        {
+          "name": "Wasabipaste (grüner Meerrettich)",
+          "quantity": 3.0,
+          "unit": "Teelöffel",
+          "note": "aus dem Asienladen"
+        },
+        {
+          "name": "Koriander",
+          "quantity": 1.0,
+          "unit": "Bund",
+          "note": "gehackt zum Bestreuen"
+        },
+        {
+          "name": "Basmatireis",
+          "note": "als Beilage"
+        }
+      ]
+    }
+  ],
+  "instructions": [
+    {
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "Fleisch mit Haushaltspapier trocken tupfen. Porree putzen und in feine Ringe schneiden. Knoblauchzehe schälen und würfeln. Orangen dick schälen, weiße Teile entfernen und in einzelne Filets teilen."
+        },
+        {
+          "order": 2,
+          "instruction": "Butterschmalz in einer Pfanne erhitzen. Hähnchenbrustfilets im heißen Fett auf jeder Seite etwa 4 Minuten kräftig anbraten, herausnehmen und warm stellen.",
+          "timer_minutes": 4
+        },
+        {
+          "order": 3,
+          "instruction": "Knoblauch im Bratfett andünsten. Orangensaft und Sherry zugeben und etwas einkochen lassen."
+        },
+        {
+          "order": 4,
+          "instruction": "Mit Salz abschmecken und die Wasabipaste einrühren, bis die Sauce gleichmäßig gewürzt ist."
+        },
+        {
+          "order": 5,
+          "instruction": "Hähnchenbrustfilets und Porree in die Sauce legen und etwa 5 Minuten ziehen lassen, damit Fleisch und Lauch die Aromen aufnehmen.",
+          "timer_minutes": 5
+        },
+        {
+          "order": 6,
+          "instruction": "Orangenfilets zugeben und alles mit gehacktem Koriander bestreuen. Nach Belieben mit Basmatireis servieren."
+        }
+      ]
+    }
+  ],
+  "notes": "Tipp: Wasabi-Meerrettich ist als Paste oder Pulver erhältlich. Das schärfere Pulver wird mit Wasser verrührt. 3 Teelöffel Paste können durch 1 Teelöffel Pulver ersetzt werden, vermischt mit 2 Teelöffeln Wasser. Nährwerte pro Portion: ca. 230 kcal; 19 g Eiweiß; 6 g Fett; 22 g Kohlenhydrate. Zubereitungszeit: ca. 30 Minuten.",
+  "image_path": "data/pipeline/02_RecipeImage.jpg",
+  "metadata": {
+    "source": "data/uploads/149ee519c88649b4a58c8c79c39258b6.pdf",
+    "categories": [
+      "Hauptgericht",
+      "Geflügel"
+    ],
+    "cuisine": "asiatisch",
+    "tags": [
+      "Hähnchen",
+      "Wasabi",
+      "Orange",
+      "Koriander",
+      "Sherry",
+      "Porree",
+      "Basmatireis"
+    ],
+    "mealie_categories": [],
+    "mealie_tags": []
+  },
+  "assets": [
+    {
+      "file_name": "02_RecipeImage.jpg"
+    }
+  ]
+}

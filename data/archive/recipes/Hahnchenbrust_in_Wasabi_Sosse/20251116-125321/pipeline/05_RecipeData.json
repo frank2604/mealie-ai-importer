@@ -1,0 +1,324 @@
+{
+  "title": "Hähnchenbrust in Wasabi-Sauce",
+  "description": "Zart gebratene Hähnchenbrust in einer fruchtig-würzigen Wasabi-Orangen-Sauce. Lauch und Orangenfilets verleihen Frische, während Koriander das Gericht aromatisch abrundet. Schnell zubereitet eignet sich das Rezept hervorragend mit Basmatireis.",
+  "recipeServings": 4.0,
+  "recipeYieldQuantity": 4.0,
+  "recipeYield": "4 Portionen",
+  "totalTime": "ca. 30 Minuten",
+  "prepTime": "ca. 30 Minuten",
+  "performTime": null,
+  "ingredients": [
+    {
+      "name": null,
+      "ingredients": [
+        {
+          "quantity": 4.0,
+          "note": "à 100 g",
+          "food": {
+            "name": "Hähnchenbrustfilet",
+            "originalName": "Hähnchenbrustfilet",
+            "mealieFoodId": "56d8f876-0110-410f-951e-7a4b365437ce",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": "Stück",
+            "originalName": "Stück",
+            "mealieUnitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": 1.0,
+          "note": "ca. 200 g, in feine Ringe schneiden",
+          "food": {
+            "name": "Porree (Lauch)",
+            "originalName": "Porree (Lauch)",
+            "mealieFoodId": "157d1764-f24d-4c42-9cf7-9414528acad1",
+            "badgeId": "new",
+            "newId": "food-new-0-1"
+          },
+          "unit": {
+            "name": "Stange",
+            "originalName": "Stange",
+            "mealieUnitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+            "badgeId": "found_ai"
+          }
+        },
+        {
+          "quantity": 1.0,
+          "note": "geschält und gewürfelt",
+          "food": {
+            "name": "Knoblauch",
+            "originalName": "Knoblauch",
+            "mealieFoodId": "b233c252-c1ac-4ae8-8c87-6e73a2f56534",
+            "badgeId": "new",
+            "newId": "food-new-0-2"
+          },
+          "unit": {
+            "name": "Zehe",
+            "originalName": "Zehe",
+            "mealieUnitId": "b737ead9-f0b1-406d-8f33-d2ab44fd3a85",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": 2.0,
+          "note": "dick schälen, weiße Teile entfernen und in Filets teilen",
+          "food": {
+            "name": "Orangen",
+            "originalName": "Orangen",
+            "mealieFoodId": "e7e9520d-fe1e-4191-af2a-a23f2801aac8",
+            "badgeId": "new",
+            "newId": "food-new-0-3"
+          },
+          "unit": {
+            "name": "Stück",
+            "originalName": "Stück",
+            "mealieUnitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": 1.0,
+          "note": null,
+          "food": {
+            "name": "Butterschmalz",
+            "originalName": "Butterschmalz",
+            "mealieFoodId": "b5851479-b300-4250-a941-f3b3aa2f2a60",
+            "badgeId": "new",
+            "newId": "food-new-0-4"
+          },
+          "unit": {
+            "name": "Esslöffel",
+            "originalName": "Esslöffel",
+            "mealieUnitId": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": 200.0,
+          "note": null,
+          "food": {
+            "name": "Orangensaft",
+            "originalName": "Orangensaft",
+            "mealieFoodId": "f1874357-d4fb-4461-bc74-65622071ed2d",
+            "badgeId": "new",
+            "newId": "food-new-0-5"
+          },
+          "unit": {
+            "name": "ml",
+            "originalName": "ml",
+            "mealieUnitId": "b558643c-bb92-479d-97ea-1337edc49d3b",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": 50.0,
+          "note": null,
+          "food": {
+            "name": "Sherry (medium)",
+            "originalName": "Sherry (medium)",
+            "mealieFoodId": "3453bef7-46e7-4894-893a-dafc08123b2f",
+            "badgeId": "new",
+            "newId": "food-new-0-6"
+          },
+          "unit": {
+            "name": "ml",
+            "originalName": "ml",
+            "mealieUnitId": "b558643c-bb92-479d-97ea-1337edc49d3b",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": null,
+          "note": "nach Geschmack",
+          "food": {
+            "name": "Salz",
+            "originalName": "Salz",
+            "mealieFoodId": "aeb19e8c-cc64-4a19-a216-182b40e0852e",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": null,
+            "originalName": null
+          }
+        },
+        {
+          "quantity": 3.0,
+          "note": "aus dem Asienladen",
+          "food": {
+            "name": "Wasabipaste (grüner Meerrettich)",
+            "originalName": "Wasabipaste (grüner Meerrettich)",
+            "mealieFoodId": "7d15c9d2-4fbb-458c-b031-fd9460fc657c",
+            "badgeId": "new",
+            "newId": "food-new-0-8"
+          },
+          "unit": {
+            "name": "Teelöffel",
+            "originalName": "Teelöffel",
+            "mealieUnitId": "190e0f06-fae8-4d6f-9009-a3c7b214434e",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": 1.0,
+          "note": "gehackt zum Bestreuen",
+          "food": {
+            "name": "Koriander",
+            "originalName": "Koriander",
+            "mealieFoodId": "19273c85-bfe2-4188-9145-57f872582970",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": "Bund",
+            "originalName": "Bund",
+            "mealieUnitId": "18de6de3-b087-486e-90fc-20f1303030b3",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "quantity": null,
+          "note": "als Beilage",
+          "food": {
+            "name": "Basmatireis",
+            "originalName": "Basmatireis",
+            "mealieFoodId": "dffc3cb6-a4c9-4f11-ad63-cc97119caa34",
+            "badgeId": "new",
+            "newId": "food-new-0-10"
+          },
+          "unit": {
+            "name": null,
+            "originalName": null
+          }
+        }
+      ]
+    }
+  ],
+  "instructions": [
+    {
+      "name": null,
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "Fleisch mit Haushaltspapier trocken tupfen. Porree putzen und in feine Ringe schneiden. Knoblauchzehe schälen und würfeln. Orangen dick schälen, weiße Teile entfernen und in einzelne Filets teilen.",
+          "timer_minutes": null
+        },
+        {
+          "order": 2,
+          "instruction": "Butterschmalz in einer Pfanne erhitzen. Hähnchenbrustfilets im heißen Fett auf jeder Seite etwa 4 Minuten kräftig anbraten, herausnehmen und warm stellen.",
+          "timer_minutes": 4
+        },
+        {
+          "order": 3,
+          "instruction": "Knoblauch im Bratfett andünsten. Orangensaft und Sherry zugeben und etwas einkochen lassen.",
+          "timer_minutes": null
+        },
+        {
+          "order": 4,
+          "instruction": "Mit Salz abschmecken und die Wasabipaste einrühren, bis die Sauce gleichmäßig gewürzt ist.",
+          "timer_minutes": null
+        },
+        {
+          "order": 5,
+          "instruction": "Hähnchenbrustfilets und Porree in die Sauce legen und etwa 5 Minuten ziehen lassen, damit Fleisch und Lauch die Aromen aufnehmen.",
+          "timer_minutes": 5
+        },
+        {
+          "order": 6,
+          "instruction": "Orangenfilets zugeben und alles mit gehacktem Koriander bestreuen. Nach Belieben mit Basmatireis servieren.",
+          "timer_minutes": null
+        }
+      ]
+    }
+  ],
+  "notes": "Tipp: Wasabi-Meerrettich ist als Paste oder Pulver erhältlich. Das schärfere Pulver wird mit Wasser verrührt. 3 Teelöffel Paste können durch 1 Teelöffel Pulver ersetzt werden, vermischt mit 2 Teelöffeln Wasser. Nährwerte pro Portion: ca. 230 kcal; 19 g Eiweiß; 6 g Fett; 22 g Kohlenhydrate. Zubereitungszeit: ca. 30 Minuten.",
+  "image_path": "data/pipeline/02_RecipeImage.jpg",
+  "image_url": null,
+  "metadata": {
+    "source": "data/uploads/149ee519c88649b4a58c8c79c39258b6.pdf",
+    "categories": [
+      "Hauptgericht",
+      "Geflügel"
+    ],
+    "cuisine": "asiatisch",
+    "tags": [
+      "Hähnchen",
+      "Wasabi",
+      "Orange",
+      "Koriander",
+      "Sherry",
+      "Porree",
+      "Basmatireis"
+    ],
+    "mealie_categories": [
+      {
+        "id": "c8b08673-ba91-4d4e-899b-77b9e9a4e733",
+        "name": "Hauptgerichte – Fleisch 🥩",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "hauptgerichte-fleisch"
+      }
+    ],
+    "mealie_tags": [
+      {
+        "id": "6b6c225a-f74e-4366-a61b-deb6afccdb3c",
+        "name": "Ernährung | High-Protein 💪",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "ernahrung-high-protein"
+      },
+      {
+        "id": "934e7b20-c521-40c9-a09c-5bc9706f9542",
+        "name": "Form | Pfannengericht 🍳",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "form-pfannengericht"
+      },
+      {
+        "id": "e2bbf7bb-c780-422d-a020-ef59b37daabc",
+        "name": "Gerät | Reiskocher 🍚",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "gerat-reiskocher"
+      },
+      {
+        "id": "44190fcc-9dd0-4ad8-b122-afd5d4148060",
+        "name": "Hauptzutat | Reis 🍚",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "hauptzutat-reis"
+      },
+      {
+        "id": "09de7e0f-17f5-4afb-aa41-09cb6472dc34",
+        "name": "Küche | Japanisch 🇯🇵",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "kuche-japanisch"
+      },
+      {
+        "id": "62cf1ee1-75a7-4eeb-bfd7-bf1f7de26bf0",
+        "name": "Saison | Frühling 🌸",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "saison-fruhling"
+      },
+      {
+        "id": "20529bfe-76e9-444e-984e-9be15e7a6eda",
+        "name": "Schärfe | Scharf 🔥",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "scharfe-scharf"
+      },
+      {
+        "id": "539f721a-a8e8-4c15-a7b4-deefcfb27f3a",
+        "name": "Tageszeit | Dinner 🌙",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "tageszeit-dinner"
+      },
+      {
+        "id": "de422906-bd1d-4fc3-852f-a5e7b105a6e2",
+        "name": "Technik | Pfanne 🍳",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "technik-pfanne"
+      }
+    ]
+  },
+  "assets": [
+    {
+      "file_name": "02_RecipeImage.jpg",
+      "dataPath": "03_RecipeImage.json"
+    }
+  ]
+}

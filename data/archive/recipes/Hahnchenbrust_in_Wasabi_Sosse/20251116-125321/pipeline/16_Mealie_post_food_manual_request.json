@@ -1,0 +1,21 @@
+{
+  "name": "Wasabipaste",
+  "payload": {
+    "name": "Wasabipaste",
+    "pluralName": "Wasabipaste",
+    "extras": {},
+    "labelId": "36be9b8c-4dd6-4f59-abc0-4715a742566d",
+    "aliases": [
+      {
+        "name": "wasabipaste"
+      },
+      {
+        "name": "wasabi"
+      },
+      {
+        "name": "wasabi-paste"
+      }
+    ],
+    "householdsWithIngredientFood": []
+  }
+}

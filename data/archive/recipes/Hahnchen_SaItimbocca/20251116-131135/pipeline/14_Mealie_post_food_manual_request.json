@@ -1,0 +1,21 @@
+{
+  "name": "Thymianblättchen",
+  "payload": {
+    "name": "Thymianblättchen",
+    "pluralName": "Thymianblättchen",
+    "extras": {},
+    "labelId": "c1e4c9ca-979b-4d58-982e-350f3dd5a5de",
+    "aliases": [
+      {
+        "name": "thymianblättchen"
+      },
+      {
+        "name": "thymian blättchen"
+      },
+      {
+        "name": "thymian-blättchen"
+      }
+    ],
+    "householdsWithIngredientFood": []
+  }
+}

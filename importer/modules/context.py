@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import base64
 import json
+import logging
 import mimetypes
 from copy import deepcopy
 from dataclasses import dataclass, field
@@ -14,6 +15,8 @@ from ..config import AppConfig
 from ..services.run_workspace import PipelineRecorder
 from ..models import Ingredient, Recipe
 from ..pdf_extractor import PdfExtractionResult
+
+logger = logging.getLogger(__name__)
 
 
 def normalize_recipe_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
@@ -78,6 +81,8 @@ def build_recipe_data_payload(recipe: Recipe) -> Dict[str, Any]:
     """Return enriched RecipeData payload with nested food/unit structures."""
     payload = recipe.dict(by_alias=True)
     data = deepcopy(payload)
+    # Ensure every ingredient and instruction has a stable id to support later mappings.
+    _ensure_item_ids(data)
     sections = data.get("ingredients")
     if not isinstance(sections, list):
         return data
@@ -134,6 +139,80 @@ def build_recipe_data_payload(recipe: Recipe) -> Dict[str, Any]:
             new_item["unit"] = unit_block
             items[idx] = new_item
     return data
+
+
+def _ensure_item_ids(data: Dict[str, Any]) -> None:
+    """Add stable ids to ingredients/instructions when missing, so we can link them later."""
+    ingredient_sections = data.get("ingredients") or []
+    for s_idx, section in enumerate(ingredient_sections):
+        items = section.get("ingredients") or []
+        for i_idx, item in enumerate(items):
+            if not item.get("id"):
+                item["id"] = f"ing-{s_idx}-{i_idx}"
+    instruction_sections = data.get("instructions") or []
+    for s_idx, section in enumerate(instruction_sections):
+        steps = section.get("steps") or []
+        for i_idx, step in enumerate(steps):
+            if not step.get("id"):
+                step["id"] = f"step-{s_idx}-{i_idx}"
+            if "ingredientIds" not in step or step.get("ingredientIds") is None:
+                step["ingredientIds"] = []
+            if "ingredientReferenceIds" not in step or step.get("ingredientReferenceIds") is None:
+                step["ingredientReferenceIds"] = []
+
+
+def auto_link_ingredients_to_instructions(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Heuristic pre-fill: map instructions to ingredient ids if none set."""
+    # Work on a copy to keep the caller's payload intact
+    recipe = deepcopy(data)
+    ingredient_sections = recipe.get("ingredients") or []
+    instructions = recipe.get("instructions") or []
+
+    # Build lookup of ingredient ids -> candidate names
+    candidates: Dict[str, str] = {}
+    for section in ingredient_sections:
+        for item in section.get("ingredients") or []:
+            ing_id = item.get("id")
+            if not ing_id:
+                continue
+            names = [
+                item.get("name") or "",
+                (item.get("food") or {}).get("name") or "",
+                (item.get("food") or {}).get("originalName") or "",
+            ]
+            # pick the longest non-empty name as matcher
+            name = max([n for n in names if isinstance(n, str)], key=len, default="").strip()
+            if name:
+                candidates[ing_id] = name.lower()
+
+    for section in instructions:
+        for step in section.get("steps") or []:
+            # Respect existing mappings
+            existing = step.get("ingredientIds") or []
+            if existing:
+                continue
+            text = (step.get("instruction") or "").lower()
+            matched: list[str] = []
+            for ing_id, needle in candidates.items():
+                if needle and needle in text:
+                    matched.append(ing_id)
+            if matched:
+                # de-duplicate while preserving order
+                seen = set()
+                deduped = []
+                for mid in matched:
+                    if mid in seen:
+                        continue
+                    seen.add(mid)
+                    deduped.append(mid)
+                step["ingredientIds"] = deduped
+    logger.info(
+        "Heuristic ingredient linking: %d ingredients, %d steps, %d steps matched",
+        len(candidates),
+        sum(len(sec.get("steps") or []) for sec in instructions),
+        sum(1 for sec in instructions for st in sec.get("steps") or [] if st.get("ingredientIds")),
+    )
+    return recipe
 
 
 @dataclass

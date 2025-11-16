@@ -1,6 +1,6 @@
 {
-  "title": "Hähnchenbrustfilets im Parma-Schinken mit Champignon-Sahnesoße",
-  "description": "Zarte Hähnchenbrustfilets werden mit Salbei belegt, in Parmaschinken gewickelt und kurz angebraten. Eine cremige Champignon-Wermut-Sahnesoße rundet das Gericht ab und wird im Ofen fertig gegart. Ideal mit Pellkartoffeln und grünem Salat.",
+  "title": "Hähnchenbrustfilets im Parma-Schinken mit Champignon-Sahne-Soße",
+  "description": "Zarte Hähnchenbrustfilets werden mit Salbeiblättern belegt, in Parma-Schinken gewickelt und kurz angebraten. Eine cremige Champignon-Sahne-Soße mit Wermut verleiht dem Gericht feine Aromen. Ideal als gemütliches Ofengericht, dazu passen Pellkartoffeln und grüner Salat.",
   "recipeServings": 4.0,
   "recipeYieldQuantity": 4.0,
   "recipeYield": "4 Portionen",
@@ -30,13 +30,12 @@
           "name": "rote Zwiebeln",
           "quantity": 3.0,
           "unit": "Stück",
-          "note": "geschält und klein gehackt"
+          "note": "geschält und kleingehackt"
         },
         {
-          "name": "Wermut",
+          "name": "trockener Wermut",
           "quantity": 100.0,
-          "unit": "ml",
-          "note": "trocken"
+          "unit": "ml"
         },
         {
           "name": "süße Sahne",
@@ -63,10 +62,12 @@
           "unit": "Blatt"
         },
         {
-          "name": "Salz"
+          "name": "Salz",
+          "note": "zum Abschmecken"
         },
         {
-          "name": "Pfeffer"
+          "name": "Pfeffer",
+          "note": "frisch gemahlen, zum Abschmecken"
         }
       ]
     }
@@ -76,47 +77,48 @@
       "steps": [
         {
           "order": 1,
-          "instruction": "Hähnchenbrustfilets mit Pfeffer würzen. Jeweils ein Salbeiblatt auflegen und die Filets mit Parma-Schinken umwickeln."
+          "instruction": "Hähnchenbrustfilets mit Salz und Pfeffer würzen. Jeweils ein Salbeiblatt auf die Filets legen und mit einer oder mehreren Scheiben Parma-Schinken umwickeln."
         },
         {
           "order": 2,
-          "instruction": "Fett in einer Pfanne erhitzen. Die Filets leicht mit Mehl bestäuben und in der Pfanne rundherum anbraten, bis sie Farbe haben. Herausnehmen und in eine feuerfeste Form legen."
+          "instruction": "Fett in einer Pfanne erhitzen. Die Filets leicht mit Mehl bestäuben und von beiden Seiten anbraten, bis sie Farbe nehmen. Herausnehmen und in eine feuerfeste Form legen."
         },
         {
           "order": 3,
-          "instruction": "Zwiebeln schälen und klein hacken. Zusammen mit den geviertelten Champignons in der Pfanne anbraten."
+          "instruction": "Zwiebeln schälen und kleinhacken. In derselben Pfanne Zwiebeln und die geviertelten Champignons anbraten, bis sie leicht gebräunt sind."
         },
         {
           "order": 4,
-          "instruction": "Mit Wermut ablöschen, kurz einkochen lassen und dann die süße Sahne zugießen. Den hellen Soßenbinder einrühren, die Soße kurz aufkochen lassen und mit Salz und Pfeffer abschmecken."
+          "instruction": "Mit dem trockenen Wermut ablöschen, etwas einkochen lassen und dann die süße Sahne zugießen. Den hellen Soßenbinder einrühren, die Soße kurz aufkochen lassen und mit Salz und Pfeffer abschmecken."
         },
         {
           "order": 5,
-          "instruction": "Die Soße über die Filets in der Auflaufform gießen und alles im vorgeheizten Ofen bei 200° C etwa 20 Minuten garen lassen.",
+          "instruction": "Die Soße über die Hähnchenfilets in der feuerfesten Form geben. Im vorgeheizten Backofen bei 200 °C etwa 20 Minuten garen lassen.",
           "timer_minutes": 20
         },
         {
           "order": 6,
-          "instruction": "Als Beilage passen Pellkartoffeln und ein grüner Salat."
+          "instruction": "Aus dem Ofen nehmen und servieren. Dazu passen Pellkartoffeln und grüner Salat."
         }
       ]
     }
   ],
-  "notes": "Beim Anbraten darauf achten, dass der Schinken nicht verbrennt. Die Garzeit kann je nach Dicke der Filets variieren.",
+  "notes": "Backofen 200 °C. Als Beilage passen Pellkartoffeln und grüner Salat. Menge reicht für etwa 4 Portionen.",
   "image_path": "data/pipeline/02_RecipeImage.jpg",
   "metadata": {
-    "source": "data/uploads/4a445f71e5434eda8184ebcc682c42cd.pdf",
+    "source": "data/uploads/eae0e771a80342ce987680256a5db88c.pdf",
     "categories": [
       "Hauptgericht",
       "Geflügel",
-      "Ofen"
+      "Ofengericht"
     ],
     "cuisine": "Deutsch",
     "tags": [
+      "Hähnchen",
       "Parmaschinken",
-      "Salbei",
       "Champignons",
       "Sahnesoße",
+      "Salbei",
       "Wermut"
     ],
     "mealie_categories": [],

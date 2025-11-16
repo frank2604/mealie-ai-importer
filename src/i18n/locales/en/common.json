@@ -141,6 +141,7 @@
     "loading": "Loading review data…",
     "saving": "Saving changes…",
     "noRunSelected": "No run selected yet.",
+    "readonlyNotice": "Transfer is running or completed. Editing is disabled.",
     "noMapping": "No mapping available.",
     "sections": {
       "ingredients": "Ingredients, quantities & units",

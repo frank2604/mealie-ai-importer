@@ -1,6 +1,6 @@
 {
-  "title": "Hähnchenbrustfilets im Parma-Schinken mit Champignon-Sahnesoße",
-  "description": "Zarte Hähnchenbrustfilets werden mit Salbei belegt, in Parmaschinken gewickelt und kurz angebraten. Eine cremige Champignon-Wermut-Sahnesoße rundet das Gericht ab und wird im Ofen fertig gegart. Ideal mit Pellkartoffeln und grünem Salat.",
+  "title": "Hähnchenbrustfilets im Parma-Schinken mit Champignon-Sahne-Soße",
+  "description": "Zarte Hähnchenbrustfilets werden mit Salbeiblättern belegt, in Parma-Schinken gewickelt und kurz angebraten. Eine cremige Champignon-Sahne-Soße mit Wermut verleiht dem Gericht feine Aromen. Ideal als gemütliches Ofengericht, dazu passen Pellkartoffeln und grüner Salat.",
   "recipeServings": 4.0,
   "recipeYieldQuantity": 4.0,
   "recipeYield": "4 Portionen",
@@ -61,7 +61,7 @@
         },
         {
           "quantity": 3.0,
-          "note": "geschält und klein gehackt",
+          "note": "geschält und kleingehackt",
           "food": {
             "name": "rote Zwiebeln",
             "originalName": "rote Zwiebeln",
@@ -77,13 +77,12 @@
         },
         {
           "quantity": 100.0,
-          "note": "trocken",
+          "note": null,
           "food": {
-            "name": "Wermut",
-            "originalName": "Wermut",
-            "mealieFoodId": "e0a2b2e6-ad2c-4054-b7f5-c611803dcd84",
-            "badgeId": "new",
-            "newId": "food-new-0-4"
+            "name": "trockener Wermut",
+            "originalName": "trockener Wermut",
+            "mealieFoodId": "cbcaa29b-a3b7-4615-89a7-a2691fef9e3f",
+            "badgeId": "found_word"
           },
           "unit": {
             "name": "ml",
@@ -172,7 +171,7 @@
         },
         {
           "quantity": null,
-          "note": null,
+          "note": "zum Abschmecken",
           "food": {
             "name": "Salz",
             "originalName": "Salz",
@@ -186,7 +185,7 @@
         },
         {
           "quantity": null,
-          "note": null,
+          "note": "frisch gemahlen, zum Abschmecken",
           "food": {
             "name": "Pfeffer",
             "originalName": "Pfeffer",
@@ -207,53 +206,54 @@
       "steps": [
         {
           "order": 1,
-          "instruction": "Hähnchenbrustfilets mit Pfeffer würzen. Jeweils ein Salbeiblatt auflegen und die Filets mit Parma-Schinken umwickeln.",
+          "instruction": "Hähnchenbrustfilets mit Salz und Pfeffer würzen. Jeweils ein Salbeiblatt auf die Filets legen und mit einer oder mehreren Scheiben Parma-Schinken umwickeln.",
           "timer_minutes": null
         },
         {
           "order": 2,
-          "instruction": "Fett in einer Pfanne erhitzen. Die Filets leicht mit Mehl bestäuben und in der Pfanne rundherum anbraten, bis sie Farbe haben. Herausnehmen und in eine feuerfeste Form legen.",
+          "instruction": "Fett in einer Pfanne erhitzen. Die Filets leicht mit Mehl bestäuben und von beiden Seiten anbraten, bis sie Farbe nehmen. Herausnehmen und in eine feuerfeste Form legen.",
           "timer_minutes": null
         },
         {
           "order": 3,
-          "instruction": "Zwiebeln schälen und klein hacken. Zusammen mit den geviertelten Champignons in der Pfanne anbraten.",
+          "instruction": "Zwiebeln schälen und kleinhacken. In derselben Pfanne Zwiebeln und die geviertelten Champignons anbraten, bis sie leicht gebräunt sind.",
           "timer_minutes": null
         },
         {
           "order": 4,
-          "instruction": "Mit Wermut ablöschen, kurz einkochen lassen und dann die süße Sahne zugießen. Den hellen Soßenbinder einrühren, die Soße kurz aufkochen lassen und mit Salz und Pfeffer abschmecken.",
+          "instruction": "Mit dem trockenen Wermut ablöschen, etwas einkochen lassen und dann die süße Sahne zugießen. Den hellen Soßenbinder einrühren, die Soße kurz aufkochen lassen und mit Salz und Pfeffer abschmecken.",
           "timer_minutes": null
         },
         {
           "order": 5,
-          "instruction": "Die Soße über die Filets in der Auflaufform gießen und alles im vorgeheizten Ofen bei 200° C etwa 20 Minuten garen lassen.",
+          "instruction": "Die Soße über die Hähnchenfilets in der feuerfesten Form geben. Im vorgeheizten Backofen bei 200 °C etwa 20 Minuten garen lassen.",
           "timer_minutes": 20
         },
         {
           "order": 6,
-          "instruction": "Als Beilage passen Pellkartoffeln und ein grüner Salat.",
+          "instruction": "Aus dem Ofen nehmen und servieren. Dazu passen Pellkartoffeln und grüner Salat.",
           "timer_minutes": null
         }
       ]
     }
   ],
-  "notes": "Beim Anbraten darauf achten, dass der Schinken nicht verbrennt. Die Garzeit kann je nach Dicke der Filets variieren.",
+  "notes": "Backofen 200 °C. Als Beilage passen Pellkartoffeln und grüner Salat. Menge reicht für etwa 4 Portionen.",
   "image_path": "data/pipeline/02_RecipeImage.jpg",
   "image_url": null,
   "metadata": {
-    "source": "data/uploads/4a445f71e5434eda8184ebcc682c42cd.pdf",
+    "source": "data/uploads/eae0e771a80342ce987680256a5db88c.pdf",
     "categories": [
       "Hauptgericht",
       "Geflügel",
-      "Ofen"
+      "Ofengericht"
     ],
     "cuisine": "Deutsch",
     "tags": [
+      "Hähnchen",
       "Parmaschinken",
-      "Salbei",
       "Champignons",
       "Sahnesoße",
+      "Salbei",
       "Wermut"
     ],
     "mealie_categories": [
@@ -272,16 +272,16 @@
         "slug": "ernahrung-high-protein"
       },
       {
-        "id": "11775025-b6b7-4103-b93f-28b118364a60",
-        "name": "Form | Auflauf 🧀",
+        "id": "934e7b20-c521-40c9-a09c-5bc9706f9542",
+        "name": "Form | Pfannengericht 🍳",
         "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-        "slug": "form-auflauf"
+        "slug": "form-pfannengericht"
       },
       {
-        "id": "3b226a44-1881-4446-a585-d583ffa4d9cf",
-        "name": "Gerät | Dutch-Oven 🍲",
+        "id": "b673c7a1-12e3-43cf-a817-914b92e7a124",
+        "name": "Gerät | Grill 🔥",
         "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-        "slug": "gerat-dutch-oven"
+        "slug": "gerat-grill"
       },
       {
         "id": "0f94c939-f5d1-482b-83de-331617c0965b",

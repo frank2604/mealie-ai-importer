@@ -1,10 +1,10 @@
 {
-  "id": "f6b2ccef-b8ea-407a-995f-3438a120aaf5",
+  "id": "1e914ffe-583a-4acc-8eed-6a4b3006b020",
   "userId": "48ff7261-817a-43a9-89de-63ee69dd4a3e",
   "householdId": "68c99137-3b89-4a63-b504-97c353531455",
   "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-  "name": "Hähnchenbrustfilets im Parma-Schinken mit Champignon-Sahnesoße",
-  "slug": "hahnchenbrustfilets-im-parma-schinken-mit-champignon-sahnesosse",
+  "name": "Hähnchenbrustfilets im Parma-Schinken mit Champignon-Sahne-Soße",
+  "slug": "hahnchenbrustfilets-im-parma-schinken-mit-champignon-sahne-sosse",
   "image": null,
   "recipeServings": 4.0,
   "recipeYieldQuantity": 4.0,
@@ -13,7 +13,7 @@
   "prepTime": "20 Min.",
   "cookTime": null,
   "performTime": "20 Min.",
-  "description": "Zarte Hähnchenbrustfilets werden mit Salbei belegt, in Parmaschinken gewickelt und kurz angebraten. Eine cremige Champignon-Wermut-Sahnesoße rundet das Gericht ab und wird im Ofen fertig gegart. Ideal mit Pellkartoffeln und grünem Salat.",
+  "description": "Zarte Hähnchenbrustfilets werden mit Salbeiblättern belegt, in Parma-Schinken gewickelt und kurz angebraten. Eine cremige Champignon-Sahne-Soße mit Wermut verleiht dem Gericht feine Aromen. Ideal als gemütliches Ofengericht, dazu passen Pellkartoffeln und grüner Salat.",
   "recipeCategory": [
     {
       "id": "c8b08673-ba91-4d4e-899b-77b9e9a4e733",
@@ -30,16 +30,16 @@
       "slug": "ernahrung-high-protein"
     },
     {
-      "id": "11775025-b6b7-4103-b93f-28b118364a60",
-      "name": "Form | Auflauf 🧀",
+      "id": "934e7b20-c521-40c9-a09c-5bc9706f9542",
+      "name": "Form | Pfannengericht 🍳",
       "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-      "slug": "form-auflauf"
+      "slug": "form-pfannengericht"
     },
     {
-      "id": "3b226a44-1881-4446-a585-d583ffa4d9cf",
-      "name": "Gerät | Dutch-Oven 🍲",
+      "id": "b673c7a1-12e3-43cf-a817-914b92e7a124",
+      "name": "Gerät | Grill 🔥",
       "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-      "slug": "gerat-dutch-oven"
+      "slug": "gerat-grill"
     },
     {
       "id": "0f94c939-f5d1-482b-83de-331617c0965b",
@@ -80,11 +80,11 @@
   ],
   "tools": [],
   "rating": null,
-  "orgURL": "data/uploads/4a445f71e5434eda8184ebcc682c42cd.pdf",
+  "orgURL": "data/uploads/eae0e771a80342ce987680256a5db88c.pdf",
   "dateAdded": "2025-11-16",
-  "dateUpdated": "2025-11-16T10:04:17.365518Z",
-  "createdAt": "2025-11-16T10:04:17.366393Z",
-  "updatedAt": "2025-11-16T10:04:17.366394Z",
+  "dateUpdated": "2025-11-16T10:42:51.945533Z",
+  "createdAt": "2025-11-16T10:42:51.946323Z",
+  "updatedAt": "2025-11-16T10:42:51.946324Z",
   "lastMade": null,
   "recipeIngredient": [
     {
@@ -123,7 +123,7 @@
     },
     {
       "quantity": 3.0,
-      "note": "geschält und klein gehackt",
+      "note": "geschält und kleingehackt",
       "unit": {
         "id": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
         "name": "Stück"
@@ -135,14 +135,13 @@
     },
     {
       "quantity": 100.0,
-      "note": "trocken",
       "unit": {
         "id": "b558643c-bb92-479d-97ea-1337edc49d3b",
         "name": "Milliliter"
       },
       "food": {
-        "id": "e0a2b2e6-ad2c-4054-b7f5-c611803dcd84",
-        "name": "Wermut"
+        "id": "cbcaa29b-a3b7-4615-89a7-a2691fef9e3f",
+        "name": "Trockener Wermut"
       }
     },
     {
@@ -194,10 +193,10 @@
       }
     },
     {
-      "note": "Salz"
+      "note": "Salz (zum Abschmecken)"
     },
     {
-      "note": "Pfeffer"
+      "note": "Pfeffer (frisch gemahlen, zum Abschmecken)"
     }
   ],
   "recipeInstructions": [],
@@ -225,7 +224,7 @@
   "notes": [
     {
       "title": "Hinweis",
-      "text": "Beim Anbraten darauf achten, dass der Schinken nicht verbrennt. Die Garzeit kann je nach Dicke der Filets variieren."
+      "text": "Backofen 200 °C. Als Beilage passen Pellkartoffeln und grüner Salat. Menge reicht für etwa 4 Portionen."
     }
   ],
   "extras": {},

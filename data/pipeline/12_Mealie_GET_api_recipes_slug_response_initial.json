@@ -1,12 +1,12 @@
 {
   "status": 200,
   "body": {
-    "id": "f6b2ccef-b8ea-407a-995f-3438a120aaf5",
+    "id": "1e914ffe-583a-4acc-8eed-6a4b3006b020",
     "userId": "48ff7261-817a-43a9-89de-63ee69dd4a3e",
     "householdId": "68c99137-3b89-4a63-b504-97c353531455",
     "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-    "name": "Hähnchenbrustfilets im Parma-Schinken mit Champignon-Sahnesoße",
-    "slug": "hahnchenbrustfilets-im-parma-schinken-mit-champignon-sahnesosse",
+    "name": "Hähnchenbrustfilets im Parma-Schinken mit Champignon-Sahne-Soße",
+    "slug": "hahnchenbrustfilets-im-parma-schinken-mit-champignon-sahne-sosse",
     "image": null,
     "recipeServings": 0.0,
     "recipeYieldQuantity": 0.0,
@@ -22,9 +22,9 @@
     "rating": null,
     "orgURL": null,
     "dateAdded": "2025-11-16",
-    "dateUpdated": "2025-11-16T10:04:17.365518Z",
-    "createdAt": "2025-11-16T10:04:17.366393Z",
-    "updatedAt": "2025-11-16T10:04:17.366394Z",
+    "dateUpdated": "2025-11-16T10:42:51.945533Z",
+    "createdAt": "2025-11-16T10:42:51.946323Z",
+    "updatedAt": "2025-11-16T10:42:51.946324Z",
     "lastMade": null,
     "recipeIngredient": [
       {
@@ -35,12 +35,12 @@
         "display": "1 Cup Flour",
         "title": null,
         "originalText": null,
-        "referenceId": "65d7f2f0-7a7b-46a3-806c-b455d505dd7d"
+        "referenceId": "9ab55600-dd7e-4de1-aecf-83efd9f1c0fc"
       }
     ],
     "recipeInstructions": [
       {
-        "id": "f8cc5676-5f11-4ae5-9111-98e7b71b59ae",
+        "id": "b5271c3c-d75c-4e8f-8ea3-6b56eb03203f",
         "title": "",
         "summary": "",
         "text": "Recipe steps as well as other fields in the recipe page support markdown syntax.\n\n**Add a link**\n\n[My Link](https://demo.mealie.io)\n",

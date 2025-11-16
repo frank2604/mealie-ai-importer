@@ -141,6 +141,7 @@
     "loading": "Lade Review-Daten …",
     "saving": "Änderungen werden gespeichert …",
     "noRunSelected": "Noch kein Lauf ausgewählt.",
+    "readonlyNotice": "Übertragung läuft oder abgeschlossen. Änderungen sind gesperrt.",
     "noMapping": "Keine Zuordnung vorhanden.",
     "sections": {
       "ingredients": "Zutaten, Mengen & Einheiten",

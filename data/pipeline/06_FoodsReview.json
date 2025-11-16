@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2025-11-16T09:53:52.115291",
+  "generatedAt": "2025-11-16T10:40:50.771550",
   "ingredients": [
     {
       "key": "0:0",
@@ -52,7 +52,7 @@
           "categoryName": null,
           "description": null
         },
-        "notes": ""
+        "notes": "geputzt, geviertelt"
       }
     },
     {
@@ -70,34 +70,22 @@
           "categoryName": null,
           "description": null
         },
-        "notes": ""
+        "notes": "geschält und kleingehackt"
       }
     },
     {
       "key": "0:4",
-      "newId": "food-new-0-4",
-      "suggestion": {
-        "nameSingular": "Wermut",
-        "namePlural": "Wermut",
-        "aliases": [
-          "wermutwein",
-          "vermouth"
-        ],
-        "categoryId": "7c260419-4a87-440b-8b4d-cec090a65078",
-        "categoryName": "Alkohol 🍻"
-      },
+      "newId": null,
+      "suggestion": null,
       "userDecision": {
         "action": "auto",
         "useFoodId": null,
         "create": {
-          "nameSingular": "Wermut",
-          "namePlural": "Wermut",
-          "aliases": [
-            "wermutwein",
-            "vermouth"
-          ],
-          "categoryId": "7c260419-4a87-440b-8b4d-cec090a65078",
-          "categoryName": "Alkohol 🍻",
+          "nameSingular": null,
+          "namePlural": null,
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
           "description": null
         },
         "notes": ""
@@ -136,7 +124,7 @@
           "categoryName": null,
           "description": null
         },
-        "notes": ""
+        "notes": "zum Bestäuben"
       }
     },
     {
@@ -208,7 +196,7 @@
           "categoryName": null,
           "description": null
         },
-        "notes": ""
+        "notes": "zum Abschmecken"
       }
     },
     {
@@ -226,7 +214,7 @@
           "categoryName": null,
           "description": null
         },
-        "notes": ""
+        "notes": "frisch gemahlen, zum Abschmecken"
       }
     }
   ]

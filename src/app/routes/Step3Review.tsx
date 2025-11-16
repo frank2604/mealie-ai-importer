@@ -572,6 +572,7 @@ export const Step3Review: React.FC = () => {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const isReadOnly = status === "transferring" || status === "completed";
   const sortedFoodOptions = useMemo(() => {
     if (!reviewData) {
       return [];
@@ -780,7 +781,7 @@ export const Step3Review: React.FC = () => {
 
   const persistChanges = useCallback(async (overrideData?: ReviewData | null) => {
     const snapshot = overrideData ?? reviewData;
-    if (!runId || !snapshot) {
+    if (!runId || !snapshot || isReadOnly) {
       return;
     }
     setIsSaving(true);
@@ -797,7 +798,7 @@ export const Step3Review: React.FC = () => {
     } finally {
       setIsSaving(false);
     }
-  }, [runId, reviewData]);
+  }, [runId, reviewData, isReadOnly]);
 
   useEffect(() => {
     const disabled = !runId || !reviewData || isSaving || isLoading;
@@ -1013,6 +1014,7 @@ export const Step3Review: React.FC = () => {
 
   const handleCategorySelect = useCallback(
     (option: CandidateOption | null) => {
+      if (isReadOnly) return;
       setReviewData((previous) => {
         if (!previous) {
           return previous;
@@ -1033,6 +1035,7 @@ export const Step3Review: React.FC = () => {
 
   const handleTagsChange = useCallback(
     (ids: string[]) => {
+      if (isReadOnly) return;
       setReviewData((previous) => {
         if (!previous) {
           return previous;
@@ -1053,10 +1056,11 @@ export const Step3Review: React.FC = () => {
 
   const handleTagChipRemove = useCallback(
     (id: string) => {
+      if (isReadOnly) return;
       const currentIds = reviewData?.summary.tagIds ?? [];
       handleTagsChange(currentIds.filter((tagId) => tagId !== id));
     },
-    [handleTagsChange, reviewData?.summary.tagIds]
+    [handleTagsChange, reviewData?.summary.tagIds, isReadOnly]
   );
 
   const handleCategoryFilterToggle = useCallback((category: string | null) => {
@@ -1065,7 +1069,7 @@ export const Step3Review: React.FC = () => {
 
   const handleImageUpload = useCallback(
     async (file: File | null | undefined) => {
-      if (!runId || !file) {
+      if (!runId || !file || isReadOnly) {
         return;
       }
       setIsImageUploading(true);
@@ -1149,6 +1153,7 @@ export const Step3Review: React.FC = () => {
   }, [isCropModalOpen]);
 
   const handleNoteChange = useCallback((entry: ReviewIngredient, value: string) => {
+    if (isReadOnly) return;
     setReviewData((previous) => {
       if (!previous) {
         return previous;
@@ -1167,10 +1172,11 @@ export const Step3Review: React.FC = () => {
         )
       };
     });
-  }, []);
+  }, [isReadOnly]);
 
   const handleFoodModalSave = useCallback(
     (ingredientId: string, values: FoodCreateFormValues) => {
+      if (isReadOnly) return;
       setReviewData((previous) => {
         if (!previous) {
           return previous;
@@ -1203,6 +1209,7 @@ export const Step3Review: React.FC = () => {
 
   const handleUnitModalSave = useCallback(
     (ingredientId: string, values: UnitCreateFormValues) => {
+      if (isReadOnly) return;
       setReviewData((previous) => {
         if (!previous) {
           return previous;
@@ -1234,6 +1241,7 @@ export const Step3Review: React.FC = () => {
   );
 
   const handleInstructionChange = useCallback((instruction: ReviewInstruction, value: string) => {
+    if (isReadOnly) return;
     setPreparationSteps((previous) => ({
       ...previous,
       [instruction.id]: value
@@ -1254,10 +1262,11 @@ export const Step3Review: React.FC = () => {
         )
       };
     });
-  }, []);
+  }, [isReadOnly]);
 
   const handleUnitSelection = useCallback(
     (ingredientId: string, option: CandidateOption | null) => {
+      if (isReadOnly) return;
       setReviewData((previous) => {
         if (!previous) {
           return previous;
@@ -1296,6 +1305,7 @@ export const Step3Review: React.FC = () => {
 
   const handleFoodSelection = useCallback(
     (ingredientId: string, option: CandidateOption | null) => {
+      if (isReadOnly) return;
       setReviewData((previous) => {
         if (!previous) {
           return previous;
@@ -1377,6 +1387,11 @@ export const Step3Review: React.FC = () => {
           )}
           style={{ scrollbarGutter: "stable" }}
         >
+          {isReadOnly ? (
+            <div className="mb-4 rounded border border-border/70 bg-warning/10 px-4 py-3 text-sm text-text/80">
+              {t("review.readonlyNotice")}
+            </div>
+          ) : null}
           <div className={clsx("pb-6", layoutConfig.spacing.section.vertical)}>
             <div
               className={clsx(
@@ -1392,6 +1407,7 @@ export const Step3Review: React.FC = () => {
                 )}
               >
                 <input
+                  disabled={isReadOnly}
                   value={reviewData.summary.title}
                   onChange={(event) => handleSummaryFieldChange("title", event.target.value)}
                   onBlur={() => persistChanges()}
@@ -1401,6 +1417,7 @@ export const Step3Review: React.FC = () => {
                   )}
                 />
                 <textarea
+                  disabled={isReadOnly}
                   value={reviewData.summary.description}
                   onChange={(event) => {
                     handleSummaryFieldChange("description", event.target.value);
@@ -1425,12 +1442,13 @@ export const Step3Review: React.FC = () => {
                   <label className="text-xs font-semibold uppercase tracking-wide text-text/60">
                     {t("review.meta.portions")}
                   </label>
-                  <input
-                    value={summaryForm.servingsInput}
-                    onChange={(event) => handleServingsChange(event.target.value)}
-                    onBlur={() => persistChanges()}
-                    className={clsx(
-                      "focus-ring mt-1 w-full border border-border bg-background px-3 py-2 text-sm font-semibold text-text/85",
+                <input
+                  disabled={isReadOnly}
+                  value={summaryForm.servingsInput}
+                  onChange={(event) => handleServingsChange(event.target.value)}
+                  onBlur={() => persistChanges()}
+                  className={clsx(
+                    "focus-ring mt-1 w-full border border-border bg-background px-3 py-2 text-sm font-semibold text-text/85",
                       layoutConfig.borderRadius.medium
                     )}
                   />
@@ -1439,12 +1457,13 @@ export const Step3Review: React.FC = () => {
                   <label className="text-xs font-semibold uppercase tracking-wide text-text/60">
                     {t("review.meta.recipeYieldQuantity")}
                   </label>
-                  <input
-                    value={summaryForm.yieldQuantityInput}
-                    onChange={(event) => handleYieldQuantityChange(event.target.value)}
-                    onBlur={() => persistChanges()}
-                    className={clsx(
-                      "focus-ring mt-1 w-full border border-border bg-background px-3 py-2 text-sm font-semibold text-text/85",
+                <input
+                  disabled={isReadOnly}
+                  value={summaryForm.yieldQuantityInput}
+                  onChange={(event) => handleYieldQuantityChange(event.target.value)}
+                  onBlur={() => persistChanges()}
+                  className={clsx(
+                    "focus-ring mt-1 w-full border border-border bg-background px-3 py-2 text-sm font-semibold text-text/85",
                       layoutConfig.borderRadius.medium
                     )}
                   />
@@ -1453,12 +1472,13 @@ export const Step3Review: React.FC = () => {
                   <label className="text-xs font-semibold uppercase tracking-wide text-text/60">
                     {t("review.meta.recipeYield")}
                   </label>
-                  <input
-                    value={summaryForm.yieldTextInput}
-                    onChange={(event) => handleYieldTextChange(event.target.value)}
-                    onBlur={() => persistChanges()}
-                    className={clsx(
-                      "focus-ring mt-1 w-full border border-border bg-background px-3 py-2 text-sm font-semibold text-text/85",
+                <input
+                  disabled={isReadOnly}
+                  value={summaryForm.yieldTextInput}
+                  onChange={(event) => handleYieldTextChange(event.target.value)}
+                  onBlur={() => persistChanges()}
+                  className={clsx(
+                    "focus-ring mt-1 w-full border border-border bg-background px-3 py-2 text-sm font-semibold text-text/85",
                       layoutConfig.borderRadius.medium
                     )}
                   />
@@ -1467,12 +1487,13 @@ export const Step3Review: React.FC = () => {
                   <label className="text-xs font-semibold uppercase tracking-wide text-text/60">
                     {t("review.meta.totalTime")}
                   </label>
-                  <input
-                    value={summaryForm.totalTimeInput}
-                    onChange={(event) => handleTotalTimeChange(event.target.value)}
-                    onBlur={() => persistChanges()}
-                    className={clsx(
-                      "focus-ring mt-1 w-full border border-border bg-background px-3 py-2 text-sm font-semibold text-text/85",
+                <input
+                  disabled={isReadOnly}
+                  value={summaryForm.totalTimeInput}
+                  onChange={(event) => handleTotalTimeChange(event.target.value)}
+                  onBlur={() => persistChanges()}
+                  className={clsx(
+                    "focus-ring mt-1 w-full border border-border bg-background px-3 py-2 text-sm font-semibold text-text/85",
                       layoutConfig.borderRadius.medium
                     )}
                   />
@@ -1481,12 +1502,13 @@ export const Step3Review: React.FC = () => {
                   <label className="text-xs font-semibold uppercase tracking-wide text-text/60">
                     {t("review.meta.prepTime")}
                   </label>
-                  <input
-                    value={summaryForm.prepTimeInput}
-                    onChange={(event) => handlePrepTimeChange(event.target.value)}
-                    onBlur={() => persistChanges()}
-                    className={clsx(
-                      "focus-ring mt-1 w-full border border-border bg-background px-3 py-2 text-sm font-semibold text-text/85",
+                <input
+                  disabled={isReadOnly}
+                  value={summaryForm.prepTimeInput}
+                  onChange={(event) => handlePrepTimeChange(event.target.value)}
+                  onBlur={() => persistChanges()}
+                  className={clsx(
+                    "focus-ring mt-1 w-full border border-border bg-background px-3 py-2 text-sm font-semibold text-text/85",
                       layoutConfig.borderRadius.medium
                     )}
                   />
@@ -1495,12 +1517,13 @@ export const Step3Review: React.FC = () => {
                   <label className="text-xs font-semibold uppercase tracking-wide text-text/60">
                     {t("review.meta.performTime")}
                   </label>
-                  <input
-                    value={summaryForm.performTimeInput}
-                    onChange={(event) => handlePerformTimeChange(event.target.value)}
-                    onBlur={() => persistChanges()}
-                    className={clsx(
-                      "focus-ring mt-1 w-full border border-border bg-background px-3 py-2 text-sm font-semibold text-text/85",
+                <input
+                  disabled={isReadOnly}
+                  value={summaryForm.performTimeInput}
+                  onChange={(event) => handlePerformTimeChange(event.target.value)}
+                  onBlur={() => persistChanges()}
+                  className={clsx(
+                    "focus-ring mt-1 w-full border border-border bg-background px-3 py-2 text-sm font-semibold text-text/85",
                       layoutConfig.borderRadius.medium
                     )}
                   />
@@ -1530,6 +1553,7 @@ export const Step3Review: React.FC = () => {
                 </label>
                 <div className="mt-1">
                   <SearchableSelect
+                    disabled={isReadOnly || sortedCategoryOptions.length === 0}
                     options={sortedCategoryOptions}
                     selectedId={reviewData.summary.categoryId ?? null}
                     displayValue={
@@ -1538,7 +1562,6 @@ export const Step3Review: React.FC = () => {
                     }
                     placeholder={t("review.meta.categoryPlaceholder")}
                     clearLabel={t("review.selection.clear")}
-                    disabled={sortedCategoryOptions.length === 0}
                     onChange={(option) => handleCategorySelect(option)}
                   />
                 </div>
@@ -1569,9 +1592,10 @@ export const Step3Review: React.FC = () => {
                           >
                             {display}
                             <button
+                              disabled={isReadOnly}
                               type="button"
                               onClick={() => handleTagChipRemove(tag.id)}
-                              className="ml-1 text-primary hover:text-primary/70"
+                              className="ml-1 text-primary hover:text-primary/70 disabled:opacity-50"
                               aria-label={t("review.meta.removeTag")}
                             >
                               ×
@@ -1582,10 +1606,11 @@ export const Step3Review: React.FC = () => {
                     )}
                   </div>
                   <button
+                    disabled={isReadOnly}
                     type="button"
                     onClick={() => setIsTagModalOpen(true)}
                     className={clsx(
-                      "focus-ring inline-flex h-9 w-9 items-center justify-center border border-border bg-background hover:border-primary/60 hover:text-primary",
+                      "focus-ring inline-flex h-9 w-9 items-center justify-center border border-border bg-background hover:border-primary/60 hover:text-primary disabled:opacity-50",
                       layoutConfig.borderRadius.small
                     )}
                     aria-label={t("review.meta.editTags")}
@@ -1698,7 +1723,11 @@ export const Step3Review: React.FC = () => {
                               {showUnitModalButton ? (
                                 <button
                                   type="button"
-                                  onClick={() => setUnitModalEntry(entry)}
+                                  disabled={isReadOnly}
+                                  onClick={() => {
+                                    if (isReadOnly) return;
+                                    setUnitModalEntry(entry);
+                                  }}
                                   className={clsx(
                                     "focus-ring inline-flex h-8 w-8 items-center justify-center border border-border bg-background hover:border-primary/60 hover:text-primary",
                                     layoutConfig.borderRadius.small
@@ -1716,7 +1745,7 @@ export const Step3Review: React.FC = () => {
                                   displayValue={unitDisplayValue}
                                   placeholder={unitPlaceholder}
                                   clearLabel={clearSelectionLabel}
-                                  disabled={unitOptions.length === 0}
+                                  disabled={isReadOnly || unitOptions.length === 0}
                                   onChange={(option) => handleUnitSelection(entry.id, option)}
                                 />
                               </div>
@@ -1735,7 +1764,11 @@ export const Step3Review: React.FC = () => {
                               {showFoodModalButton ? (
                                 <button
                                   type="button"
-                                  onClick={() => setFoodModalEntry(entry)}
+                                  disabled={isReadOnly}
+                                  onClick={() => {
+                                    if (isReadOnly) return;
+                                    setFoodModalEntry(entry);
+                                  }}
                                   className={clsx(
                                     "focus-ring inline-flex h-8 w-8 items-center justify-center border border-border bg-background hover:border-primary/60 hover:text-primary",
                                     layoutConfig.borderRadius.small
@@ -1753,7 +1786,7 @@ export const Step3Review: React.FC = () => {
                                   displayValue={foodDisplayValue}
                                   placeholder={foodPlaceholder}
                                   clearLabel={clearSelectionLabel}
-                                  disabled={foodOptions.length === 0}
+                                  disabled={isReadOnly || foodOptions.length === 0}
                                   onChange={(option) => handleFoodSelection(entry.id, option)}
                                 />
                               </div>
@@ -1766,6 +1799,7 @@ export const Step3Review: React.FC = () => {
                             {t("review.table.labels.note")}
                           </label>
                           <textarea
+                            disabled={isReadOnly}
                             value={entry.notes ?? ""}
                             onChange={(event) => {
                               handleNoteChange(entry, event.target.value);
@@ -1821,6 +1855,7 @@ export const Step3Review: React.FC = () => {
                           </div>
                           <div className="flex-1">
                             <textarea
+                              disabled={isReadOnly}
                               value={preparationSteps[instruction.id] ?? instruction.text}
                               onChange={(event) => {
                                 handleInstructionChange(instruction, event.target.value);
@@ -1875,16 +1910,18 @@ export const Step3Review: React.FC = () => {
                                       <span className="text-xs font-semibold">{displayLabel}</span>
                                       <button
                                         type="button"
-                                        onClick={() =>
+                                        disabled={isReadOnly}
+                                        onClick={() => {
+                                          if (isReadOnly) return;
                                           setStepIngredients((previous) => {
                                             const current = previous[instruction.id] || [];
                                             return {
                                               ...previous,
                                               [instruction.id]: current.filter((id) => id !== ingredientId)
                                             };
-                                          })
-                                        }
-                                        className="focus-ring hover:text-error"
+                                          });
+                                        }}
+                                        className="focus-ring hover:text-error disabled:opacity-50"
                                         aria-label={t("review.preparation.removeIngredient")}
                                       >
                                         <XMarkIcon className="h-3 w-3" />
@@ -1897,7 +1934,9 @@ export const Step3Review: React.FC = () => {
 
                             <select
                               value=""
+                              disabled={isReadOnly}
                               onChange={(event) => {
+                                if (isReadOnly) return;
                                 const ingredientId = event.target.value;
                                 if (ingredientId && !selected.includes(ingredientId)) {
                                   setStepIngredients((previous) => ({
@@ -1908,7 +1947,8 @@ export const Step3Review: React.FC = () => {
                               }}
                               className={clsx(
                                 "focus-ring w-full border border-border bg-background px-4 py-2 text-sm text-text",
-                                layoutConfig.borderRadius.medium
+                                layoutConfig.borderRadius.medium,
+                                isReadOnly && "opacity-60 cursor-not-allowed"
                               )}
                             >
                               <option value="">{t("review.preparation.selectIngredient")}</option>
@@ -1975,11 +2015,15 @@ export const Step3Review: React.FC = () => {
                       }
                       event.target.value = "";
                     }}
+                    disabled={isReadOnly}
                   />
                   <button
                     type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={isImageUploading || !runId}
+                    onClick={() => {
+                      if (isReadOnly) return;
+                      fileInputRef.current?.click();
+                    }}
+                    disabled={isReadOnly || isImageUploading || !runId}
                     className={clsx(
                       "focus-ring inline-flex items-center border border-border bg-background px-4 py-2 text-sm font-semibold text-text hover:border-primary/60 hover:text-primary disabled:cursor-not-allowed disabled:opacity-50",
                       layoutConfig.borderRadius.medium
@@ -1988,9 +2032,18 @@ export const Step3Review: React.FC = () => {
                     {t("review.image.uploadButton")}
                   </button>
                   <div
-                    onDragOver={handleDropZoneDragOver}
-                    onDragLeave={handleDropZoneDragLeave}
-                    onDrop={handleDropZoneDrop}
+                    onDragOver={(e) => {
+                      if (isReadOnly) return;
+                      handleDropZoneDragOver(e);
+                    }}
+                    onDragLeave={(e) => {
+                      if (isReadOnly) return;
+                      handleDropZoneDragLeave(e);
+                    }}
+                    onDrop={(e) => {
+                      if (isReadOnly) return;
+                      handleDropZoneDrop(e);
+                    }}
                     className={clsx(
                       "flex h-11 flex-1 items-center justify-center border border-dashed text-xs",
                       layoutConfig.borderRadius.medium,
@@ -2002,7 +2055,11 @@ export const Step3Review: React.FC = () => {
                   {currentImageUrl ? (
                     <button
                       type="button"
-                      onClick={() => setIsCropModalOpen(true)}
+                      disabled={isReadOnly}
+                      onClick={() => {
+                        if (isReadOnly) return;
+                        setIsCropModalOpen(true);
+                      }}
                       className={clsx(
                         "focus-ring ml-auto inline-flex items-center border border-border bg-background px-4 py-2 text-sm font-semibold text-text hover:border-primary/60 hover:text-primary",
                         layoutConfig.borderRadius.medium

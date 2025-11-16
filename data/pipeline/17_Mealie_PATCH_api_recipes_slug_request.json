@@ -1,7 +1,7 @@
 {
   "image": null,
   "prepTime": "20 Min.",
-  "slug": "hahnchenbrustfilets-im-parma-schinken-mit-champignon-sahnesosse",
+  "slug": "hahnchenbrustfilets-im-parma-schinken-mit-champignon-sahne-sosse",
   "rating": null,
   "assets": [],
   "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
@@ -17,11 +17,11 @@
     "disableComments": false,
     "locked": false
   },
-  "createdAt": "2025-11-16T10:04:17.366393Z",
+  "createdAt": "2025-11-16T10:42:51.946323Z",
   "recipeYield": "4 Portionen",
-  "name": "Hähnchenbrustfilets im Parma-Schinken mit Champignon-Sahnesoße",
+  "name": "Hähnchenbrustfilets im Parma-Schinken mit Champignon-Sahne-Soße",
   "recipeServings": 4.0,
-  "dateUpdated": "2025-11-16T10:04:27.623041Z",
+  "dateUpdated": "2025-11-16T10:43:02.146291Z",
   "cookTime": null,
   "dateAdded": "2025-11-16",
   "userId": "48ff7261-817a-43a9-89de-63ee69dd4a3e",
@@ -45,16 +45,16 @@
       "slug": "hauptzutat-pilze"
     },
     {
-      "id": "11775025-b6b7-4103-b93f-28b118364a60",
-      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-      "name": "Form | Auflauf 🧀",
-      "slug": "form-auflauf"
-    },
-    {
       "id": "f580714e-8ea4-47e6-a6be-2c7e133a52bb",
       "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
       "name": "Saison | Herbst 🍂",
       "slug": "saison-herbst"
+    },
+    {
+      "id": "934e7b20-c521-40c9-a09c-5bc9706f9542",
+      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+      "name": "Form | Pfannengericht 🍳",
+      "slug": "form-pfannengericht"
     },
     {
       "id": "6b6c225a-f74e-4366-a61b-deb6afccdb3c",
@@ -69,10 +69,10 @@
       "slug": "scharfe-mild"
     },
     {
-      "id": "3b226a44-1881-4446-a585-d583ffa4d9cf",
+      "id": "b673c7a1-12e3-43cf-a817-914b92e7a124",
       "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-      "name": "Gerät | Dutch-Oven 🍲",
-      "slug": "gerat-dutch-oven"
+      "name": "Gerät | Grill 🔥",
+      "slug": "gerat-grill"
     },
     {
       "id": "539f721a-a8e8-4c15-a7b4-deefcfb27f3a",
@@ -81,9 +81,9 @@
       "slug": "tageszeit-dinner"
     }
   ],
-  "orgURL": "data/uploads/4a445f71e5434eda8184ebcc682c42cd.pdf",
-  "description": "Zarte Hähnchenbrustfilets werden mit Salbei belegt, in Parmaschinken gewickelt und kurz angebraten. Eine cremige Champignon-Wermut-Sahnesoße rundet das Gericht ab und wird im Ofen fertig gegart. Ideal mit Pellkartoffeln und grünem Salat.",
-  "updatedAt": "2025-11-16T10:04:27.626370Z",
+  "orgURL": "data/uploads/eae0e771a80342ce987680256a5db88c.pdf",
+  "description": "Zarte Hähnchenbrustfilets werden mit Salbeiblättern belegt, in Parma-Schinken gewickelt und kurz angebraten. Eine cremige Champignon-Sahne-Soße mit Wermut verleiht dem Gericht feine Aromen. Ideal als gemütliches Ofengericht, dazu passen Pellkartoffeln und grüner Salat.",
+  "updatedAt": "2025-11-16T10:43:02.149298Z",
   "nutrition": {
     "calories": null,
     "carbohydrateContent": null,
@@ -157,7 +157,7 @@
       "display": "4 Stk. Hähnchenbrustfilets",
       "title": null,
       "originalText": null,
-      "referenceId": "a1134cfc-efeb-46dd-a06e-c12b45d3a50c"
+      "referenceId": "27f4a9d3-f944-45ee-a8d9-773b574fe974"
     },
     {
       "quantity": 6.0,
@@ -204,7 +204,7 @@
       "display": "6 Scheiben Parma-Schinken",
       "title": null,
       "originalText": null,
-      "referenceId": "f2bd3e79-82db-4c5a-8dfc-3b59a34c7d52"
+      "referenceId": "7b7d4279-8044-4624-b7a0-0cfb38d63c4f"
     },
     {
       "quantity": 500.0,
@@ -244,7 +244,7 @@
       "display": "500 g Champignons geputzt, geviertelt",
       "title": null,
       "originalText": null,
-      "referenceId": "11525ed1-1746-4e25-9b48-c001b63517b9"
+      "referenceId": "f31b20be-0087-4c41-8c00-44a0d87cb5b1"
     },
     {
       "quantity": 3.0,
@@ -280,11 +280,11 @@
         "createdAt": "2025-10-25T08:01:57.442962Z",
         "updatedAt": "2025-10-25T08:01:57.442965Z"
       },
-      "note": "geschält und klein gehackt",
-      "display": "3 Stk. Rote Zwiebeln geschält und klein gehackt",
+      "note": "geschält und kleingehackt",
+      "display": "3 Stk. Rote Zwiebeln geschält und kleingehackt",
       "title": null,
       "originalText": null,
-      "referenceId": "a6e77829-d2e8-452f-9173-b381a8a72114"
+      "referenceId": "c1654e65-cf2f-4ca3-bfa0-9ca290d2de96"
     },
     {
       "quantity": 100.0,
@@ -303,18 +303,18 @@
         "updatedAt": "2025-10-25T08:01:57.515937Z"
       },
       "food": {
-        "id": "e0a2b2e6-ad2c-4054-b7f5-c611803dcd84",
-        "name": "Wermut",
-        "pluralName": "Wermut",
+        "id": "cbcaa29b-a3b7-4615-89a7-a2691fef9e3f",
+        "name": "Trockener Wermut",
+        "pluralName": "Trockener Wermut",
         "description": "",
         "extras": {},
         "labelId": "7c260419-4a87-440b-8b4d-cec090a65078",
         "aliases": [
           {
-            "name": "wermutwein"
+            "name": "trockener wermut"
           },
           {
-            "name": "vermouth"
+            "name": "trockener-wermut"
           }
         ],
         "householdsWithIngredientFood": [],
@@ -324,14 +324,14 @@
           "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
           "id": "7c260419-4a87-440b-8b4d-cec090a65078"
         },
-        "createdAt": "2025-11-16T10:04:12.278383Z",
-        "updatedAt": "2025-11-16T10:04:12.278386Z"
+        "createdAt": "2025-11-11T17:05:27.658411Z",
+        "updatedAt": "2025-11-11T17:05:27.658415Z"
       },
-      "note": "trocken",
-      "display": "100 ml Wermut trocken",
+      "note": "",
+      "display": "100 ml Trockener Wermut",
       "title": null,
       "originalText": null,
-      "referenceId": "0b1d44bc-265c-419b-bb33-bab6792b2e9b"
+      "referenceId": "bfc14563-c2a1-4067-872c-50fca03a5f72"
     },
     {
       "quantity": 200.0,
@@ -375,7 +375,7 @@
       "display": "200 ml Süße Sahne",
       "title": null,
       "originalText": null,
-      "referenceId": "5db02b9d-37e3-4da6-8f99-5d20856aec29"
+      "referenceId": "16f396c7-2d2b-4ab9-bb7c-0bd193ea3ff8"
     },
     {
       "quantity": 1.0,
@@ -417,7 +417,7 @@
       "display": "1 EL Mehl zum Bestäuben",
       "title": null,
       "originalText": null,
-      "referenceId": "1c375f42-ea0c-4976-880b-b3e622488bdd"
+      "referenceId": "831c5a68-7578-4681-9f76-ba2a9d5a1c73"
     },
     {
       "quantity": 1.0,
@@ -457,7 +457,7 @@
       "display": "1 EL Heller Soßenbinder",
       "title": null,
       "originalText": null,
-      "referenceId": "2a3ff3b9-b049-461a-ba65-145f1e9f438f"
+      "referenceId": "80457d42-55ce-41e7-b1ed-dc9143f2b581"
     },
     {
       "quantity": 0.0,
@@ -467,7 +467,7 @@
       "display": "Fett zum Braten",
       "title": null,
       "originalText": null,
-      "referenceId": "cf573ab4-00cb-4246-b1f7-08c3c59a11e2"
+      "referenceId": "3a7c5f54-5a12-4942-8854-fd3dbc7c7e59"
     },
     {
       "quantity": 6.0,
@@ -507,75 +507,75 @@
       "display": "6 Bl. Salbeiblätter",
       "title": null,
       "originalText": null,
-      "referenceId": "49cc7ff4-cdcc-430e-a396-6a0638becb3d"
+      "referenceId": "c549025f-fc03-46d2-80b6-4f51bdeeb2fd"
     },
     {
       "quantity": 0.0,
       "unit": null,
       "food": null,
-      "note": "Salz",
-      "display": "Salz",
+      "note": "Salz (zum Abschmecken)",
+      "display": "Salz (zum Abschmecken)",
       "title": null,
       "originalText": null,
-      "referenceId": "e1585662-9ec7-4ef8-af08-d115c84605b2"
+      "referenceId": "8564f53a-9054-43b6-8010-3d1bde2a27b6"
     },
     {
       "quantity": 0.0,
       "unit": null,
       "food": null,
-      "note": "Pfeffer",
-      "display": "Pfeffer",
+      "note": "Pfeffer (frisch gemahlen, zum Abschmecken)",
+      "display": "Pfeffer (frisch gemahlen, zum Abschmecken)",
       "title": null,
       "originalText": null,
-      "referenceId": "2b453927-08bf-495b-9ced-300ca7df197e"
+      "referenceId": "8d82ff82-2f59-417b-8f4f-f1e7f540fc76"
     }
   ],
   "notes": [
     {
       "title": "Hinweis",
-      "text": "Beim Anbraten darauf achten, dass der Schinken nicht verbrennt. Die Garzeit kann je nach Dicke der Filets variieren."
+      "text": "Backofen 200 °C. Als Beilage passen Pellkartoffeln und grüner Salat. Menge reicht für etwa 4 Portionen."
     }
   ],
-  "id": "f6b2ccef-b8ea-407a-995f-3438a120aaf5",
+  "id": "1e914ffe-583a-4acc-8eed-6a4b3006b020",
   "extras": {},
   "performTime": "20 Min.",
   "lastMade": null,
   "comments": [],
   "recipeInstructions": [
     {
-      "id": "87e6a8cd-d4cd-44e8-b700-514afde4dfac",
-      "text": "Hähnchenbrustfilets mit Pfeffer würzen. Jeweils ein Salbeiblatt auflegen und die Filets mit Parma-Schinken umwickeln.",
+      "id": "de1f438c-3e13-4019-a5da-f894479d8231",
+      "text": "Hähnchenbrustfilets mit Salz und Pfeffer würzen. Jeweils ein Salbeiblatt auf die Filets legen und mit einer oder mehreren Scheiben Parma-Schinken umwickeln.",
       "order": 1,
       "ingredientReferences": []
     },
     {
-      "id": "84ec18ea-9c62-4add-b8c3-064d73e545c6",
-      "text": "Fett in einer Pfanne erhitzen. Die Filets leicht mit Mehl bestäuben und in der Pfanne rundherum anbraten, bis sie Farbe haben. Herausnehmen und in eine feuerfeste Form legen.",
+      "id": "47707974-0858-4788-91af-95e89f6d4431",
+      "text": "Fett in einer Pfanne erhitzen. Die Filets leicht mit Mehl bestäuben und von beiden Seiten anbraten, bis sie Farbe nehmen. Herausnehmen und in eine feuerfeste Form legen.",
       "order": 2,
       "ingredientReferences": []
     },
     {
-      "id": "1605a78b-581c-4ca7-bb3a-557aea0cfb80",
-      "text": "Zwiebeln schälen und klein hacken. Zusammen mit den geviertelten Champignons in der Pfanne anbraten.",
+      "id": "94420a79-d81b-4855-ac08-4a56bb98a092",
+      "text": "Zwiebeln schälen und kleinhacken. In derselben Pfanne Zwiebeln und die geviertelten Champignons anbraten, bis sie leicht gebräunt sind.",
       "order": 3,
       "ingredientReferences": []
     },
     {
-      "id": "62cb9adf-99e4-4577-98aa-c55c86489e32",
-      "text": "Mit Wermut ablöschen, kurz einkochen lassen und dann die süße Sahne zugießen. Den hellen Soßenbinder einrühren, die Soße kurz aufkochen lassen und mit Salz und Pfeffer abschmecken.",
+      "id": "6c7cce78-c092-431d-86ab-095329e54b8d",
+      "text": "Mit dem trockenen Wermut ablöschen, etwas einkochen lassen und dann die süße Sahne zugießen. Den hellen Soßenbinder einrühren, die Soße kurz aufkochen lassen und mit Salz und Pfeffer abschmecken.",
       "order": 4,
       "ingredientReferences": []
     },
     {
-      "id": "231b602a-237f-46f3-820c-653cce967805",
-      "text": "Die Soße über die Filets in der Auflaufform gießen und alles im vorgeheizten Ofen bei 200° C etwa 20 Minuten garen lassen.",
+      "id": "9e2aac9e-1f9b-4c31-bfaf-56d362236551",
+      "text": "Die Soße über die Hähnchenfilets in der feuerfesten Form geben. Im vorgeheizten Backofen bei 200 °C etwa 20 Minuten garen lassen.",
       "order": 5,
       "ingredientReferences": [],
       "timerMinutes": 20
     },
     {
-      "id": "d7856fdf-f1f5-414a-9b37-ee656de7ce03",
-      "text": "Als Beilage passen Pellkartoffeln und ein grüner Salat.",
+      "id": "a26a69a1-41c8-487d-850d-9529bcd77607",
+      "text": "Aus dem Ofen nehmen und servieren. Dazu passen Pellkartoffeln und grüner Salat.",
       "order": 6,
       "ingredientReferences": []
     }

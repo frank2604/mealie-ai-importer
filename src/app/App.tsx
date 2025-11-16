@@ -199,18 +199,26 @@ const AppShell: React.FC = () => {
                 </Link>
                 <div className="flex items-center gap-3">
                   <div className="hidden text-sm font-medium text-text/70 sm:block">{t("app.subtitle")}</div>
-                  <Link
-                    to={settingsPath}
-                    state={{ from: currentPath }}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (isRunning) return;
+                      navigate(settingsPath, { state: { from: currentPath } });
+                    }}
                     aria-label={t("navigation.settings")}
+                    disabled={isRunning}
                     className={clsx(
-                      "focus-ring inline-flex items-center justify-center border border-border bg-panel p-2 hover:border-primary/50",
+                      "focus-ring inline-flex items-center justify-center border border-border bg-panel p-2",
                       layoutConfig.borderRadius.small,
-                      isOnSettings ? "border-primary text-primary" : "text-text hover:text-primary"
+                      isRunning
+                        ? "cursor-not-allowed text-text/40"
+                        : isOnSettings
+                          ? "border-primary text-primary"
+                          : "text-text hover:border-primary/50 hover:text-primary"
                     )}
                   >
                     <Cog6ToothIcon className="h-5 w-5" aria-hidden="true" />
-                  </Link>
+                  </button>
                 </div>
               </div>
               <div className="border-t border-border/60 bg-background/95">

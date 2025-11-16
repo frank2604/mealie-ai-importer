@@ -1,18 +1,18 @@
 {
-  "generatedAt": "2025-11-16T09:32:57.714132",
+  "generatedAt": "2025-11-16T09:54:20.542266",
   "current": {
     "recipeServings": 4.0,
-    "totalTime": "50 Min.",
+    "totalTime": "40 Min.",
     "category": null,
     "tagIds": []
   },
   "proposal": {
     "recipeServings": 4.0,
-    "totalTime": "50 Min.",
+    "totalTime": "40 Min.",
     "categoryId": "c8b08673-ba91-4d4e-899b-77b9e9a4e733",
     "tagIds": [
       "6b6c225a-f74e-4366-a61b-deb6afccdb3c",
-      "934e7b20-c521-40c9-a09c-5bc9706f9542",
+      "11775025-b6b7-4103-b93f-28b118364a60",
       "3b226a44-1881-4446-a585-d583ffa4d9cf",
       "0f94c939-f5d1-482b-83de-331617c0965b",
       "9063f3bf-6806-49fc-a925-378b15dcc154",
@@ -24,11 +24,11 @@
   },
   "userDecision": {
     "recipeServings": 4.0,
-    "totalTime": "50 Min.",
+    "totalTime": "40 Min.",
     "categoryId": "c8b08673-ba91-4d4e-899b-77b9e9a4e733",
     "tagIds": [
       "6b6c225a-f74e-4366-a61b-deb6afccdb3c",
-      "934e7b20-c521-40c9-a09c-5bc9706f9542",
+      "11775025-b6b7-4103-b93f-28b118364a60",
       "3b226a44-1881-4446-a585-d583ffa4d9cf",
       "0f94c939-f5d1-482b-83de-331617c0965b",
       "9063f3bf-6806-49fc-a925-378b15dcc154",

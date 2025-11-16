@@ -1,0 +1,54 @@
+2025-11-16 10:52:43 [INFO] Pipeline: -----------------------------------------------
+2025-11-16 10:52:43 [INFO] Pipeline: Starting module Refresh Mealie caches
+2025-11-16 10:52:43 [INFO] Refresh Caches: Refreshing the ingredient and unit lists from Mealie
+2025-11-16 10:52:48 [INFO] httpx: HTTP Request: GET https://mealie.local/api/units?page=1&perPage=200 "HTTP/1.1 200 OK"
+2025-11-16 10:52:48 [INFO] httpx: HTTP Request: GET https://mealie.local/api/foods?page=1&perPage=200 "HTTP/1.1 200 OK"
+2025-11-16 10:52:48 [INFO] httpx: HTTP Request: GET https://mealie.local/api/groups/labels?page=1&perPage=200 "HTTP/1.1 200 OK"
+2025-11-16 10:52:48 [INFO] httpx: HTTP Request: GET https://mealie.local/api/organizers/categories?page=1&perPage=200 "HTTP/1.1 200 OK"
+2025-11-16 10:52:48 [INFO] httpx: HTTP Request: GET https://mealie.local/api/organizers/tags?page=1&perPage=200 "HTTP/1.1 200 OK"
+2025-11-16 10:52:48 [INFO] Refresh Caches: Finished refreshing the Mealie lists
+2025-11-16 10:52:48 [INFO] Pipeline: Finished module Refresh Mealie caches
+2025-11-16 10:52:48 [INFO] Pipeline: -----------------------------------------------
+2025-11-16 10:52:48 [INFO] Pipeline: Starting module Input
+2025-11-16 10:52:48 [INFO] PDF Input: Reading the recipe PDF from data/uploads/4a445f71e5434eda8184ebcc682c42cd.pdf
+2025-11-16 10:52:49 [INFO] Pipeline: Finished module Input
+2025-11-16 10:52:49 [INFO] Pipeline: -----------------------------------------------
+2025-11-16 10:52:49 [INFO] Pipeline: Starting module AI Analyser
+2025-11-16 10:52:49 [INFO] AI Analyser: Starting the AI analysis with 987 characters of recipe text
+2025-11-16 10:53:20 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-16 10:53:32 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-16 10:53:32 [INFO] AI Analyser: Stored the selected image at data/pipeline/02_RecipeImage.jpg
+2025-11-16 10:53:32 [INFO] AI Analyser: Saved the raw recipe snapshot to data/pipeline/04_RecipeRawData.json
+2025-11-16 10:53:32 [INFO] AI Analyser: Saved RecipeData.json to data/pipeline/05_RecipeData.json
+2025-11-16 10:53:32 [INFO] Pipeline: Finished module AI Analyser
+2025-11-16 10:53:32 [INFO] Pipeline: -----------------------------------------------
+2025-11-16 10:53:32 [INFO] Pipeline: Starting module Food Checker
+2025-11-16 10:53:32 [INFO] Food Checker: Trying to match 12 ingredients to existing foods in Mealie [Hähnchenbrustfilets, Parma-Schinken, Champignons, rote Zwiebeln, Wermut, süße Sahne, Mehl, heller Soßenbinder, Fett zum Braten, Salbeiblätter, Salz, Pfeffer]
+2025-11-16 10:53:32 [INFO] Food Checker: Matched 11 ingredients exact by words: [Hähnchenbrustfilets, Parma-Schinken, Champignons, rote Zwiebeln, süße Sahne, Mehl, heller Soßenbinder, Fett zum Braten, Salbeiblätter, Salz, Pfeffer]
+2025-11-16 10:53:32 [INFO] Food Checker: Try matching rest of the ingredients [Wermut] with AI
+2025-11-16 10:53:32 [INFO] Food Checker: Ask AI to find [Wermut] in existing foods in Mealie
+2025-11-16 10:53:38 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-16 10:53:38 [INFO] Food Checker: AI could not find a matching ingredient for [Wermut] in existing foods in Mealie
+2025-11-16 10:53:38 [INFO] Food Checker: Matched 11 ingredients so far; 1 still need attention
+2025-11-16 10:53:38 [INFO] Food Checker: 1 ingredient need to be created in Mealie: [Wermut]
+2025-11-16 10:53:38 [INFO] Food Checker: Will ask AI for naming suggestions for missing ingredients
+2025-11-16 10:53:38 [INFO] Food Checker: Ask AI for singular, plural, aliases and mapping to existing food category for [Wermut]
+2025-11-16 10:53:52 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-16 10:53:52 [INFO] Food Checker: AI returns this suggestion for [Wermut]: singular [Wermut], plural [Wermut], aliases [wermutwein, vermouth], category [Alkohol 🍻]
+2025-11-16 10:53:52 [INFO] Food Checker: Saved the foods review to data/pipeline/06_FoodsReview.json
+2025-11-16 10:53:52 [INFO] Pipeline: Finished module Food Checker
+2025-11-16 10:53:52 [INFO] Pipeline: -----------------------------------------------
+2025-11-16 10:53:52 [INFO] Pipeline: Starting module Unit Checker
+2025-11-16 10:53:52 [INFO] Unit Checker: Trying to match 6 unique units (from 9 ingredient entries) to existing Mealie units [Stück, Scheiben, g, ml, Esslöffel, Blatt]
+2025-11-16 10:53:52 [INFO] Unit Checker: Matched 9 units exact by words: [Blatt, Esslöffel, Esslöffel, g, ml, ml, Scheiben, Stück, Stück]
+2025-11-16 10:53:52 [INFO] Unit Checker: Matched 9 units so far; 0 still need attention
+2025-11-16 10:53:52 [INFO] Unit Checker: Every unit now has a Mealie match
+2025-11-16 10:53:52 [INFO] Unit Checker: Saved the units review to data/pipeline/07_UnitsReview.json
+2025-11-16 10:53:52 [INFO] Pipeline: Finished module Unit Checker
+2025-11-16 10:53:52 [INFO] Pipeline: -----------------------------------------------
+2025-11-16 10:53:52 [INFO] Pipeline: Starting module Assign Metadata
+2025-11-16 10:54:20 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-16 10:54:20 [INFO] Assign Metadata: Saved the metadata review to data/pipeline/08_MetadataReview.json
+2025-11-16 10:54:36 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-16 10:54:36 [INFO] Pipeline: Finished module Assign Metadata
+2025-11-16 10:54:36 [INFO] Pipeline: -----------------------------------------------

@@ -162,6 +162,7 @@ export const Step4Transfer: React.FC = () => {
         return t("transfer.status.idle");
     }
   }, [status, t]);
+  const showActivityBar = status === "transferring" || status === "starting";
 
   const helperText = !runId ? t("transfer.status.noRun") : isPolling ? t("transfer.status.polling") : undefined;
   const canStartTransfer = Boolean(runId) && !isStartingTransfer && status !== "transferring" && status !== "completed";
@@ -193,6 +194,11 @@ export const Step4Transfer: React.FC = () => {
               )}
             >
               <div className="text-base font-semibold text-primary">{statusLabel}</div>
+              {showActivityBar ? (
+                <div className="relative mt-3 h-1 overflow-hidden rounded-full bg-primary/20">
+                  <div className="absolute inset-y-0 left-0 w-1/3 rounded-full bg-primary/70 animate-indeterminate" />
+                </div>
+              ) : null}
               {helperText ? <div className="mt-2 text-xs text-text/60">{helperText}</div> : null}
               {recipeName ? (
                 <div className="mt-4 text-sm text-text/70">{t("transfer.recipeLabel", { recipeName })}</div>

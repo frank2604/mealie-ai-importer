@@ -169,6 +169,7 @@ export const Step2Analyze: React.FC = () => {
         return t("analyze.status.idle");
     }
   }, [status, t]);
+  const showActivityBar = ["starting", "analyzing", "transferring"].includes(status);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -196,6 +197,11 @@ export const Step2Analyze: React.FC = () => {
               )}
             >
               <div className="font-semibold text-primary">{statusLabel}</div>
+              {showActivityBar ? (
+                <div className="relative mt-3 h-1 overflow-hidden rounded-full bg-primary/20">
+                  <div className="absolute inset-y-0 left-0 w-1/3 rounded-full bg-primary/70 animate-indeterminate" />
+                </div>
+              ) : null}
               {isPolling ? <div className="mt-2 text-xs text-text/60">{t("analyze.status.polling")}</div> : null}
               {error ? (
                 <div className="mt-2 rounded border border-error/40 bg-error/10 px-3 py-2 text-xs text-error">

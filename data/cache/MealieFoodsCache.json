@@ -1,6 +1,14 @@
 {
-  "updated_at": "2025-11-16T09:33:47.609891",
+  "updated_at": "2025-11-16T09:53:32.830934",
   "foods": [
+    {
+      "id": "2b4654bc-1ed3-4cdf-a879-55ce3dd2061b",
+      "name": "Fett",
+      "pluralName": "Fett",
+      "aliases": [
+        "{'name': 'fett'}"
+      ]
+    },
     {
       "id": "cbcaa29b-a3b7-4615-89a7-a2691fef9e3f",
       "name": "Trockener Wermut",
@@ -198,16 +206,6 @@
         "{'name': 'Onions'}",
         "{'name': 'Speisezwiebel'}",
         "{'name': 'Küchenzwiebel'}"
-      ]
-    },
-    {
-      "id": "2b4654bc-1ed3-4cdf-a879-55ce3dd2061b",
-      "name": "Fett",
-      "pluralName": "Fett",
-      "aliases": [
-        {
-          "name": "fett"
-        }
       ]
     }
   ]

@@ -1,5 +1,5 @@
 {
-  "updated_at": "2025-11-16T09:53:32.830934",
+  "updated_at": "2025-11-16T10:04:12.297295",
   "foods": [
     {
       "id": "2b4654bc-1ed3-4cdf-a879-55ce3dd2061b",
@@ -206,6 +206,19 @@
         "{'name': 'Onions'}",
         "{'name': 'Speisezwiebel'}",
         "{'name': 'Küchenzwiebel'}"
+      ]
+    },
+    {
+      "id": "e0a2b2e6-ad2c-4054-b7f5-c611803dcd84",
+      "name": "Wermut",
+      "pluralName": "Wermut",
+      "aliases": [
+        {
+          "name": "wermutwein"
+        },
+        {
+          "name": "vermouth"
+        }
       ]
     }
   ]

@@ -33,6 +33,7 @@ export const LogViewer: React.FC<LogViewerProps> = ({ logs, titleKey, summaryKey
   const { t } = useTranslation();
   const [activeFilter, setActiveFilter] = useState<LogLevel | "ALL">("ALL");
   const listRef = useRef<HTMLOListElement | null>(null);
+  const stickToBottomRef = useRef(true);
 
   const filteredLogs = useMemo(() => {
     if (activeFilter === "ALL") {
@@ -42,6 +43,19 @@ export const LogViewer: React.FC<LogViewerProps> = ({ logs, titleKey, summaryKey
   }, [activeFilter, logs]);
 
   useEffect(() => {
+    const container = listRef.current;
+    if (!container) return;
+    const handleScroll = () => {
+      const isNearBottom = container.scrollHeight - container.clientHeight - container.scrollTop < 40;
+      stickToBottomRef.current = isNearBottom;
+    };
+    container.addEventListener("scroll", handleScroll);
+    return () => {
+      container.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
     if (activeFilter !== "ALL") {
       return;
     }
@@ -49,8 +63,7 @@ export const LogViewer: React.FC<LogViewerProps> = ({ logs, titleKey, summaryKey
     if (!container) {
       return;
     }
-    const isNearBottom = container.scrollHeight - container.clientHeight - container.scrollTop < 40;
-    if (isNearBottom) {
+    if (stickToBottomRef.current) {
       container.scrollTop = container.scrollHeight;
     }
   }, [activeFilter, logs]);

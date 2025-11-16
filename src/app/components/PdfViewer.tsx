@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import clsx from "clsx";
 import { Document, Page, pdfjs } from "react-pdf";
 import {
@@ -29,11 +29,16 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({ src, className }) => {
   const [zoom, setZoom] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
+  const [containerWidth, setContainerWidth] = useState<number>(0);
+  const [containerHeight, setContainerHeight] = useState<number>(0);
+  const [pageDimensions, setPageDimensions] = useState<{ width: number; height: number } | null>(null);
 
   useEffect(() => {
     setPageNumber(1);
     setError(null);
     setNumPages(0);
+    setPageDimensions(null);
     if (src) {
       setIsLoading(true);
     } else {
@@ -41,13 +46,41 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({ src, className }) => {
     }
   }, [src]);
 
-  const handleDocumentLoad = useCallback(
-    ({ numPages }: { numPages: number }) => {
-      setNumPages(numPages);
-      setIsLoading(false);
-    },
-    []
-  );
+  useEffect(() => {
+    const node = contentRef.current;
+    if (!node) return undefined;
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry?.contentRect) {
+        setContainerWidth(entry.contentRect.width);
+        setContainerHeight(entry.contentRect.height);
+      }
+    });
+    observer.observe(node);
+    // initialize width immediately
+    const rect = node.getBoundingClientRect();
+    if (rect.width) {
+      setContainerWidth(rect.width);
+    }
+    if (rect.height) {
+      setContainerHeight(rect.height);
+    }
+    return () => observer.disconnect();
+  }, []);
+
+  const handleDocumentLoad = useCallback(({ numPages }: { numPages: number }) => {
+    setNumPages(numPages);
+    setIsLoading(false);
+  }, []);
+
+  const handlePageLoad = useCallback((page: any) => {
+    try {
+      const viewport = page.getViewport({ scale: 1 });
+      setPageDimensions({ width: viewport.width, height: viewport.height });
+    } catch {
+      // fallback: leave as-is
+    }
+  }, []);
 
   const handleDocumentError = useCallback((event: Error) => {
     setError(event.message);
@@ -69,8 +102,25 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({ src, className }) => {
 
   const headerStatus = !src ? t("review.pdfViewer.noPdf") : isLoading ? t("review.pdfViewer.loading") : null;
 
+  const fitScale = useMemo(() => {
+    if (!pageDimensions || !containerWidth || !containerHeight) {
+      return 1;
+    }
+    const widthScale = containerWidth / pageDimensions.width;
+    const heightScale = containerHeight / pageDimensions.height;
+    return Math.min(widthScale, heightScale);
+  }, [containerHeight, containerWidth, pageDimensions]);
+
+  const pageScale = useMemo(() => fitScale * zoom, [fitScale, zoom]);
+
   return (
-    <div className={clsx("flex h-full flex-col border border-border bg-panel", layoutConfig.borderRadius.large, className)}>
+    <div
+      className={clsx(
+        "flex h-full min-w-0 flex-col border border-border bg-panel",
+        layoutConfig.borderRadius.large,
+        className
+      )}
+    >
       <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
         <div>
           <h3 className="text-base font-semibold">{t("review.pdfViewer.title")}</h3>
@@ -123,23 +173,26 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({ src, className }) => {
             {t("review.pdfViewer.error", { message: error })}
           </div>
         ) : (
-          <div className="h-full overflow-auto px-4 py-4">
-            <div className="flex justify-center">
-              <Document
-                file={fileSource}
-                onLoadSuccess={handleDocumentLoad}
-                onLoadError={handleDocumentError}
-                loading={<div className="text-sm text-text/70">{t("review.pdfViewer.loading")}</div>}
-                error={<div className="text-sm text-error">{t("review.pdfViewer.error", { message: "" })}</div>}
-              >
-                <Page
-                  pageNumber={pageNumber}
-                  scale={zoom}
-                  renderTextLayer={false}
-                  renderAnnotationLayer={false}
-                  className={clsx("mx-auto shadow-sm", layoutConfig.borderRadius.medium)}
-                />
-              </Document>
+          <div ref={contentRef} className="h-full overflow-auto px-4 py-4">
+            <div className="flex justify-center min-w-0">
+              <div className="max-w-full overflow-auto">
+                <Document
+                  file={fileSource}
+                  onLoadSuccess={handleDocumentLoad}
+                  onLoadError={handleDocumentError}
+                  loading={<div className="text-sm text-text/70">{t("review.pdfViewer.loading")}</div>}
+                  error={<div className="text-sm text-error">{t("review.pdfViewer.error", { message: "" })}</div>}
+                >
+                  <Page
+                    pageNumber={pageNumber}
+                    scale={pageScale}
+                    onLoadSuccess={handlePageLoad}
+                    renderTextLayer={false}
+                    renderAnnotationLayer={false}
+                    className={clsx("mx-auto shadow-sm", layoutConfig.borderRadius.medium)}
+                  />
+                </Document>
+              </div>
             </div>
           </div>
         )}

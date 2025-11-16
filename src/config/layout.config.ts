@@ -196,15 +196,14 @@ export const layoutConfig = {
        * - Basis: Einspaltiges Grid mit eigener Scrollbar
        * - Ab XL: Zweispaltiges Grid mit 3:2 Verhältnis
        */
-      gridClasses: 'grid h-full min-h-0 flex-1 grid-cols-1 overflow-y-auto xl:grid-cols-[3fr_2fr] xl:overflow-visible',
+      gridClasses: 'grid h-full min-h-0 flex-1 grid-cols-1 overflow-visible xl:grid-cols-[3fr_2fr] xl:overflow-visible',
 
       /**
        * Klassen für die rechte Spalte (PDF-Viewer)
-       * - Flexibles Einspaltenlayout unterhalb des Breakpoints mit Mindesthöhe
-       * - sm:min-h-[320px]: Höhere Mindestfläche auf größeren Smartphones/Tablets
-       * - xl:h-full: Volle Höhe im zweispaltigen Desktop-Layout
+       * - Im Einspaltenlayout soll der Viewer sich an der Inhaltsgröße orientieren (kein innerer Scroll)
+       * - Ab XL: volle Höhe im zweispaltigen Layout
        */
-      rightColumnClasses: 'flex min-h-[240px] flex-col sm:min-h-[320px] xl:min-h-0 xl:h-full',
+      rightColumnClasses: 'flex flex-col xl:min-h-0 xl:h-full',
 
       /**
        * Dokumentation der Layout-Parameter

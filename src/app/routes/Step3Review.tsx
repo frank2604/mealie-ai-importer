@@ -495,6 +495,14 @@ const createPreparationSteps = (instructions: ReviewInstruction[]): Record<strin
   return steps;
 };
 
+const createStepIngredientMap = (instructions: ReviewInstruction[]): Record<string, string[]> => {
+  const map: Record<string, string[]> = {};
+  instructions.forEach((instruction) => {
+    map[instruction.id] = [...(instruction.ingredientIds ?? [])];
+  });
+  return map;
+};
+
 const buildUpdatePayload = (data: ReviewData) => ({
   summary: {
     title: data.summary.title,
@@ -532,7 +540,8 @@ const buildUpdatePayload = (data: ReviewData) => ({
     id: item.id,
     order: item.order,
     text: item.text,
-    timerMinutes: item.timerMinutes ?? null
+    timerMinutes: item.timerMinutes ?? null,
+    ingredientIds: item.ingredientIds ?? []
   }))
 });
 
@@ -754,7 +763,7 @@ export const Step3Review: React.FC = () => {
         setReviewData(enriched);
         setSummaryForm(createSummaryForm(enriched.summary));
         setPreparationSteps(createPreparationSteps(enriched.instructions));
-        setStepIngredients({});
+        setStepIngredients(createStepIngredientMap(enriched.instructions));
         setRecipeNameValue(enriched.summary.title);
       })
       .catch((error: Error) => {
@@ -793,12 +802,31 @@ export const Step3Review: React.FC = () => {
       setReviewData(enriched);
       setSummaryForm(createSummaryForm(enriched.summary));
       setPreparationSteps(createPreparationSteps(enriched.instructions));
+      setStepIngredients(createStepIngredientMap(enriched.instructions));
     } catch (error) {
       setSaveError(error instanceof Error ? error.message : String(error));
     } finally {
       setIsSaving(false);
     }
   }, [runId, reviewData, isReadOnly]);
+
+  const updateInstructionIngredients = useCallback(
+    (instructionId: string, ingredientIds: string[]) => {
+      if (isReadOnly) return;
+      setReviewData((previous) => {
+        if (!previous) return previous;
+        const updated = {
+          ...previous,
+          instructions: previous.instructions.map((inst) =>
+            inst.id === instructionId ? { ...inst, ingredientIds } : inst
+          )
+        };
+        void persistChanges(updated);
+        return updated;
+      });
+    },
+    [isReadOnly, persistChanges]
+  );
 
   useEffect(() => {
     const disabled = !runId || !reviewData || isSaving || isLoading;
@@ -860,10 +888,12 @@ export const Step3Review: React.FC = () => {
         if (!changed) {
           return previous;
         }
-        return Object.fromEntries(nextEntries) as Record<string, string[]>;
+        const nextMap = Object.fromEntries(nextEntries) as Record<string, string[]>;
+        Object.entries(nextMap).forEach(([stepId, ids]) => updateInstructionIngredients(stepId, ids));
+        return nextMap;
       });
     }
-  }, [reviewData?.ingredients]);
+  }, [reviewData?.ingredients, updateInstructionIngredients]);
 
   useEffect(() => {
     if (stepIngredientOptions.length === 0) {
@@ -874,6 +904,7 @@ export const Step3Review: React.FC = () => {
         const cleared = Object.fromEntries(
           Object.keys(previous).map((stepId) => [stepId, [] as string[]])
         ) as Record<string, string[]>;
+        Object.keys(cleared).forEach((stepId) => updateInstructionIngredients(stepId, []));
         return cleared;
       });
       return;
@@ -894,9 +925,11 @@ export const Step3Review: React.FC = () => {
       if (!changed) {
         return previous;
       }
-      return Object.fromEntries(nextEntries) as Record<string, string[]>;
+      const nextMap = Object.fromEntries(nextEntries) as Record<string, string[]>;
+      Object.entries(nextMap).forEach(([stepId, ids]) => updateInstructionIngredients(stepId, ids));
+      return nextMap;
     });
-  }, [stepIngredientOptions]);
+  }, [stepIngredientOptions, updateInstructionIngredients]);
 
   const handleSummaryFieldChange = useCallback(
     (field: "title" | "description", value: string) => {
@@ -1913,13 +1946,13 @@ export const Step3Review: React.FC = () => {
                                         disabled={isReadOnly}
                                         onClick={() => {
                                           if (isReadOnly) return;
-                                          setStepIngredients((previous) => {
-                                            const current = previous[instruction.id] || [];
-                                            return {
-                                              ...previous,
-                                              [instruction.id]: current.filter((id) => id !== ingredientId)
-                                            };
-                                          });
+                                          const current = stepIngredients[instruction.id] || [];
+                                          const next = current.filter((id) => id !== ingredientId);
+                                          setStepIngredients((previous) => ({
+                                            ...previous,
+                                            [instruction.id]: next
+                                          }));
+                                          updateInstructionIngredients(instruction.id, next);
                                         }}
                                         className="focus-ring hover:text-error disabled:opacity-50"
                                         aria-label={t("review.preparation.removeIngredient")}
@@ -1939,10 +1972,12 @@ export const Step3Review: React.FC = () => {
                                 if (isReadOnly) return;
                                 const ingredientId = event.target.value;
                                 if (ingredientId && !selected.includes(ingredientId)) {
+                                  const next = [...selected, ingredientId];
                                   setStepIngredients((previous) => ({
                                     ...previous,
-                                    [instruction.id]: [...(previous[instruction.id] || []), ingredientId]
+                                    [instruction.id]: next
                                   }));
+                                  updateInstructionIngredients(instruction.id, next);
                                 }
                               }}
                               className={clsx(

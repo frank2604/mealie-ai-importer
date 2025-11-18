@@ -224,6 +224,8 @@ class ReviewInstruction(BaseModel):
     order: int
     text: str
     timerMinutes: Optional[int] = None
+    ingredientIds: List[str] = Field(default_factory=list)
+    ingredientReferenceIds: List[str] = Field(default_factory=list)
 
 
 class ReviewAssets(BaseModel):
@@ -288,6 +290,7 @@ class ReviewInstructionUpdate(BaseModel):
     order: Optional[int] = None
     text: str
     timerMinutes: Optional[int] = None
+    ingredientIds: Optional[List[str]] = None
 
 
 class ReviewUpdateRequest(BaseModel):
@@ -747,11 +750,15 @@ def _build_review_payload(run_id: str, config: AppConfig) -> ReviewDataResponse:
 
     recipe_sections = recipe_data.get("ingredients") or []
     recipe_ingredient_map: Dict[str, Dict[str, Any]] = {}
+    recipe_id_to_key: Dict[str, str] = {}
     for section_index, section in enumerate(recipe_sections):
         items = section.get("ingredients") or []
         for ingredient_index, ingredient in enumerate(items):
             key = f"{section_index}:{ingredient_index}"
             recipe_ingredient_map[key] = ingredient
+            rec_id = ingredient.get("id")
+            if isinstance(rec_id, str) and rec_id:
+                recipe_id_to_key[rec_id] = key
 
     foods_map = {
         str(item.get("key")): item for item in foods_review.get("ingredients", []) if isinstance(item, dict)
@@ -872,13 +879,20 @@ def _build_review_payload(run_id: str, config: AppConfig) -> ReviewDataResponse:
     instructions_sections = recipe_data.get("instructions") or []
     for section_index, section in enumerate(instructions_sections):
         for step_index, step in enumerate(section.get("steps") or []):
+            raw_ids = step.get("ingredientIds") or []
+            mapped_ids = []
+            for ing_id in raw_ids:
+                if isinstance(ing_id, str) and ing_id:
+                    mapped_ids.append(recipe_id_to_key.get(ing_id, ing_id))
             instruction_payload = ReviewInstruction(
-                id=f"{section_index}:{step_index}",
+                id=str(step.get("id") or f"{section_index}:{step_index}"),
                 sectionIndex=section_index,
                 stepIndex=step_index,
                 order=int(step.get("order") or step_index + 1),
                 text=str(step.get("instruction") or ""),
                 timerMinutes=step.get("timer_minutes"),
+                ingredientIds=mapped_ids,
+                ingredientReferenceIds=list(step.get("ingredientReferenceIds") or []),
             )
             instructions_payload.append(instruction_payload)
 
@@ -1082,25 +1096,49 @@ def _apply_review_update(run_id: str, config: AppConfig, payload: ReviewUpdateRe
 
     # Update instructions
     instructions_sections = recipe_data.setdefault("instructions", [])
-    for instruction_update in payload.instructions:
+
+    # Map UI ingredient keys back to recipe ingredient ids if present
+    key_to_recipe_id: Dict[str, str] = {}
+    for section_index, section in enumerate(recipe_data.get("ingredients") or []):
+        for ingredient_index, ingredient in enumerate(section.get("ingredients") or []):
+            key = f"{section_index}:{ingredient_index}"
+            rec_id = ingredient.get("id") or key
+            key_to_recipe_id[key] = rec_id
+
+    def _locate_instruction_by_id(target: Dict[str, Any], instr_id: str) -> Optional[Dict[str, Any]]:
+        for section in target.get("instructions") or []:
+            for step in section.get("steps") or []:
+                if str(step.get("id")) == instr_id:
+                    return step
+        # fallback by index pattern
         try:
-            section_index_str, step_index_str = instruction_update.id.split(":", 1)
+            section_index_str, step_index_str = instr_id.split(":", 1)
             section_index = int(section_index_str)
             step_index = int(step_index_str)
         except (ValueError, AttributeError):
-            continue
-
+            return None
         if not (0 <= section_index < len(instructions_sections)):
-            continue
+            return None
         steps = instructions_sections[section_index].setdefault("steps", [])
         if not (0 <= step_index < len(steps)):
+            return None
+        return steps[step_index]
+
+    for instruction_update in payload.instructions:
+        step = _locate_instruction_by_id(recipe_data, instruction_update.id)
+        if step is None:
             continue
-        step = steps[step_index]
         step["instruction"] = instruction_update.text
         if instruction_update.order is not None:
             step["order"] = instruction_update.order
         if instruction_update.timerMinutes is not None or "timer_minutes" in step:
             step["timer_minutes"] = instruction_update.timerMinutes
+        if instruction_update.ingredientIds is not None:
+            mapped = []
+            for ing_id in instruction_update.ingredientIds:
+                mapped_id = key_to_recipe_id.get(ing_id, ing_id)
+                mapped.append(mapped_id)
+            step["ingredientIds"] = mapped
 
     # Persist files
     recipe_model = Recipe.parse_obj(recipe_data)

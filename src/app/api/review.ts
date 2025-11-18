@@ -98,6 +98,8 @@ export interface ReviewInstruction {
   order: number;
   text: string;
   timerMinutes?: number | null;
+  ingredientIds?: string[];
+  ingredientReferenceIds?: string[];
 }
 
 export interface ReviewAssets {
@@ -160,6 +162,7 @@ export interface ReviewInstructionUpdatePayload {
   order?: number | null;
   text: string;
   timerMinutes?: number | null;
+  ingredientIds?: string[];
 }
 
 export interface ReviewUpdatePayload {

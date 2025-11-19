@@ -322,11 +322,25 @@
     },
     "prompts": {
       "title": "Prompts",
-      "description": "Placeholder for customizable prompts. Editing arrives in the next sprint.",
-      "analysis": "Analysis prompt",
-      "suggestion": "Completion prompt",
-      "analysisPlaceholder": "system: Analyse the recipe, extract ingredients, quantities and units...",
-      "suggestionPlaceholder": "user: Provide a structured response in Mealie format..."
+      "description": "",
+      "freeLabel": "Editable prompt part",
+      "systemLabel": "Technical prompt part",
+      "analysis": "Analysis",
+      "analysisSystem": "Technical analysis instructions",
+      "ingredients": "Ingredient Checker",
+      "ingredientsSystem": "Technical ingredient checker instructions",
+      "units": "Unit Checker",
+      "unitsSystem": "Technical unit checker instructions",
+      "metadata": "Metadata",
+      "metadataSystem": "Technical metadata instructions",
+      "analysisPlaceholder": "You are an AI chef that analyses the uploaded recipe…",
+      "analysisSystemPlaceholder": "Respond only in JSON, keep placeholders intact, use {{recipeText}} etc.",
+      "ingredientsPlaceholder": "Match ingredients to Mealie foods …",
+      "ingredientsSystemPlaceholder": "Return mappings with IDs, handle new foods, keep placeholders.",
+      "unitsPlaceholder": "Map units to Mealie standard units …",
+      "unitsSystemPlaceholder": "Return mappings with unit IDs, keep placeholders.",
+      "metadataPlaceholder": "Suggest categories/tags for this recipe …",
+      "metadataSystemPlaceholder": "Use the provided ID lists, return JSON {categoryId, tags:[…]}."
     }
   },
   "buttons": {

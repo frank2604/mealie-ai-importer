@@ -321,11 +321,25 @@
     },
     "prompts": {
       "title": "Prompts",
-      "description": "Platzhalter für die anpassbaren Prompts. Bearbeitung folgt im nächsten Sprint.",
-      "analysis": "Analyse Prompt",
-      "suggestion": "Vervollständigungs-Prompt",
-      "analysisPlaceholder": "system: Analysiere das Rezept, erkenne Zutaten, Mengen und Einheiten...",
-      "suggestionPlaceholder": "user: Erstelle eine strukturierte Antwort im Mealie-Format..."
+      "description": "",
+      "freeLabel": "Editierbarer Prompt-Teil",
+      "systemLabel": "Technischer Prompt-Teil",
+      "analysis": "Analyse",
+      "analysisSystem": "Technischer Analyse-Teil",
+      "ingredients": "Zutaten-Checker",
+      "ingredientsSystem": "Technischer Teil für den Zutaten-Checker",
+      "units": "Einheiten-Checker",
+      "unitsSystem": "Technischer Teil für den Einheiten-Checker",
+      "metadata": "Metadaten",
+      "metadataSystem": "Technischer Teil für Metadaten",
+      "analysisPlaceholder": "Du bist ein Rezept-Analyse-Experte und beschreibst den Ablauf …",
+      "analysisSystemPlaceholder": "Antworte nur als JSON, nutze Platzhalter wie {{recipeText}} unverändert.",
+      "ingredientsPlaceholder": "Ordne Zutaten passenden Mealie-Lebensmitteln zu …",
+      "ingredientsSystemPlaceholder": "Gib Zuordnungen mit IDs zurück, behalte Platzhalter bei.",
+      "unitsPlaceholder": "Mappe Einheiten auf standardisierte Mealie-Einheiten …",
+      "unitsSystemPlaceholder": "Liefere IDs/Neu-Einträge für Einheiten im JSON-Format.",
+      "metadataPlaceholder": "Schlage Kategorien und Tags für dieses Rezept vor …",
+      "metadataSystemPlaceholder": "Nutze nur die bereitgestellten IDs, antworte exakt im JSON-Schema."
     }
   },
   "buttons": {

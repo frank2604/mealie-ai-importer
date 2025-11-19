@@ -1,6 +1,6 @@
 {
-  "title": "Hähnchenbrust im Parma-Schinken mit Champignon-Sahne-Wermut-Soße",
-  "description": "Zarte Hähnchenbrustfilets werden mit Salbeiblättern belegt, in Parmaschinken gewickelt und kurz angebraten. Eine cremige Champignon-Sahne-Soße mit Wermut rundet das Gericht ab und wird im Ofen fertig gegart. Dazu passen Pellkartoffeln und ein frischer grüner Salat.",
+  "title": "Hähnchenbrustfilets mit Parma‑Schinken, Salbei und Champignon‑Sahne‑Soße",
+  "description": "Zarte Hähnchenbrustfilets werden mit Salbeiblättern belegt, in Parma‑Schinken gewickelt und kurz angebraten. Dazu gibt es eine cremige Champignon‑Sahne‑Soße mit einem Hauch Wermut, die im Ofen fertig gart. Ein einfaches, geschmackvolles Gericht, das sich gut mit Pellkartoffeln und grünem Salat kombinieren lässt.",
   "recipeServings": 4.0,
   "recipeYieldQuantity": 4.0,
   "recipeYield": "4 Portionen",
@@ -16,7 +16,7 @@
           "unit": "Stück"
         },
         {
-          "name": "Parma-Schinken",
+          "name": "Parma‑Schinken",
           "quantity": 6.0,
           "unit": "Scheiben"
         },
@@ -24,12 +24,13 @@
           "name": "Champignons",
           "quantity": 500.0,
           "unit": "g",
-          "note": "geputzt und geviertelt"
+          "note": "geputzt, geviertelt"
         },
         {
           "name": "rote Zwiebeln",
           "quantity": 3.0,
-          "unit": "Stück"
+          "unit": "Stück",
+          "note": "geschält und klein gehackt"
         },
         {
           "name": "trockener Wermut",
@@ -53,59 +54,62 @@
           "unit": "EL"
         },
         {
-          "name": "Fett",
-          "note": "zum Braten"
+          "name": "Fett zum Braten",
+          "note": "zum Anbraten"
         },
         {
           "name": "Salbeiblätter",
           "quantity": 6.0,
-          "unit": "Blätter"
+          "unit": "Blatt"
         },
         {
-          "name": "Salz"
+          "name": "Salz",
+          "note": "nach Geschmack"
         },
         {
-          "name": "Pfeffer"
+          "name": "Pfeffer",
+          "note": "nach Geschmack"
         }
       ]
     }
   ],
   "instructions": [
     {
+      "name": "Zubereitung",
       "steps": [
         {
           "order": 1,
-          "instruction": "Hähnchenbrustfilets mit Salz und Pfeffer würzen.",
+          "instruction": "Hähnchenbrustfilets mit Pfeffer würzen.",
           "ingredientIds": [],
           "ingredientReferenceIds": []
         },
         {
           "order": 2,
-          "instruction": "Jeweils ein Salbeiblatt auf jedes Filet legen und die Filets mit Parma-Schinken umwickeln.",
+          "instruction": "Jeweils ein Salbeiblatt auf ein Filet legen und das Filet mit einer Scheibe Parma‑Schinken umwickeln.",
           "ingredientIds": [],
           "ingredientReferenceIds": []
         },
         {
           "order": 3,
-          "instruction": "Fett in einer Pfanne erhitzen. Die Filets leicht mit Mehl bestäuben und rundherum kurz anbraten, bis sie Farbe nehmen.",
+          "instruction": "Fett in einer Pfanne erhitzen. Die Filets leicht mit Mehl bestäuben und in der Pfanne rundherum anbraten, bis sie Farbe bekommen.",
           "ingredientIds": [],
           "ingredientReferenceIds": []
         },
         {
           "order": 4,
-          "instruction": "Die angebratenen Filets herausnehmen und in eine feuerfeste Form legen.",
+          "instruction": "Die angebratenen Filets aus der Pfanne nehmen und in eine feuerfeste Form geben.",
           "ingredientIds": [],
           "ingredientReferenceIds": []
         },
         {
           "order": 5,
-          "instruction": "Zwiebeln schälen und klein hacken. In derselben Pfanne die Zwiebeln zusammen mit den geviertelten Champignons anbraten.",
+          "instruction": "Zwiebeln schälen und klein hacken. In derselben Pfanne die Zwiebeln zusammen mit den geputzten und geviertelten Champignons anbraten.",
           "ingredientIds": [],
           "ingredientReferenceIds": []
         },
         {
           "order": 6,
-          "instruction": "Mit Wermut ablöschen, etwas einkochen lassen und dann die süße Sahne angießen.",
+          "instruction": "Mit Wermut ablöschen, etwas einkochen lassen und dann die süße Sahne zugießen.",
           "ingredientIds": [],
           "ingredientReferenceIds": []
         },
@@ -117,42 +121,42 @@
         },
         {
           "order": 8,
-          "instruction": "Die Soße über die Hähnchenbrustfilets in der Form gießen.",
+          "instruction": "Die Soße über die Filets in der feuerfesten Form gießen.",
           "ingredientIds": [],
           "ingredientReferenceIds": []
         },
         {
           "order": 9,
-          "instruction": "Die Form in den vorgeheizten Ofen geben und alles bei 200 °C etwa 20 Minuten garen lassen.",
+          "instruction": "Die Form in den vorgeheizten Backofen geben und alles bei 200 °C etwa 20 Minuten garen lassen, bis das Fleisch durch ist.",
           "timer_minutes": 20,
           "ingredientIds": [],
           "ingredientReferenceIds": []
         },
         {
           "order": 10,
-          "instruction": "Herausnehmen und heiß servieren.",
+          "instruction": "Die Filets aus dem Ofen nehmen und heiß servieren. Dazu passen Pellkartoffeln und grüner Salat.",
           "ingredientIds": [],
           "ingredientReferenceIds": []
         }
       ]
     }
   ],
-  "notes": "Dazu passen Pellkartoffeln und grüner Salat.",
+  "notes": "Backtemperatur 200 °C (Umluft ggf. anpassen). Als Beilage passen Pellkartoffeln und grüner Salat. Mengenangaben für 4 Portionen.",
   "image_path": "data/pipeline/02_RecipeImage.jpg",
   "metadata": {
-    "source": "data/uploads/d6595dc2221a4288b495bdf0d3c2116d.pdf",
+    "source": "Leistungsgemeinschaft Deutscher Hähnchen­erzeuger (aus OCR‑Quelle)",
     "categories": [
       "Hauptgericht",
-      "Geflügel"
+      "Geflügel",
+      "Ofengericht"
     ],
-    "cuisine": "Deutsch",
+    "cuisine": "deutsch",
     "tags": [
       "Hähnchen",
-      "Parmaschinken",
       "Champignons",
-      "Sahne",
-      "Wermut",
-      "Ofengericht"
+      "Sahnesoße",
+      "Salbei",
+      "Parmaschinken"
     ],
     "mealie_categories": [],
     "mealie_tags": []

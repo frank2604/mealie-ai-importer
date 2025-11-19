@@ -1,0 +1,150 @@
+{
+  "title": "Hähnchenbrustfilets mit Parma-Schinken in Wermut-Sahne-Soße",
+  "description": "Zarte Hähnchenbrustfilets werden mit Salbei und Parma-Schinken umwickelt, angebraten und in einer cremigen Wermut-Sahne-Soße fertig gegart. Das Gericht verbindet würzige und sahnige Aromen zu einem eleganten Hauptgericht, das sich gut für Gäste oder das Familienessen eignet.",
+  "recipeServings": 4.0,
+  "recipeYieldQuantity": 4.0,
+  "recipeYield": "4 Portionen",
+  "totalTime": "40 Min.",
+  "prepTime": "20 Min.",
+  "performTime": "20 Min.",
+  "ingredients": [
+    {
+      "ingredients": [
+        {
+          "name": "Hähnchenbrustfilets",
+          "quantity": 4.0,
+          "unit": "Stück"
+        },
+        {
+          "name": "Parma-Schinken",
+          "quantity": 6.0,
+          "unit": "Scheiben"
+        },
+        {
+          "name": "Champignons",
+          "quantity": 500.0,
+          "unit": "g",
+          "note": "geputzt, geviertelt"
+        },
+        {
+          "name": "rote Zwiebeln",
+          "quantity": 3.0,
+          "unit": "Stück",
+          "note": "geschält und fein gehackt"
+        },
+        {
+          "name": "trockener Wermut",
+          "quantity": 100.0,
+          "unit": "ml"
+        },
+        {
+          "name": "süße Sahne",
+          "quantity": 200.0,
+          "unit": "ml"
+        },
+        {
+          "name": "Mehl",
+          "quantity": 1.0,
+          "unit": "EL",
+          "note": "zum Bestäuben"
+        },
+        {
+          "name": "heller Soßenbinder",
+          "quantity": 1.0,
+          "unit": "EL"
+        },
+        {
+          "name": "Fett",
+          "note": "zum Braten (z. B. Öl oder Butterschmalz)"
+        },
+        {
+          "name": "Salbeiblätter",
+          "quantity": 6.0,
+          "unit": "Blätter"
+        },
+        {
+          "name": "Salz",
+          "note": "nach Geschmack"
+        },
+        {
+          "name": "Pfeffer",
+          "note": "nach Geschmack"
+        }
+      ]
+    }
+  ],
+  "instructions": [
+    {
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "Hähnchenbrustfilets mit Pfeffer würzen. Jeweils ein Salbeiblatt auf ein Filet legen und mit je einer oder mehreren Scheiben Parma-Schinken umwickeln, sodass das Filet bedeckt ist.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 2,
+          "instruction": "Fett in einer Pfanne erhitzen. Die umwickelten Filets leicht mit Mehl bestäuben und in der Pfanne von allen Seiten kurz anbraten, bis sie Farbe bekommen.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 3,
+          "instruction": "Die angebratenen Filets aus der Pfanne nehmen und in eine feuerfeste Form legen.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 4,
+          "instruction": "Zwiebeln schälen und fein hacken. In derselben Pfanne die Zwiebeln zusammen mit den geputzten und geviertelten Champignons anbraten, bis sie leicht gebräunt sind.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 5,
+          "instruction": "Mit dem Wermut ablöschen, kurz einkochen lassen und dann die süße Sahne angießen. Den hellen Soßenbinder einrühren, die Soße kurz aufkochen lassen und mit Salz und Pfeffer abschmecken.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 6,
+          "instruction": "Die Soße über die Hähnchenbrustfilets in der Form gießen und alles im vorgeheizten Backofen bei 200° C etwa 20 Minuten garen lassen, bis das Fleisch durchgegart ist.",
+          "timer_minutes": 20,
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 7,
+          "instruction": "Vor dem Servieren kurz ruhen lassen und nach Belieben mit Pellkartoffeln und grünem Salat servieren.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        }
+      ]
+    }
+  ],
+  "notes": "Als Beilage passen Pellkartoffeln und ein grüner Salat sehr gut. Temperaturangabe im Backofen: 200 °C, Garzeit ca. 20 Minuten.",
+  "image_path": "data/pipeline/02_RecipeImage.jpg",
+  "metadata": {
+    "source": "data/uploads/d2cfcdf57f374d44bf3f0a51718bc6aa.pdf",
+    "categories": [
+      "Hauptgericht",
+      "Geflügel"
+    ],
+    "cuisine": "deutsch",
+    "tags": [
+      "Hähnchen",
+      "Pfanne",
+      "Backofen",
+      "Sahne",
+      "Wermut",
+      "schnell"
+    ],
+    "mealie_categories": [],
+    "mealie_tags": []
+  },
+  "assets": [
+    {
+      "file_name": "02_RecipeImage.jpg"
+    }
+  ]
+}

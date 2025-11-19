@@ -1,0 +1,231 @@
+{
+  "id": "f5bcb078-454c-4d67-87da-a6f4a2a0117e",
+  "userId": "48ff7261-817a-43a9-89de-63ee69dd4a3e",
+  "householdId": "68c99137-3b89-4a63-b504-97c353531455",
+  "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+  "name": "Hähnchenbrust im Parma-Schinken mit Champignon-Sahne-Wermut-Soße (1)",
+  "slug": "hahnchenbrust-im-parma-schinken-mit-champignon-sahne-wermut-sosse-1",
+  "image": null,
+  "recipeServings": 4.0,
+  "recipeYieldQuantity": 4.0,
+  "recipeYield": "4 Portionen",
+  "totalTime": "40 Min.",
+  "prepTime": "20 Min.",
+  "cookTime": null,
+  "performTime": "20 Min.",
+  "description": "Zarte Hähnchenbrustfilets werden mit Salbeiblättern belegt, in Parmaschinken gewickelt und kurz angebraten. Eine cremige Champignon-Sahne-Soße mit Wermut rundet das Gericht ab und wird im Ofen fertig gegart. Dazu passen Pellkartoffeln und ein frischer grüner Salat.",
+  "recipeCategory": [
+    {
+      "id": "c8b08673-ba91-4d4e-899b-77b9e9a4e733",
+      "name": "Hauptgerichte – Fleisch 🥩",
+      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+      "slug": "hauptgerichte-fleisch"
+    }
+  ],
+  "tags": [
+    {
+      "id": "6b6c225a-f74e-4366-a61b-deb6afccdb3c",
+      "name": "Ernährung | High-Protein 💪",
+      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+      "slug": "ernahrung-high-protein"
+    },
+    {
+      "id": "934e7b20-c521-40c9-a09c-5bc9706f9542",
+      "name": "Form | Pfannengericht 🍳",
+      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+      "slug": "form-pfannengericht"
+    },
+    {
+      "id": "b673c7a1-12e3-43cf-a817-914b92e7a124",
+      "name": "Gerät | Grill 🔥",
+      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+      "slug": "gerat-grill"
+    },
+    {
+      "id": "0f94c939-f5d1-482b-83de-331617c0965b",
+      "name": "Hauptzutat | Pilze 🍄",
+      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+      "slug": "hauptzutat-pilze"
+    },
+    {
+      "id": "9063f3bf-6806-49fc-a925-378b15dcc154",
+      "name": "Küche | Italienisch 🇮🇹",
+      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+      "slug": "kuche-italienisch"
+    },
+    {
+      "id": "f580714e-8ea4-47e6-a6be-2c7e133a52bb",
+      "name": "Saison | Herbst 🍂",
+      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+      "slug": "saison-herbst"
+    },
+    {
+      "id": "d5a8b13a-11cb-4d0c-893f-d2c99204eaea",
+      "name": "Schärfe | Mild 🙂",
+      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+      "slug": "scharfe-mild"
+    },
+    {
+      "id": "539f721a-a8e8-4c15-a7b4-deefcfb27f3a",
+      "name": "Tageszeit | Dinner 🌙",
+      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+      "slug": "tageszeit-dinner"
+    },
+    {
+      "id": "de422906-bd1d-4fc3-852f-a5e7b105a6e2",
+      "name": "Technik | Pfanne 🍳",
+      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+      "slug": "technik-pfanne"
+    }
+  ],
+  "tools": [],
+  "rating": null,
+  "orgURL": "data/uploads/d6595dc2221a4288b495bdf0d3c2116d.pdf",
+  "dateAdded": "2025-11-18",
+  "dateUpdated": "2025-11-18T07:41:56.442195Z",
+  "createdAt": "2025-11-18T07:41:56.443918Z",
+  "updatedAt": "2025-11-18T07:41:56.443920Z",
+  "lastMade": null,
+  "recipeIngredient": [
+    {
+      "quantity": 4.0,
+      "unit": {
+        "id": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+        "name": "Stück"
+      },
+      "food": {
+        "id": "56d8f876-0110-410f-951e-7a4b365437ce",
+        "name": "Hähnchenbrustfilet"
+      }
+    },
+    {
+      "quantity": 6.0,
+      "unit": {
+        "id": "2c3e0c93-592c-4759-bb3e-685a247b49b8",
+        "name": "Scheibe"
+      },
+      "food": {
+        "id": "2092d72d-0375-4ce9-b524-830a98107cf4",
+        "name": "Parma-Schinken"
+      }
+    },
+    {
+      "quantity": 500.0,
+      "note": "geputzt und geviertelt",
+      "unit": {
+        "id": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
+        "name": "Gramm"
+      },
+      "food": {
+        "id": "60554611-f601-4d7f-b7dc-ce21c3462067",
+        "name": "Champignon"
+      }
+    },
+    {
+      "quantity": 3.0,
+      "unit": {
+        "id": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+        "name": "Stück"
+      },
+      "food": {
+        "id": "faec60df-abda-4f65-bed0-b81d47121a55",
+        "name": "Rote Zwiebel"
+      }
+    },
+    {
+      "quantity": 100.0,
+      "unit": {
+        "id": "b558643c-bb92-479d-97ea-1337edc49d3b",
+        "name": "Milliliter"
+      },
+      "food": {
+        "id": "cbcaa29b-a3b7-4615-89a7-a2691fef9e3f",
+        "name": "Trockener Wermut"
+      }
+    },
+    {
+      "quantity": 200.0,
+      "unit": {
+        "id": "b558643c-bb92-479d-97ea-1337edc49d3b",
+        "name": "Milliliter"
+      },
+      "food": {
+        "id": "ce7b4e53-b248-490e-953f-c4548bfb941a",
+        "name": "Süße Sahne"
+      }
+    },
+    {
+      "quantity": 1.0,
+      "note": "zum Bestäuben",
+      "unit": {
+        "id": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+        "name": "Esslöffel"
+      },
+      "food": {
+        "id": "49ad74f8-8303-4fa3-8e31-0e5b0d55e12d",
+        "name": "Mehl"
+      }
+    },
+    {
+      "quantity": 1.0,
+      "unit": {
+        "id": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+        "name": "Esslöffel"
+      },
+      "food": {
+        "id": "16018665-3023-4213-aeb2-c8445dd699b6",
+        "name": "Heller Soßenbinder"
+      }
+    },
+    {
+      "note": "Fett (zum Braten)"
+    },
+    {
+      "quantity": 6.0,
+      "unit": {
+        "id": "14bd13df-83f2-44e5-a326-abc2fb38c09b",
+        "name": "Blatt"
+      },
+      "food": {
+        "id": "31eedd6a-c57b-4979-8a9d-b7ff71663acc",
+        "name": "Salbeiblatt"
+      }
+    },
+    {
+      "note": "Salz"
+    },
+    {
+      "note": "Pfeffer"
+    }
+  ],
+  "recipeInstructions": [],
+  "nutrition": {
+    "calories": null,
+    "carbohydrateContent": null,
+    "cholesterolContent": null,
+    "fatContent": null,
+    "fiberContent": null,
+    "proteinContent": null,
+    "saturatedFatContent": null,
+    "sodiumContent": null,
+    "sugarContent": null,
+    "transFatContent": null,
+    "unsaturatedFatContent": null
+  },
+  "settings": {
+    "public": false,
+    "showNutrition": false,
+    "showAssets": true,
+    "landscapeView": false,
+    "disableComments": false,
+    "locked": false
+  },
+  "notes": [
+    {
+      "title": "Hinweis",
+      "text": "Dazu passen Pellkartoffeln und grüner Salat."
+    }
+  ],
+  "extras": {},
+  "comments": []
+}

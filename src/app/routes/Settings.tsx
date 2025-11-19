@@ -101,40 +101,98 @@ export const Settings: React.FC = () => {
               <Disclosure.Button className="flex w-full items-center justify-between gap-3 px-6 py-4 text-left">
                 <div>
                   <h2 className="text-lg font-semibold">{t("settings.prompts.title")}</h2>
-                  <p className="text-sm text-text/70">{t("settings.prompts.description")}</p>
                 </div>
                 <ChevronDownIcon
                   className={clsx("h-5 w-5 transition-transform", open ? "rotate-180 text-primary" : "text-text/60")}
                 />
               </Disclosure.Button>
               <Disclosure.Panel className="space-y-4 px-6 pb-6">
-                <div>
-                  <label htmlFor="analysis-prompt" className="text-sm font-semibold text-text">
-                    {t("settings.prompts.analysis")}
-                  </label>
-                  <textarea
-                    id="analysis-prompt"
-                    rows={4}
-                    readOnly
-                    value={t("settings.prompts.analysisPlaceholder")}
-                    className={clsx("focus-ring mt-2 w-full border border-border bg-background px-4 py-3 text-sm text-text/80", layoutConfig.borderRadius.medium)}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="suggestion-prompt" className="text-sm font-semibold text-text">
-                    {t("settings.prompts.suggestion")}
-                  </label>
-                  <textarea
-                    id="suggestion-prompt"
-                    rows={4}
-                    readOnly
-                    value={t("settings.prompts.suggestionPlaceholder")}
-                    className={clsx("focus-ring mt-2 w-full border border-border bg-background px-4 py-3 text-sm text-text/80", layoutConfig.borderRadius.medium)}
-                  />
-                </div>
-                <div className={clsx("border border-accent/40 bg-accent/10 px-4 py-3 text-xs text-accent", layoutConfig.borderRadius.medium)}>
-                  {t("notifications.comingSoon")}
-                </div>
+                {[
+                  {
+                    id: "analysis",
+                    title: t("settings.prompts.analysis"),
+                    freeValue: t("settings.prompts.analysisPlaceholder"),
+                    systemLabel: t("settings.prompts.analysisSystem"),
+                    systemValue: t("settings.prompts.analysisSystemPlaceholder")
+                  },
+                  {
+                    id: "ingredients",
+                    title: t("settings.prompts.ingredients"),
+                    freeValue: t("settings.prompts.ingredientsPlaceholder"),
+                    systemLabel: t("settings.prompts.ingredientsSystem"),
+                    systemValue: t("settings.prompts.ingredientsSystemPlaceholder")
+                  },
+                  {
+                    id: "units",
+                    title: t("settings.prompts.units"),
+                    freeValue: t("settings.prompts.unitsPlaceholder"),
+                    systemLabel: t("settings.prompts.unitsSystem"),
+                    systemValue: t("settings.prompts.unitsSystemPlaceholder")
+                  },
+                  {
+                    id: "metadata",
+                    title: t("settings.prompts.metadata"),
+                    freeValue: t("settings.prompts.metadataPlaceholder"),
+                    systemLabel: t("settings.prompts.metadataSystem"),
+                    systemValue: t("settings.prompts.metadataSystemPlaceholder")
+                  }
+                ].map((section) => (
+                  <Disclosure key={section.id}>
+                    {({ open: moduleOpen }) => (
+                      <div
+                        className={clsx(
+                          "border border-border bg-background/80 shadow-sm",
+                          layoutConfig.borderRadius.medium
+                        )}
+                      >
+                        <Disclosure.Button className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left">
+                          <span className="text-sm font-semibold text-text">{section.title}</span>
+                          <ChevronDownIcon
+                            className={clsx(
+                              "h-4 w-4 transition-transform",
+                              moduleOpen ? "rotate-180 text-primary" : "text-text/60"
+                            )}
+                          />
+                        </Disclosure.Button>
+                        <Disclosure.Panel className={clsx("space-y-3 border-t border-border/60 px-4 py-4")}>
+                          <div className="space-y-2">
+                            <label htmlFor={`${section.id}-prompt-free`} className="text-xs font-semibold uppercase tracking-wide text-text/60">
+                              {t("settings.prompts.freeLabel")}
+                            </label>
+                            <textarea
+                              id={`${section.id}-prompt-free`}
+                              rows={4}
+                              readOnly
+                              value={section.freeValue}
+                              className={clsx(
+                                "focus-ring w-full border border-border bg-background px-4 py-3 text-sm text-text/80",
+                                layoutConfig.borderRadius.medium
+                              )}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <label
+                              htmlFor={`${section.id}-prompt-system`}
+                              className="text-xs font-semibold uppercase tracking-wide text-text/60"
+                            >
+                              {t("settings.prompts.systemLabel")}
+                            </label>
+                            <textarea
+                              id={`${section.id}-prompt-system`}
+                              rows={4}
+                              readOnly
+                              value={section.systemValue}
+                              className={clsx(
+                                "focus-ring w-full border border-dashed border-border bg-background/70 px-4 py-3 text-xs text-text/70",
+                                layoutConfig.borderRadius.medium
+                              )}
+                            />
+                          </div>
+                        </Disclosure.Panel>
+                      </div>
+                    )}
+                  </Disclosure>
+                ))}
               </Disclosure.Panel>
             </div>
           )}

@@ -26,14 +26,16 @@ def recipe_to_mealie(recipe: Recipe, ingredient_service: Optional[IngredientServ
     )
     tags_payload = _map_organizer_refs(recipe.metadata.mealie_tags) or _map_name_list(recipe.metadata.tags)
 
+    ingredients_payload, reference_map = _map_ingredients(recipe.ingredients, ingredient_service, recipe)
+
     payload: Dict[str, Any] = {
         "name": recipe.title,
         "description": recipe.description or "",
         "recipeServings": recipe.recipe_servings,
         "recipeYieldQuantity": recipe.recipe_yield_quantity,
         "recipeYield": recipe.recipe_yield,
-        "recipeIngredient": _map_ingredients(recipe.ingredients, ingredient_service, recipe),
-        "recipeInstructions": _map_instructions(recipe.instructions),
+        "recipeIngredient": ingredients_payload,
+        "recipeInstructions": _map_instructions(recipe.instructions, reference_map),
         "recipeCategory": categories_payload,
         "tags": tags_payload,
         "tools": [],
@@ -70,19 +72,25 @@ def _map_ingredients(
     sections: Iterable[IngredientSection],
     service: Optional[IngredientService],
     recipe: Recipe,
-) -> List[Dict[str, Any]]:
+) -> tuple[List[Dict[str, Any]], Dict[str, str]]:
     entries: List[Dict[str, Any]] = []
+    reference_map: Dict[str, str] = {}
     for section in sections:
         for ingr in section.ingredients:
-            entries.append(
-                _ingredient_to_entry(
-                    ingr,
-                    section_name=section.name,
-                    ingredient_service=service,
-                    recipe=recipe,
-                )
+            entry = _ingredient_to_entry(
+                ingr,
+                section_name=section.name,
+                ingredient_service=service,
+                recipe=recipe,
             )
-    return entries
+            entries.append(entry)
+            ref = entry.get("referenceId")
+            if ref and (ingr.id or ref):
+                if ingr.id:
+                    reference_map[ingr.id] = ref
+                else:
+                    reference_map[ref] = ref
+    return entries, reference_map
 
 
 def _ingredient_to_entry(
@@ -148,7 +156,8 @@ def _ingredient_to_entry(
     if section_name and "title" not in entry:
         entry["title"] = section_name
 
-    entry["referenceId"] = str(uuid4())
+    ref_id = ingredient.reference_id or ingredient.id or str(uuid4())
+    entry["referenceId"] = ref_id
     return _clean_nulls(entry)
 
 
@@ -162,10 +171,17 @@ def _build_display_string(ingredient: Ingredient) -> str:
     return display
 
 
-def _map_instructions(sections: Iterable[InstructionSection]) -> List[Dict[str, Any]]:
+def _map_instructions(sections: Iterable[InstructionSection], reference_map: Dict[str, str]) -> List[Dict[str, Any]]:
     steps: List[Dict[str, Any]] = []
     for section in sections:
         for step in section.steps:
+            ingredient_refs: List[Dict[str, str]] = []
+            if step.ingredient_reference_ids:
+                ingredient_refs = [{"referenceId": ref} for ref in step.ingredient_reference_ids if ref]
+            elif step.ingredient_ids:
+                for ing_id in step.ingredient_ids:
+                    mapped = reference_map.get(ing_id, str(ing_id))
+                    ingredient_refs.append({"referenceId": mapped})
             steps.append(
                 _clean_nulls(
                     {
@@ -174,7 +190,7 @@ def _map_instructions(sections: Iterable[InstructionSection]) -> List[Dict[str, 
                         "summary": "",
                         "text": step.instruction,
                         "order": step.order,
-                        "ingredientReferences": [],
+                        "ingredientReferences": ingredient_refs,
                         "timerMinutes": step.timer_minutes,
                     }
                 )

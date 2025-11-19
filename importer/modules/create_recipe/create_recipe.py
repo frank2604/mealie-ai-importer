@@ -13,8 +13,8 @@ import httpx
 from ..context import PipelineContext
 from ...config import AppConfig
 from ...exceptions import UserAbort
-from ...mealie_schema import recipe_to_mealie
-from ...models import RecipeAsset
+from ...mealie_schema import recipe_to_mealie, _map_instructions
+from ...models import RecipeAsset, Ingredient
 from ...services.ingredients import IngredientService
 from ...services.run_workspace import ApiLabel, ApiPayloadRecorder
 
@@ -430,7 +430,10 @@ class CreateRecipeModule:
             )
         recipe_after_put = _parse_recipe_from_response(response)
 
-        # 5) PATCH: Zubereitungsschritte anreichern
+        # Map ingredient referenceIds returned by Mealie to our ingredients
+        reference_map = _build_reference_map(recipe, recipe_after_put)
+        # 5) PATCH: Zubereitungsschritte anreichern mit referenceIds
+        instructions_payload = _map_instructions(recipe.instructions, reference_map)
         patch_payload = _build_patch_payload(recipe_after_put, instructions_payload)
         _log_payload("PATCH_BODY", patch_payload)
         api_recorder.write("patch_recipe_request", patch_payload)
@@ -705,6 +708,28 @@ def _build_patch_payload(
 
     payload["recipeInstructions"] = instructions or []
     return payload
+
+
+def _build_reference_map(recipe: Recipe, recipe_after_put: Optional[Dict[str, Any]]) -> Dict[str, str]:
+    """Map lokale Ingredient-IDs zu Mealie-referenceIds basierend auf der GET-Antwort nach dem PUT."""
+    mapping: Dict[str, str] = {}
+    if not recipe_after_put:
+        return mapping
+    remote_items = recipe_after_put.get("recipeIngredient") or []
+    flat: List[Ingredient] = []
+    for section in recipe.ingredients:
+        flat.extend(section.ingredients)
+    for ing, remote in zip(flat, remote_items):
+        if not isinstance(remote, dict):
+            continue
+        ref = remote.get("referenceId") or remote.get("referenceID") or remote.get("reference_id")
+        if not ref:
+            continue
+        key = ing.id or ing.reference_id
+        if key:
+            mapping[str(key)] = str(ref)
+            ing.reference_id = str(ref)
+    return mapping
 
 
 def _data_url_to_file(asset: RecipeAsset) -> tuple[str, str, bytes]:

@@ -1,0 +1,165 @@
+{
+  "title": "Hähnchenbrust im Parma-Schinken mit Champignon-Sahne-Wermut-Soße",
+  "description": "Zarte Hähnchenbrustfilets werden mit Salbeiblättern belegt, in Parmaschinken gewickelt und kurz angebraten. Eine cremige Champignon-Sahne-Soße mit Wermut rundet das Gericht ab und wird im Ofen fertig gegart. Dazu passen Pellkartoffeln und ein frischer grüner Salat.",
+  "recipeServings": 4.0,
+  "recipeYieldQuantity": 4.0,
+  "recipeYield": "4 Portionen",
+  "totalTime": "40 Min.",
+  "prepTime": "20 Min.",
+  "performTime": "20 Min.",
+  "ingredients": [
+    {
+      "ingredients": [
+        {
+          "name": "Hähnchenbrustfilets",
+          "quantity": 4.0,
+          "unit": "Stück"
+        },
+        {
+          "name": "Parma-Schinken",
+          "quantity": 6.0,
+          "unit": "Scheiben"
+        },
+        {
+          "name": "Champignons",
+          "quantity": 500.0,
+          "unit": "g",
+          "note": "geputzt und geviertelt"
+        },
+        {
+          "name": "rote Zwiebeln",
+          "quantity": 3.0,
+          "unit": "Stück"
+        },
+        {
+          "name": "trockener Wermut",
+          "quantity": 100.0,
+          "unit": "ml"
+        },
+        {
+          "name": "süße Sahne",
+          "quantity": 200.0,
+          "unit": "ml"
+        },
+        {
+          "name": "Mehl",
+          "quantity": 1.0,
+          "unit": "EL",
+          "note": "zum Bestäuben"
+        },
+        {
+          "name": "heller Soßenbinder",
+          "quantity": 1.0,
+          "unit": "EL"
+        },
+        {
+          "name": "Fett",
+          "note": "zum Braten"
+        },
+        {
+          "name": "Salbeiblätter",
+          "quantity": 6.0,
+          "unit": "Blätter"
+        },
+        {
+          "name": "Salz"
+        },
+        {
+          "name": "Pfeffer"
+        }
+      ]
+    }
+  ],
+  "instructions": [
+    {
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "Hähnchenbrustfilets mit Salz und Pfeffer würzen.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 2,
+          "instruction": "Jeweils ein Salbeiblatt auf jedes Filet legen und die Filets mit Parma-Schinken umwickeln.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 3,
+          "instruction": "Fett in einer Pfanne erhitzen. Die Filets leicht mit Mehl bestäuben und rundherum kurz anbraten, bis sie Farbe nehmen.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 4,
+          "instruction": "Die angebratenen Filets herausnehmen und in eine feuerfeste Form legen.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 5,
+          "instruction": "Zwiebeln schälen und klein hacken. In derselben Pfanne die Zwiebeln zusammen mit den geviertelten Champignons anbraten.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 6,
+          "instruction": "Mit Wermut ablöschen, etwas einkochen lassen und dann die süße Sahne angießen.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 7,
+          "instruction": "Den hellen Soßenbinder einrühren, die Soße kurz aufkochen lassen und mit Salz und Pfeffer abschmecken.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 8,
+          "instruction": "Die Soße über die Hähnchenbrustfilets in der Form gießen.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 9,
+          "instruction": "Die Form in den vorgeheizten Ofen geben und alles bei 200 °C etwa 20 Minuten garen lassen.",
+          "timer_minutes": 20,
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 10,
+          "instruction": "Herausnehmen und heiß servieren.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        }
+      ]
+    }
+  ],
+  "notes": "Dazu passen Pellkartoffeln und grüner Salat.",
+  "image_path": "data/pipeline/02_RecipeImage.jpg",
+  "metadata": {
+    "source": "data/uploads/d6595dc2221a4288b495bdf0d3c2116d.pdf",
+    "categories": [
+      "Hauptgericht",
+      "Geflügel"
+    ],
+    "cuisine": "Deutsch",
+    "tags": [
+      "Hähnchen",
+      "Parmaschinken",
+      "Champignons",
+      "Sahne",
+      "Wermut",
+      "Ofengericht"
+    ],
+    "mealie_categories": [],
+    "mealie_tags": []
+  },
+  "assets": [
+    {
+      "file_name": "02_RecipeImage.jpg"
+    }
+  ]
+}

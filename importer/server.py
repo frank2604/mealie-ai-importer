@@ -38,6 +38,7 @@ from .modules.add_unit_ids import AddUnitIdsModule
 from .modules.create_recipe import CreateRecipeModule
 from .services.run_workspace import PipelineRecorder, RunInfo, RunWorkspace
 from .services.ingredients import IngredientService
+from .prompt_store import load_prompts, save_prompts, get_prompt_defaults
 
 logger = logging.getLogger(__name__)
 
@@ -297,6 +298,20 @@ class ReviewUpdateRequest(BaseModel):
     summary: ReviewSummaryUpdate
     ingredients: List[ReviewIngredientUpdate] = Field(default_factory=list)
     instructions: List[ReviewInstructionUpdate] = Field(default_factory=list)
+
+
+class PromptModuleConfig(BaseModel):
+    free: str = ""
+    system: str = ""
+
+
+class PromptUpdateRequest(BaseModel):
+    prompts: Dict[str, Dict[str, PromptModuleConfig]]
+
+
+class PromptResponse(BaseModel):
+    prompts: Dict[str, Dict[str, PromptModuleConfig]]
+    defaults: Dict[str, Dict[str, PromptModuleConfig]]
 
 
 class ResetWorkspaceResponse(BaseModel):
@@ -1477,6 +1492,24 @@ async def update_review_data(run_id: str, update: ReviewUpdateRequest) -> Review
     config = _load_app_config()
     _apply_review_update(run_id, config, update)
     return _build_review_payload(run_id, config)
+
+
+@app.get("/api/prompts", response_model=PromptResponse)
+async def get_prompts() -> PromptResponse:
+    prompts = load_prompts()
+    defaults = get_prompt_defaults()
+    return PromptResponse(prompts=prompts, defaults=defaults)
+
+
+@app.put("/api/prompts", response_model=PromptResponse)
+async def update_prompts(payload: PromptUpdateRequest) -> PromptResponse:
+    existing = load_prompts()
+    for locale, modules in payload.prompts.items():
+        locale_entry = existing.setdefault(locale, {})
+        for module, config in modules.items():
+            locale_entry[module] = {"free": config.free, "system": config.system}
+    save_prompts(existing)
+    return PromptResponse(prompts=existing, defaults=get_prompt_defaults())
 
 
 @app.get("/api/imports/{run_id}", response_model=RunStatusResponse)

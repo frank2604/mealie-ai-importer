@@ -346,7 +346,10 @@
     "cancel": "Abbrechen",
     "back": "Zurück",
     "next": "Weiter",
-    "finish": "Übertragen"
+    "finish": "Übertragen",
+    "save": "Speichern",
+    "saving": "Speichern …",
+    "reset": "Zurücksetzen"
   },
   "confirmations": {
     "cancelImport": "Möchtest du den Import wirklich abbrechen? Alle bisher eingelesenen Daten werden gelöscht."

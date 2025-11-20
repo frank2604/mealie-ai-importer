@@ -1,4 +1,4 @@
-import type { ChangeEvent } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { Disclosure } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
@@ -7,6 +7,7 @@ import { ThemePreview } from "../components/ThemePreview";
 import { layoutConfig } from "../../config/layout.config";
 import { useTheme } from "../../theme/useTheme";
 import { availableLanguages } from "../../i18n/i18n";
+import { fetchPrompts, savePrompts, type PromptLocaleConfig } from "../api/prompts";
 
 export const Settings: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -16,6 +17,54 @@ export const Settings: React.FC = () => {
     ? resolvedLanguage
     : availableLanguages[0]) as (typeof availableLanguages)[number];
 
+  const [promptData, setPromptData] = useState<Record<string, PromptLocaleConfig>>({});
+  const [promptDefaults, setPromptDefaults] = useState<Record<string, PromptLocaleConfig>>({});
+  const [promptsLoading, setPromptsLoading] = useState(false);
+  const [promptsError, setPromptsError] = useState<string | null>(null);
+  const [isSavingPrompts, setIsSavingPrompts] = useState(false);
+  const [hasPromptChanges, setHasPromptChanges] = useState(false);
+
+  const promptModules = useMemo(
+    () => [
+      { id: "analysis", labelKey: "settings.prompts.analysis" },
+      { id: "ingredients", labelKey: "settings.prompts.ingredients" },
+      { id: "units", labelKey: "settings.prompts.units" },
+      { id: "metadata", labelKey: "settings.prompts.metadata" }
+    ],
+    []
+  );
+
+  useEffect(() => {
+    setPromptsLoading(true);
+    setPromptsError(null);
+    fetchPrompts()
+      .then((response) => {
+        setPromptData(response.prompts);
+        setPromptDefaults(response.defaults);
+        setHasPromptChanges(false);
+      })
+      .catch((error: Error) => {
+        setPromptsError(error.message);
+      })
+      .finally(() => {
+        setPromptsLoading(false);
+      });
+  }, []);
+
+  const currentLocale = useMemo(() => (resolvedLanguage ?? "de").split("-")[0], [resolvedLanguage]);
+
+  const currentPromptConfig = useMemo(() => {
+    const localeData = promptData[currentLocale] || promptDefaults[currentLocale] || {};
+    const fallback: PromptLocaleConfig = {};
+    promptModules.forEach((module) => {
+      fallback[module.id] = localeData[module.id] || {
+        free: promptDefaults[currentLocale]?.[module.id]?.free ?? "",
+        system: promptDefaults[currentLocale]?.[module.id]?.system ?? ""
+      };
+    });
+    return fallback;
+  }, [currentLocale, promptData, promptDefaults, promptModules]);
+
   const handleThemeChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value as "light" | "dark";
     setTheme(value);
@@ -23,6 +72,61 @@ export const Settings: React.FC = () => {
 
   const handleLanguageChange = (event: ChangeEvent<HTMLSelectElement>) => {
     void i18n.changeLanguage(event.target.value);
+  };
+
+  const updatePromptValue = (moduleId: string, value: string) => {
+    setPromptData((previous) => {
+      const next = { ...previous };
+      const localeEntry = { ...(next[currentLocale] || {}) };
+      const existing = localeEntry[moduleId] || {
+        free: promptDefaults[currentLocale]?.[moduleId]?.free ?? "",
+        system: promptDefaults[currentLocale]?.[moduleId]?.system ?? ""
+      };
+      localeEntry[moduleId] = { ...existing, free: value };
+      next[currentLocale] = localeEntry;
+      return next;
+    });
+    setHasPromptChanges(true);
+  };
+
+  const handleResetModule = (moduleId: string) => {
+    const defaultValue = promptDefaults[currentLocale]?.[moduleId]?.free ?? "";
+    setPromptData((previous) => {
+      const next = { ...previous };
+      const localeEntry = { ...(next[currentLocale] || {}) };
+      const existing = localeEntry[moduleId] || {};
+      localeEntry[moduleId] = {
+        free: defaultValue,
+        system: existing.system ?? promptDefaults[currentLocale]?.[moduleId]?.system ?? ""
+      };
+      next[currentLocale] = localeEntry;
+      return next;
+    });
+    setHasPromptChanges(true);
+  };
+
+  const handleResetLocale = () => {
+    setPromptData((previous) => {
+      const next = { ...previous };
+      next[currentLocale] = { ...(promptDefaults[currentLocale] || {}) };
+      return next;
+    });
+    setHasPromptChanges(true);
+  };
+
+  const handleSavePrompts = async () => {
+    setIsSavingPrompts(true);
+    setPromptsError(null);
+    try {
+      const response = await savePrompts(promptData);
+      setPromptData(response.prompts);
+      setPromptDefaults(response.defaults);
+      setHasPromptChanges(false);
+    } catch (error) {
+      setPromptsError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setIsSavingPrompts(false);
+    }
   };
 
   return (
@@ -107,46 +211,22 @@ export const Settings: React.FC = () => {
                 />
               </Disclosure.Button>
               <Disclosure.Panel className="space-y-4 px-6 pb-6">
-                {[
-                  {
-                    id: "analysis",
-                    title: t("settings.prompts.analysis"),
-                    freeValue: t("settings.prompts.analysisPlaceholder"),
-                    systemLabel: t("settings.prompts.analysisSystem"),
-                    systemValue: t("settings.prompts.analysisSystemPlaceholder")
-                  },
-                  {
-                    id: "ingredients",
-                    title: t("settings.prompts.ingredients"),
-                    freeValue: t("settings.prompts.ingredientsPlaceholder"),
-                    systemLabel: t("settings.prompts.ingredientsSystem"),
-                    systemValue: t("settings.prompts.ingredientsSystemPlaceholder")
-                  },
-                  {
-                    id: "units",
-                    title: t("settings.prompts.units"),
-                    freeValue: t("settings.prompts.unitsPlaceholder"),
-                    systemLabel: t("settings.prompts.unitsSystem"),
-                    systemValue: t("settings.prompts.unitsSystemPlaceholder")
-                  },
-                  {
-                    id: "metadata",
-                    title: t("settings.prompts.metadata"),
-                    freeValue: t("settings.prompts.metadataPlaceholder"),
-                    systemLabel: t("settings.prompts.metadataSystem"),
-                    systemValue: t("settings.prompts.metadataSystemPlaceholder")
-                  }
-                ].map((section) => (
-                  <Disclosure key={section.id}>
-                    {({ open: moduleOpen }) => (
-                      <div
-                        className={clsx(
-                          "border border-border bg-background/80 shadow-sm",
+                {promptModules.map((section) => {
+                  const moduleConfig = currentPromptConfig[section.id] || {
+                    free: "",
+                    system: promptDefaults[currentLocale]?.[section.id]?.system ?? ""
+                  };
+                  return (
+                    <Disclosure key={section.id}>
+                      {({ open: moduleOpen }) => (
+                        <div
+                          className={clsx(
+                            "border border-border bg-background/80 shadow-sm",
                           layoutConfig.borderRadius.medium
                         )}
                       >
                         <Disclosure.Button className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left">
-                          <span className="text-sm font-semibold text-text">{section.title}</span>
+                          <span className="text-sm font-semibold text-text">{t(section.labelKey)}</span>
                           <ChevronDownIcon
                             className={clsx(
                               "h-4 w-4 transition-transform",
@@ -156,17 +236,22 @@ export const Settings: React.FC = () => {
                         </Disclosure.Button>
                         <Disclosure.Panel className={clsx("space-y-3 border-t border-border/60 px-4 py-4")}>
                           <div className="space-y-2">
-                            <label htmlFor={`${section.id}-prompt-free`} className="text-xs font-semibold uppercase tracking-wide text-text/60">
+                            <label
+                              htmlFor={`${section.id}-prompt-free`}
+                              className="text-xs font-semibold uppercase tracking-wide text-text/60"
+                            >
                               {t("settings.prompts.freeLabel")}
                             </label>
                             <textarea
                               id={`${section.id}-prompt-free`}
                               rows={4}
-                              readOnly
-                              value={section.freeValue}
+                              disabled={promptsLoading}
+                              value={moduleConfig.free}
+                              onChange={(event) => updatePromptValue(section.id, event.target.value)}
                               className={clsx(
                                 "focus-ring w-full border border-border bg-background px-4 py-3 text-sm text-text/80",
-                                layoutConfig.borderRadius.medium
+                                layoutConfig.borderRadius.medium,
+                                promptsLoading && "opacity-60 cursor-not-allowed"
                               )}
                             />
                           </div>
@@ -181,18 +266,58 @@ export const Settings: React.FC = () => {
                               id={`${section.id}-prompt-system`}
                               rows={4}
                               readOnly
-                              value={section.systemValue}
+                              value={moduleConfig.system}
                               className={clsx(
                                 "focus-ring w-full border border-dashed border-border bg-background/70 px-4 py-3 text-xs text-text/70",
                                 layoutConfig.borderRadius.medium
                               )}
                             />
                           </div>
+                          <div className="flex justify-end pt-2">
+                            <button
+                              type="button"
+                              disabled={promptsLoading || isSavingPrompts}
+                              onClick={() => handleResetModule(section.id)}
+                              className={clsx(
+                                "text-xs font-semibold text-primary hover:text-primary/80 disabled:opacity-50"
+                              )}
+                            >
+                              {t("buttons.reset")}
+                            </button>
+                          </div>
                         </Disclosure.Panel>
                       </div>
                     )}
                   </Disclosure>
-                ))}
+                );
+                })}
+                {promptsError ? (
+                  <div className="text-sm text-error">{promptsError}</div>
+                ) : null}
+                <div className="flex items-center justify-end gap-3 pt-2">
+                  <button
+                    type="button"
+                    disabled={promptsLoading || isSavingPrompts}
+                    onClick={handleResetLocale}
+                    className={clsx(
+                      "focus-ring border border-border px-4 py-2 text-sm font-semibold text-text hover:border-primary/60 hover:text-primary disabled:opacity-50",
+                      layoutConfig.borderRadius.small
+                    )}
+                  >
+                    {t("buttons.reset")}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={!hasPromptChanges || promptsLoading || isSavingPrompts}
+                    onClick={handleSavePrompts}
+                    className={clsx(
+                      "focus-ring border border-primary bg-primary px-4 py-2 text-sm font-semibold text-on-primary disabled:opacity-50",
+                      layoutConfig.borderRadius.small
+                    )}
+                  >
+                    {isSavingPrompts ? t("buttons.saving") : t("buttons.save")}
+                  </button>
+                </div>
               </Disclosure.Panel>
             </div>
           )}

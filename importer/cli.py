@@ -30,6 +30,7 @@ from .modules.context import normalize_recipe_payload
 from .modules.add_food_ids import AddFoodIdsModule
 from .modules.add_unit_ids import AddUnitIdsModule
 from .modules.ai_analyser import AiAnalyserModule
+from .modules.instruction_linking import InstructionLinkingModule
 from .modules.create_foods import CreateFoodsModule
 from .modules.create_recipe import CreateRecipeModule
 from .modules.create_units import CreateUnitsModule
@@ -341,6 +342,7 @@ def _handle_parse_llm(
             llm_config=llm_config,
             image_output_dir=recipe_output_dir,
         ),
+        InstructionLinkingModule(llm_client=client, llm_config=llm_config),
     ]
 
     runner = PipelineRunner(modules)

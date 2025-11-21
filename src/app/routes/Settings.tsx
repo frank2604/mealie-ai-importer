@@ -27,6 +27,7 @@ export const Settings: React.FC = () => {
   const promptModules = useMemo(
     () => [
       { id: "analysis", labelKey: "settings.prompts.analysis" },
+      { id: "instructions", labelKey: "settings.prompts.instructions" },
       { id: "ingredients", labelKey: "settings.prompts.ingredients" },
       { id: "units", labelKey: "settings.prompts.units" },
       { id: "metadata", labelKey: "settings.prompts.metadata" }
@@ -181,37 +182,14 @@ export const Settings: React.FC = () => {
         </div>
       </section>
       <div className="space-y-4">
-        <Disclosure defaultOpen>
-          {({ open }) => (
-            <div className={clsx("border border-border bg-panel shadow-sm", layoutConfig.borderRadius.large)}>
-              <Disclosure.Button className="flex w-full items-center justify-between gap-3 px-6 py-4 text-left">
-                <div>
-                  <h2 className="text-lg font-semibold">{t("settings.theme.title")}</h2>
-                  <p className="text-sm text-text/70">{t("settings.theme.description")}</p>
-                </div>
-                <ChevronDownIcon
-                  className={clsx("h-5 w-5 transition-transform", open ? "rotate-180 text-primary" : "text-text/60")}
-                />
-              </Disclosure.Button>
-              <Disclosure.Panel className="px-6 pb-6">
-                <ThemePreview />
-              </Disclosure.Panel>
+        <div className={clsx("border border-border bg-panel shadow-sm", layoutConfig.borderRadius.large)}>
+          <div className="flex w-full items-center justify-between gap-3 px-6 py-4 text-left">
+            <div>
+              <h2 className="text-lg font-semibold">{t("settings.prompts.title")}</h2>
             </div>
-          )}
-        </Disclosure>
-        <Disclosure>
-          {({ open }) => (
-            <div className={clsx("border border-border bg-panel shadow-sm", layoutConfig.borderRadius.large)}>
-              <Disclosure.Button className="flex w-full items-center justify-between gap-3 px-6 py-4 text-left">
-                <div>
-                  <h2 className="text-lg font-semibold">{t("settings.prompts.title")}</h2>
-                </div>
-                <ChevronDownIcon
-                  className={clsx("h-5 w-5 transition-transform", open ? "rotate-180 text-primary" : "text-text/60")}
-                />
-              </Disclosure.Button>
-              <Disclosure.Panel className="space-y-4 px-6 pb-6">
-                {promptModules.map((section) => {
+          </div>
+          <div className="space-y-4 px-6 pb-6">
+            {promptModules.map((section) => {
                   const moduleConfig = currentPromptConfig[section.id] || {
                     free: "",
                     system: promptDefaults[currentLocale]?.[section.id]?.system ?? ""
@@ -318,10 +296,8 @@ export const Settings: React.FC = () => {
                     {isSavingPrompts ? t("buttons.saving") : t("buttons.save")}
                   </button>
                 </div>
-              </Disclosure.Panel>
-            </div>
-          )}
-        </Disclosure>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -36,6 +36,7 @@ from .modules.add_food_ids import AddFoodIdsModule
 from .modules.create_units import CreateUnitsModule
 from .modules.add_unit_ids import AddUnitIdsModule
 from .modules.create_recipe import CreateRecipeModule
+from .modules.instruction_linking import InstructionLinkingModule
 from .services.run_workspace import PipelineRecorder, RunInfo, RunWorkspace
 from .services.ingredients import IngredientService
 from .prompt_store import load_prompts, save_prompts, get_prompt_defaults
@@ -1233,6 +1234,7 @@ def _run_analysis(run_state: RunState, pending: PendingUpload, config: AppConfig
                 llm_config=config.llm,
                 image_output_dir=workspace.pipeline_dir,
             ),
+            InstructionLinkingModule(llm_client=llm_client, llm_config=config.llm),
             FoodCheckerModule(ingredient_service, llm_client=llm_client),
             UnitCheckerModule(ingredient_service, llm_client=llm_client),
             AssignMetadataModule(ingredient_service, llm_client=llm_client),

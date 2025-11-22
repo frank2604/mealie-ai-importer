@@ -334,6 +334,7 @@
       "metadataSystem": "Technischer Teil für Metadaten",
       "instructions": "Schritt-Zuordnungen",
       "instructionsSystem": "Technischer Teil für Schritt-Zuordnungen",
+      "adminToggleLabel": "System-Prompts bearbeiten (Admin)",
       "analysisPlaceholder": "Du bist ein Rezept-Analyse-Experte und beschreibst den Ablauf …",
       "analysisSystemPlaceholder": "Antworte nur als JSON, nutze Platzhalter wie {{recipeText}} unverändert.",
       "ingredientsPlaceholder": "Ordne Zutaten passenden Mealie-Lebensmitteln zu …",

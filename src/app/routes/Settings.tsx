@@ -3,7 +3,6 @@ import { Disclosure } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
-import { ThemePreview } from "../components/ThemePreview";
 import { layoutConfig } from "../../config/layout.config";
 import { useTheme } from "../../theme/useTheme";
 import { availableLanguages } from "../../i18n/i18n";
@@ -23,6 +22,7 @@ export const Settings: React.FC = () => {
   const [promptsError, setPromptsError] = useState<string | null>(null);
   const [isSavingPrompts, setIsSavingPrompts] = useState(false);
   const [hasPromptChanges, setHasPromptChanges] = useState(false);
+  const [isAdminOverrideEnabled, setIsAdminOverrideEnabled] = useState(false);
 
   const promptModules = useMemo(
     () => [
@@ -58,9 +58,11 @@ export const Settings: React.FC = () => {
     const localeData = promptData[currentLocale] || promptDefaults[currentLocale] || {};
     const fallback: PromptLocaleConfig = {};
     promptModules.forEach((module) => {
-      fallback[module.id] = localeData[module.id] || {
-        free: promptDefaults[currentLocale]?.[module.id]?.free ?? "",
-        system: promptDefaults[currentLocale]?.[module.id]?.system ?? ""
+      const defaults = promptDefaults[currentLocale]?.[module.id] || { free: "", system: "" };
+      const existing = localeData[module.id] || {};
+      fallback[module.id] = {
+        free: existing.free ?? defaults.free,
+        system: existing.system ?? defaults.system
       };
     });
     return fallback;
@@ -75,15 +77,18 @@ export const Settings: React.FC = () => {
     void i18n.changeLanguage(event.target.value);
   };
 
-  const updatePromptValue = (moduleId: string, value: string) => {
+  const updatePromptValue = (moduleId: string, field: "free" | "system", value: string) => {
     setPromptData((previous) => {
       const next = { ...previous };
       const localeEntry = { ...(next[currentLocale] || {}) };
-      const existing = localeEntry[moduleId] || {
-        free: promptDefaults[currentLocale]?.[moduleId]?.free ?? "",
-        system: promptDefaults[currentLocale]?.[moduleId]?.system ?? ""
+      const defaults = promptDefaults[currentLocale]?.[moduleId] || { free: "", system: "" };
+      const existing = localeEntry[moduleId] || defaults;
+      const updatedEntry = {
+        free: existing.free ?? defaults.free ?? "",
+        system: existing.system ?? defaults.system ?? ""
       };
-      localeEntry[moduleId] = { ...existing, free: value };
+      updatedEntry[field] = value;
+      localeEntry[moduleId] = updatedEntry;
       next[currentLocale] = localeEntry;
       return next;
     });
@@ -91,14 +96,14 @@ export const Settings: React.FC = () => {
   };
 
   const handleResetModule = (moduleId: string) => {
-    const defaultValue = promptDefaults[currentLocale]?.[moduleId]?.free ?? "";
+    const defaultFree = promptDefaults[currentLocale]?.[moduleId]?.free ?? "";
+    const defaultSystem = promptDefaults[currentLocale]?.[moduleId]?.system ?? "";
     setPromptData((previous) => {
       const next = { ...previous };
       const localeEntry = { ...(next[currentLocale] || {}) };
-      const existing = localeEntry[moduleId] || {};
       localeEntry[moduleId] = {
-        free: defaultValue,
-        system: existing.system ?? promptDefaults[currentLocale]?.[moduleId]?.system ?? ""
+        free: defaultFree,
+        system: defaultSystem
       };
       next[currentLocale] = localeEntry;
       return next;
@@ -109,7 +114,11 @@ export const Settings: React.FC = () => {
   const handleResetLocale = () => {
     setPromptData((previous) => {
       const next = { ...previous };
-      next[currentLocale] = { ...(promptDefaults[currentLocale] || {}) };
+      const localeDefaults = promptDefaults[currentLocale] || {};
+      next[currentLocale] = Object.entries(localeDefaults).reduce<PromptLocaleConfig>((acc, [moduleId, config]) => {
+        acc[moduleId] = { ...config };
+        return acc;
+      }, {});
       return next;
     });
     setHasPromptChanges(true);
@@ -131,7 +140,7 @@ export const Settings: React.FC = () => {
   };
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="w-full space-y-6">
       <header className={clsx("border border-border bg-panel p-6 shadow-sm", layoutConfig.borderRadius.large)}>
         <h1 className="text-2xl font-semibold text-primary">{t("settings.title")}</h1>
         <p className="mt-2 text-sm text-text/70">{t("settings.subtitle")}</p>
@@ -187,6 +196,15 @@ export const Settings: React.FC = () => {
             <div>
               <h2 className="text-lg font-semibold">{t("settings.prompts.title")}</h2>
             </div>
+            <label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-text/60">
+              <input
+                type="checkbox"
+                className="h-4 w-4 accent-primary"
+                checked={isAdminOverrideEnabled}
+                onChange={(event) => setIsAdminOverrideEnabled(event.target.checked)}
+              />
+              <span>{t("settings.prompts.adminToggleLabel")}</span>
+            </label>
           </div>
           <div className="space-y-4 px-6 pb-6">
             {promptModules.map((section) => {
@@ -225,7 +243,7 @@ export const Settings: React.FC = () => {
                               rows={4}
                               disabled={promptsLoading}
                               value={moduleConfig.free}
-                              onChange={(event) => updatePromptValue(section.id, event.target.value)}
+                              onChange={(event) => updatePromptValue(section.id, "free", event.target.value)}
                               className={clsx(
                                 "focus-ring w-full border border-border bg-background px-4 py-3 text-sm text-text/80",
                                 layoutConfig.borderRadius.medium,
@@ -243,12 +261,23 @@ export const Settings: React.FC = () => {
                             <textarea
                               id={`${section.id}-prompt-system`}
                               rows={4}
-                              readOnly
+                              readOnly={!isAdminOverrideEnabled || promptsLoading}
+                              disabled={promptsLoading}
                               value={moduleConfig.system}
                               className={clsx(
-                                "focus-ring w-full border border-dashed border-border bg-background/70 px-4 py-3 text-xs text-text/70",
-                                layoutConfig.borderRadius.medium
+                                "focus-ring w-full border px-4 py-3 text-xs text-text/70",
+                                layoutConfig.borderRadius.medium,
+                                promptsLoading && "opacity-60 cursor-not-allowed",
+                                isAdminOverrideEnabled
+                                  ? "border-border bg-background text-text/80 text-sm"
+                                  : "border-dashed border-border bg-background/70"
                               )}
+                              onChange={(event) => {
+                                if (!isAdminOverrideEnabled || promptsLoading) {
+                                  return;
+                                }
+                                updatePromptValue(section.id, "system", event.target.value);
+                              }}
                             />
                           </div>
                           <div className="flex justify-end pt-2">

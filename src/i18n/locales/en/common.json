@@ -335,6 +335,7 @@
       "metadataSystem": "Technical metadata instructions",
       "instructions": "Step assignments",
       "instructionsSystem": "Technical instructions for step assignments",
+      "adminToggleLabel": "Enable editing of system prompt (admin)",
       "analysisPlaceholder": "You are an AI chef that analyses the uploaded recipe…",
       "analysisSystemPlaceholder": "Respond only in JSON, keep placeholders intact, use {{recipeText}} etc.",
       "ingredientsPlaceholder": "Match ingredients to Mealie foods …",

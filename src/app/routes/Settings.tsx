@@ -29,8 +29,11 @@ export const Settings: React.FC = () => {
       { id: "analysis", labelKey: "settings.prompts.analysis" },
       { id: "instructions", labelKey: "settings.prompts.instructions" },
       { id: "ingredients", labelKey: "settings.prompts.ingredients" },
+      { id: "foodForms", labelKey: "settings.prompts.foodForms" },
       { id: "units", labelKey: "settings.prompts.units" },
-      { id: "metadata", labelKey: "settings.prompts.metadata" }
+      { id: "unitForms", labelKey: "settings.prompts.unitForms" },
+      { id: "metadata", labelKey: "settings.prompts.metadata" },
+      { id: "imageCrop", labelKey: "settings.prompts.imageCrop" }
     ],
     []
   );

@@ -145,6 +145,7 @@ class AiAnalyserModule:
             return
 
         image_bytes = best_image.data
+        locale = (context.config.processing.language or "de") if context.config else "de"
         if (
             crop_image_with_llm is not None
             and self._llm_config.api_key
@@ -154,6 +155,7 @@ class AiAnalyserModule:
                 image_bytes,
                 llm_config=self._llm_config,
                 title=recipe.title or context.source_pdf.stem,
+                locale=locale,
             )
             if cropped:
                 image_bytes = cropped

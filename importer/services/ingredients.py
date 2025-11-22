@@ -19,132 +19,12 @@ except ImportError:  # pragma: no cover - fallback when rapidfuzz is unavailable
 from ..config import IngredientConfig
 from ..exceptions import UserAbort
 from ..llm_parser import OpenAiClient
+from ..prompt_store import resolve_prompt
 
 logger = logging.getLogger(__name__)
 
 _DEFAULT_TIMEOUT = 30.0
 _MAX_FORM_BATCH = 12
-
-_FORM_SYSTEM_PROMPT = """
-Du bist ein deutschsprachiger Zutaten-Normalizer für Mealie.
-Aufgabe: Für jede Zutat bestimme Singular, Plural, Zählbarkeit, nur strikte Aliasse sowie eine passende Lebensmittelkategorie aus der bereitgestellten Liste.
-
-Regeln
-
-Zählbar vs. unzählbar
-
-Zählbar → unterschiedliche Formen (z. B. „1 Champignon“, „2 Champignons“).
-
-Unzählbar (Stoff-/Massenbegriffe wie Salz, Mehl, Sahne, Schinken) → Form bleibt in Singular/Plural gleich.
-
-Strikte Aliasse (aliasesStrict)
-Gib nur sehr enge, sichere Varianten aus:
-
-Eindeutige Synonyme ohne Bedeutungswechsel (z. B. „Schlagsahne“ ↔ „Sahne“, „Prosciutto di Parma“ ↔ „Parma-Schinken“).
-
-Sie müssen aber semantisch dasselbe Lebensmittel bezeichnen (z. B. sind "Zwiebeln" ungleich "Rote Zwiebeln", "Pfeffer" ist ungleich "Roter Pfeffer")
-
-Orthografische Varianten (mit/ohne Bindestrich, Singular/Plural, Groß-/Kleinschreibung).
-
-Nicht ausgeben:
-
-Unterarten/Qualitäten: z. B. „meersalz“, „schwarzer pfeffer“, „extra vergine“, „bio“.
-
-Zubereitungs-/Zustandsformen: „gemahlen“, „gehackt“, „fein“, „grob“.
-
-Überbegriffe (z. B. „pilz“ für „champignon“).
-
-Marken/Regionen (außer wenn integraler Bestandteil wie „prosciutto di parma“).
-
-Max. 8 Aliasse je Eintrag, Duplikate entfernen, lowercase liefern.
-
-Orthografie
-
-Nomen im Ergebnisfeld (nameSingular/namePlural) korrekt mit Großschreibung und Umlauten.
-
-Adjektive/Bindestriche beibehalten („Rote Zwiebel“, „Parma-Schinken“).
-
-Kategoriewahl
-
-Verwende ausschließlich eine der vorgegebenen Kategorien. Gib sowohl ID als auch Namen zurück. Wenn keine Kategorie passt, setze beide Felder auf null.
-
-JSON only
-
-Antworte ausschließlich mit gültigem JSON gemäß Schema (keine Kommentare, kein Fließtext).
-
-Keine Halluzinationen
-
-Nichts dazuerfinden. Keine Einheiten, keine Marken.
-
-Ausgabeschema
-{
-  "ingredients": [
-    {
-      "input": "Originaltext",
-      "nameSingular": "...",
-      "namePlural": "...",
-      "countable": true,
-      "aliasesStrict": ["...", "..."],
-      "categoryId": "...",
-      "categoryName": "..."
-    }
-  ]
-}
-
-Beispiele zur Ausrichtung (nicht ausgeben, nur beachten):
-
-1 Salbeiblatt / 2 Salbeiblätter
-
-1 cl Wermut / 2 cl Wermut
-""".strip()
-
-
-
-_FORM_USER_PROMPT_TEMPLATE = """
-Bestimme Singular, Plural, Zählbarkeit, strikte Aliasse und ordne jede Zutat einer vorhandenen Lebensmittelkategorie zu.
-Antworte ausschließlich mit JSON im oben beschriebenen Schema.
-
-Zutatenliste:
-{ingredient_lines}
-
-Verfügbare Kategorien (ID – Name):
-{category_lines}
-""".strip()
-
-
-_UNIT_FORM_SYSTEM_PROMPT = """
-Du bereitest neue Mengeneinheiten für Mealie vor. Für jede Eingabe lieferst du Name, optionalen Plural sowie sinnvolle Abkürzungen.
-
-Regeln:
-1. Gib nur Werte zurück, die in einem Kochkontext üblich sind.
-2. "name" ist Pflicht und soll großgeschrieben starten.
-3. "pluralName" nur angeben, wenn es eine andere Form als der Singular gibt.
-4. "abbreviation" und "pluralAbbreviation" nur setzen, wenn sie in Rezepten gebräuchlich sind (z. B. "EL" für Esslöffel). Sonst leer lassen.
-5. Setze "useAbbreviation" auf true, wenn eine sinnvolle Abkürzung existiert.
-6. Antworte ausschließlich mit gültigem JSON im folgenden Schema:
-{
-  "units": [
-    {
-      "input": "Originaltext",
-      "name": "...",
-      "pluralName": "..." | null,
-      "abbreviation": "..." | null,
-      "pluralAbbreviation": "..." | null,
-      "useAbbreviation": true | false
-    }
-  ]
-}
-
-Keine zusätzlichen Erklärungen, keine weiteren Felder.
-""".strip()
-
-
-_UNIT_FORM_USER_PROMPT_TEMPLATE = """
-Erstelle für diese Einheiten passende Schreibweisen. Antworte ausschließlich mit JSON im oben beschriebenen Schema.
-
-{unit_lines}
-""".strip()
-
 
 @dataclass
 class UnitResource:
@@ -197,6 +77,7 @@ class IngredientService:
         llm_client: Optional[OpenAiClient] = None,
         verify: Union[bool, str] = True,
         auto_seed: bool = True,
+        prompt_locale: Optional[str] = None,
     ) -> None:
         self._base_url = (base_url or "").rstrip("/")
         self._token = token or ""
@@ -221,6 +102,7 @@ class IngredientService:
         self._tag_categories: List[str] = []
         self._forms_cache: Dict[str, FoodForms] = {}
         self._unit_forms_cache: Dict[str, UnitForms] = {}
+        self._prompt_locale = (prompt_locale or "de") or "de"
 
         self._enabled = bool(self._base_url and self._token)
         self._client: Optional[httpx.Client] = None
@@ -1339,25 +1221,29 @@ class IngredientService:
             return {}
 
         try:
-            category_lines = "\n".join(
-                f"- {item['id']}: {item['name']}" for item in categories
-            ) or "- keine Kategorien vorhanden"
-            user_prompt = _FORM_USER_PROMPT_TEMPLATE.format(
-                ingredient_lines="\n".join(batch),
-                category_lines=category_lines,
-            )
+            category_lines = "\n".join(f"- {item['id']}: {item['name']}" for item in categories) or "- keine Kategorien vorhanden"
+            prompt_cfg = resolve_prompt("foodForms", self._prompt_locale)
+            template = prompt_cfg.get("free") or "{ingredient_lines}"
+            try:
+                user_prompt = template.format(
+                    ingredient_lines="\n".join(batch),
+                    category_lines=category_lines,
+                )
+            except KeyError:
+                user_prompt = template
+            system_prompt = prompt_cfg.get("system") or ""
             self._maybe_confirm(confirm, f"LLM Zutatenformen – {', '.join(batch)}")
             self._debug_write(
                 debug,
                 "foods_llm_request",
                 {
                     "batch": batch,
-                    "systemPrompt": _FORM_SYSTEM_PROMPT,
+                    "systemPrompt": system_prompt,
                     "userPrompt": user_prompt,
                     "categories": categories,
                 },
             )
-            response = self._llm_client.run_json(_FORM_SYSTEM_PROMPT, user_prompt)
+            response = self._llm_client.run_json(system_prompt, user_prompt)
             self._debug_write(
                 debug,
                 "foods_llm_response",
@@ -1432,20 +1318,24 @@ class IngredientService:
             return {}
 
         try:
-            user_prompt = _UNIT_FORM_USER_PROMPT_TEMPLATE.format(
-                unit_lines="\n".join(batch)
-            )
+            prompt_cfg = resolve_prompt("unitForms", self._prompt_locale)
+            template = prompt_cfg.get("free") or "{unit_lines}"
+            try:
+                user_prompt = template.format(unit_lines="\n".join(batch))
+            except KeyError:
+                user_prompt = template
+            system_prompt = prompt_cfg.get("system") or ""
             self._maybe_confirm(confirm, f"LLM Einheitenformen – {', '.join(batch)}")
             self._debug_write(
                 debug,
                 "units_llm_request",
                 {
                     "batch": batch,
-                    "systemPrompt": _UNIT_FORM_SYSTEM_PROMPT,
+                    "systemPrompt": system_prompt,
                     "userPrompt": user_prompt,
                 },
             )
-            response = self._llm_client.run_json(_UNIT_FORM_SYSTEM_PROMPT, user_prompt)
+            response = self._llm_client.run_json(system_prompt, user_prompt)
             self._debug_write(
                 debug,
                 "units_llm_response",

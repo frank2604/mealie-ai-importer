@@ -1190,6 +1190,7 @@ def _run_analysis(run_state: RunState, pending: PendingUpload, config: AppConfig
                 llm_client=llm_client,
                 verify=config.mealie.verify_option(),
                 auto_seed=False,
+                prompt_locale=config.processing.language,
             )
         except Exception as exc:  # pragma: no cover - defensive
             logger.error("IngredientService konnte nicht initialisiert werden: %s", exc)
@@ -1285,6 +1286,7 @@ def _run_transfer(run_state: RunState, config: AppConfig, workspace: RunWorkspac
             llm_client=None,
             verify=config.mealie.verify_option(),
             auto_seed=False,
+            prompt_locale=config.processing.language,
         )
 
         if run_state.log_file:

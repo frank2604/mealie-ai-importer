@@ -382,6 +382,7 @@ def _handle_export_mealie(source: Path, output: Optional[Path], config) -> int:
             config=config.ingredients,
             llm_client=client,
             verify=config.mealie.verify_option(),
+            prompt_locale=config.processing.language,
         )
 
     try:
@@ -440,6 +441,7 @@ def _handle_upload_pdf(*, pdf_path: Path, config: AppConfig, dry_run: bool) -> i
         llm_client=llm_client,
         verify=config.mealie.verify_option(),
         auto_seed=False,
+        prompt_locale=config.processing.language,
     )
     cache_paths = CachePaths(cache_dir)
     context = PipelineContext(
@@ -533,6 +535,7 @@ def _handle_upload_json(*, source: Path, config: AppConfig, dry_run: bool) -> in
         llm_client=llm_client,
         verify=config.mealie.verify_option(),
         auto_seed=False,
+        prompt_locale=config.processing.language,
     )
 
     cache_paths = CachePaths(Path(config.ingredients.cache_dir))

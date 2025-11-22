@@ -12,29 +12,18 @@ from PIL import Image
 
 from .config import LlmConfig
 from .llm_parser import LlmParsingError, _parse_json_response  # reuse util
+from .prompt_store import resolve_prompt
 
 logger = logging.getLogger(__name__)
 
 
-_CROP_PROMPT = """
-Finde ausschließlich die Bildregion, auf der das fertig angerichtete Gericht zu sehen ist. 
-Es soll das komplette Gericht mit dem Gefäß (Teller, Schale, Schüssel, Glas, Becher etc.) zu sehen sein. 
-Keine Cloe-Ups.
-Ignoriere aber Textspalten, Seitenränder, Logos oder Dekoelemente. Gib ein JSON-Objekt mit dem 
-Feld "crop" zurück. "crop" enthält relative Koordinaten innerhalb des Bildes (Werte von 0.0 bis 1.0):
-{
-  "crop": {
-    "x": <linker Rand>,
-    "y": <oberer Rand>,
-    "width": <Breite>,
-    "height": <Höhe>
-  }
-}
-Falls kein sinnvolles Gericht zu erkennen ist, setze "crop" auf null.
-""".strip()
-
-
-def crop_image_with_llm(image_bytes: bytes, *, llm_config: LlmConfig, title: str) -> Optional[bytes]:
+def crop_image_with_llm(
+    image_bytes: bytes,
+    *,
+    llm_config: LlmConfig,
+    title: str,
+    locale: str = "de",
+) -> Optional[bytes]:
     """Use an OpenAI vision model to crop *image_bytes* to the plated dish."""
 
     model = llm_config.vision_model or llm_config.model
@@ -43,14 +32,22 @@ def crop_image_with_llm(image_bytes: bytes, *, llm_config: LlmConfig, title: str
 
     b64_image = base64.b64encode(image_bytes).decode("ascii")
 
+    prompt_cfg = resolve_prompt("imageCrop", locale)
+    system_prompt = prompt_cfg.get("system") or "Du bist ein präziser Assistent für Bildausschnitte."
+    template = prompt_cfg.get("free") or "{title}"
+    try:
+        user_text = template.format(title=title)
+    except KeyError:
+        user_text = template
+
     payload = {
         "model": model,
         "messages": [
-            {"role": "system", "content": "Du bist ein präziser Assistent für Bildausschnitte."},
+            {"role": "system", "content": system_prompt},
             {
                 "role": "user",
                 "content": [
-                    {"type": "text", "text": f"Rezept: {title}\n{_CROP_PROMPT}"},
+                    {"type": "text", "text": user_text},
                     {
                         "type": "image_url",
                         "image_url": {

@@ -11,7 +11,8 @@ import httpx
 from ..context import PipelineContext, auto_link_ingredients_to_instructions, normalize_recipe_payload
 from ...config import LlmConfig
 from ...llm_parser import OpenAiClient
-from ...prompt_store import get_prompt_defaults, load_prompts
+from ...prompt_store import resolve_prompt
+from ...prompt_logging import log_prompt_messages
 
 logger = logging.getLogger("Instruction Linking")
 
@@ -59,14 +60,18 @@ class InstructionLinkingModule:
         if not ingredients or not steps:
             return None
 
-        prompt_cfg = self._resolve_prompt(locale)
-        system_prompt = prompt_cfg["system"]
-        free_template = prompt_cfg["free"]
-        user_prompt = (
-            free_template.replace("{ingredients}", json.dumps(ingredients, ensure_ascii=False))
-            .replace("{steps}", json.dumps(steps, ensure_ascii=False))
-            .replace("\\n", "\n")
-        )
+        replacements = {
+            "ingredients": json.dumps(ingredients, ensure_ascii=False),
+            "steps": json.dumps(steps, ensure_ascii=False),
+        }
+        prompt_cfg = resolve_prompt("instructions", locale, replacements=replacements)
+        system_prompt = prompt_cfg.get("system", "").strip()
+        user_parts = [
+            part.strip()
+            for part in (prompt_cfg.get("user1", ""), prompt_cfg.get("user2", ""))
+            if part and part.strip()
+        ]
+        user_prompt = "\n\n".join(user_parts) if user_parts else "\n\n".join(replacements.values())
 
         payload = {
             "model": self._llm_config.model,
@@ -85,6 +90,7 @@ class InstructionLinkingModule:
         endpoint = f"{self._client.base_url}/chat/completions"
 
         try:
+            log_prompt_messages("instructions", payload["messages"])
             response = httpx.post(endpoint, headers=headers, json=payload, timeout=self._client.timeout)
             response.raise_for_status()
         except httpx.HTTPError as exc:
@@ -166,29 +172,3 @@ class InstructionLinkingModule:
                     }
                 )
         return steps
-
-    def _resolve_prompt(self, locale: str) -> Dict[str, str]:
-        prompts = load_prompts()
-        defaults = get_prompt_defaults()
-
-        candidates = [
-            locale,
-            locale.split("-")[0],
-            "de",
-            "en",
-        ]
-
-        for key in candidates:
-            prompt = prompts.get(key, {})
-            module = prompt.get("instructions")
-            if module and module.get("system"):
-                return {
-                    "free": module.get("free") or defaults.get(key, {}).get("instructions", {}).get("free") or "",
-                    "system": module.get("system") or defaults.get(key, {}).get("instructions", {}).get("system") or "",
-                }
-
-        default_locale = defaults.get("de") or next(iter(defaults.values()))
-        return {
-            "free": default_locale.get("instructions", {}).get("free", ""),
-            "system": default_locale.get("instructions", {}).get("system", ""),
-        }

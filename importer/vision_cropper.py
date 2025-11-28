@@ -13,6 +13,7 @@ from PIL import Image
 from .config import LlmConfig
 from .llm_parser import LlmParsingError, _parse_json_response  # reuse util
 from .prompt_store import resolve_prompt
+from .prompt_logging import log_prompt_messages
 
 logger = logging.getLogger(__name__)
 
@@ -32,13 +33,14 @@ def crop_image_with_llm(
 
     b64_image = base64.b64encode(image_bytes).decode("ascii")
 
-    prompt_cfg = resolve_prompt("imageCrop", locale)
+    prompt_cfg = resolve_prompt("imageCrop", locale, replacements={"title": title})
     system_prompt = prompt_cfg.get("system") or "Du bist ein präziser Assistent für Bildausschnitte."
-    template = prompt_cfg.get("free") or "{title}"
-    try:
-        user_text = template.format(title=title)
-    except KeyError:
-        user_text = template
+    user_parts = [
+        part.strip()
+        for part in (prompt_cfg.get("user1", ""), prompt_cfg.get("user2", ""))
+        if part and part.strip()
+    ]
+    user_text = "\n\n".join(user_parts) if user_parts else title
 
     payload = {
         "model": model,
@@ -59,6 +61,8 @@ def crop_image_with_llm(
         ],
         "response_format": {"type": "json_object"},
     }
+
+    log_prompt_messages("imageCrop", payload["messages"])
 
     headers = {
         "Authorization": f"Bearer {llm_config.api_key}",

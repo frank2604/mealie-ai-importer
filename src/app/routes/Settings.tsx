@@ -61,10 +61,11 @@ export const Settings: React.FC = () => {
     const localeData = promptData[currentLocale] || promptDefaults[currentLocale] || {};
     const fallback: PromptLocaleConfig = {};
     promptModules.forEach((module) => {
-      const defaults = promptDefaults[currentLocale]?.[module.id] || { free: "", system: "" };
+      const defaults = promptDefaults[currentLocale]?.[module.id] || { user1: "", user2: "", system: "" };
       const existing = localeData[module.id] || {};
       fallback[module.id] = {
-        free: existing.free ?? defaults.free,
+        user1: existing.user1 ?? defaults.user1,
+        user2: existing.user2 ?? defaults.user2,
         system: existing.system ?? defaults.system
       };
     });
@@ -80,14 +81,15 @@ export const Settings: React.FC = () => {
     void i18n.changeLanguage(event.target.value);
   };
 
-  const updatePromptValue = (moduleId: string, field: "free" | "system", value: string) => {
+  const updatePromptValue = (moduleId: string, field: "user1" | "user2" | "system", value: string) => {
     setPromptData((previous) => {
       const next = { ...previous };
       const localeEntry = { ...(next[currentLocale] || {}) };
-      const defaults = promptDefaults[currentLocale]?.[moduleId] || { free: "", system: "" };
+      const defaults = promptDefaults[currentLocale]?.[moduleId] || { user1: "", user2: "", system: "" };
       const existing = localeEntry[moduleId] || defaults;
       const updatedEntry = {
-        free: existing.free ?? defaults.free ?? "",
+        user1: existing.user1 ?? defaults.user1 ?? "",
+        user2: existing.user2 ?? defaults.user2 ?? "",
         system: existing.system ?? defaults.system ?? ""
       };
       updatedEntry[field] = value;
@@ -99,29 +101,22 @@ export const Settings: React.FC = () => {
   };
 
   const handleResetModule = (moduleId: string) => {
-    const defaultFree = promptDefaults[currentLocale]?.[moduleId]?.free ?? "";
+    const confirmed = window.confirm(t("settings.prompts.resetModuleConfirm"));
+    if (!confirmed) {
+      return;
+    }
+    const defaultUser1 = promptDefaults[currentLocale]?.[moduleId]?.user1 ?? "";
+    const defaultUser2 = promptDefaults[currentLocale]?.[moduleId]?.user2 ?? "";
     const defaultSystem = promptDefaults[currentLocale]?.[moduleId]?.system ?? "";
     setPromptData((previous) => {
       const next = { ...previous };
       const localeEntry = { ...(next[currentLocale] || {}) };
       localeEntry[moduleId] = {
-        free: defaultFree,
+        user1: defaultUser1,
+        user2: defaultUser2,
         system: defaultSystem
       };
       next[currentLocale] = localeEntry;
-      return next;
-    });
-    setHasPromptChanges(true);
-  };
-
-  const handleResetLocale = () => {
-    setPromptData((previous) => {
-      const next = { ...previous };
-      const localeDefaults = promptDefaults[currentLocale] || {};
-      next[currentLocale] = Object.entries(localeDefaults).reduce<PromptLocaleConfig>((acc, [moduleId, config]) => {
-        acc[moduleId] = { ...config };
-        return acc;
-      }, {});
       return next;
     });
     setHasPromptChanges(true);
@@ -212,7 +207,8 @@ export const Settings: React.FC = () => {
           <div className="space-y-4 px-6 pb-6">
             {promptModules.map((section) => {
                   const moduleConfig = currentPromptConfig[section.id] || {
-                    free: "",
+                    user1: "",
+                    user2: "",
                     system: promptDefaults[currentLocale]?.[section.id]?.system ?? ""
                   };
                   return (
@@ -236,22 +232,51 @@ export const Settings: React.FC = () => {
                         <Disclosure.Panel className={clsx("space-y-3 border-t border-border/60 px-4 py-4")}>
                           <div className="space-y-2">
                             <label
-                              htmlFor={`${section.id}-prompt-free`}
+                              htmlFor={`${section.id}-prompt-user1`}
                               className="text-xs font-semibold uppercase tracking-wide text-text/60"
                             >
-                              {t("settings.prompts.freeLabel")}
+                              {t("settings.prompts.user1Label")}
                             </label>
                             <textarea
-                              id={`${section.id}-prompt-free`}
-                              rows={4}
+                              id={`${section.id}-prompt-user1`}
+                              rows={8}
                               disabled={promptsLoading}
-                              value={moduleConfig.free}
-                              onChange={(event) => updatePromptValue(section.id, "free", event.target.value)}
+                              value={moduleConfig.user1}
+                              onChange={(event) => updatePromptValue(section.id, "user1", event.target.value)}
                               className={clsx(
                                 "focus-ring w-full border border-border bg-background px-4 py-3 text-sm text-text/80",
                                 layoutConfig.borderRadius.medium,
                                 promptsLoading && "opacity-60 cursor-not-allowed"
                               )}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <label
+                              htmlFor={`${section.id}-prompt-user2`}
+                              className="text-xs font-semibold uppercase tracking-wide text-text/60"
+                            >
+                              {t("settings.prompts.user2Label")}
+                            </label>
+                            <textarea
+                              id={`${section.id}-prompt-user2`}
+                              rows={8}
+                              readOnly={!isAdminOverrideEnabled || promptsLoading}
+                              disabled={promptsLoading}
+                              value={moduleConfig.user2}
+                              className={clsx(
+                                "focus-ring w-full border px-4 py-3 text-xs text-text/70",
+                                layoutConfig.borderRadius.medium,
+                                promptsLoading && "opacity-60 cursor-not-allowed",
+                                isAdminOverrideEnabled
+                                  ? "border-border bg-background text-text/80 text-sm"
+                                  : "border-dashed border-border bg-background/70"
+                              )}
+                              onChange={(event) => {
+                                if (!isAdminOverrideEnabled || promptsLoading) {
+                                  return;
+                                }
+                                updatePromptValue(section.id, "user2", event.target.value);
+                              }}
                             />
                           </div>
                           <div className="space-y-2">
@@ -263,7 +288,7 @@ export const Settings: React.FC = () => {
                             </label>
                             <textarea
                               id={`${section.id}-prompt-system`}
-                              rows={4}
+                              rows={8}
                               readOnly={!isAdminOverrideEnabled || promptsLoading}
                               disabled={promptsLoading}
                               value={moduleConfig.system}
@@ -305,17 +330,6 @@ export const Settings: React.FC = () => {
                   <div className="text-sm text-error">{promptsError}</div>
                 ) : null}
                 <div className="flex items-center justify-end gap-3 pt-2">
-                  <button
-                    type="button"
-                    disabled={promptsLoading || isSavingPrompts}
-                    onClick={handleResetLocale}
-                    className={clsx(
-                      "focus-ring border border-border px-4 py-2 text-sm font-semibold text-text hover:border-primary/60 hover:text-primary disabled:opacity-50",
-                      layoutConfig.borderRadius.small
-                    )}
-                  >
-                    {t("buttons.reset")}
-                  </button>
                   <button
                     type="button"
                     disabled={!hasPromptChanges || promptsLoading || isSavingPrompts}

@@ -465,6 +465,7 @@ def _handle_upload_pdf(*, pdf_path: Path, config: AppConfig, dry_run: bool) -> i
         )
         return _prompt_yes_no(message, default=False)
 
+    locale = config.processing.language or "de"
     modules: List = [
         RefreshCachesModule(ingredient_service),
         PdfInputModule(),
@@ -472,9 +473,9 @@ def _handle_upload_pdf(*, pdf_path: Path, config: AppConfig, dry_run: bool) -> i
             llm_client=llm_client,
             llm_config=config.llm,
         ),
-        FoodCheckerModule(ingredient_service, llm_client=llm_client),
-        UnitCheckerModule(ingredient_service, llm_client=llm_client),
-        AssignMetadataModule(ingredient_service, llm_client=llm_client),
+        FoodCheckerModule(ingredient_service, llm_client=llm_client, locale=locale),
+        UnitCheckerModule(ingredient_service, llm_client=llm_client, locale=locale),
+        AssignMetadataModule(ingredient_service, llm_client=llm_client, locale=locale),
         ReviewPromptModule(),
         ApplyUserDecisionsModule(),
         CreateFoodsModule(ingredient_service, dry_run=dry_run),
@@ -556,8 +557,9 @@ def _handle_upload_json(*, source: Path, config: AppConfig, dry_run: bool) -> in
         )
         return _prompt_yes_no(message, default=False)
 
+    locale = config.processing.language or "de"
     refresh_module = RefreshCachesModule(ingredient_service)
-    metadata_module = AssignMetadataModule(ingredient_service, llm_client=llm_client)
+    metadata_module = AssignMetadataModule(ingredient_service, llm_client=llm_client, locale=locale)
     try:
         refresh_module.run(context)
         metadata_module.run(context)

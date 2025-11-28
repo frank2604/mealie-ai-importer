@@ -300,6 +300,7 @@ class RunWorkspace:
         self._clear_directory(self._cache_dir)
         if self._log_dir is not None:
             self._clear_directory(self._log_dir)
+        self._clear_directory(Path("data/prompts"))
 
     def _archive_run(self, info: RunInfo) -> Path:
         recipe_dir_name = _normalize_filename(info.recipe_name, fallback=info.run_id)

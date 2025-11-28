@@ -1,5 +1,5 @@
 {
-  "updated_at": "2025-11-19T06:53:51.044456",
+  "updated_at": "2025-11-28T17:37:53.079648",
   "foods": [
     {
       "id": "a884cc29-5a5f-4298-b0c7-2a7c5d4c5a6e",
@@ -138,15 +138,6 @@
       ]
     },
     {
-      "id": "cbcaa29b-a3b7-4615-89a7-a2691fef9e3f",
-      "name": "Trockener Wermut",
-      "pluralName": "Trockener Wermut",
-      "aliases": [
-        "{'name': 'trockener wermut'}",
-        "{'name': 'trockener-wermut'}"
-      ]
-    },
-    {
       "id": "0bb022f0-4715-4bdf-8938-7be3b867d3ab",
       "name": "Wan Tan Tasche",
       "pluralName": "Wan Tan Taschen",
@@ -223,14 +214,6 @@
       "name": "Rote Zwiebel",
       "pluralName": "Rote Zwiebeln",
       "aliases": []
-    },
-    {
-      "id": "1e9f9678-213c-477d-8c3a-7c5a7f365f32",
-      "name": "Fett zum Braten",
-      "pluralName": "Fett zum Braten",
-      "aliases": [
-        "{'name': 'bratfett'}"
-      ]
     },
     {
       "id": "16018665-3023-4213-aeb2-c8445dd699b6",

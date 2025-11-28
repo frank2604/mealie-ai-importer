@@ -92,13 +92,16 @@ class AiAnalyserModule:
     def _parse_recipe_with_retry(self, extraction: PdfExtractionResult, context: PipelineContext) -> Recipe:
         attempts = 5
         last_error: Optional[LlmParsingError] = None
+        locale = self._resolve_locale(context)
         for attempt in range(1, attempts + 1):
             try:
                 return parse_with_llm(
                     extraction.text,
                     llm_client=self._client,
                     source=context.source_pdf,
-                    servings_hint=context.servings_hint,
+                    servings_hint=None,
+                    title_hint=None,
+                    locale=locale,
                 )
             except LlmParsingError as exc:
                 last_error = exc
@@ -133,6 +136,12 @@ class AiAnalyserModule:
         ]
         return any(token in message for token in retry_tokens)
 
+    @staticmethod
+    def _resolve_locale(context: PipelineContext) -> str:
+        if context.config and context.config.processing.language:
+            return context.config.processing.language
+        return "de"
+
     def _attach_image_assets(self, recipe: Recipe, context: PipelineContext) -> None:
         extraction = context.ensure_extraction()
         if not extraction.images:
@@ -145,7 +154,7 @@ class AiAnalyserModule:
             return
 
         image_bytes = best_image.data
-        locale = (context.config.processing.language or "de") if context.config else "de"
+        locale = self._resolve_locale(context)
         if (
             crop_image_with_llm is not None
             and self._llm_config.api_key

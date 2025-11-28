@@ -11,6 +11,8 @@ from typing import Any, Dict, Optional
 import httpx
 
 from .models import Recipe
+from .prompt_store import resolve_prompt
+from .prompt_logging import log_prompt_messages
 
 logger = logging.getLogger(__name__)
 
@@ -25,87 +27,39 @@ class LlmRequest:
     source: Optional[Path]
     title_hint: Optional[str]
     servings_hint: Optional[str]
+    locale: str = "de"
 
 
 _JSON_PREFIX_RE = re.compile(r"```json\s*(?P<body>.+?)```", re.DOTALL)
 
+_DEFAULT_ANALYSIS_SYSTEM = "Du bist ein hilfreicher Assistent, der Rezepttexte in eine strukturierte JSON-Darstellung für die App Mealie überführt."
 
-_SYSTEM_PROMPT = """
-Du bist ein hilfreicher Assistent, der Rezepttexte in eine strukturierte JSON-Darstellung für die App Mealie
-überführt. Arbeite sorgfältig, beachte Mengenangaben und Einheiten und entferne Werbetexte, Footer sowie
-unzusammenhängende Sätze.
-
-Regeln:
-1. Antworte ausschließlich mit gültigem JSON ohne zusätzlichen Text oder Kommentare.
-2. Verwende Dezimalzahlen mit Punkt als Trenner (z.B. 0.5).
-3. Zutaten werden in Abschnitte gruppiert (häufig nur ein Abschnitt ohne Namen). Jede Zutat enthält Felder:
-   "name", optional "quantity" (float), optional "unit", optional "note".
-4. Schritte werden nummeriert, jeder Schritt enthält ein Feld "order" (int) und "instruction" (string).
-5. Füge falls möglich "recipeServings" (float), "recipeYieldQuantity" (float), "recipeYield" (Text), "totalTime", "prepTime" und "performTime" (jeweils Text wie "50 Min." oder "1,5 Stunden") sowie "notes" hinzu.
-6. Fülle "metadata" mit "source" (falls bekannt) und sinnvollen "tags" oder "categories".
-7. Verwende keine Abkürzungen wie "n. B." – schreibe sie aus.
-8. Wenn Informationen fehlen, lasse die Felder auf null oder leeren Listen.
-9. Erstelle im Feld "description" eine appetitanregende Zusammenfassung mit 2-3 vollständigen Sätzen.
-""".strip()
+_DEFAULT_ANALYSIS_USER_TEMPLATE = (
+    "Kontext:\n"
+    "- Titel-Hinweis: {title_hint}\n"
+    "- Dateiname: {filename}\n"
+    "- Hinweis Portionen: {servings}\n\n"
+    "Rezepttext:\n---\n{text}\n---"
+)
 
 
-_USER_PROMPT_TEMPLATE = """
-Erzeuge JSON mit folgendem Schema:
-{{
-  "title": "string",
-  "description": "string" | null,
-  "recipeServings": float | null,
-  "recipeYieldQuantity": float | null,
-  "recipeYield": "string" | null,
-  "totalTime": "string" | null,
-  "prepTime": "string" | null,
-  "performTime": "string" | null,
-  "ingredients": [
-    {{
-      "name": "string" | null,
-      "ingredients": [
-        {{
-          "name": "string",
-          "quantity": float | null,
-          "unit": "string" | null,
-          "note": "string" | null
-        }}
-      ]
-    }}
-  ],
-  "instructions": [
-    {{
-      "name": "string" | null,
-      "steps": [
-        {{
-          "order": int,
-          "instruction": "string",
-          "timer_minutes": int | null
-        }}
-      ]
-    }}
-  ],
-  "notes": "string" | null,
-  "image_path": null,
-  "image_url": null,
-  "metadata": {{
-    "source": "string" | null,
-    "categories": ["string"],
-    "cuisine": "string" | null,
-    "tags": ["string"]
-  }}
-}}
+def _build_analysis_user_prompt(user1: str, user2: str, request: LlmRequest) -> str:
+    parts = [part.strip() for part in (user1, user2) if part and part.strip()]
+    if parts:
+        return "\n\n".join(parts).strip()
 
-Kontext:
-- Titel-Hinweis: {title_hint}
-- Dateiname: {filename}
-- Hinweis Portionen: {servings}
-
-Rezepttext:
----
-{text}
----
-""".strip()
+    locale = (request.locale or "de").lower()
+    is_english = locale.startswith("en")
+    unknown = "unknown" if is_english else "unbekannt"
+    title_hint = request.title_hint or unknown
+    servings_hint = request.servings_hint or unknown
+    source_name = str(request.source) if request.source else unknown
+    return _DEFAULT_ANALYSIS_USER_TEMPLATE.format(
+        filename=source_name,
+        servings=servings_hint,
+        title_hint=title_hint,
+        text=request.text,
+    )
 
 
 class OpenAiClient:
@@ -129,19 +83,25 @@ class OpenAiClient:
         self.timeout = timeout
 
     def run(self, request: LlmRequest) -> Recipe:
+        source_name = Path(request.source).name if request.source else "unbekannt"
+        replacements = {
+            "filename": source_name,
+            "servings": "",
+            "title_hint": Path(request.source).stem if request.source else "",
+            "text": request.text,
+        }
+        prompt_cfg = resolve_prompt("analysis", request.locale, replacements=replacements)
+        system_prompt = prompt_cfg.get("system") or _DEFAULT_ANALYSIS_SYSTEM
+        user_prompt = _build_analysis_user_prompt(prompt_cfg.get("user1", ""), prompt_cfg.get("user2", ""), request)
+
         payload = {
             "model": self.model,
             "response_format": {"type": "json_object"},
             "messages": [
-                {"role": "system", "content": _SYSTEM_PROMPT},
+                {"role": "system", "content": system_prompt},
                 {
                     "role": "user",
-                    "content": _USER_PROMPT_TEMPLATE.format(
-                        filename=str(request.source) if request.source else "unbekannt",
-                        servings=request.servings_hint or "unbekannt",
-                        title_hint=request.title_hint or "unbekannt",
-                        text=request.text,
-                    ),
+                    "content": user_prompt,
                 },
             ],
         }
@@ -157,6 +117,8 @@ class OpenAiClient:
         }
 
         endpoint = f"{self.base_url}/chat/completions"
+
+        log_prompt_messages("analysis", payload["messages"])
 
         try:
             response = httpx.post(endpoint, headers=headers, json=payload, timeout=self.timeout)
@@ -221,6 +183,8 @@ class OpenAiClient:
         }
         endpoint = f"{self.base_url}/chat/completions"
 
+        log_prompt_messages("generic_text", payload["messages"])
+
         response = httpx.post(endpoint, headers=headers, json=payload, timeout=self.timeout)
         response.raise_for_status()
         data = response.json()
@@ -252,6 +216,8 @@ class OpenAiClient:
             "Content-Type": "application/json",
         }
         endpoint = f"{self.base_url}/chat/completions"
+
+        log_prompt_messages("generic_json", payload["messages"])
 
         response = httpx.post(endpoint, headers=headers, json=payload, timeout=self.timeout)
         response.raise_for_status()
@@ -316,6 +282,7 @@ def parse_with_llm(
     source: Optional[Path] = None,
     servings_hint: Optional[str] = None,
     title_hint: Optional[str] = None,
+    locale: str = "de",
 ) -> Recipe:
     """Parse *text* using the provided LLM client and return a Recipe."""
     cleaned_text = text.strip()
@@ -325,8 +292,9 @@ def parse_with_llm(
     request = LlmRequest(
         text=cleaned_text,
         source=source,
-        title_hint=title_hint,
-        servings_hint=servings_hint,
+        title_hint=None,
+        servings_hint=None,
+        locale=locale or "de",
     )
 
     logger.debug("Sende %s Zeichen an das LLM", len(cleaned_text))

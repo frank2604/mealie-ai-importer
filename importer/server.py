@@ -244,6 +244,7 @@ class ReviewOptions(BaseModel):
 class ReviewSummary(BaseModel):
     title: str
     description: str
+    notes: Optional[str] = None
     recipeServings: Optional[float] = None
     recipeYieldQuantity: Optional[float] = None
     recipeYield: Optional[str] = None
@@ -268,6 +269,7 @@ class ReviewDataResponse(BaseModel):
 class ReviewSummaryUpdate(BaseModel):
     title: str
     description: str
+    notes: Optional[str] = None
     recipeServings: Optional[float] = None
     recipeYieldQuantity: Optional[float] = None
     recipeYield: Optional[str] = None
@@ -939,6 +941,7 @@ def _build_review_payload(run_id: str, config: AppConfig) -> ReviewDataResponse:
     summary = ReviewSummary(
         title=str(recipe_data.get("title") or context.run_info.recipe_name),
         description=str(recipe_data.get("description") or ""),
+        notes=recipe_data.get("notes"),
         recipeServings=servings_value,
         recipeYieldQuantity=recipe_data.get("recipeYieldQuantity"),
         recipeYield=recipe_data.get("recipeYield"),
@@ -972,7 +975,6 @@ def _build_review_payload(run_id: str, config: AppConfig) -> ReviewDataResponse:
                 ],
             )
             for block in metadata_review.get("available", {}).get("tagCategories", [])
-            if block.get("category")
         ],
     )
 
@@ -1025,6 +1027,8 @@ def _apply_review_update(run_id: str, config: AppConfig, payload: ReviewUpdateRe
         recipe_data["prepTime"] = payload.summary.prepTime
     if payload.summary.performTime is not None:
         recipe_data["performTime"] = payload.summary.performTime
+    if payload.summary.notes is not None:
+        recipe_data["notes"] = payload.summary.notes
     if payload.summary.title:
         context.run_info.recipe_name = payload.summary.title
 

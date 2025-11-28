@@ -110,6 +110,7 @@ export interface ReviewAssets {
 export interface ReviewSummary {
   title: string;
   description: string;
+  notes?: string | null;
   recipeServings?: number | null;
   recipeYieldQuantity?: number | null;
   recipeYield?: string | null;
@@ -138,6 +139,7 @@ export interface ImageUploadResponse {
 export interface ReviewSummaryUpdatePayload {
   title: string;
   description: string;
+  notes?: string | null;
   recipeServings?: number | null;
   recipeYieldQuantity?: number | null;
   recipeYield?: string | null;

@@ -215,6 +215,8 @@
       "categoryPlaceholder": "Kategorie auswählen …",
       "tagsPlaceholder": "Schlagwort auswählen …",
       "tagsSearch": "Suchen …",
+      "notes": "Notizen",
+      "notesPlaceholder": "Notizen zum Rezept …",
       "editTags": "Schlagworte bearbeiten",
       "removeTag": "Schlagwort entfernen"
     },

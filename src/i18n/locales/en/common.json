@@ -216,6 +216,8 @@
       "categoryPlaceholder": "Select category…",
       "tagsPlaceholder": "Select tag…",
       "tagsSearch": "Search…",
+      "notes": "General recipe notes",
+      "notesPlaceholder": "Notes about the recipe…",
       "editTags": "Edit tags",
       "removeTag": "Remove tag"
     },

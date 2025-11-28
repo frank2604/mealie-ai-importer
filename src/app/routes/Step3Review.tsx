@@ -54,6 +54,7 @@ interface SummaryFormState {
   totalTimeInput: string;
   prepTimeInput: string;
   performTimeInput: string;
+  notesInput: string;
 }
 
 interface SearchableSelectProps {
@@ -484,7 +485,8 @@ const createSummaryForm = (summary: ReviewData["summary"]): SummaryFormState => 
   yieldTextInput: summary.recipeYield ?? "",
   totalTimeInput: summary.totalTime ?? "",
   prepTimeInput: summary.prepTime ?? "",
-  performTimeInput: summary.performTime ?? ""
+  performTimeInput: summary.performTime ?? "",
+  notesInput: summary.notes ?? ""
 });
 
 const createPreparationSteps = (instructions: ReviewInstruction[]): Record<string, string> => {
@@ -507,6 +509,7 @@ const buildUpdatePayload = (data: ReviewData) => ({
   summary: {
     title: data.summary.title,
     description: data.summary.description,
+    notes: data.summary.notes ?? null,
     recipeServings: data.summary.recipeServings ?? null,
     recipeYieldQuantity: data.summary.recipeYieldQuantity ?? null,
     recipeYield: data.summary.recipeYield ?? null,
@@ -560,7 +563,8 @@ export const Step3Review: React.FC = () => {
     yieldTextInput: "",
     totalTimeInput: "",
     prepTimeInput: "",
-    performTimeInput: ""
+    performTimeInput: "",
+    notesInput: ""
   });
   const [foodModalEntry, setFoodModalEntry] = useState<ReviewIngredient | null>(null);
   const [unitModalEntry, setUnitModalEntry] = useState<ReviewIngredient | null>(null);
@@ -624,11 +628,28 @@ export const Step3Review: React.FC = () => {
     groups.forEach((group) => {
       (group.tags || []).forEach((tag) => {
         if (tag.id) {
+          const splitParts = (value: string | null | undefined) =>
+            (value || "")
+              .split("|")
+              .map((part) => part.trim())
+              .filter(Boolean);
+          const nameParts = splitParts(tag.name);
+          const detailParts = splitParts(tag.detail ?? tag.name);
+          const categoryFromName = nameParts.length > 1 ? nameParts[0] : undefined;
+          const category = group.category ?? categoryFromName ?? tag.category ?? null;
+          const detail =
+            (detailParts.length > 1 && detailParts.slice(1).join(" | ")) ||
+            (detailParts.length === 1 ? detailParts[0] : nameParts.slice(1).join(" | ")) ||
+            detailParts.join(" | ") ||
+            nameParts.slice(1).join(" | ") ||
+            tag.detail ||
+            tag.name ||
+            tag.id;
           flattened.push({
             ...tag,
-            name: tag.detail ?? tag.name,
-            detail: tag.detail ?? tag.name,
-            category: group.category
+            name: detail,
+            detail: detail,
+            category
           });
         }
       });
@@ -935,7 +956,7 @@ export const Step3Review: React.FC = () => {
   }, [stepIngredientOptions, updateInstructionIngredients]);
 
   const handleSummaryFieldChange = useCallback(
-    (field: "title" | "description", value: string) => {
+    (field: "title" | "description" | "notes", value: string) => {
       setReviewData((previous) => {
         if (!previous) {
           return previous;
@@ -1011,6 +1032,22 @@ export const Step3Review: React.FC = () => {
         summary: {
           ...previous.summary,
           recipeYield: value
+        }
+      };
+    });
+  }, []);
+
+  const handleNotesChange = useCallback((value: string) => {
+    setSummaryForm((previous) => ({ ...previous, notesInput: value }));
+    setReviewData((previous) => {
+      if (!previous) {
+        return previous;
+      }
+      return {
+        ...previous,
+        summary: {
+          ...previous.summary,
+          notes: value
         }
       };
     });
@@ -1678,6 +1715,22 @@ export const Step3Review: React.FC = () => {
                   >
                     <PencilSquareIcon className="h-4 w-4" aria-hidden="true" />
                   </button>
+                </div>
+                <div className="mt-4">
+                  <label className="text-xs font-semibold uppercase tracking-wide text-text/60">
+                    {t("review.meta.notes")}
+                  </label>
+                  <textarea
+                    rows={2}
+                    className={clsx(
+                      "focus-ring mt-1 w-full border border-border bg-background px-3 py-2 text-sm text-text",
+                      layoutConfig.borderRadius.medium
+                    )}
+                    value={summaryForm.notesInput}
+                    onChange={(event) => handleNotesChange(event.target.value)}
+                    placeholder={t("review.meta.notesPlaceholder")}
+                    disabled={isReadOnly}
+                  />
                 </div>
               </div>
             </div>

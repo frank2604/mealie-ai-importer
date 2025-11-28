@@ -388,8 +388,7 @@ class AssignMetadataModule:
             if not tag.get("id") or not name:
                 continue
             category, detail = self._split_tag_name(name)
-            if not category:
-                continue
+            category = category or ""
             grouped.setdefault(category, [])
             grouped[category].append(
                 {
@@ -407,7 +406,7 @@ class AssignMetadataModule:
                 continue
             result.append(
                 {
-                    "category": category,
+                    "category": category or None,
                     "options": options[:20],
                 }
             )

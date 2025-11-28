@@ -1,7 +1,8 @@
 import { BASE_URL } from "./imports";
 
 export interface PromptModuleConfig {
-  free: string;
+  user1: string;
+  user2: string;
   system: string;
 }
 

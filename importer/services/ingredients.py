@@ -20,6 +20,7 @@ from ..config import IngredientConfig
 from ..exceptions import UserAbort
 from ..llm_parser import OpenAiClient
 from ..prompt_store import resolve_prompt
+from ..prompt_logging import log_prompt_messages
 
 logger = logging.getLogger(__name__)
 
@@ -1222,16 +1223,27 @@ class IngredientService:
 
         try:
             category_lines = "\n".join(f"- {item['id']}: {item['name']}" for item in categories) or "- keine Kategorien vorhanden"
-            prompt_cfg = resolve_prompt("foodForms", self._prompt_locale)
-            template = prompt_cfg.get("free") or "{ingredient_lines}"
-            try:
-                user_prompt = template.format(
-                    ingredient_lines="\n".join(batch),
-                    category_lines=category_lines,
-                )
-            except KeyError:
-                user_prompt = template
+            replacements = {
+                "ingredient_lines": "\n".join(batch),
+                "category_lines": category_lines,
+            }
+            prompt_cfg = resolve_prompt("foodForms", self._prompt_locale, replacements=replacements)
+            user_parts = [
+                part.strip()
+                for part in (prompt_cfg.get("user1", ""), prompt_cfg.get("user2", ""))
+                if part and part.strip()
+            ]
+            user_prompt = "\n\n".join(user_parts).strip() or "\n".join(replacements.values())
+
             system_prompt = prompt_cfg.get("system") or ""
+
+            log_prompt_messages(
+                "foodForms",
+                [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+            )
             self._maybe_confirm(confirm, f"LLM Zutatenformen – {', '.join(batch)}")
             self._debug_write(
                 debug,
@@ -1318,13 +1330,22 @@ class IngredientService:
             return {}
 
         try:
-            prompt_cfg = resolve_prompt("unitForms", self._prompt_locale)
-            template = prompt_cfg.get("free") or "{unit_lines}"
-            try:
-                user_prompt = template.format(unit_lines="\n".join(batch))
-            except KeyError:
-                user_prompt = template
+            replacements = {"unit_lines": "\n".join(batch)}
+            prompt_cfg = resolve_prompt("unitForms", self._prompt_locale, replacements=replacements)
+            user_parts = [
+                part.strip()
+                for part in (prompt_cfg.get("user1", ""), prompt_cfg.get("user2", ""))
+                if part and part.strip()
+            ]
+            user_prompt = "\n\n".join(user_parts).strip() or replacements["unit_lines"]
             system_prompt = prompt_cfg.get("system") or ""
+            log_prompt_messages(
+                "unitForms",
+                [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+            )
             self._maybe_confirm(confirm, f"LLM Einheitenformen – {', '.join(batch)}")
             self._debug_write(
                 debug,
@@ -1541,7 +1562,7 @@ class IngredientService:
         text = str(alias or "").strip()
         if not text:
             return None
-        sanitized = re.sub(r"\s+", " ", text).lower()
+        sanitized = re.sub(r"\s+", " ", text)
         return sanitized or None
 
     def _forms_to_dict(self, forms: FoodForms) -> Dict[str, Any]:
@@ -1613,10 +1634,13 @@ class IngredientService:
         return results
 
     def _debug_write(self, recorder: Optional[Any], label: str, data: Mapping[str, Any]) -> None:
-        if not recorder or not hasattr(recorder, "write"):
+        if not recorder:
             return
         try:
-            recorder.write(label, data)
+            if hasattr(recorder, "write"):
+                recorder.write(label, data)
+            elif hasattr(recorder, "write_json"):
+                recorder.write_json(label, data)  # type: ignore[attr-defined]
         except Exception as exc:  # pragma: no cover - debug helper
             logger.debug("Konnte Debug-Datei nicht schreiben (%s): %s", label, exc)
 

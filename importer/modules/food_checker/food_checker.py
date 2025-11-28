@@ -10,6 +10,8 @@ from typing import Dict, Iterable, List, Optional, Tuple
 
 from ..context import IngredientRef, PipelineContext
 from ...llm_parser import OpenAiClient
+from ...prompt_store import resolve_prompt
+from ...prompt_logging import log_prompt_messages
 from ...services.ingredients import IngredientService
 
 logger = logging.getLogger("Food Checker")
@@ -59,10 +61,12 @@ class FoodCheckerModule:
         ingredient_service: Optional[IngredientService],
         *,
         llm_client: Optional[OpenAiClient] = None,
+        locale: str = "de",
     ) -> None:
         self._service = ingredient_service
         self._llm_client = llm_client
         self._foods: List[_FoodCandidate] = []
+        self._locale = locale or "de"
 
     def run(self, context: PipelineContext) -> None:
         ingredient_refs = list(context.iter_ingredients())
@@ -367,15 +371,28 @@ class FoodCheckerModule:
             candidate_lines.append(
                 f"- {candidate.id}: {candidate.name} (Plural: {candidate.plural}; Aliases: {alias_part})"
             )
-        user_prompt = (
-            f"Ingredient: {query}\n"
-            "Candidates:\n"
-            + "\n".join(candidate_lines)
-            + '\nResponse format: {"match": <ID or null>, "reason": string}'
-        )
+        replacements = {
+            "ingredient": query,
+            "candidates": "\n".join(candidate_lines) if candidate_lines else "-",
+        }
+        prompt_cfg = resolve_prompt("ingredients", self._locale, replacements=replacements)
+        system_prompt = prompt_cfg.get("system", _SYSTEM_PROMPT).strip() or _SYSTEM_PROMPT
+        user_parts = [
+            part.strip()
+            for part in (prompt_cfg.get("user1", ""), prompt_cfg.get("user2", ""))
+            if part and part.strip()
+        ]
+        user_prompt = "\n\n".join(user_parts).strip() or "\n".join(candidate_lines)
 
         try:
-            response = self._llm_client.run_text(_SYSTEM_PROMPT, user_prompt)
+            log_prompt_messages(
+                "ingredients",
+                [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+            )
+            response = self._llm_client.run_text(system_prompt or _SYSTEM_PROMPT, user_prompt)
         except Exception as exc:  # pragma: no cover - external dependency
             logger.debug("Assistant lookup failed: %s", exc)
             return None, None

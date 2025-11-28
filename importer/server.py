@@ -302,7 +302,8 @@ class ReviewUpdateRequest(BaseModel):
 
 
 class PromptModuleConfig(BaseModel):
-    free: str = ""
+    user1: str = ""
+    user2: str = ""
     system: str = ""
 
 
@@ -711,6 +712,7 @@ def _prepare_transfer_context(config: AppConfig, run_state: RunState) -> Pipelin
         output_dir=review_context.pipeline_dir,
         config=config,
         cache_paths=cache_paths,
+        recipe_name=run_state.recipe_name,
         run_id=run_state.run_id,
         pipeline_recorder=recorder,
         log_file=run_state.log_file,
@@ -1213,20 +1215,22 @@ def _run_analysis(run_state: RunState, pending: PendingUpload, config: AppConfig
         _update_run_state(run_state.run_id, status="running")
 
         recorder = PipelineRecorder(workspace.pipeline_dir)
-        recorder.copy_file(pending.file_path, label=run_state.recipe_name)
+        copied_pdf = recorder.copy_file(pending.file_path, label=run_state.recipe_name)
 
         cache_paths = CachePaths(Path(config.ingredients.cache_dir))
         context = PipelineContext(
-            source_pdf=pending.file_path,
+            source_pdf=copied_pdf if copied_pdf else pending.file_path,
             output_dir=workspace.pipeline_dir,
             config=config,
             cache_paths=cache_paths,
+            recipe_name=run_state.recipe_name,
             pipeline_recorder=recorder,
             run_id=run_state.run_id,
             log_file=log_file,
         )
         context.requires_user_review = True
 
+        locale = config.processing.language or "de"
         modules = [
             RefreshCachesModule(ingredient_service),
             PdfInputModule(),
@@ -1236,9 +1240,9 @@ def _run_analysis(run_state: RunState, pending: PendingUpload, config: AppConfig
                 image_output_dir=workspace.pipeline_dir,
             ),
             InstructionLinkingModule(llm_client=llm_client, llm_config=config.llm),
-            FoodCheckerModule(ingredient_service, llm_client=llm_client),
-            UnitCheckerModule(ingredient_service, llm_client=llm_client),
-            AssignMetadataModule(ingredient_service, llm_client=llm_client),
+            FoodCheckerModule(ingredient_service, llm_client=llm_client, locale=locale),
+            UnitCheckerModule(ingredient_service, llm_client=llm_client, locale=locale),
+            AssignMetadataModule(ingredient_service, llm_client=llm_client, locale=locale),
         ]
 
         runner = PipelineRunner(modules)
@@ -1511,7 +1515,11 @@ async def update_prompts(payload: PromptUpdateRequest) -> PromptResponse:
     for locale, modules in payload.prompts.items():
         locale_entry = existing.setdefault(locale, {})
         for module, config in modules.items():
-            locale_entry[module] = {"free": config.free, "system": config.system}
+            locale_entry[module] = {
+                "user1": config.user1,
+                "user2": config.user2,
+                "system": config.system,
+            }
     save_prompts(existing)
     return PromptResponse(prompts=existing, defaults=get_prompt_defaults())
 

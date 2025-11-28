@@ -1,14 +1,11 @@
 {
-  "title": "Hähnchenbrustfilets mit Parma‑Schinken, Salbei und Champignon‑Sahne‑Soße",
-  "description": "Zarte Hähnchenbrustfilets werden mit Salbeiblättern belegt, in Parma‑Schinken gewickelt und kurz angebraten. Dazu gibt es eine cremige Champignon‑Sahne‑Soße mit einem Hauch Wermut, die im Ofen fertig gart. Ein einfaches, geschmackvolles Gericht, das sich gut mit Pellkartoffeln und grünem Salat kombinieren lässt.",
+  "title": "Hähnchenbrustfilet im Schinkenmantel",
+  "description": "Zarte Hähnchenbrustfilets werden mit Salbeiblättern und Parma-Schinken umwickelt und kurz angebraten. Serviert werden sie mit einer cremigen Champignon-Wermut-Sahne-Soße, die im Ofen fertig gart.",
   "recipeServings": 4.0,
-  "recipeYieldQuantity": 4.0,
-  "recipeYield": "4 Portionen",
-  "totalTime": "40 Min.",
-  "prepTime": "20 Min.",
   "performTime": "20 Min.",
   "ingredients": [
     {
+      "name": "Zutaten",
       "ingredients": [
         {
           "name": "Hähnchenbrustfilets",
@@ -16,7 +13,7 @@
           "unit": "Stück"
         },
         {
-          "name": "Parma‑Schinken",
+          "name": "Parma-Schinken",
           "quantity": 6.0,
           "unit": "Scheiben"
         },
@@ -29,24 +26,24 @@
         {
           "name": "rote Zwiebeln",
           "quantity": 3.0,
-          "unit": "Stück",
-          "note": "geschält und klein gehackt"
+          "unit": "Stück"
         },
         {
-          "name": "trockener Wermut",
+          "name": "Wermut",
           "quantity": 100.0,
-          "unit": "ml"
+          "unit": "ml",
+          "note": "trocken"
         },
         {
-          "name": "süße Sahne",
+          "name": "Sahne",
           "quantity": 200.0,
-          "unit": "ml"
+          "unit": "ml",
+          "note": "süß"
         },
         {
           "name": "Mehl",
           "quantity": 1.0,
-          "unit": "EL",
-          "note": "zum Bestäuben"
+          "unit": "EL"
         },
         {
           "name": "heller Soßenbinder",
@@ -54,21 +51,19 @@
           "unit": "EL"
         },
         {
-          "name": "Fett zum Braten",
-          "note": "zum Anbraten"
+          "name": "Fett",
+          "note": "zum Braten"
         },
         {
           "name": "Salbeiblätter",
           "quantity": 6.0,
-          "unit": "Blatt"
+          "unit": "Stück"
         },
         {
-          "name": "Salz",
-          "note": "nach Geschmack"
+          "name": "Salz"
         },
         {
-          "name": "Pfeffer",
-          "note": "nach Geschmack"
+          "name": "Pfeffer"
         }
       ]
     }
@@ -79,84 +74,71 @@
       "steps": [
         {
           "order": 1,
-          "instruction": "Hähnchenbrustfilets mit Pfeffer würzen.",
+          "instruction": "Hähnchenbrustfilets pfeffern.",
           "ingredientIds": [],
           "ingredientReferenceIds": []
         },
         {
           "order": 2,
-          "instruction": "Jeweils ein Salbeiblatt auf ein Filet legen und das Filet mit einer Scheibe Parma‑Schinken umwickeln.",
+          "instruction": "Jeweils mit einem Salbeiblatt belegen und mit Schinken umwickeln.",
           "ingredientIds": [],
           "ingredientReferenceIds": []
         },
         {
           "order": 3,
-          "instruction": "Fett in einer Pfanne erhitzen. Die Filets leicht mit Mehl bestäuben und in der Pfanne rundherum anbraten, bis sie Farbe bekommen.",
+          "instruction": "Fett in einer Pfanne erhitzen, die Filets mit Mehl bestäuben und anbraten.",
           "ingredientIds": [],
           "ingredientReferenceIds": []
         },
         {
           "order": 4,
-          "instruction": "Die angebratenen Filets aus der Pfanne nehmen und in eine feuerfeste Form geben.",
+          "instruction": "Herausnehmen und in eine feuerfeste Form geben.",
           "ingredientIds": [],
           "ingredientReferenceIds": []
         },
         {
           "order": 5,
-          "instruction": "Zwiebeln schälen und klein hacken. In derselben Pfanne die Zwiebeln zusammen mit den geputzten und geviertelten Champignons anbraten.",
+          "instruction": "Zwiebel schälen und kleinhacken und zusammen mit den geputzten, geviertelten Champignons anbraten.",
           "ingredientIds": [],
           "ingredientReferenceIds": []
         },
         {
           "order": 6,
-          "instruction": "Mit Wermut ablöschen, etwas einkochen lassen und dann die süße Sahne zugießen.",
+          "instruction": "Mit Wermut ablöschen, etwas einkochen lassen und Sahne angießen.",
           "ingredientIds": [],
           "ingredientReferenceIds": []
         },
         {
           "order": 7,
-          "instruction": "Den hellen Soßenbinder einrühren, die Soße kurz aufkochen lassen und mit Salz und Pfeffer abschmecken.",
+          "instruction": "1 EL Soßenbinder einrühren, kurz aufkochen lassen und mit Salz und Pfeffer abschmecken.",
           "ingredientIds": [],
           "ingredientReferenceIds": []
         },
         {
           "order": 8,
-          "instruction": "Die Soße über die Filets in der feuerfesten Form gießen.",
-          "ingredientIds": [],
-          "ingredientReferenceIds": []
-        },
-        {
-          "order": 9,
-          "instruction": "Die Form in den vorgeheizten Backofen geben und alles bei 200 °C etwa 20 Minuten garen lassen, bis das Fleisch durch ist.",
+          "instruction": "Die Soße über das Fleisch in der Form geben und alles etwa 20 Min. bei 200° C garen lassen.",
           "timer_minutes": 20,
-          "ingredientIds": [],
-          "ingredientReferenceIds": []
-        },
-        {
-          "order": 10,
-          "instruction": "Die Filets aus dem Ofen nehmen und heiß servieren. Dazu passen Pellkartoffeln und grüner Salat.",
           "ingredientIds": [],
           "ingredientReferenceIds": []
         }
       ]
     }
   ],
-  "notes": "Backtemperatur 200 °C (Umluft ggf. anpassen). Als Beilage passen Pellkartoffeln und grüner Salat. Mengenangaben für 4 Portionen.",
+  "notes": "Dazu passen Pellkartoffeln und grüner Salat.",
   "image_path": "data/pipeline/02_RecipeImage.jpg",
   "metadata": {
-    "source": "Leistungsgemeinschaft Deutscher Hähnchen­erzeuger (aus OCR‑Quelle)",
+    "source": "data/pipeline/01_Hahnchenbrustfilet_im_Schinkenmantel.pdf",
     "categories": [
       "Hauptgericht",
-      "Geflügel",
-      "Ofengericht"
+      "Geflügel"
     ],
-    "cuisine": "deutsch",
+    "cuisine": "Deutsch",
     "tags": [
       "Hähnchen",
+      "Schinken",
       "Champignons",
-      "Sahnesoße",
-      "Salbei",
-      "Parmaschinken"
+      "Sahne",
+      "Ofen"
     ],
     "mealie_categories": [],
     "mealie_tags": []

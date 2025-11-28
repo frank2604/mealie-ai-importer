@@ -9,6 +9,8 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple
 from ..context import PipelineContext
 from ...llm_parser import OpenAiClient
 from ...models import OrganizerReference, Recipe
+from ...prompt_store import resolve_prompt
+from ...prompt_logging import log_prompt_messages
 from ...services.ingredients import IngredientService
 
 logger = logging.getLogger("Assign Metadata")
@@ -41,9 +43,11 @@ class AssignMetadataModule:
         ingredient_service: Optional[IngredientService],
         *,
         llm_client: Optional[OpenAiClient],
+        locale: str = "de",
     ) -> None:
         self._service = ingredient_service
         self._llm_client = llm_client
+        self._locale = locale or "de"
 
     def run(self, context: PipelineContext) -> None:
         recipe = context.ensure_recipe()
@@ -162,7 +166,15 @@ class AssignMetadataModule:
 
         prompt = json.dumps(payload, ensure_ascii=False, indent=2)
         try:
-            response_text = self._llm_client.run_text(_METADATA_SYSTEM_PROMPT, prompt)
+            system_prompt, user_prompt = self._build_prompts(prompt)
+            log_prompt_messages(
+                "metadata",
+                [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+            )
+            response_text = self._llm_client.run_text(system_prompt, user_prompt)
         except Exception as exc:  # pragma: no cover - network errors
             logger.error("The assistant request for categories failed: %s", exc)
             return None
@@ -172,6 +184,23 @@ class AssignMetadataModule:
         except json.JSONDecodeError:
             logger.warning("The assistant did not return valid JSON: %s", response_text[:200])
             return None
+
+    def _build_prompts(self, payload: str) -> tuple[str, str]:
+        replacements = {"payload_json": payload}
+        prompt_cfg = resolve_prompt("metadata", self._locale, replacements=replacements)
+        system_prompt = prompt_cfg.get("system", _METADATA_SYSTEM_PROMPT)
+        user_parts = [
+            part.strip()
+            for part in (prompt_cfg.get("user1", ""), prompt_cfg.get("user2", ""))
+            if part and part.strip()
+        ]
+        if user_parts:
+            user_prompt = "\n\n".join(user_parts)
+        else:
+            locale_lower = self._locale.lower()
+            context_label = "Context data (JSON)" if locale_lower.startswith("en") else "Kontextdaten (JSON)"
+            user_prompt = f"{context_label}:\n{payload}"
+        return system_prompt, user_prompt
 
     def _write_review(
         self,
@@ -222,6 +251,7 @@ class AssignMetadataModule:
                     {
                         "id": str(tag.get("id") or ""),
                         "name": str(tag.get("name") or ""),
+                        "detail": tag.get("detail"),
                         "groupId": tag.get("groupId") or category,
                         "slug": tag.get("slug"),
                     }
@@ -284,7 +314,8 @@ class AssignMetadataModule:
 
         prompt = json.dumps(payload, ensure_ascii=False, indent=2)
         try:
-            response_text = self._llm_client.run_text(_METADATA_SYSTEM_PROMPT, prompt)
+            system_prompt, user_prompt = self._build_prompts(prompt)
+            response_text = self._llm_client.run_text(system_prompt, user_prompt)
         except Exception as exc:  # pragma: no cover - network errors
             logger.error("The assistant request for categories failed: %s", exc)
             return None

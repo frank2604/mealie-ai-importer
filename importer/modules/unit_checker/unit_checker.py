@@ -10,6 +10,8 @@ from typing import Dict, Iterable, List, Optional
 
 from ..context import IngredientRef, PipelineContext
 from ...llm_parser import OpenAiClient
+from ...prompt_store import resolve_prompt
+from ...prompt_logging import log_prompt_messages
 from ...services.ingredients import IngredientService
 
 logger = logging.getLogger("Unit Checker")
@@ -56,13 +58,17 @@ class UnitCheckerModule:
         ingredient_service: Optional[IngredientService],
         *,
         llm_client: Optional[OpenAiClient] = None,
+        locale: str = "de",
     ) -> None:
         self._service = ingredient_service
         self._llm_client = llm_client
         self._units: List[_UnitCandidate] = []
+        self._locale = locale or "de"
 
     def run(self, context: PipelineContext) -> None:
-        ingredient_refs = [ref for ref in context.iter_ingredients() if ref.ingredient.unit]
+        ingredient_refs = [
+            ref for ref in context.iter_ingredients() if ref.ingredient.unit or ref.ingredient.unit_original_name
+        ]
         total = len(ingredient_refs)
         if total == 0:
             logger.info("No units found on the ingredients, so we skip the unit checker")
@@ -71,14 +77,17 @@ class UnitCheckerModule:
         grouped_refs: Dict[str, List[IngredientRef]] = {}
         group_order: List[str] = []
         for ref in ingredient_refs:
-            unit_name = ref.ingredient.unit or ""
+            unit_name = ref.ingredient.unit or ref.ingredient.unit_original_name or ""
             normalized = self._normalize_unit(unit_name)
             if normalized not in grouped_refs:
                 grouped_refs[normalized] = []
                 group_order.append(normalized)
             grouped_refs[normalized].append(ref)
 
-        unique_unit_names = [grouped_refs[key][0].ingredient.unit or "" for key in group_order]
+        unique_unit_names = [
+            grouped_refs[key][0].ingredient.unit or grouped_refs[key][0].ingredient.unit_original_name or ""
+            for key in group_order
+        ]
         unique_total = len(unique_unit_names)
         logger.info(
             "Trying to match %s unique unit%s (from %s ingredient entr%s) to existing Mealie units %s",
@@ -116,7 +125,7 @@ class UnitCheckerModule:
             if not pending_refs:
                 continue
 
-            sample_unit = pending_refs[0].ingredient.unit or ""
+            sample_unit = pending_refs[0].ingredient.unit or pending_refs[0].ingredient.unit_original_name or ""
             candidate_id, strategy, matched_label = self._stage_one_match(sample_unit)
             if candidate_id:
                 candidate = units_by_id.get(candidate_id)
@@ -368,15 +377,28 @@ class UnitCheckerModule:
                     pabbr=candidate.plural_abbreviation or "-",
                 )
             )
-        user_prompt = (
-            f"Einheit: {query}\n"
-            "Kandidaten:\n"
-            + "\n".join(candidate_lines)
-            + '\nAntwortformat: {"match": <ID oder null>}'
-        )
+        replacements = {
+            "unit": query,
+            "candidates": "\n".join(candidate_lines) if candidate_lines else "-",
+        }
+        prompt_cfg = resolve_prompt("units", self._locale, replacements=replacements)
+        system_prompt = prompt_cfg.get("system", _SYSTEM_PROMPT).strip() or _SYSTEM_PROMPT
+        user_parts = [
+            part.strip()
+            for part in (prompt_cfg.get("user1", ""), prompt_cfg.get("user2", ""))
+            if part and part.strip()
+        ]
+        user_prompt = "\n\n".join(user_parts).strip() or "\n".join(candidate_lines)
 
         try:
-            response = self._llm_client.run_text(_SYSTEM_PROMPT, user_prompt)
+            log_prompt_messages(
+                "units",
+                [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+            )
+            response = self._llm_client.run_text(system_prompt or _SYSTEM_PROMPT, user_prompt)
         except Exception as exc:  # pragma: no cover - external dependency
             logger.debug("Assistant unit lookup failed: %s", exc)
             return None, None
@@ -441,7 +463,7 @@ class UnitCheckerModule:
         if missing:
             unique_missing: Dict[str, str] = {}
             for ref in missing:
-                unit_name = ref.ingredient.unit or ""
+                unit_name = ref.ingredient.unit or ref.ingredient.unit_original_name or ""
                 normalized = self._normalize_unit(unit_name)
                 if normalized not in unique_missing:
                     unique_missing[normalized] = unit_name
@@ -473,7 +495,17 @@ class UnitCheckerModule:
         for ref in ingredient_refs:
             ingredient = ref.ingredient
             key = ref.key
-            suggestion = suggestions.get(ingredient.unit or "")
+            # Try to resolve suggestions using unit text, original name, or normalized variants
+            suggestion = None
+            for candidate in [
+                ingredient.unit,
+                ingredient.unit_original_name,
+                (ingredient.unit or "").lower(),
+                (ingredient.unit_original_name or "").lower(),
+            ]:
+                if candidate and candidate in suggestions:
+                    suggestion = suggestions[candidate]
+                    break
             create_defaults = {
                 "name": None,
                 "pluralName": None,

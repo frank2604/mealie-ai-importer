@@ -270,6 +270,7 @@ class PipelineContext:
     output_dir: Path
     config: AppConfig
     cache_paths: CachePaths
+    recipe_name: Optional[str] = None
     servings_hint: Optional[str] = None
     recipe_output_path: Optional[Path] = None
     recipe_data_path: Optional[Path] = None

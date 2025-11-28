@@ -72,7 +72,7 @@ interface StepIngredientOption {
 }
 
 const MAX_RESULTS = 50;
-type TagOption = CategoryOption & { category?: string | null };
+type TagOption = CategoryOption & { category?: string | null; detail?: string | null };
 
 const compareCandidateOptions = (a: CandidateOption, b: CandidateOption) => {
   const left = (a.name ?? a.id ?? "").toString();
@@ -626,6 +626,8 @@ export const Step3Review: React.FC = () => {
         if (tag.id) {
           flattened.push({
             ...tag,
+            name: tag.detail ?? tag.name,
+            detail: tag.detail ?? tag.name,
             category: group.category
           });
         }
@@ -657,7 +659,8 @@ export const Step3Review: React.FC = () => {
         match ?? {
           id,
           name: id,
-          category: null
+          category: null,
+          detail: null
         }
       );
     });
@@ -1614,7 +1617,31 @@ export const Step3Review: React.FC = () => {
                       <span className="text-sm text-text/50">{t("review.meta.tagsPlaceholder")}</span>
                     ) : (
                       selectedTagDetails.map((tag) => {
-                        const display = tag.category ? `${tag.category} | ${tag.name}` : tag.name ?? tag.id;
+                        const rawName = tag.name ?? tag.id;
+                        const rawDetail = tag.detail ?? rawName;
+                        const splitParts = (value: string | null | undefined) =>
+                          (value || "")
+                            .split("|")
+                            .map((part) => part.trim())
+                            .filter(Boolean);
+
+                        const detailParts = splitParts(rawDetail);
+                        const nameParts = splitParts(rawName);
+
+                        const inferredCategory = tag.category ?? (nameParts.length > 1 ? nameParts[0] : undefined);
+
+                        let detail = detailParts.join(" | ");
+                        if (inferredCategory && detail.startsWith(`${inferredCategory} |`)) {
+                          detail = detailParts.slice(1).join(" | ");
+                        }
+                        if (!detail && nameParts.length > 1) {
+                          detail = nameParts.slice(1).join(" | ");
+                        }
+                        if (!detail) {
+                          detail = rawDetail || rawName || tag.id;
+                        }
+
+                        const display = inferredCategory ? `${inferredCategory} | ${detail}` : detail;
                         return (
                           <span
                             key={tag.id}

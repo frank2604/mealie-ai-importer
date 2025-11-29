@@ -1,16 +1,14 @@
 {
   "title": "Hähnchenbrustfilet im Schinkenmantel",
-  "description": "Zarte Hähnchenbrustfilets werden mit Salbeiblättern und Parma-Schinken umwickelt und kurz angebraten. Serviert werden sie mit einer cremigen Champignon-Wermut-Sahne-Soße, die im Ofen fertig gart.",
+  "description": "Zarte Hähnchenbrustfilets werden mit Salbeiblättern belegt und in Parma-Schinken gewickelt. In einer cremigen Champignon-Wermut-Sauce im Ofen fertig gegart entsteht ein würziges Hauptgericht. Passt gut zu Pellkartoffeln und grünem Salat.",
   "recipeServings": 4.0,
   "performTime": "20 Min.",
   "ingredients": [
     {
-      "name": "Zutaten",
       "ingredients": [
         {
           "name": "Hähnchenbrustfilets",
-          "quantity": 4.0,
-          "unit": "Stück"
+          "quantity": 4.0
         },
         {
           "name": "Parma-Schinken",
@@ -20,25 +18,21 @@
         {
           "name": "Champignons",
           "quantity": 500.0,
-          "unit": "g",
-          "note": "geputzt, geviertelt"
+          "unit": "g"
         },
         {
           "name": "rote Zwiebeln",
-          "quantity": 3.0,
-          "unit": "Stück"
+          "quantity": 3.0
         },
         {
-          "name": "Wermut",
+          "name": "trockener Wermut",
           "quantity": 100.0,
-          "unit": "ml",
-          "note": "trocken"
+          "unit": "ml"
         },
         {
-          "name": "Sahne",
+          "name": "süße Sahne",
           "quantity": 200.0,
-          "unit": "ml",
-          "note": "süß"
+          "unit": "ml"
         },
         {
           "name": "Mehl",
@@ -51,13 +45,11 @@
           "unit": "EL"
         },
         {
-          "name": "Fett",
-          "note": "zum Braten"
+          "name": "Fett zum Braten"
         },
         {
           "name": "Salbeiblätter",
-          "quantity": 6.0,
-          "unit": "Stück"
+          "quantity": 6.0
         },
         {
           "name": "Salz"
@@ -70,7 +62,6 @@
   ],
   "instructions": [
     {
-      "name": "Zubereitung",
       "steps": [
         {
           "order": 1,
@@ -128,18 +119,8 @@
   "image_path": "data/pipeline/02_RecipeImage.jpg",
   "metadata": {
     "source": "data/pipeline/01_Hahnchenbrustfilet_im_Schinkenmantel.pdf",
-    "categories": [
-      "Hauptgericht",
-      "Geflügel"
-    ],
-    "cuisine": "Deutsch",
-    "tags": [
-      "Hähnchen",
-      "Schinken",
-      "Champignons",
-      "Sahne",
-      "Ofen"
-    ],
+    "categories": [],
+    "tags": [],
     "mealie_categories": [],
     "mealie_tags": []
   },

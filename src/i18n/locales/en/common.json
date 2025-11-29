@@ -310,12 +310,26 @@
   },
   "settings": {
     "title": "Settings",
-    "subtitle": "Adjust presentation and upcoming automations.",
+    "subtitle": "",
     "general": {
       "title": "General",
       "description": "Core options for appearance and language.",
       "themeLabel": "Display mode",
       "languageLabel": "Language"
+    },
+    "api": {
+      "title": "Connections",
+      "description": "Manage your credentials for Mealie and OpenAI.",
+      "mealieToken": "Mealie API key",
+      "mealieTokenPlaceholder": "e.g. abc123...",
+      "mealieBaseUrl": "Mealie base URL",
+      "mealieBaseUrlPlaceholder": "e.g. https://mealie.local",
+      "llmApiKey": "OpenAI API key",
+      "llmApiKeyPlaceholder": "e.g. sk-...",
+      "llmModel": "OpenAI model name",
+      "llmModelPlaceholder": "e.g. gpt-4o-mini",
+      "llmVisionModel": "OpenAI vision model",
+      "llmVisionModelPlaceholder": "e.g. gpt-4o-mini-vision"
     },
     "theme": {
       "title": "Theme",
@@ -324,7 +338,7 @@
     },
     "prompts": {
       "title": "Prompts",
-      "description": "",
+      "description": "Adjust LLM prompts if needed.",
       "user1Label": "TASK",
       "user2Label": "DATA PASS",
       "systemLabel": "TECHNICAL FRAME",

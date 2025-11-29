@@ -1,0 +1,18 @@
+{
+  "batch": [
+    "trockener Wermut"
+  ],
+  "response": {
+    "ingredients": [
+      {
+        "input": "trockener Wermut",
+        "nameSingular": "trockener Wermut",
+        "namePlural": "trockener Wermut",
+        "countable": false,
+        "aliasesStrict": [],
+        "categoryId": "7c260419-4a87-440b-8b4d-cec090a65078",
+        "categoryName": "Alkohol 🍻"
+      }
+    ]
+  }
+}

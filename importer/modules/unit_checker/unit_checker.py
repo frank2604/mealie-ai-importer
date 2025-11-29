@@ -115,7 +115,9 @@ class UnitCheckerModule:
                 continue
             preassigned_refs = [ref for ref in refs if ref.ingredient.mealie_unit_id]
             for ref in preassigned_refs:
-                unit_name = ref.ingredient.unit or ""
+                unit_name = ref.ingredient.unit or ref.ingredient.unit_original_name or ""
+                if not unit_name:
+                    unit_name = "(unbekannt)"
                 unit_id = ref.ingredient.mealie_unit_id or ""
                 matches[ref.key] = unit_id
                 match_details[ref.key] = {"strategy": "preassigned"}
@@ -135,7 +137,7 @@ class UnitCheckerModule:
                     matches[ref.key] = candidate_id
                     match_details[ref.key] = {"strategy": strategy}
                     if strategy == "exact":
-                        exact_matches.append(unit_name)
+                        exact_matches.append(display or unit_name or "(unbekannt)")
                     else:
                         fuzzy_matches.append((unit_name, display))
                 continue

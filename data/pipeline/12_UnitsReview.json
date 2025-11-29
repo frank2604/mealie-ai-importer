@@ -1,23 +1,6 @@
 {
-  "generatedAt": "2025-11-28T17:38:08.679156",
+  "generatedAt": "2025-11-29T09:01:08.261529",
   "units": [
-    {
-      "key": "0:0",
-      "newId": null,
-      "suggestion": null,
-      "userDecision": {
-        "action": "auto",
-        "useUnitId": null,
-        "create": {
-          "name": null,
-          "pluralName": null,
-          "abbreviation": null,
-          "pluralAbbreviation": null,
-          "useAbbreviation": false
-        },
-        "notes": ""
-      }
-    },
     {
       "key": "0:1",
       "newId": null,
@@ -49,23 +32,6 @@
           "pluralAbbreviation": null,
           "useAbbreviation": false
         },
-        "notes": "geputzt, geviertelt"
-      }
-    },
-    {
-      "key": "0:3",
-      "newId": null,
-      "suggestion": null,
-      "userDecision": {
-        "action": "auto",
-        "useUnitId": null,
-        "create": {
-          "name": null,
-          "pluralName": null,
-          "abbreviation": null,
-          "pluralAbbreviation": null,
-          "useAbbreviation": false
-        },
         "notes": ""
       }
     },
@@ -83,7 +49,7 @@
           "pluralAbbreviation": null,
           "useAbbreviation": false
         },
-        "notes": "trocken"
+        "notes": ""
       }
     },
     {
@@ -100,7 +66,7 @@
           "pluralAbbreviation": null,
           "useAbbreviation": false
         },
-        "notes": "süß"
+        "notes": ""
       }
     },
     {
@@ -122,23 +88,6 @@
     },
     {
       "key": "0:7",
-      "newId": null,
-      "suggestion": null,
-      "userDecision": {
-        "action": "auto",
-        "useUnitId": null,
-        "create": {
-          "name": null,
-          "pluralName": null,
-          "abbreviation": null,
-          "pluralAbbreviation": null,
-          "useAbbreviation": false
-        },
-        "notes": ""
-      }
-    },
-    {
-      "key": "0:9",
       "newId": null,
       "suggestion": null,
       "userDecision": {

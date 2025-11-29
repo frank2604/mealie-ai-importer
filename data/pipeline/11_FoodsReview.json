@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2025-11-28T17:38:08.676973",
+  "generatedAt": "2025-11-29T09:01:08.259654",
   "ingredients": [
     {
       "key": "0:0",
@@ -52,7 +52,7 @@
           "categoryName": null,
           "description": null
         },
-        "notes": "geputzt, geviertelt"
+        "notes": ""
       }
     },
     {
@@ -75,20 +75,26 @@
     },
     {
       "key": "0:4",
-      "newId": null,
-      "suggestion": null,
+      "newId": "food-new-0-4",
+      "suggestion": {
+        "nameSingular": "Trockener Wermut",
+        "namePlural": "Trockener Wermut",
+        "aliases": [],
+        "categoryId": "7c260419-4a87-440b-8b4d-cec090a65078",
+        "categoryName": "Alkohol 🍻"
+      },
       "userDecision": {
         "action": "auto",
         "useFoodId": null,
         "create": {
-          "nameSingular": null,
-          "namePlural": null,
+          "nameSingular": "Trockener Wermut",
+          "namePlural": "Trockener Wermut",
           "aliases": [],
-          "categoryId": null,
-          "categoryName": null,
+          "categoryId": "7c260419-4a87-440b-8b4d-cec090a65078",
+          "categoryName": "Alkohol 🍻",
           "description": null
         },
-        "notes": "trocken"
+        "notes": ""
       }
     },
     {
@@ -106,7 +112,7 @@
           "categoryName": null,
           "description": null
         },
-        "notes": "süß"
+        "notes": ""
       }
     },
     {
@@ -160,7 +166,7 @@
           "categoryName": null,
           "description": null
         },
-        "notes": "zum Braten"
+        "notes": ""
       }
     },
     {

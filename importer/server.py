@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import base64
 import json
+import yaml
 import logging
 import re
 import time
@@ -59,6 +60,7 @@ DEFAULT_IMAGE_JSON = "03_RecipeImage.json"
 RUN_STATE_LOCK = Lock()
 ACTIVE_RUNS: Dict[str, "RunState"] = {}
 PENDING_UPLOADS: Dict[str, "PendingUpload"] = {}
+SETTINGS_PATH = Path("config/settings.yaml")
 
 LOG_PATTERN = re.compile(
     r"^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) "
@@ -320,6 +322,22 @@ class PromptResponse(BaseModel):
 
 class ResetWorkspaceResponse(BaseModel):
     status: str
+
+
+class ApiKeysResponse(BaseModel):
+    mealieToken: Optional[str] = None
+    mealieBaseUrl: Optional[str] = None
+    llmApiKey: Optional[str] = None
+    llmModel: Optional[str] = None
+    llmVisionModel: Optional[str] = None
+
+
+class ApiKeysUpdateRequest(BaseModel):
+    mealieToken: Optional[str] = None
+    mealieBaseUrl: Optional[str] = None
+    llmApiKey: Optional[str] = None
+    llmModel: Optional[str] = None
+    llmVisionModel: Optional[str] = None
 
 
 @dataclass
@@ -748,6 +766,22 @@ def _map_strategy(value: Optional[str]) -> Optional[str]:
     if not value:
         return None
     return _STRATEGY_MAP.get(value.lower(), value.lower())
+
+
+def _load_settings_file() -> Dict[str, Any]:
+    if SETTINGS_PATH.exists():
+        try:
+            with SETTINGS_PATH.open("r", encoding="utf-8") as handle:
+                return yaml.safe_load(handle) or {}
+        except yaml.YAMLError:
+            logger.warning("settings.yaml konnte nicht gelesen werden – verwende leeres Objekt")
+    return {}
+
+
+def _save_settings_file(data: Dict[str, Any]) -> None:
+    SETTINGS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with SETTINGS_PATH.open("w", encoding="utf-8") as handle:
+        yaml.safe_dump(data, handle, allow_unicode=True, sort_keys=False)
 
 
 def _format_quantity(value: Any) -> Optional[str]:
@@ -1527,6 +1561,51 @@ async def update_prompts(payload: PromptUpdateRequest) -> PromptResponse:
     save_prompts(existing)
     return PromptResponse(prompts=existing, defaults=get_prompt_defaults())
 
+
+@app.get("/api/settings/api-keys", response_model=ApiKeysResponse)
+async def get_api_keys() -> ApiKeysResponse:
+    data = _load_settings_file()
+    mealie_section = data.setdefault("mealie", {})
+    llm_section = data.setdefault("llm", {})
+
+    mealie_token = mealie_section.get("token")
+    mealie_base_url = mealie_section.get("base_url")
+    llm_api_key = llm_section.get("api_key")
+    llm_model = llm_section.get("model")
+    llm_vision_model = llm_section.get("vision_model")
+    return ApiKeysResponse(
+        mealieToken=mealie_token,
+        mealieBaseUrl=mealie_base_url,
+        llmApiKey=llm_api_key,
+        llmModel=llm_model,
+        llmVisionModel=llm_vision_model,
+    )
+
+
+@app.put("/api/settings/api-keys", response_model=ApiKeysResponse)
+async def update_api_keys(payload: ApiKeysUpdateRequest) -> ApiKeysResponse:
+    data = _load_settings_file()
+    mealie_section = data.setdefault("mealie", {})
+    llm_section = data.setdefault("llm", {})
+    # Entferne evtl. env-bedingte Überschreibungen: settings.yaml ist führend
+    if payload.mealieToken is not None:
+        mealie_section["token"] = payload.mealieToken
+    if payload.mealieBaseUrl is not None:
+        mealie_section["base_url"] = payload.mealieBaseUrl
+    if payload.llmApiKey is not None:
+        llm_section["api_key"] = payload.llmApiKey
+    if payload.llmModel is not None:
+        llm_section["model"] = payload.llmModel
+    if payload.llmVisionModel is not None:
+        llm_section["vision_model"] = payload.llmVisionModel
+    _save_settings_file(data)
+    return ApiKeysResponse(
+        mealieToken=mealie_section.get("token"),
+        mealieBaseUrl=mealie_section.get("base_url"),
+        llmApiKey=llm_section.get("api_key"),
+        llmModel=llm_section.get("model"),
+        llmVisionModel=llm_section.get("vision_model"),
+    )
 
 @app.get("/api/imports/{run_id}", response_model=RunStatusResponse)
 async def get_run_status(run_id: str) -> RunStatusResponse:

@@ -1,6 +1,6 @@
 {
   "title": "Hähnchenbrustfilet im Schinkenmantel",
-  "description": "Zarte Hähnchenbrustfilets werden mit Salbeiblättern und Parma-Schinken umwickelt und kurz angebraten. Serviert werden sie mit einer cremigen Champignon-Wermut-Sahne-Soße, die im Ofen fertig gart.",
+  "description": "Zarte Hähnchenbrustfilets werden mit Salbeiblättern belegt und in Parma-Schinken gewickelt. In einer cremigen Champignon-Wermut-Sauce im Ofen fertig gegart entsteht ein würziges Hauptgericht. Passt gut zu Pellkartoffeln und grünem Salat.",
   "recipeServings": 4.0,
   "recipeYieldQuantity": null,
   "recipeYield": null,
@@ -9,7 +9,7 @@
   "performTime": "20 Min.",
   "ingredients": [
     {
-      "name": "Zutaten",
+      "name": null,
       "ingredients": [
         {
           "id": "ing-0-0",
@@ -23,10 +23,8 @@
             "badgeId": "found_word"
           },
           "unit": {
-            "name": "Stück",
-            "originalName": "Stück",
-            "mealieUnitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
-            "badgeId": "found_word"
+            "name": null,
+            "originalName": null
           }
         },
         {
@@ -41,7 +39,7 @@
             "badgeId": "found_word"
           },
           "unit": {
-            "name": "Scheiben",
+            "name": null,
             "originalName": "Scheiben",
             "mealieUnitId": "2c3e0c93-592c-4759-bb3e-685a247b49b8",
             "badgeId": "found_word"
@@ -50,7 +48,7 @@
         {
           "id": "ing-0-2",
           "quantity": 500.0,
-          "note": "geputzt, geviertelt",
+          "note": null,
           "referenceId": null,
           "food": {
             "name": "Champignons",
@@ -59,7 +57,7 @@
             "badgeId": "found_word"
           },
           "unit": {
-            "name": "g",
+            "name": null,
             "originalName": "g",
             "mealieUnitId": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
             "badgeId": "found_word"
@@ -77,25 +75,23 @@
             "badgeId": "found_word"
           },
           "unit": {
-            "name": "Stück",
-            "originalName": "Stück",
-            "mealieUnitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
-            "badgeId": "found_word"
+            "name": null,
+            "originalName": null
           }
         },
         {
           "id": "ing-0-4",
           "quantity": 100.0,
-          "note": "trocken",
+          "note": null,
           "referenceId": null,
           "food": {
-            "name": "Wermut",
-            "originalName": "Wermut",
-            "mealieFoodId": "e0a2b2e6-ad2c-4054-b7f5-c611803dcd84",
-            "badgeId": "found_word"
+            "name": "trockener Wermut",
+            "originalName": "trockener Wermut",
+            "badgeId": "new",
+            "newId": "food-new-0-4"
           },
           "unit": {
-            "name": "ml",
+            "name": null,
             "originalName": "ml",
             "mealieUnitId": "b558643c-bb92-479d-97ea-1337edc49d3b",
             "badgeId": "found_word"
@@ -104,16 +100,16 @@
         {
           "id": "ing-0-5",
           "quantity": 200.0,
-          "note": "süß",
+          "note": null,
           "referenceId": null,
           "food": {
-            "name": "Sahne",
-            "originalName": "Sahne",
+            "name": "süße Sahne",
+            "originalName": "süße Sahne",
             "mealieFoodId": "ce7b4e53-b248-490e-953f-c4548bfb941a",
-            "badgeId": "found_ai"
+            "badgeId": "found_word"
           },
           "unit": {
-            "name": "ml",
+            "name": null,
             "originalName": "ml",
             "mealieUnitId": "b558643c-bb92-479d-97ea-1337edc49d3b",
             "badgeId": "found_word"
@@ -131,7 +127,7 @@
             "badgeId": "found_word"
           },
           "unit": {
-            "name": "EL",
+            "name": null,
             "originalName": "EL",
             "mealieUnitId": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
             "badgeId": "found_word"
@@ -149,7 +145,7 @@
             "badgeId": "found_word"
           },
           "unit": {
-            "name": "EL",
+            "name": null,
             "originalName": "EL",
             "mealieUnitId": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
             "badgeId": "found_word"
@@ -158,13 +154,13 @@
         {
           "id": "ing-0-8",
           "quantity": null,
-          "note": "zum Braten",
+          "note": null,
           "referenceId": null,
           "food": {
-            "name": "Fett",
-            "originalName": "Fett",
+            "name": "Fett zum Braten",
+            "originalName": "Fett zum Braten",
             "mealieFoodId": "2b4654bc-1ed3-4cdf-a879-55ce3dd2061b",
-            "badgeId": "found_word"
+            "badgeId": "found_ai"
           },
           "unit": {
             "name": null,
@@ -183,10 +179,8 @@
             "badgeId": "found_word"
           },
           "unit": {
-            "name": "Stück",
-            "originalName": "Stück",
-            "mealieUnitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
-            "badgeId": "found_word"
+            "name": null,
+            "originalName": null
           }
         },
         {
@@ -226,7 +220,7 @@
   ],
   "instructions": [
     {
-      "name": "Zubereitung",
+      "name": null,
       "steps": [
         {
           "id": "step-0-0",
@@ -253,8 +247,7 @@
           "instruction": "Fett in einer Pfanne erhitzen, die Filets mit Mehl bestäuben und anbraten.",
           "timer_minutes": null,
           "ingredientIds": [
-            "ing-0-6",
-            "ing-0-8"
+            "ing-0-6"
           ],
           "ingredientReferenceIds": []
         },
@@ -281,10 +274,7 @@
           "order": 6,
           "instruction": "Mit Wermut ablöschen, etwas einkochen lassen und Sahne angießen.",
           "timer_minutes": null,
-          "ingredientIds": [
-            "ing-0-4",
-            "ing-0-5"
-          ],
+          "ingredientIds": [],
           "ingredientReferenceIds": []
         },
         {
@@ -314,18 +304,9 @@
   "image_url": null,
   "metadata": {
     "source": "data/pipeline/01_Hahnchenbrustfilet_im_Schinkenmantel.pdf",
-    "categories": [
-      "Hauptgericht",
-      "Geflügel"
-    ],
-    "cuisine": "Deutsch",
-    "tags": [
-      "Hähnchen",
-      "Schinken",
-      "Champignons",
-      "Sahne",
-      "Ofen"
-    ],
+    "categories": [],
+    "cuisine": null,
+    "tags": [],
     "mealie_categories": [],
     "mealie_tags": []
   },

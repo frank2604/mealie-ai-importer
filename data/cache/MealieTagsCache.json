@@ -1,5 +1,5 @@
 {
-  "updated_at": "2025-11-28T17:38:08.679808",
+  "updated_at": "2025-11-29T09:01:08.261956",
   "tags": [
     {
       "id": "539f721a-a8e8-4c15-a7b4-deefcfb27f3a",
@@ -234,120 +234,6 @@
       "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
       "name": "Ernährung | Vegetarisch 🌿",
       "slug": "ernahrung-vegetarisch"
-    },
-    {
-      "id": "0f94c939-f5d1-482b-83de-331617c0965b",
-      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-      "name": "Hauptzutat | Pilze 🍄",
-      "slug": "hauptzutat-pilze"
-    },
-    {
-      "id": "3c994c94-4aad-4328-a420-ac5ea64fedc3",
-      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-      "name": "Hauptzutat | Brokkoli 🥦",
-      "slug": "hauptzutat-brokkoli"
-    },
-    {
-      "id": "eb2b2239-fc05-403c-856d-88c52592e415",
-      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-      "name": "Hauptzutat | Blumenkohl 🥦",
-      "slug": "hauptzutat-blumenkohl"
-    },
-    {
-      "id": "aa55e16f-e391-47d7-9d9f-a046a7393508",
-      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-      "name": "Hauptzutat | Spinat 🥬",
-      "slug": "hauptzutat-spinat"
-    },
-    {
-      "id": "343b0690-a98f-4656-9d60-98e56b4dd8f7",
-      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-      "name": "Hauptzutat | Aubergine 🍆",
-      "slug": "hauptzutat-aubergine"
-    },
-    {
-      "id": "d6e06c60-b3fe-4df4-8259-11fff10b0c86",
-      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-      "name": "Hauptzutat | Paprika 🫑",
-      "slug": "hauptzutat-paprika"
-    },
-    {
-      "id": "5a37d6eb-8601-432c-b42a-9bcc6787722a",
-      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-      "name": "Hauptzutat | Tomate 🍅",
-      "slug": "hauptzutat-tomate"
-    },
-    {
-      "id": "48a99c9c-3163-4825-872c-548d01aeb478",
-      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-      "name": "Hauptzutat | Zucchini 🥒",
-      "slug": "hauptzutat-zucchini"
-    },
-    {
-      "id": "3fc654b5-01dd-4c9a-9f38-4f095839325c",
-      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-      "name": "Hauptzutat | Kürbis 🎃",
-      "slug": "hauptzutat-kurbis"
-    },
-    {
-      "id": "65ce4841-c1c0-44c6-b951-f0b98eb83117",
-      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-      "name": "Hauptzutat | Quinoa 🌾",
-      "slug": "hauptzutat-quinoa"
-    },
-    {
-      "id": "86d8bd13-e947-4900-ad7d-3f4b1841c88a",
-      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-      "name": "Hauptzutat | Bohnen 🫘",
-      "slug": "hauptzutat-bohnen"
-    },
-    {
-      "id": "4188fe01-a164-4e82-8e3e-6592ea4654d8",
-      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-      "name": "Hauptzutat | Kichererbsen 🟡",
-      "slug": "hauptzutat-kichererbsen"
-    },
-    {
-      "id": "93b1ff1a-a0b9-4d6a-986d-41f914687ebe",
-      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-      "name": "Hauptzutat | Linsen 🟠",
-      "slug": "hauptzutat-linsen"
-    },
-    {
-      "id": "b07f5262-fd7b-4486-ba98-f201c3bd2986",
-      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-      "name": "Hauptzutat | Bulgur 🥣",
-      "slug": "hauptzutat-bulgur"
-    },
-    {
-      "id": "ec38d75b-4e5e-40d5-85ee-5e6c5a7ce845",
-      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-      "name": "Hauptzutat | Couscous 🍽️",
-      "slug": "hauptzutat-couscous"
-    },
-    {
-      "id": "949861ba-7076-469c-8f66-941a8d6999bb",
-      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-      "name": "Hauptzutat | Pasta 🍝",
-      "slug": "hauptzutat-pasta"
-    },
-    {
-      "id": "44190fcc-9dd0-4ad8-b122-afd5d4148060",
-      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-      "name": "Hauptzutat | Reis 🍚",
-      "slug": "hauptzutat-reis"
-    },
-    {
-      "id": "fe18be0b-b39b-4d5d-a673-87eaafcec6cf",
-      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-      "name": "Hauptzutat | Süßkartoffel 🍠",
-      "slug": "hauptzutat-susskartoffel"
-    },
-    {
-      "id": "dcfa7f6d-a00c-4413-8079-29dd9f2774be",
-      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
-      "name": "Hauptzutat | Kartoffel 🥔",
-      "slug": "hauptzutat-kartoffel"
     },
     {
       "id": "050ee135-c6ef-4b9d-8c53-7a315abbac53",

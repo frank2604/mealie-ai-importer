@@ -7,6 +7,7 @@ import { layoutConfig } from "../../config/layout.config";
 import { useTheme } from "../../theme/useTheme";
 import { availableLanguages } from "../../i18n/i18n";
 import { fetchPrompts, savePrompts, type PromptLocaleConfig } from "../api/prompts";
+import { fetchApiKeys, saveApiKeys, type ApiKeys } from "../api/settings";
 
 export const Settings: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -23,6 +24,17 @@ export const Settings: React.FC = () => {
   const [isSavingPrompts, setIsSavingPrompts] = useState(false);
   const [hasPromptChanges, setHasPromptChanges] = useState(false);
   const [isAdminOverrideEnabled, setIsAdminOverrideEnabled] = useState(false);
+  const [apiKeys, setApiKeys] = useState<ApiKeys>({
+    mealieToken: null,
+    mealieBaseUrl: null,
+    llmApiKey: null,
+    llmModel: null,
+    llmVisionModel: null
+  });
+  const [apiKeysLoading, setApiKeysLoading] = useState(false);
+  const [apiKeysError, setApiKeysError] = useState<string | null>(null);
+  const [apiKeysSaving, setApiKeysSaving] = useState(false);
+  const [hasApiKeyChanges, setHasApiKeyChanges] = useState(false);
 
   const promptModules = useMemo(
     () => [
@@ -53,6 +65,20 @@ export const Settings: React.FC = () => {
       .finally(() => {
         setPromptsLoading(false);
       });
+  }, []);
+
+  useEffect(() => {
+    setApiKeysLoading(true);
+    setApiKeysError(null);
+    fetchApiKeys()
+      .then((response) => {
+        setApiKeys(response);
+        setHasApiKeyChanges(false);
+      })
+      .catch((error: Error) => {
+        setApiKeysError(error.message);
+      })
+      .finally(() => setApiKeysLoading(false));
   }, []);
 
   const currentLocale = useMemo(() => (resolvedLanguage ?? "de").split("-")[0], [resolvedLanguage]);
@@ -137,12 +163,27 @@ export const Settings: React.FC = () => {
     }
   };
 
+  const handleApiKeyChange = (field: keyof ApiKeys, value: string) => {
+    setApiKeys((prev) => ({ ...prev, [field]: value }));
+    setHasApiKeyChanges(true);
+  };
+
+  const handleSaveApiKeys = async () => {
+    setApiKeysSaving(true);
+    setApiKeysError(null);
+    try {
+      const response = await saveApiKeys(apiKeys);
+      setApiKeys(response);
+      setHasApiKeyChanges(false);
+    } catch (error) {
+      setApiKeysError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setApiKeysSaving(false);
+    }
+  };
+
   return (
     <div className="w-full space-y-6">
-      <header className={clsx("border border-border bg-panel p-6 shadow-sm", layoutConfig.borderRadius.large)}>
-        <h1 className="text-2xl font-semibold text-primary">{t("settings.title")}</h1>
-        <p className="mt-2 text-sm text-text/70">{t("settings.subtitle")}</p>
-      </header>
       <section className={clsx("border border-border bg-panel p-6 shadow-sm", layoutConfig.borderRadius.large)}>
         <header>
           <h2 className="text-lg font-semibold">{t("settings.general.title")}</h2>
@@ -188,11 +229,130 @@ export const Settings: React.FC = () => {
           </div>
         </div>
       </section>
+      <Disclosure defaultOpen={false}>
+        {({ open }) => (
+          <section className={clsx("border border-border bg-panel p-6 shadow-sm", layoutConfig.borderRadius.large)}>
+            <Disclosure.Button className="flex w-full items-center justify-between text-left">
+              <div>
+                <h2 className="text-lg font-semibold">{t("settings.api.title")}</h2>
+                <p className="mt-1 text-sm text-text/70">{t("settings.api.description")}</p>
+              </div>
+              <ChevronDownIcon
+                className={clsx("h-4 w-4 transition-transform", open ? "rotate-180 text-primary" : "text-text/60")}
+              />
+            </Disclosure.Button>
+            <Disclosure.Panel className="mt-4">
+              <div className="space-y-4">
+                {apiKeysError ? <div className="text-sm text-error">{apiKeysError}</div> : null}
+                <div className="space-y-2">
+                  <label htmlFor="settings-mealie-base" className="text-sm font-semibold text-text">
+                    {t("settings.api.mealieBaseUrl")}
+                  </label>
+                  <input
+                    id="settings-mealie-base"
+                    type="text"
+                    value={apiKeys.mealieBaseUrl ?? ""}
+                    onChange={(event) => handleApiKeyChange("mealieBaseUrl", event.target.value)}
+                    className={clsx(
+                      "focus-ring w-full border border-border bg-background px-4 py-2 text-sm font-medium text-text",
+                      layoutConfig.borderRadius.medium
+                    )}
+                    placeholder={t("settings.api.mealieBaseUrlPlaceholder")}
+                    disabled={apiKeysLoading || apiKeysSaving}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="settings-mealie-token" className="text-sm font-semibold text-text">
+                    {t("settings.api.mealieToken")}
+                  </label>
+                  <input
+                    id="settings-mealie-token"
+                    type="password"
+                    value={apiKeys.mealieToken ?? ""}
+                    onChange={(event) => handleApiKeyChange("mealieToken", event.target.value)}
+                    className={clsx(
+                      "focus-ring w-full border border-border bg-background px-4 py-2 text-sm font-medium text-text",
+                      layoutConfig.borderRadius.medium
+                    )}
+                    placeholder={t("settings.api.mealieTokenPlaceholder")}
+                    disabled={apiKeysLoading || apiKeysSaving}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="settings-llm-api-key" className="text-sm font-semibold text-text">
+                    {t("settings.api.llmApiKey")}
+                  </label>
+                  <input
+                    id="settings-llm-api-key"
+                    type="password"
+                    value={apiKeys.llmApiKey ?? ""}
+                    onChange={(event) => handleApiKeyChange("llmApiKey", event.target.value)}
+                    className={clsx(
+                      "focus-ring w-full border border-border bg-background px-4 py-2 text-sm font-medium text-text",
+                      layoutConfig.borderRadius.medium
+                    )}
+                    placeholder={t("settings.api.llmApiKeyPlaceholder")}
+                    disabled={apiKeysLoading || apiKeysSaving}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="settings-llm-model" className="text-sm font-semibold text-text">
+                    {t("settings.api.llmModel")}
+                  </label>
+                  <input
+                    id="settings-llm-model"
+                    type="text"
+                    value={apiKeys.llmModel ?? ""}
+                    onChange={(event) => handleApiKeyChange("llmModel", event.target.value)}
+                    className={clsx(
+                      "focus-ring w-full border border-border bg-background px-4 py-2 text-sm font-medium text-text",
+                      layoutConfig.borderRadius.medium
+                    )}
+                    placeholder={t("settings.api.llmModelPlaceholder")}
+                    disabled={apiKeysLoading || apiKeysSaving}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="settings-llm-vision-model" className="text-sm font-semibold text-text">
+                    {t("settings.api.llmVisionModel")}
+                  </label>
+                  <input
+                    id="settings-llm-vision-model"
+                    type="text"
+                    value={apiKeys.llmVisionModel ?? ""}
+                    onChange={(event) => handleApiKeyChange("llmVisionModel", event.target.value)}
+                    className={clsx(
+                      "focus-ring w-full border border-border bg-background px-4 py-2 text-sm font-medium text-text",
+                      layoutConfig.borderRadius.medium
+                    )}
+                    placeholder={t("settings.api.llmVisionModelPlaceholder")}
+                    disabled={apiKeysLoading || apiKeysSaving}
+                  />
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    disabled={!hasApiKeyChanges || apiKeysSaving || apiKeysLoading}
+                    onClick={handleSaveApiKeys}
+                    className={clsx(
+                      "focus-ring border border-primary bg-primary px-4 py-2 text-sm font-semibold text-on-primary disabled:opacity-50",
+                      layoutConfig.borderRadius.small
+                    )}
+                  >
+                    {apiKeysSaving ? t("buttons.saving") : t("buttons.save")}
+                  </button>
+                </div>
+              </div>
+            </Disclosure.Panel>
+          </section>
+        )}
+      </Disclosure>
       <div className="space-y-4">
         <div className={clsx("border border-border bg-panel shadow-sm", layoutConfig.borderRadius.large)}>
           <div className="flex w-full items-center justify-between gap-3 px-6 py-4 text-left">
             <div>
               <h2 className="text-lg font-semibold">{t("settings.prompts.title")}</h2>
+              <p className="text-sm text-text/70">{t("settings.prompts.description")}</p>
             </div>
             <label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-text/60">
               <input

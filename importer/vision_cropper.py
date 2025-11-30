@@ -5,14 +5,14 @@ import base64
 import io
 import json
 import logging
+import time
 from typing import Optional
 
-import httpx
 from PIL import Image
 
 from .config import LlmConfig
-from .llm_parser import LlmParsingError, _parse_json_response  # reuse util
-from .prompt_store import resolve_prompt
+from .llm_parser import LlmParsingError, OpenAiClient, _parse_json_response  # reuse util
+from .prompt_store import resolve_prompt, resolve_llm_config
 from .prompt_logging import log_prompt_messages
 
 logger = logging.getLogger(__name__)
@@ -34,6 +34,14 @@ def crop_image_with_llm(
     b64_image = base64.b64encode(image_bytes).decode("ascii")
 
     prompt_cfg = resolve_prompt("imageCrop", locale, replacements={"title": title})
+    llm_cfg = resolve_llm_config("imageCrop")
+    logger.info(
+        "LLM config (imageCrop): model=%s, temperature=%s, top_p=%s, max_output_tokens=%s",
+        llm_cfg.get("model"),
+        llm_cfg.get("temperature"),
+        llm_cfg.get("top_p"),
+        llm_cfg.get("max_output_tokens"),
+    )
     system_prompt = prompt_cfg.get("system") or "Du bist ein präziser Assistent für Bildausschnitte."
     user_parts = [
         part.strip()
@@ -42,57 +50,53 @@ def crop_image_with_llm(
     ]
     user_text = "\n\n".join(user_parts) if user_parts else title
 
-    payload = {
-        "model": model,
-        "messages": [
-            {"role": "system", "content": system_prompt},
-            {
-                "role": "user",
-                "content": [
-                    {"type": "text", "text": user_text},
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": f"data:image/jpeg;base64,{b64_image}",
-                        },
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": user_text},
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/jpeg;base64,{b64_image}",
                     },
-                ],
-            },
-        ],
-        "response_format": {"type": "json_object"},
-    }
+                },
+            ],
+        },
+    ]
 
-    log_prompt_messages("imageCrop", payload["messages"])
+    log_prompt_messages("imageCrop", messages)
 
-    headers = {
-        "Authorization": f"Bearer {llm_config.api_key}",
-        "Content-Type": "application/json",
-    }
+    client = OpenAiClient(
+        api_key=llm_config.api_key,
+        model=llm_cfg.get("model") or model,
+        base_url=llm_config.base_url,
+        timeout=llm_config.timeout,
+    )
 
-    endpoint = f"{llm_config.base_url.rstrip('/')}/chat/completions"
+    # run_json erwartet system/user als Strings; wir geben die Messages als JSON-String weiter
+    response_obj = None
+    attempts = 3
+    for attempt in range(1, attempts + 1):
+        try:
+            response_obj = client.run_json(system_prompt, json.dumps(messages), llm_config=llm_cfg)
+            break
+        except Exception as exc:  # pragma: no cover - defensive
+            err_text = str(exc).lower()
+            if "429" in err_text and attempt < attempts:
+                wait = min(2 * attempt, 5)
+                logger.info("Vision-Anfrage Rate-Limit (429) – Retry %s/%s in %ss", attempt, attempts, wait)
+                time.sleep(wait)
+                continue
+            logger.warning("Vision-Anfrage fehlgeschlagen: %s", exc)
+            return None
 
-    try:
-        response = httpx.post(endpoint, headers=headers, json=payload, timeout=llm_config.timeout)
-    except httpx.HTTPError as exc:  # pragma: no cover - network issues
-        logger.warning("Vision-Anfrage fehlgeschlagen: %s", exc)
+    if response_obj is None:
+        logger.warning("Vision-Anfrage fehlgeschlagen: Keine Antwort nach Retries")
         return None
 
-    if response.status_code >= 400:
-        logger.warning("Vision-Modell antwortete mit %s: %s", response.status_code, response.text[:200])
-        return None
-
-    try:
-        data = response.json()
-        content = data["choices"][0]["message"]["content"]
-    except (KeyError, IndexError, TypeError, json.JSONDecodeError) as exc:
-        logger.warning("Vision-Antwort nicht lesbar: %s", exc)
-        return None
-
-    try:
-        result = _parse_json_response(content)
-    except LlmParsingError as exc:  # pragma: no cover - defensive
-        logger.warning("Vision-Antwort kein JSON: %s", exc)
-        return None
+    result = response_obj if isinstance(response_obj, dict) else _parse_json_response(json.dumps(response_obj))
 
     crop = result.get("crop")
     if not crop:

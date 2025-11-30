@@ -82,7 +82,17 @@ class OpenAiClient:
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
 
-    def run(self, request: LlmRequest) -> Recipe:
+    @staticmethod
+    def _supports_sampling_params(model: Optional[str]) -> bool:
+        """Return False for models that forbid temperature/top_p (e.g. o1, gpt-4.1)."""
+        if not model:
+            return True
+        name = model.lower()
+        if name.startswith("o1") or name.startswith("gpt-4.1"):
+            return False
+        return True
+
+    def run(self, request: LlmRequest, llm_config: Optional[Dict[str, Any]] = None) -> Recipe:
         source_name = Path(request.source).name if request.source else "unbekannt"
         replacements = {
             "filename": source_name,
@@ -94,8 +104,10 @@ class OpenAiClient:
         system_prompt = prompt_cfg.get("system") or _DEFAULT_ANALYSIS_SYSTEM
         user_prompt = _build_analysis_user_prompt(prompt_cfg.get("user1", ""), prompt_cfg.get("user2", ""), request)
 
+        cfg = llm_config or {}
+        model_name = cfg.get("model", self.model)
         payload = {
-            "model": self.model,
+            "model": model_name,
             "response_format": {"type": "json_object"},
             "messages": [
                 {"role": "system", "content": system_prompt},
@@ -106,10 +118,16 @@ class OpenAiClient:
             ],
         }
 
-        if self.temperature is not None:
-            payload["temperature"] = self.temperature
-        if self.max_tokens is not None:
-            payload["max_completion_tokens"] = self.max_tokens
+        temperature = cfg.get("temperature", self.temperature)
+        top_p = cfg.get("top_p", None)
+        max_output_tokens = cfg.get("max_output_tokens", self.max_tokens)
+        supports_sampling = self._supports_sampling_params(model_name)
+        if temperature is not None and supports_sampling:
+            payload["temperature"] = temperature
+        if top_p is not None and supports_sampling:
+            payload["top_p"] = top_p
+        if max_output_tokens is not None:
+            payload["max_completion_tokens"] = max_output_tokens
 
         headers = {
             "Authorization": f"Bearer {self.api_key}",
@@ -124,6 +142,12 @@ class OpenAiClient:
             response = httpx.post(endpoint, headers=headers, json=payload, timeout=self.timeout)
         except httpx.HTTPError as exc:  # pragma: no cover - runtime safeguard
             raise LlmParsingError(f"HTTP-Anfrage an OpenAI fehlgeschlagen: {exc}") from exc
+
+        if response.status_code >= 400 and "temperature" in response.text and "not support" in response.text:
+            logger.info("Retrying without sampling params for model %s", model_name)
+            payload.pop("temperature", None)
+            payload.pop("top_p", None)
+            response = httpx.post(endpoint, headers=headers, json=payload, timeout=self.timeout)
 
         if response.status_code >= 400:
             raise LlmParsingError(
@@ -161,21 +185,30 @@ class OpenAiClient:
 
         return recipe
 
-    def run_text(self, system_prompt: str, user_prompt: str) -> str:
+    def run_text(self, system_prompt: str, user_prompt: str, *, llm_config: Optional[Dict[str, Any]] = None) -> str:
         """Return raw text response for lightweight prompts."""
 
+        cfg = llm_config or {}
+        model_name = cfg.get("model", self.model)
+
         payload: Dict[str, Any] = {
-            "model": self.model,
+            "model": model_name,
             "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
         }
 
-        if self.temperature is not None:
-            payload["temperature"] = self.temperature
-        if self.max_tokens is not None:
-            payload["max_completion_tokens"] = self.max_tokens
+        temperature = cfg.get("temperature", self.temperature)
+        top_p = cfg.get("top_p", None)
+        max_output_tokens = cfg.get("max_output_tokens", self.max_tokens)
+        supports_sampling = self._supports_sampling_params(model_name)
+        if temperature is not None and supports_sampling:
+            payload["temperature"] = temperature
+        if top_p is not None and supports_sampling:
+            payload["top_p"] = top_p
+        if max_output_tokens is not None:
+            payload["max_completion_tokens"] = max_output_tokens
 
         headers = {
             "Authorization": f"Bearer {self.api_key}",
@@ -186,6 +219,17 @@ class OpenAiClient:
         log_prompt_messages("generic_text", payload["messages"])
 
         response = httpx.post(endpoint, headers=headers, json=payload, timeout=self.timeout)
+
+        if response.status_code >= 400 and "temperature" in response.text and "not support" in response.text:
+            payload.pop("temperature", None)
+            payload.pop("top_p", None)
+        response = httpx.post(endpoint, headers=headers, json=payload, timeout=self.timeout)
+
+        if response.status_code >= 400 and "temperature" in response.text and "not support" in response.text:
+            payload.pop("temperature", None)
+            payload.pop("top_p", None)
+            response = httpx.post(endpoint, headers=headers, json=payload, timeout=self.timeout)
+
         response.raise_for_status()
         data = response.json()
         try:
@@ -194,11 +238,14 @@ class OpenAiClient:
             return ""
         return content or ""
 
-    def run_json(self, system_prompt: str, user_prompt: str) -> Dict[str, Any]:
+    def run_json(self, system_prompt: str, user_prompt: str, *, llm_config: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Return parsed JSON response using OpenAI's JSON mode."""
 
+        cfg = llm_config or {}
+        model_name = cfg.get("model", self.model)
+
         payload: Dict[str, Any] = {
-            "model": self.model,
+            "model": model_name,
             "response_format": {"type": "json_object"},
             "messages": [
                 {"role": "system", "content": system_prompt},
@@ -206,10 +253,16 @@ class OpenAiClient:
             ],
         }
 
-        if self.temperature is not None:
-            payload["temperature"] = self.temperature
-        if self.max_tokens is not None:
-            payload["max_completion_tokens"] = self.max_tokens
+        temperature = cfg.get("temperature", self.temperature)
+        top_p = cfg.get("top_p", None)
+        max_output_tokens = cfg.get("max_output_tokens", self.max_tokens)
+        supports_sampling = self._supports_sampling_params(model_name)
+        if temperature is not None and supports_sampling:
+            payload["temperature"] = temperature
+        if top_p is not None and supports_sampling:
+            payload["top_p"] = top_p
+        if max_output_tokens is not None:
+            payload["max_completion_tokens"] = max_output_tokens
 
         headers = {
             "Authorization": f"Bearer {self.api_key}",
@@ -283,6 +336,7 @@ def parse_with_llm(
     servings_hint: Optional[str] = None,
     title_hint: Optional[str] = None,
     locale: str = "de",
+    llm_config: Optional[Dict[str, Any]] = None,
 ) -> Recipe:
     """Parse *text* using the provided LLM client and return a Recipe."""
     cleaned_text = text.strip()
@@ -298,7 +352,7 @@ def parse_with_llm(
     )
 
     logger.debug("Sende %s Zeichen an das LLM", len(cleaned_text))
-    return llm_client.run(request)
+    return llm_client.run(request, llm_config=llm_config)
 
 
 def _parse_json_response(content: str) -> Dict[str, Any]:

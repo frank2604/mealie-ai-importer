@@ -9,7 +9,7 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple
 from ..context import PipelineContext
 from ...llm_parser import OpenAiClient
 from ...models import OrganizerReference, Recipe
-from ...prompt_store import resolve_prompt
+from ...prompt_store import resolve_prompt, resolve_llm_config
 from ...prompt_logging import log_prompt_messages
 from ...services.ingredients import IngredientService
 
@@ -167,6 +167,14 @@ class AssignMetadataModule:
         prompt = json.dumps(payload, ensure_ascii=False, indent=2)
         try:
             system_prompt, user_prompt = self._build_prompts(prompt)
+            llm_cfg = resolve_llm_config("metadata")
+            logger.info(
+                "LLM config (metadata): model=%s, temperature=%s, top_p=%s, max_output_tokens=%s",
+                llm_cfg.get("model"),
+                llm_cfg.get("temperature"),
+                llm_cfg.get("top_p"),
+                llm_cfg.get("max_output_tokens"),
+            )
             log_prompt_messages(
                 "metadata",
                 [
@@ -174,7 +182,7 @@ class AssignMetadataModule:
                     {"role": "user", "content": user_prompt},
                 ],
             )
-            response_text = self._llm_client.run_text(system_prompt, user_prompt)
+            response_text = self._llm_client.run_text(system_prompt, user_prompt, llm_config=llm_cfg)
         except Exception as exc:  # pragma: no cover - network errors
             logger.error("The assistant request for categories failed: %s", exc)
             return None

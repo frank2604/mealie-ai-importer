@@ -40,7 +40,14 @@ from .modules.create_recipe import CreateRecipeModule
 from .modules.instruction_linking import InstructionLinkingModule
 from .services.run_workspace import PipelineRecorder, RunInfo, RunWorkspace
 from .services.ingredients import IngredientService
-from .prompt_store import load_prompts, save_prompts, get_prompt_defaults
+from .prompt_store import (
+    LLM_CONFIG_DEFAULTS,
+    get_prompt_defaults,
+    load_llm_config,
+    load_prompts,
+    save_llm_config,
+    save_prompts,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -313,11 +320,14 @@ class PromptModuleConfig(BaseModel):
 
 class PromptUpdateRequest(BaseModel):
     prompts: Dict[str, Dict[str, PromptModuleConfig]]
+    llmConfig: Optional[Dict[str, Dict[str, Any]]] = None
 
 
 class PromptResponse(BaseModel):
     prompts: Dict[str, Dict[str, PromptModuleConfig]]
     defaults: Dict[str, Dict[str, PromptModuleConfig]]
+    llmConfig: Dict[str, Dict[str, Any]] = Field(default_factory=dict)
+    llmDefaults: Dict[str, Dict[str, Any]] = Field(default_factory=dict)
 
 
 class ResetWorkspaceResponse(BaseModel):
@@ -1544,7 +1554,7 @@ async def update_review_data(run_id: str, update: ReviewUpdateRequest) -> Review
 async def get_prompts() -> PromptResponse:
     prompts = load_prompts()
     defaults = get_prompt_defaults()
-    return PromptResponse(prompts=prompts, defaults=defaults)
+    return PromptResponse(prompts=prompts, defaults=defaults, llmConfig=load_llm_config(), llmDefaults=LLM_CONFIG_DEFAULTS)
 
 
 @app.put("/api/prompts", response_model=PromptResponse)
@@ -1559,7 +1569,14 @@ async def update_prompts(payload: PromptUpdateRequest) -> PromptResponse:
                 "system": config.system,
             }
     save_prompts(existing)
-    return PromptResponse(prompts=existing, defaults=get_prompt_defaults())
+    if payload.llmConfig is not None:
+        save_llm_config(payload.llmConfig)
+    return PromptResponse(
+        prompts=existing,
+        defaults=get_prompt_defaults(),
+        llmConfig=load_llm_config(),
+        llmDefaults=LLM_CONFIG_DEFAULTS,
+    )
 
 
 @app.get("/api/settings/api-keys", response_model=ApiKeysResponse)

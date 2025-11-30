@@ -10,7 +10,7 @@ from typing import Dict, Iterable, List, Optional
 
 from ..context import IngredientRef, PipelineContext
 from ...llm_parser import OpenAiClient
-from ...prompt_store import resolve_prompt
+from ...prompt_store import resolve_prompt, resolve_llm_config
 from ...prompt_logging import log_prompt_messages
 from ...services.ingredients import IngredientService
 
@@ -384,6 +384,14 @@ class UnitCheckerModule:
             "candidates": "\n".join(candidate_lines) if candidate_lines else "-",
         }
         prompt_cfg = resolve_prompt("units", self._locale, replacements=replacements)
+        llm_cfg = resolve_llm_config("units")
+        logger.info(
+            "LLM config (units): model=%s, temperature=%s, top_p=%s, max_output_tokens=%s",
+            llm_cfg.get("model"),
+            llm_cfg.get("temperature"),
+            llm_cfg.get("top_p"),
+            llm_cfg.get("max_output_tokens"),
+        )
         system_prompt = prompt_cfg.get("system", _SYSTEM_PROMPT).strip() or _SYSTEM_PROMPT
         user_parts = [
             part.strip()
@@ -400,7 +408,7 @@ class UnitCheckerModule:
                     {"role": "user", "content": user_prompt},
                 ],
             )
-            response = self._llm_client.run_text(system_prompt or _SYSTEM_PROMPT, user_prompt)
+            response = self._llm_client.run_text(system_prompt or _SYSTEM_PROMPT, user_prompt, llm_config=llm_cfg)
         except Exception as exc:  # pragma: no cover - external dependency
             logger.debug("Assistant unit lookup failed: %s", exc)
             return None, None

@@ -48,6 +48,12 @@ export const badgeConfig: Record<string, BadgeConfig> = {
     icon: "warning",
     className: `${baseBadgeClasses} text-error/60 border-border/50 bg-background/50 ${layoutConfig.borderRadius.small}`,
     tooltipKey: "review.badges.none"
+  },
+  no_amount: {
+    id: "no_amount",
+    icon: "sparkles",
+    className: `${baseBadgeClasses} text-success border-success/40 bg-success/10 ${layoutConfig.borderRadius.small}`,
+    tooltipKey: "review.badges.noAmount"
   }
 };
 

@@ -1,0 +1,221 @@
+{
+  "generatedAt": "2025-11-29T15:58:58.037829",
+  "ingredients": [
+    {
+      "key": "0:0",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useFoodId": null,
+        "create": {
+          "nameSingular": null,
+          "namePlural": null,
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
+          "description": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:1",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useFoodId": null,
+        "create": {
+          "nameSingular": null,
+          "namePlural": null,
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
+          "description": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:2",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useFoodId": null,
+        "create": {
+          "nameSingular": null,
+          "namePlural": null,
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
+          "description": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:3",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useFoodId": null,
+        "create": {
+          "nameSingular": null,
+          "namePlural": null,
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
+          "description": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:4",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useFoodId": null,
+        "create": {
+          "nameSingular": null,
+          "namePlural": null,
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
+          "description": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:5",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useFoodId": null,
+        "create": {
+          "nameSingular": null,
+          "namePlural": null,
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
+          "description": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:6",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useFoodId": null,
+        "create": {
+          "nameSingular": null,
+          "namePlural": null,
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
+          "description": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:7",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useFoodId": null,
+        "create": {
+          "nameSingular": null,
+          "namePlural": null,
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
+          "description": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:8",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useFoodId": null,
+        "create": {
+          "nameSingular": null,
+          "namePlural": null,
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
+          "description": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:9",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useFoodId": null,
+        "create": {
+          "nameSingular": null,
+          "namePlural": null,
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
+          "description": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:10",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useFoodId": null,
+        "create": {
+          "nameSingular": null,
+          "namePlural": null,
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
+          "description": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "key": "0:11",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useFoodId": null,
+        "create": {
+          "nameSingular": null,
+          "namePlural": null,
+          "aliases": [],
+          "categoryId": null,
+          "categoryName": null,
+          "description": null
+        },
+        "notes": ""
+      }
+    }
+  ]
+}

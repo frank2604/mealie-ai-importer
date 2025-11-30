@@ -7,6 +7,17 @@ from typing import Any, Dict, Optional
 
 PROMPT_FILE = Path("config/prompts.json")
 
+LLM_CONFIG_DEFAULTS: Dict[str, Dict[str, Any]] = {
+    "analysis": {"model": "gpt-5-mini", "temperature": 0.3, "top_p": 1.0, "max_output_tokens": 2500},
+    "ingredients": {"model": "gpt-5-nano", "temperature": 0.0, "top_p": 1.0, "max_output_tokens": 200},
+    "units": {"model": "gpt-5-nano", "temperature": 0.0, "top_p": 1.0, "max_output_tokens": 150},
+    "metadata": {"model": "gpt-5-mini", "temperature": 0.3, "top_p": 1.0, "max_output_tokens": 400},
+    "instructions": {"model": "gpt-5-mini", "temperature": 0.0, "top_p": 1.0, "max_output_tokens": 600},
+    "foodForms": {"model": "gpt-5-mini", "temperature": 0.5, "top_p": 1.0, "max_output_tokens": 600},
+    "unitForms": {"model": "gpt-5-mini", "temperature": 0.3, "top_p": 1.0, "max_output_tokens": 400},
+    "imageCrop": {"model": "gpt-4o-mini", "temperature": 0.0, "top_p": 1.0, "max_output_tokens": 150},
+}
+
 FALLBACK_DEFAULTS: Dict[str, Dict[str, Dict[str, str]]] = {
     "de": {
         "analysis": {
@@ -254,7 +265,21 @@ def _merge_prompts(base: Dict[str, Any], override: Optional[Dict[str, Any]]) -> 
     return merged
 
 
-def _load_prompt_file() -> tuple[Dict[str, Dict[str, Dict[str, str]]], Dict[str, Dict[str, Dict[str, str]]]]:
+def _merge_llm_config(base: Dict[str, Any], override: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+    merged = deepcopy(base)
+    if not isinstance(override, dict):
+        return merged
+    for module, cfg in override.items():
+        if not isinstance(cfg, dict):
+            continue
+        target = merged.setdefault(module, {})
+        for key in ("model", "temperature", "top_p", "max_output_tokens"):
+            if key in cfg:
+                target[key] = cfg[key]
+    return merged
+
+
+def _load_prompt_file() -> tuple[Dict[str, Dict[str, Dict[str, str]]], Dict[str, Dict[str, Dict[str, str]]], Dict[str, Any]]:
     if PROMPT_FILE.exists():
         try:
             data = json.loads(PROMPT_FILE.read_text(encoding="utf-8"))
@@ -266,22 +291,30 @@ def _load_prompt_file() -> tuple[Dict[str, Dict[str, Dict[str, str]]], Dict[str,
     if isinstance(data, dict) and "defaults" in data and "prompts" in data:
         defaults_section = data.get("defaults")
         prompts_section = data.get("prompts")
+        llm_section = data.get("llmConfig")
     else:
         defaults_section = None
         prompts_section = data if isinstance(data, dict) else None
+        llm_section = None
 
     defaults = _merge_prompts(FALLBACK_DEFAULTS, defaults_section)
     prompts = _merge_prompts(defaults, prompts_section)
-    return defaults, prompts
+    llm_config = _merge_llm_config(LLM_CONFIG_DEFAULTS, llm_section)
+    return defaults, prompts, llm_config
 
 
 def load_prompts() -> Dict[str, Dict[str, Dict[str, str]]]:
-    _, prompts = _load_prompt_file()
+    _, prompts, _ = _load_prompt_file()
     return prompts
 
 
+def load_llm_config() -> Dict[str, Any]:
+    _, _, llm_config = _load_prompt_file()
+    return llm_config
+
+
 def save_prompts(data: Dict[str, Dict[str, Dict[str, str]]]) -> None:
-    defaults, _ = _load_prompt_file()
+    defaults, _, llm_config = _load_prompt_file()
     normalized_prompts: Dict[str, Dict[str, Dict[str, str]]] = {}
     for locale, modules in (data or {}).items():
         if not isinstance(modules, dict):
@@ -294,12 +327,20 @@ def save_prompts(data: Dict[str, Dict[str, Dict[str, str]]]) -> None:
         if locale_entry:
             normalized_prompts[locale] = locale_entry
     PROMPT_FILE.parent.mkdir(parents=True, exist_ok=True)
-    payload = {"defaults": defaults, "prompts": normalized_prompts}
+    payload = {"defaults": defaults, "prompts": normalized_prompts, "llmConfig": llm_config}
+    PROMPT_FILE.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def save_llm_config(llm_config: Dict[str, Any]) -> None:
+    defaults, prompts, _ = _load_prompt_file()
+    merged = _merge_llm_config(LLM_CONFIG_DEFAULTS, llm_config)
+    PROMPT_FILE.parent.mkdir(parents=True, exist_ok=True)
+    payload = {"defaults": defaults, "prompts": prompts, "llmConfig": merged}
     PROMPT_FILE.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 def get_prompt_defaults() -> Dict[str, Dict[str, Dict[str, str]]]:
-    defaults, _ = _load_prompt_file()
+    defaults, _, _ = _load_prompt_file()
     return deepcopy(defaults)
 
 
@@ -317,7 +358,7 @@ def _safe_format(text: str, replacements: Optional[Dict[str, str]]) -> str:
 
 def resolve_prompt(module: str, locale: Optional[str] = None, replacements: Optional[Dict[str, str]] = None) -> Dict[str, str]:
     """Return the prompt texts for *module* using *locale* with fallbacks."""
-    defaults, prompts = _load_prompt_file()
+    defaults, prompts, _ = _load_prompt_file()
 
     def _lookup(source: Dict[str, Dict[str, Dict[str, str]]], loc: Optional[str]) -> Optional[Dict[str, str]]:
         if not loc:
@@ -357,3 +398,15 @@ def resolve_prompt(module: str, locale: Optional[str] = None, replacements: Opti
             result["free"] = result["user1"]
             return result
     return {"user1": "", "user2": "", "system": "", "free": ""}
+
+
+def resolve_llm_config(module: str) -> Dict[str, Any]:
+    _, _, llm_config = _load_prompt_file()
+    defaults = LLM_CONFIG_DEFAULTS.get(module, {})
+    cfg = llm_config.get(module, {}) if isinstance(llm_config, dict) else {}
+    return {
+        "model": cfg.get("model", defaults.get("model")),
+        "temperature": cfg.get("temperature", defaults.get("temperature")),
+        "top_p": cfg.get("top_p", defaults.get("top_p")),
+        "max_output_tokens": cfg.get("max_output_tokens", defaults.get("max_output_tokens")),
+    }

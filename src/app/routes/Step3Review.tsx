@@ -1753,7 +1753,9 @@ export const Step3Review: React.FC = () => {
                     entry.amountText ??
                     (entry.amount != null ? String(entry.amount).replace(".", ",") : "") ??
                     "";
+                  const hasAmount = Boolean(displayAmount.trim() || entry.amount != null);
                   const unitBadgeId =
+                    (!hasAmount ? ("no_amount" as BadgeId) : undefined) ??
                     (entry.unitSelection?.badgeId as BadgeId | undefined) ??
                     mapStatusToBadgeId(entry.unitStatus) ??
                     null;

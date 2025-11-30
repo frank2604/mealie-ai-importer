@@ -40,6 +40,9 @@ const resolvedLabelKey = (badgeId: BadgeId | null, fallbackStatus: string): stri
   if (badgeId && badgeId.startsWith("found")) {
     return "review.status.found";
   }
+  if (badgeId === "no_amount") {
+    return "review.badges.noAmount";
+  }
   if (badgeId === "new" || badgeId === "manual" || badgeId === "none" || badgeId === "error") {
     return `review.status.${badgeId}`;
   }

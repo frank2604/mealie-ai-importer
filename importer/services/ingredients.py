@@ -19,7 +19,7 @@ except ImportError:  # pragma: no cover - fallback when rapidfuzz is unavailable
 from ..config import IngredientConfig
 from ..exceptions import UserAbort
 from ..llm_parser import OpenAiClient
-from ..prompt_store import resolve_prompt
+from ..prompt_store import resolve_prompt, resolve_llm_config
 from ..prompt_logging import log_prompt_messages
 
 logger = logging.getLogger(__name__)
@@ -1228,6 +1228,13 @@ class IngredientService:
                 "category_lines": category_lines,
             }
             prompt_cfg = resolve_prompt("foodForms", self._prompt_locale, replacements=replacements)
+            logger.info(
+                "LLM config (foodForms): model=%s, temperature=%s, top_p=%s, max_output_tokens=%s",
+                resolve_llm_config("foodForms").get("model"),
+                resolve_llm_config("foodForms").get("temperature"),
+                resolve_llm_config("foodForms").get("top_p"),
+                resolve_llm_config("foodForms").get("max_output_tokens"),
+            )
             user_parts = [
                 part.strip()
                 for part in (prompt_cfg.get("user1", ""), prompt_cfg.get("user2", ""))
@@ -1255,7 +1262,8 @@ class IngredientService:
                     "categories": categories,
                 },
             )
-            response = self._llm_client.run_json(system_prompt, user_prompt)
+            llm_cfg = resolve_llm_config("foodForms")
+            response = self._llm_client.run_json(system_prompt, user_prompt, llm_config=llm_cfg)
             self._debug_write(
                 debug,
                 "foods_llm_response",
@@ -1332,6 +1340,13 @@ class IngredientService:
         try:
             replacements = {"unit_lines": "\n".join(batch)}
             prompt_cfg = resolve_prompt("unitForms", self._prompt_locale, replacements=replacements)
+            logger.info(
+                "LLM config (unitForms): model=%s, temperature=%s, top_p=%s, max_output_tokens=%s",
+                resolve_llm_config("unitForms").get("model"),
+                resolve_llm_config("unitForms").get("temperature"),
+                resolve_llm_config("unitForms").get("top_p"),
+                resolve_llm_config("unitForms").get("max_output_tokens"),
+            )
             user_parts = [
                 part.strip()
                 for part in (prompt_cfg.get("user1", ""), prompt_cfg.get("user2", ""))
@@ -1356,7 +1371,8 @@ class IngredientService:
                     "userPrompt": user_prompt,
                 },
             )
-            response = self._llm_client.run_json(system_prompt, user_prompt)
+            llm_cfg = resolve_llm_config("unitForms")
+            response = self._llm_client.run_json(system_prompt, user_prompt, llm_config=llm_cfg)
             self._debug_write(
                 debug,
                 "units_llm_response",

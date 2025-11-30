@@ -179,7 +179,8 @@
       "foundAi": "Gefunden: AI-Vorschlag",
       "new": "Neuer Eintrag erforderlich",
       "manual": "Manuell ausgewählt",
-      "none": "Keine Einheit vorhanden"
+      "none": "Keine Einheit vorhanden",
+      "noAmount": "Keine Menge"
     },
     "pdfViewer": {
       "title": "Original-PDF",
@@ -341,6 +342,11 @@
       "user1Label": "AUFGABE",
       "user2Label": "DATENÜBERGABE",
       "systemLabel": "TECHNISCHER RAHMEN",
+      "llmSettings": "LLM-Einstellungen",
+      "model": "Modell",
+      "temperature": "Temperatur",
+      "topP": "top_p",
+      "maxTokens": "max_output_tokens",
       "analysis": "Analyse",
       "analysisSystem": "Technischer Analyse-Teil",
       "ingredients": "Zutaten-Checker",

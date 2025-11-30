@@ -7,10 +7,11 @@ import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from ..context import PipelineContext, build_recipe_data_payload
+from ..context import PipelineContext, build_recipe_data_payload, auto_link_ingredients_to_instructions
 from ...config import LlmConfig
 from ...image_utils import prepare_image_asset, select_best_image
 from ...llm_parser import LlmParsingError, OpenAiClient, parse_with_llm
+from ...prompt_store import resolve_llm_config
 from ...models import Recipe, RecipeAsset
 
 try:  # pragma: no cover - optional vision dependency
@@ -43,8 +44,20 @@ class AiAnalyserModule:
     def run(self, context: PipelineContext) -> None:
         extraction = context.ensure_extraction()
         logger.info("Starting the AI analysis with %s characters of recipe text", len(extraction.text))
+        cfg = resolve_llm_config("analysis")
+        logger.info(
+            "LLM config (analysis): model=%s, temperature=%s, top_p=%s, max_output_tokens=%s",
+            cfg.get("model"),
+            cfg.get("temperature"),
+            cfg.get("top_p"),
+            cfg.get("max_output_tokens"),
+        )
 
         recipe = self._parse_recipe_with_retry(extraction, context)
+        if recipe is None:
+            logger.info("LLM-Zuordnung nicht verfügbar – verwende heuristische Zuordnung.")
+            recipe_payload = build_recipe_data_payload(context.ensure_recipe())
+            recipe = Recipe.parse_obj(auto_link_ingredients_to_instructions(recipe_payload))
 
         self._attach_image_assets(recipe, context)
 
@@ -102,6 +115,7 @@ class AiAnalyserModule:
                     servings_hint=None,
                     title_hint=None,
                     locale=locale,
+                    llm_config=resolve_llm_config("analysis"),
                 )
             except LlmParsingError as exc:
                 last_error = exc

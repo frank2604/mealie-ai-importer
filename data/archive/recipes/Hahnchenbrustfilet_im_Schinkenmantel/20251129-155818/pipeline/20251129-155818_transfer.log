@@ -1,0 +1,51 @@
+2025-11-30 09:51:48 [INFO] Pipeline: -----------------------------------------------
+2025-11-30 09:51:48 [INFO] Pipeline: Starting module Apply User Decisions
+2025-11-30 09:51:48 [INFO] Review: Applying user decisions for foods, units, and metadata
+2025-11-30 09:51:48 [INFO] Pipeline: Finished module Apply User Decisions
+2025-11-30 09:51:48 [INFO] Pipeline: -----------------------------------------------
+2025-11-30 09:51:48 [INFO] Pipeline: Starting module Create Foods
+2025-11-30 09:51:48 [INFO] Create Foods: Every ingredient already has a matching Mealie food
+2025-11-30 09:51:48 [INFO] Pipeline: Finished module Create Foods
+2025-11-30 09:51:48 [INFO] Pipeline: -----------------------------------------------
+2025-11-30 09:51:48 [INFO] Pipeline: Starting module Add Food IDs
+2025-11-30 09:51:48 [INFO] Add Food IDs: All ingredients already had their food IDs
+2025-11-30 09:51:48 [INFO] Pipeline: Finished module Add Food IDs
+2025-11-30 09:51:48 [INFO] Pipeline: -----------------------------------------------
+2025-11-30 09:51:48 [INFO] Pipeline: Starting module Create Units
+2025-11-30 09:51:48 [INFO] Create Units: Every ingredient already has a matching Mealie unit
+2025-11-30 09:51:48 [INFO] Pipeline: Finished module Create Units
+2025-11-30 09:51:48 [INFO] Pipeline: -----------------------------------------------
+2025-11-30 09:51:48 [INFO] Pipeline: Starting module Add Unit IDs
+2025-11-30 09:51:48 [INFO] Add Unit IDs: All ingredients already had their unit IDs
+2025-11-30 09:51:48 [INFO] Pipeline: Finished module Add Unit IDs
+2025-11-30 09:51:48 [INFO] Pipeline: -----------------------------------------------
+2025-11-30 09:51:48 [INFO] Pipeline: Starting module Create Recipe
+2025-11-30 09:51:48 [INFO] Create Recipe: Preparing the data that will be sent to Mealie
+2025-11-30 09:51:48 [INFO] Create Recipe: Sending recipe details to Mealie (POST /api/recipes) - payload file: pipeline/09_Mealie_POST_api_recipes_request.json
+2025-11-30 09:51:54 [INFO] httpx: HTTP Request: POST https://mealie.local/api/recipes "HTTP/1.1 201 Created"
+2025-11-30 09:51:54 [INFO] Create Recipe: Mealie accepted the recipe details (POST /api/recipes) - payload file: pipeline/10_Mealie_POST_api_recipes_response.json
+2025-11-30 09:51:54 [INFO] Create Recipe: Created a placeholder recipe in Mealie (hahnchenbrustfilet-im-schinkenmantel)
+2025-11-30 09:51:54 [INFO] Create Recipe: Checking if the recipe already exists in Mealie (GET /api/recipes/{slug}) - payload file: pipeline/11_Mealie_GET_api_recipes_slug_request_initial.json
+2025-11-30 09:51:59 [INFO] httpx: HTTP Request: GET https://mealie.local/api/recipes/hahnchenbrustfilet-im-schinkenmantel "HTTP/1.1 200 OK"
+2025-11-30 09:51:59 [INFO] Create Recipe: Mealie responded to the initial recipe lookup (GET /api/recipes/{slug}) - payload file: pipeline/12_Mealie_GET_api_recipes_slug_response_initial.json
+2025-11-30 09:51:59 [INFO] Create Recipe: Updating the recipe in Mealie (PUT /api/recipes/{slug}) - payload file: pipeline/13_Mealie_PUT_api_recipes_slug_request.json
+2025-11-30 09:52:04 [INFO] httpx: HTTP Request: PUT https://mealie.local/api/recipes/hahnchenbrustfilet-im-schinkenmantel "HTTP/1.1 200 OK"
+2025-11-30 09:52:04 [INFO] Create Recipe: Mealie confirmed the recipe update (PUT /api/recipes/{slug}) - payload file: pipeline/14_Mealie_PUT_api_recipes_slug_response.json
+2025-11-30 09:52:04 [INFO] Create Recipe: Confirming the saved recipe in Mealie (GET /api/recipes/{slug}) - payload file: pipeline/15_Mealie_GET_api_recipes_slug_request_after_put.json
+2025-11-30 09:52:09 [INFO] httpx: HTTP Request: GET https://mealie.local/api/recipes/hahnchenbrustfilet-im-schinkenmantel "HTTP/1.1 200 OK"
+2025-11-30 09:52:09 [INFO] Create Recipe: Mealie returned the saved recipe details (GET /api/recipes/{slug}) - payload file: pipeline/16_Mealie_GET_api_recipes_slug_response_after_put.json
+2025-11-30 09:52:09 [INFO] Create Recipe: Sending final recipe adjustments to Mealie (PATCH /api/recipes/{slug}) - payload file: pipeline/17_Mealie_PATCH_api_recipes_slug_request.json
+2025-11-30 09:52:14 [INFO] httpx: HTTP Request: PATCH https://mealie.local/api/recipes/hahnchenbrustfilet-im-schinkenmantel "HTTP/1.1 200 OK"
+2025-11-30 09:52:14 [INFO] Create Recipe: Mealie confirmed the final adjustments (PATCH /api/recipes/{slug}) - payload file: pipeline/18_Mealie_PATCH_api_recipes_slug_response.json
+2025-11-30 09:52:14 [INFO] Create Recipe: Updated the recipe details and added the preparation steps
+2025-11-30 09:52:14 [INFO] Create Recipe: Setting the feature image in Mealie (POST /api/recipes/{slug}/image) - payload file: pipeline/19_Mealie_POST_api_recipes_slug_image_request.json
+2025-11-30 09:52:21 [INFO] httpx: HTTP Request: PUT https://mealie.local/api/recipes/hahnchenbrustfilet-im-schinkenmantel/image "HTTP/1.1 200 OK"
+2025-11-30 09:52:21 [INFO] Create Recipe: Mealie confirmed the feature image (POST /api/recipes/{slug}/image) - payload file: pipeline/20_Mealie_POST_api_recipes_slug_image_response.json
+2025-11-30 09:52:21 [INFO] Create Recipe: Set the feature image for the recipe
+2025-11-30 09:52:21 [INFO] Create Recipe: Uploading recipe files to Mealie (POST /api/recipes/{slug}/assets) - payload file: pipeline/21_Mealie_POST_api_recipes_slug_assets_request.json
+2025-11-30 09:52:26 [INFO] httpx: HTTP Request: POST https://mealie.local/api/recipes/hahnchenbrustfilet-im-schinkenmantel/assets "HTTP/1.1 200 OK"
+2025-11-30 09:52:26 [INFO] Create Recipe: Mealie confirmed the file upload (POST /api/recipes/{slug}/assets) - payload file: pipeline/22_Mealie_POST_api_recipes_slug_assets_response.json
+2025-11-30 09:52:26 [INFO] Create Recipe: Uploaded the original PDF as an attachment
+2025-11-30 09:52:26 [INFO] Pipeline: Finished module Create Recipe
+2025-11-30 09:52:26 [INFO] Pipeline: -----------------------------------------------
+2025-11-30 09:52:26 [INFO] importer.server: Übertragung erfolgreich abgeschlossen

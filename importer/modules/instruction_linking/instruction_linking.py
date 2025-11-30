@@ -11,7 +11,7 @@ import httpx
 from ..context import PipelineContext, auto_link_ingredients_to_instructions, normalize_recipe_payload
 from ...config import LlmConfig
 from ...llm_parser import OpenAiClient
-from ...prompt_store import resolve_prompt
+from ...prompt_store import resolve_prompt, resolve_llm_config
 from ...prompt_logging import log_prompt_messages
 
 logger = logging.getLogger("Instruction Linking")
@@ -65,6 +65,14 @@ class InstructionLinkingModule:
             "steps": json.dumps(steps, ensure_ascii=False),
         }
         prompt_cfg = resolve_prompt("instructions", locale, replacements=replacements)
+        llm_cfg = resolve_llm_config("instructions")
+        logger.info(
+            "LLM config (instructions): model=%s, temperature=%s, top_p=%s, max_output_tokens=%s",
+            llm_cfg.get("model"),
+            llm_cfg.get("temperature"),
+            llm_cfg.get("top_p"),
+            llm_cfg.get("max_output_tokens"),
+        )
         system_prompt = prompt_cfg.get("system", "").strip()
         user_parts = [
             part.strip()
@@ -73,41 +81,26 @@ class InstructionLinkingModule:
         ]
         user_prompt = "\n\n".join(user_parts) if user_parts else "\n\n".join(replacements.values())
 
-        payload = {
-            "model": self._llm_config.model,
-            "response_format": {"type": "json_object"},
-            "messages": [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            "temperature": 0,
-        }
-
-        headers = {
-            "Authorization": f"Bearer {self._llm_config.api_key}",
-            "Content-Type": "application/json",
-        }
-        endpoint = f"{self._client.base_url}/chat/completions"
-
+        # Nutzen den zentralen OpenAiClient mit passender LLM-Config
         try:
-            log_prompt_messages("instructions", payload["messages"])
-            response = httpx.post(endpoint, headers=headers, json=payload, timeout=self._client.timeout)
-            response.raise_for_status()
-        except httpx.HTTPError as exc:
+            log_prompt_messages(
+                "instructions",
+                [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+            )
+            response = self._client.run_json(
+                system_prompt,
+                user_prompt,
+                llm_config=llm_cfg,
+            )
+            data = response
+        except Exception as exc:
             logger.warning("LLM-Anfrage für Schritt-Zuordnungen fehlgeschlagen: %s", exc)
             return None
 
-        data = response.json()
-        content = data.get("choices", [{}])[0].get("message", {}).get("content") or ""
-        if not content:
-            return None
-        try:
-            parsed = json.loads(content)
-        except json.JSONDecodeError:
-            logger.warning("LLM-Antwort konnte nicht gelesen werden: %s", content[:200])
-            return None
-
-        links = parsed.get("links")
+        links = data.get("links")
         if not isinstance(links, list):
             return None
 
@@ -122,7 +115,10 @@ class InstructionLinkingModule:
             mapping[str(step_id)] = [str(value) for value in ingredient_ids if isinstance(value, (str, int))]
 
         if not mapping:
+            logger.warning("LLM-Antwort enthielt keine gültigen Zuordnungen (links): %s", content[:200])
             return None
+
+        logger.info("LLM Schritt-Zuordnung: %s Schritte mit Zuordnungen", len(mapping))
 
         recipe = deepcopy(recipe_payload)
         matched_steps = 0

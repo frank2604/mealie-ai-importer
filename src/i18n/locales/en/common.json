@@ -192,7 +192,8 @@
       "foundAi": "Matched via AI suggestion",
       "new": "Requires creation",
       "manual": "Selected manually",
-      "none": "No unit provided"
+      "none": "No unit provided",
+      "noAmount": "No quantity provided"
     },
     "table": {
       "headers": {
@@ -342,6 +343,11 @@
       "user1Label": "TASK",
       "user2Label": "DATA PASS",
       "systemLabel": "TECHNICAL FRAME",
+      "llmSettings": "LLM settings",
+      "model": "Model",
+      "temperature": "Temperature",
+      "topP": "top_p",
+      "maxTokens": "max_output_tokens",
       "analysis": "Analysis",
       "analysisSystem": "Technical analysis instructions",
       "ingredients": "Ingredient Checker",

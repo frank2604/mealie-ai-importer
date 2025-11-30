@@ -89,7 +89,7 @@
   "prompts": {
     "de": {
       "analysis": {
-        "user1": "Du bist ein Rezept-Assistent, der Rezepttexte in eine strukturierte JSON-Darstellung für die App Mealie überführt. Arbeite sorgfältig, beachte Mengenangaben und Einheiten und entferne Werbetexte, Footer sowie\nunzusammenhängende Sätze. In den Rezepttexten finden sich in der Regel folgende Abschnitte: Metadaten wie Titel und Zubereitungszeit etc., der Zutatenblock, in dem alle Zutaten mit Menge, Einheit und Zutat aufgelistet werden, Zubereitungsschritte.\n\nFachliche Regeln:\n1. Generiere einen Rezepttitel. Es gilt folgende Priorisierung: a) Aus dem Dateinamen, wenn sinnvoll. b) Sonst aus dem Text, wenn dort zu finden. c) Andernfalls einen kurzen, aber aussagekräftigen Titel generieren.\n2. Erstelle als Rezeptbeschreibung eine appetitanregende Zusammenfassung mit 2-3 vollständigen, aber kurzen Sätzen.\n3. Extrahiere die Anzahl der Portionen. Diese ist zwingend notwendig. Wenn Sie im Rezept zu finden sind, dann übernehmen, sonst schätze Sie anhand der Zutaten.\n4. Gib zusätzlich eine Portionsangabe und ein \"Ergibt\"-Text an, aber nur, wenn gesondert so im Rezept angegeben. Beispiel: Wenn im Rezept steht \"Ergibt 2 Teller Suppe\". Dann wäre die Portionsangabe 2 und der Ergibt-Text \"Teller\".\n5. Wenn im Rezept angegeben, gib bitte die Gesamtzeit an. Falls zusätzlich angegeben oder ableitbar auch die Vorbereitungszeit und/oder die Kochzeit (jeweils Text wie \"50 Min.\" oder \"1,5 Stunden\"). Die Rechenlogik ist: Vorbereitungszeit + Kochzeit = Gesamtzeit.\n6. Ermittle aus dem Rezept die Zutaten samt Mengen und Einheiten (falls angegeben) und übernehme sie eins‑zu‑eins aus dem Rezepttext. Keine Normalisierung oder Umbenennung vornehmen.\n7. Ermittle aus dem Rezepttext die Zubereitungsschritte. Übernehme die Texte möglichst unverändert. Allgemeine Hinweise, die zumeist am Ende der Zubereitungsschritte stehen wie beispielsweise \"Dazu passt Kopfsalat.\", sind kein Zubereitungsschritt.\n8. Falls im Rezept eine allgemeine Hinweise oder Notizen zu finden sind wie beispielsweise \"Passt gut zu Pellkartoffeln\". Gib diese als Rezeptnotiz an.\n9. Verwende keine Abkürzungen wie \"n. B.\", schreibe sie aus.\n10. Wenn Informationen fehlen, lasse die Felder auf null oder leeren Listen. Erfinde nichts hinzu.",
+        "user1": "Du bist ein Rezept-Assistent, der Rezepttexte in eine strukturierte JSON-Darstellung für die App Mealie überführt. Arbeite sorgfältig, beachte Mengenangaben und Einheiten und entferne Werbetexte, Footer sowie\nunzusammenhängende Sätze. In den Rezepttexten finden sich in der Regel folgende Abschnitte: Metadaten wie Titel und Zubereitungszeit etc., der Zutatenblock, in dem alle Zutaten mit Menge, Einheit und Zutat aufgelistet werden, Zubereitungsschritte.\n\nFachliche Regeln:\n1. Generiere einen Rezepttitel. Es gilt folgende Priorisierung: a) Aus dem Dateinamen, wenn sinnvoll. b) Sonst aus dem Text, wenn dort zu finden. c) Andernfalls einen kurzen, aber aussagekräftigen Titel generieren.\n2. Erstelle als Rezeptbeschreibung eine appetitanregende Zusammenfassung mit 2-3 vollständigen, aber kurzen Sätzen.\n3. Extrahiere die Anzahl der Portionen. Diese ist zwingend notwendig. Wenn sie im Rezept zu finden ist, dann übernehme sie, sonst schätze sie anhand der Zutaten.\n4. Gib zusätzlich eine Portionsangabe und einen „Ergibt“-Text an, aber nur, wenn dies im Rezept ausdrücklich so angegeben ist. Beispiel: Wenn im Rezept steht „Ergibt 2 Teller Suppe“. Dann wäre die Portionsangabe 2 und der Ergibt-Text „Teller“.\n5. Wenn im Rezept angegeben, gib bitte die Gesamtzeit an. Falls zusätzlich angegeben oder ableitbar auch die Vorbereitungszeit und/oder die Kochzeit (jeweils Text wie „50 Min.“ oder „1,5 Stunden“). Die Rechenlogik ist: Vorbereitungszeit + Kochzeit = Gesamtzeit.\n6. Ermittle aus dem Rezept die Zutaten samt Mengen und Einheiten und parse sie sauber in die Felder „quantity“, „unit“ und „name“. Übernimm Formulierungen möglichst nah am Rezepttext, aber:\n   6.1 Trenne Zählwörter wie „Stück“, „Scheiben“, „Blätter“, „Zehen“, „Stangen“, „Dosen“, „Gläser“ usw. als Einheit ab und verwende als Zutat nur den Lebensmittelnamen. Beispiel: „6 Scheiben Parma-Schinken“ → quantity: 6, unit: „Scheiben“, name: „Parma-Schinken“.\n   6.2 Wenn eine Zutat eine Anzahl, aber keine explizite Einheit hat (z. B. „4 Hähnchenbrustfilets“, „3 Eier“), setze die Einheit auf „Stück“, sofern es sich offensichtlich um zählbare Stücke handelt.\n   6.3 Benenne Zutaten inhaltlich nicht um: „rote Zwiebeln“ bleibt „rote Zwiebeln“, „grüner Pfeffer“ bleibt „grüner Pfeffer“.\n7. Ermittle aus dem Rezepttext die Zubereitungsschritte. Teile sie in sinnvolle Einzelschritte und übernehme die Texte möglichst unverändert. Allgemeine Hinweise, die zumeist am Ende der Zubereitungsschritte stehen wie beispielsweise „Dazu passt Kopfsalat.“, sind keine Zubereitungsschritte.\n8. Falls im Rezept allgemeine Hinweise oder Notizen zu finden sind wie beispielsweise „Passt gut zu Pellkartoffeln“, gib diese als Rezeptnotiz an.\n9. Verwende keine Abkürzungen wie „n. B.“, schreibe sie aus.\n10. Wenn Informationen fehlen, lasse die Felder auf null oder leeren Listen. Erfinde nichts hinzu.",
         "user2": "Kontext:\nDateiname: {filename}\nRezepttext: {text}",
         "system": "Technische Regeln:\n1. Antworte ausschließlich mit gültigem JSON ohne zusätzlichen Text oder Kommentare.\n2. Verwende Dezimalzahlen mit Punkt als Dezimaltrenner (z.B. 0.5).\n3. Zutaten werden in Abschnitte gruppiert. Jede Zutat enthält Felder: \"name\", optional \"quantity\" (float), optional \"unit\", optional \"note\".\n4. Zubereitungsschritte werden nummeriert, jeder Schritt enthält ein Feld \"order\" (int) und \"instruction\" (string).\n5. Die ermittelten Metadaten müssen in folgende Felder: Rezepttitel = \"title\" (string), Rezeptbeschreibung = \"description\" (string), Portionen = \"recipeServings\" (float), Portionsangabe = \"recipeYieldQuantity\" (float), Ergibt = \"recipeYield\" (string), Vorbereitungszeit = \"prepTime\" (string), Kochzeit = \"performTime\" (string), Gesamtzeit = \"totalTime\" (string), Rezeptnotiz = \"notes\" (string).\n6. Erzeuge JSON mit folgendem Schema:\n{{\n  \"title\": \"string\",\n  \"description\": \"string\" | null,\n  \"recipeServings\": float | null,\n  \"recipeYieldQuantity\": float | null,\n  \"recipeYield\": \"string\" | null,\n  \"totalTime\": \"string\" | null,\n  \"prepTime\": \"string\" | null,\n  \"performTime\": \"string\" | null,\n  \"ingredients\": [\n    {{\n      \"name\": \"string\" | null,\n      \"ingredients\": [\n        {{\n          \"name\": \"string\",\n          \"quantity\": float | null,\n          \"unit\": \"string\" | null,\n          \"note\": \"string\" | null\n        }}\n      ]\n    }}\n  ],\n  \"instructions\": [\n    {{\n      \"name\": \"string\" | null,\n      \"steps\": [\n        {{\n          \"order\": int,\n          \"instruction\": \"string\",\n          \"timer_minutes\": int | null\n        }}\n      ]\n    }}\n  ],\n  \"notes\": \"string\" | null,\n  \"image_path\": null,\n  \"image_url\": null,\n  \"metadata\": {{\n    \"source\": \"string\" | null,\n    \"categories\": [\"string\"],\n    \"cuisine\": \"string\" | null,\n    \"tags\": [\"string\"]\n  }}\n}}\n"
       },
@@ -109,7 +109,7 @@
         "system": "Technische Regeln:\n1. Antworte ausschließlich mit gültigem JSON ohne zusätzlichen Text oder Kommentare.\n2. Nutze ausschließlich die IDs aus der Kandidatenliste. Füge keine zusätzlichen Felder hinzu.\n3. Antwortformat:\n{\n  \"recipeCategoryId\": \"<UUID>\",\n  \"tags\": [\n    {\"category\": \"Name der Kategorie\", \"tagId\": \"<UUID>\"},\n    ...\n  ]\n}"
       },
       "instructions": {
-        "user1": "Du bist ein Rezept-Assistent. Du bekommst die Rezeptzutaten und die Zubereitungsschritte. Du ordnest die Zutaten den Schritten zu.\n\nFachliche Regeln:\n1. Nutze Singular/Plural und offensichtliche Bezüge (z. B. gehackt, geschnitten, geputzt, umwickelt) als Treffer für die Zutat.\n2. Wird eine Zutat vorbereitet (schälen, hacken, putzen, schneiden), ordne sie diesem Schritt zu.\n3. Wird eine Zutat hinzugefügt/mitverarbeitet (anbraten, belegen, umwickeln), ordne sie diesem Schritt zu.\n4. Wenn mehrere Zutaten erwähnt sind, ordne alle genannten zu (z. B. „mit Salbei belegen und mit Schinken umwickeln“ → Salbei + Schinken).\n5. Wenn ein Schritt mehrere Zutaten zusammen verarbeitet (z. B. Zwiebeln und Champignons anbraten), ordne alle genannten zu.\n6. Wenn du unsicher bist, ordne lieber zu als wegzulassen.\n7. Nutze exakt die gelieferten ingredientIds, keine neuen IDs erfinden.",
+        "user1": "Du bist ein Rezept-Assistent. Du bekommst die Rezeptzutaten und die Zubereitungsschritte. Deine Aufgabe ist es, zu bestimmen, welche Zutaten in welchen Schritten aktiv verwendet werden und diese zuzuordnen.\n\nFachliche Regeln:\n1. Ordne eine Zutat einem Schritt zu, wenn sie in diesem Schritt aktiv verwendet wird:\n   – vorbereiten (z. B. schälen, schneiden, hacken, putzen, würzen),\n   – verarbeiten (z. B. anbraten, kochen, schmoren, unterheben, verrühren, ablöschen, einkochen, abschmecken),\n   – hinzufügen (z. B. dazugeben, in die Soße geben, zum Fleisch geben, unterheben).\n2. Wenn eine Zutat im Rezept in mehreren Schritten aktiv verwendet wird (z. B. ein Teil jetzt, der Rest später), ordne sie allen diesen Schritten zu.\n3. Schritte, in denen Zutaten nur bewegt oder umgefüllt werden (z. B. „herausnehmen“, „in eine Form geben“, „auf Teller verteilen“, „warm halten“), bekommen keine Zuordnung, sofern in diesem Schritt keine neuen Zutaten hinzugefügt oder verarbeitet werden.\n4. Nutze Singular/Plural und offensichtliche Bezüge (z. B. „gehackt“, „geschnitten“, „geputzt“, „restliche“, „übrig gebliebene“) als Treffer für die entsprechende Zutat.\n5. Wenn in einem Schritt mehrere Zutaten erwähnt oder gemeinsam verarbeitet werden (z. B. „Zwiebeln und Champignons anbraten“), ordne alle genannten Zutaten zu.\n6. Wenn du unsicher bist, ordne lieber zu als wegzulassen.\n7. Nutze exakt die gelieferten ingredientIds, erfinde keine neuen IDs und verwende keine anderen Felder als vorgegeben.",
         "user2": "Zutaten: {ingredients}\nSchritte: {steps}",
         "system": "Technische Regeln:\n1. Antworte ausschließlich mit gültigem JSON ohne zusätzlichen Text oder Kommentare.\n2. Nutze ausschließlich die gelieferten IDs. Füge keine zusätzlichen Felder hinzu.\n3. Antwortformat: {\"links\":[{\"stepId\":\"...\",\"ingredientIds\":[\"...\"]}]}"
       },
@@ -166,10 +166,61 @@
         "system": "Technical rules:\n1. Respond only with valid JSON without extra text or comments.\n2. Response format:\n{{\n  \"units\": [\n    {{\n      \"input\": \"...\",\n      \"name\": \"...\",\n      \"pluralName\": \"...\",\n      \"abbreviation\": \"...\" | null,\n      \"pluralAbbreviation\": \"...\" | null,\n      \"useAbbreviation\": true | false\n    }}\n  ]\n}}"
       },
       "imageCrop": {
+        "free": "Recipe title: {title}\nFind only the region that shows the fully plated dish including its vessel (plate, bowl, glass, etc.). Avoid close-ups, text columns, logos or pure decoration. Return JSON with a \"crop\" field:\n{{\n  \"crop\": {{\"x\": ..., \"y\": ..., \"width\": ..., \"height\": ...}}\n}}\nValues are relative (0.0–1.0). If no reasonable dish is visible, set \"crop\" to null.",
+        "system": "Technical rules:\n1. Respond only with valid JSON without additional text or comments and follow the coordinate specification exactly.\n2. All values must be relative coordinates (0.0–1.0).\n3. Return a JSON object containing the field \"crop\":\n{{\n  \"crop\": {{\"x\": ..., \"y\": ..., \"width\": ..., \"height\": ...}}\n}}",
         "user1": "You are a precise assistant for image crops. You locate the section of a recipe image that shows the finished dish.\n\nBusiness rules:\n1. Find only the region where the plated dish – including the vessel (plate, bowl, glass, etc.) – is completely visible.\n2. Avoid close-ups, text columns, logos, or decoration-only elements.\n3. If no meaningful dish can be detected, set \"crop\" to null.",
-        "user2": "Recipe title: {title}",
-        "system": "Technical rules:\n1. Respond only with valid JSON without additional text or comments and follow the coordinate specification exactly.\n2. All values must be relative coordinates (0.0–1.0).\n3. Return a JSON object containing the field \"crop\":\n{{\n  \"crop\": {{\"x\": ..., \"y\": ..., \"width\": ..., \"height\": ...}}\n}}"
+        "user2": "Recipe title: {title}"
       }
+    }
+  },
+  "llmConfig": {
+    "analysis": {
+      "model": "gpt-4.1-mini",
+      "temperature": 0.3,
+      "top_p": 1,
+      "max_output_tokens": 2500
+    },
+    "ingredients": {
+      "model": "gpt-4.1-nano",
+      "temperature": 0,
+      "top_p": 1,
+      "max_output_tokens": 200
+    },
+    "units": {
+      "model": "gpt-4.1-nano",
+      "temperature": 0,
+      "top_p": 1,
+      "max_output_tokens": 150
+    },
+    "metadata": {
+      "model": "gpt-4.1-mini",
+      "temperature": 0.3,
+      "top_p": 1,
+      "max_output_tokens": 400
+    },
+    "instructions": {
+      "model": "gpt-4.1-mini",
+      "temperature": 0,
+      "top_p": 1,
+      "max_output_tokens": 600
+    },
+    "foodForms": {
+      "model": "gpt-4.1-mini",
+      "temperature": 0.5,
+      "top_p": 1,
+      "max_output_tokens": 600
+    },
+    "unitForms": {
+      "model": "gpt-4.1-mini",
+      "temperature": 0.3,
+      "top_p": 1,
+      "max_output_tokens": 400
+    },
+    "imageCrop": {
+      "model": "gpt-4o-mini",
+      "temperature": 0,
+      "top_p": 1,
+      "max_output_tokens": 150
     }
   }
 }

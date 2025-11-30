@@ -1,0 +1,76 @@
+2025-11-29 16:58:18 [INFO] Pipeline: -----------------------------------------------
+2025-11-29 16:58:18 [INFO] Pipeline: Starting module Refresh Mealie caches
+2025-11-29 16:58:18 [INFO] Refresh Caches: Refreshing the ingredient and unit lists from Mealie
+2025-11-29 16:58:23 [INFO] httpx: HTTP Request: GET https://mealie.local/api/units?page=1&perPage=200 "HTTP/1.1 200 OK"
+2025-11-29 16:58:23 [INFO] httpx: HTTP Request: GET https://mealie.local/api/foods?page=1&perPage=200 "HTTP/1.1 200 OK"
+2025-11-29 16:58:23 [INFO] httpx: HTTP Request: GET https://mealie.local/api/groups/labels?page=1&perPage=200 "HTTP/1.1 200 OK"
+2025-11-29 16:58:23 [INFO] httpx: HTTP Request: GET https://mealie.local/api/organizers/categories?page=1&perPage=200 "HTTP/1.1 200 OK"
+2025-11-29 16:58:23 [INFO] httpx: HTTP Request: GET https://mealie.local/api/organizers/tags?page=1&perPage=200 "HTTP/1.1 200 OK"
+2025-11-29 16:58:23 [INFO] Refresh Caches: Finished refreshing the Mealie lists
+2025-11-29 16:58:23 [INFO] Pipeline: Finished module Refresh Mealie caches
+2025-11-29 16:58:23 [INFO] Pipeline: -----------------------------------------------
+2025-11-29 16:58:23 [INFO] Pipeline: Starting module Input
+2025-11-29 16:58:23 [INFO] PDF Input: Reading the recipe PDF from data/pipeline/01_Hahnchenbrustfilet_im_Schinkenmantel.pdf
+2025-11-29 16:58:23 [INFO] Pipeline: Finished module Input
+2025-11-29 16:58:23 [INFO] Pipeline: -----------------------------------------------
+2025-11-29 16:58:23 [INFO] Pipeline: Starting module AI Analyser
+2025-11-29 16:58:23 [INFO] AI Analyser: Starting the AI analysis with 987 characters of recipe text
+2025-11-29 16:58:23 [INFO] AI Analyser: LLM config (analysis): model=gpt-4.1-mini, temperature=0.3, top_p=1, max_output_tokens=2500
+2025-11-29 16:58:39 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-29 16:58:39 [INFO] importer.vision_cropper: LLM config (imageCrop): model=gpt-4o-mini, temperature=0, top_p=1, max_output_tokens=150
+2025-11-29 16:58:40 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-29 16:58:40 [INFO] importer.vision_cropper: Vision-Anfrage Rate-Limit (429) – Retry 1/3 in 2s
+2025-11-29 16:58:44 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-29 16:58:44 [INFO] importer.vision_cropper: Vision-Anfrage Rate-Limit (429) – Retry 2/3 in 4s
+2025-11-29 16:58:50 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-11-29 16:58:50 [WARNING] importer.vision_cropper: Vision-Anfrage fehlgeschlagen: Client error '429 Too Many Requests' for url 'https://api.openai.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+2025-11-29 16:58:50 [INFO] AI Analyser: Stored the selected image at data/pipeline/02_RecipeImage.jpg
+2025-11-29 16:58:50 [INFO] AI Analyser: Saved the raw recipe snapshot to data/pipeline/04_RecipeRawData.json
+2025-11-29 16:58:50 [INFO] AI Analyser: Saved RecipeData.json to data/pipeline/05_RecipeData.json
+2025-11-29 16:58:50 [INFO] Pipeline: Finished module AI Analyser
+2025-11-29 16:58:50 [INFO] Pipeline: -----------------------------------------------
+2025-11-29 16:58:50 [INFO] Pipeline: Starting module Instruction Linking
+2025-11-29 16:58:50 [INFO] Instruction Linking: LLM config (instructions): model=gpt-4.1-mini, temperature=0, top_p=1, max_output_tokens=600
+2025-11-29 16:58:53 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-29 16:58:53 [INFO] Instruction Linking: LLM Schritt-Zuordnung: 7 Schritte mit Zuordnungen
+2025-11-29 16:58:53 [INFO] Instruction Linking: LLM ingredient linking: 12 Zutaten, 8 Schritte, 7 Schritte mit Zuordnung
+2025-11-29 16:58:53 [INFO] Pipeline: Finished module Instruction Linking
+2025-11-29 16:58:53 [INFO] Pipeline: -----------------------------------------------
+2025-11-29 16:58:53 [INFO] Pipeline: Starting module Food Checker
+2025-11-29 16:58:53 [INFO] Food Checker: Trying to match 12 ingredients to existing foods in Mealie [Hähnchenbrustfilets, Parma-Schinken, Champignons, rote Zwiebeln, trockener Wermut, süße Sahne, Mehl, heller Soßenbinder, Fett zum Braten, Salbeiblätter, Salz, Pfeffer]
+2025-11-29 16:58:53 [INFO] Food Checker: Matched 10 ingredients exact by words: [Hähnchenbrustfilets, Parma-Schinken, Champignons, rote Zwiebeln, süße Sahne, Mehl, heller Soßenbinder, Salbeiblätter, Salz, Pfeffer]
+2025-11-29 16:58:53 [INFO] Food Checker: Try matching rest of the ingredients [trockener Wermut, Fett zum Braten] with AI
+2025-11-29 16:58:53 [INFO] Food Checker: Ask AI to find [trockener Wermut] in existing foods in Mealie
+2025-11-29 16:58:53 [INFO] Food Checker: LLM config (ingredients): model=gpt-4.1-nano, temperature=0, top_p=1, max_output_tokens=200
+2025-11-29 16:58:55 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-29 16:58:56 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-29 16:58:56 [INFO] Food Checker: AI suggests [Wermut] from existing foods in Mealie
+2025-11-29 16:58:56 [INFO] Food Checker: Ask AI to find [Fett zum Braten] in existing foods in Mealie
+2025-11-29 16:58:56 [INFO] Food Checker: LLM config (ingredients): model=gpt-4.1-nano, temperature=0, top_p=1, max_output_tokens=200
+2025-11-29 16:58:57 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-29 16:58:58 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-29 16:58:58 [INFO] Food Checker: AI suggests [Fett] from existing foods in Mealie
+2025-11-29 16:58:58 [INFO] Food Checker: Matched 12 ingredients so far; 0 still need attention
+2025-11-29 16:58:58 [INFO] Food Checker: Matched 2 ingredients with AI: [trockener Wermut, Fett zum Braten]
+2025-11-29 16:58:58 [INFO] Food Checker: Every ingredient now has a Mealie food match
+2025-11-29 16:58:58 [INFO] Food Checker: Saved the foods review to data/pipeline/06_FoodsReview.json
+2025-11-29 16:58:58 [INFO] Pipeline: Finished module Food Checker
+2025-11-29 16:58:58 [INFO] Pipeline: -----------------------------------------------
+2025-11-29 16:58:58 [INFO] Pipeline: Starting module Unit Checker
+2025-11-29 16:58:58 [INFO] Unit Checker: Trying to match 5 unique units (from 9 ingredient entries) to existing Mealie units [Stück, Scheiben, g, ml, EL]
+2025-11-29 16:58:58 [INFO] Unit Checker: Matched 9 units exact by words: [EL, EL, g, ml, ml, Scheiben, Stück, Stück, Stück]
+2025-11-29 16:58:58 [INFO] Unit Checker: Matched 9 units so far; 0 still need attention
+2025-11-29 16:58:58 [INFO] Unit Checker: Every unit now has a Mealie match
+2025-11-29 16:58:58 [INFO] Unit Checker: Saved the units review to data/pipeline/07_UnitsReview.json
+2025-11-29 16:58:58 [INFO] Pipeline: Finished module Unit Checker
+2025-11-29 16:58:58 [INFO] Pipeline: -----------------------------------------------
+2025-11-29 16:58:58 [INFO] Pipeline: Starting module Assign Metadata
+2025-11-29 16:58:58 [INFO] Assign Metadata: LLM config (metadata): model=gpt-4.1-mini, temperature=0.3, top_p=1, max_output_tokens=400
+2025-11-29 16:59:03 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-29 16:59:08 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-29 16:59:08 [INFO] Assign Metadata: Saved the metadata review to data/pipeline/08_MetadataReview.json
+2025-11-29 16:59:25 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-29 16:59:38 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-29 16:59:38 [INFO] Pipeline: Finished module Assign Metadata
+2025-11-29 16:59:38 [INFO] Pipeline: -----------------------------------------------

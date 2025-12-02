@@ -94,7 +94,7 @@
         "system": "Technische Regeln:\n1. Antworte ausschließlich mit gültigem JSON ohne zusätzlichen Text oder Kommentare.\n2. Verwende Dezimalzahlen mit Punkt als Dezimaltrenner (z.B. 0.5).\n3. Zutaten werden in Abschnitte gruppiert. Jede Zutat enthält Felder: \"name\", optional \"quantity\" (float), optional \"unit\", optional \"note\".\n4. Zubereitungsschritte werden nummeriert, jeder Schritt enthält ein Feld \"order\" (int) und \"instruction\" (string).\n5. Die ermittelten Metadaten müssen in folgende Felder: Rezepttitel = \"title\" (string), Rezeptbeschreibung = \"description\" (string), Portionen = \"recipeServings\" (float), Portionsangabe = \"recipeYieldQuantity\" (float), Ergibt = \"recipeYield\" (string), Vorbereitungszeit = \"prepTime\" (string), Kochzeit = \"performTime\" (string), Gesamtzeit = \"totalTime\" (string), Rezeptnotiz = \"notes\" (string).\n6. Erzeuge JSON mit folgendem Schema:\n{{\n  \"title\": \"string\",\n  \"description\": \"string\" | null,\n  \"recipeServings\": float | null,\n  \"recipeYieldQuantity\": float | null,\n  \"recipeYield\": \"string\" | null,\n  \"totalTime\": \"string\" | null,\n  \"prepTime\": \"string\" | null,\n  \"performTime\": \"string\" | null,\n  \"ingredients\": [\n    {{\n      \"name\": \"string\" | null,\n      \"ingredients\": [\n        {{\n          \"name\": \"string\",\n          \"quantity\": float | null,\n          \"unit\": \"string\" | null,\n          \"note\": \"string\" | null\n        }}\n      ]\n    }}\n  ],\n  \"instructions\": [\n    {{\n      \"name\": \"string\" | null,\n      \"steps\": [\n        {{\n          \"order\": int,\n          \"instruction\": \"string\",\n          \"timer_minutes\": int | null\n        }}\n      ]\n    }}\n  ],\n  \"notes\": \"string\" | null,\n  \"image_path\": null,\n  \"image_url\": null,\n  \"metadata\": {{\n    \"source\": \"string\" | null,\n    \"categories\": [\"string\"],\n    \"cuisine\": \"string\" | null,\n    \"tags\": [\"string\"]\n  }}\n}}\n"
       },
       "ingredients": {
-        "user1": "Du bist ein Rezept-Assistent. Du vergleichst Zutaten aus einem Rezept mit den vorhandenen Lebensmitteln aus der Rezept-Datenbank Mealie.\n\nFachliche Regeln:\n1. Wähle nur dann eine Zutat, wenn sie inhaltlich exakt passt – nicht nur teilweise.\n2. Ignoriere Farb-, Herkunfts- oder Sortenunterschiede nicht (\"rote Zwiebeln\" ist nicht dasselbe wie \"Zwiebeln\", \"grüner Pfeffer\" ist nicht dasselbe wie \"Pfeffer\").\n3. Wähle keine allgemeinere Kategorie, wenn die Zutat spezifischer ist.\n4. Wähle keine eng verwandten, aber unterschiedlichen Zutaten (z. B. \"Butter\" ≠ \"Margarine\").\n5. Wähle nur dann eine Zutat, wenn du dir sicher bist, dass es exakt dasselbe meint.\n6. Es kann nur einen Treffer geben, keine Mehrfachauswahl.\n7. Wenn du unsicher bist oder mehrere ähnliche Treffer möglich sind, gib keinen Treffer zurück.",
+        "user1": "Du bist ein Rezept-Assistent. Du vergleichst Zutaten aus einem Rezept mit den vorhandenen Lebensmitteln aus der Rezept-Datenbank Mealie.\n\nFachliche Regeln:\n1. Wähle nur dann eine Zutat, wenn sie inhaltlich exakt passt – nicht nur teilweise.\n2. Wenn sich Rezeptzutaten und Kandidaten nur durch die Stellung von Adjektiven unterscheiden, behandle sie als gleichwertig. Insbesondere gilt: Schreibweisen mit Klammern wie „Sahne (süß)“, „Wermut (trocken)“, „Senf (süß)“ entsprechen den Varianten „süße Sahne“, „trockener Wermut“, „Süßer Senf“ im Rezept. Diese Fälle gelten als guter Treffer und sollen zugeordnet werden.\n3. Ignoriere Farb-, Herkunfts- oder Sortenunterschiede nicht (\"rote Zwiebeln\" ist nicht dasselbe wie \"Zwiebeln\", \"grüner Pfeffer\" ist nicht dasselbe wie \"Pfeffer\").\n4. Wähle keine allgemeinere Kategorie, wenn die Zutat spezifischer ist.\n5. Wähle keine eng verwandten, aber unterschiedlichen Zutaten (z. B. \"Butter\" ≠ \"Margarine\").\n6. Wähle nur dann eine Zutat, wenn du dir sicher bist, dass es exakt dasselbe meint.\n7. Es kann nur einen Treffer geben, keine Mehrfachauswahl.\n8. Wenn du unsicher bist oder mehrere ähnliche Treffer möglich sind, gib keinen Treffer zurück.",
         "user2": "Zutat: {ingredient}\nKandidaten: {candidates}",
         "system": "Technische Regeln:\n1. Antworte ausschließlich mit gültigem JSON ohne zusätzlichen Text oder Kommentare.\n2. Nutze ausschließlich die IDs aus der Kandidatenliste. Füge keine zusätzlichen Felder hinzu.\n3. Antwortformat: {\"match\": <ID oder null>, \"reason\": \"...\"}\n"
       },
@@ -114,9 +114,9 @@
         "system": "Technische Regeln:\n1. Antworte ausschließlich mit gültigem JSON ohne zusätzlichen Text oder Kommentare.\n2. Nutze ausschließlich die gelieferten IDs. Füge keine zusätzlichen Felder hinzu.\n3. Antwortformat: {\"links\":[{\"stepId\":\"...\",\"ingredientIds\":[\"...\"]}]}"
       },
       "foodForms": {
-        "user1": "Du bist ein Rezept-Assistent. Du erzeugst für die Neuanlage fehlender Zutaten in der Rezept-Datenbank Mealie deren Singular, Plural, Zählbarkeit und Aliasse. Außerdem ordnest Du sie einer vorgegebenen Lebensmittelkategorie zu.\n\nAufgabe: Für jede Zutat bestimmst du Singular, Plural, Zählbarkeit, nur strikte Aliasse sowie eine passende Lebensmittelkategorie aus der bereitgestellten Liste.\n\nFachliche Regeln:\n1. Zählbar vs. unzählbar:\n1.1 Zählbar → unterschiedliche Formen (z. B. „1 Champignon“, „2 Champignons“) → Vergib den korrekten Singular und Plural.\n1.2 Unzählbar (Massenbegriffe wie Salz, Mehl, Sahne) → Form bleibt gleich.\n2. Aliasse:\n2.1 Strikte Aliasse nur für eindeutige Synonyme ohne Bedeutungswechsel; keine Unterarten, Marken oder Zubereitungszustände.\n2.2 Maximal 5 Aliasse.\n2.3 Beispiel: \"Sahne\" - Aliasse: \"Schlagsahne\", \"Schlagrahm\",  \"Rahm\". Aber nicht: \"Saure Sahne\".\n2.4 Englische Übersetzungen gelten nicht als Aliasse, es sei denn sie wären eingedeutscht oder im Deutschen gängige Begriffe.\n3. Lebensmittelkategorien:\n3.1 Wähle genau eine Rezeptkategorie aus der Liste.\n3.2 Wenn du unsicher bist, entscheide dich für die bestpassende oder allgemeinste Option.\n3.3 Null ist nicht erlaubt.",
+        "user1": "Du bist ein Rezept-Assistent. Du erzeugst für die Neuanlage fehlender Zutaten in der Rezept-Datenbank Mealie deren Singular, Plural, Zählbarkeit und Aliasse. Außerdem ordnest Du sie einer vorgegebenen Lebensmittelkategorie zu.\n\nAufgabe: Für jede Zutat bestimmst du Singular, Plural, Zählbarkeit, nur strikte Aliasse sowie eine passende Lebensmittelkategorie aus der bereitgestellten Liste.\n\nFachliche Regeln:\n1. Zählbar vs. unzählbar:\n1.1 Zählbar → unterschiedliche Formen (z. B. „1 Champignon“, „2 Champignons“) → Vergib den korrekten Singular und Plural.\n1.2 Unzählbar (Massenbegriffe wie Salz, Mehl, Zucker, Reis, Sahne) → Form bleibt gleich: Verwende **exakt dieselbe Schreibweise** für Singular und Plural und setze `\"countable\": false`.\n1.3 Flüssige Zutaten wie Wasser, Milch, Öl, Essig, Wein, Wermut, Brühe, Fond, Sojasauce usw. gelten immer als unzählbar, auch wenn ein Adjektiv davor steht (z. B. „trockener Wermut“, „süßer Wein“). → Verwende **genau dieselbe Form** für Singular und Plural (z. B. `nameSingular = \"trockener Wermut\"`, `namePlural = \"trockener Wermut\"`, `\"countable\": false`). Erfinde **keine** Kunst-Pluralformen wie „Wermuts“.\n1.4 Wenn eine Zutat durch ein Adjektiv näher bestimmt ist (z. B. „trockener Wermut“, „süßer Senf“, „frischer Lachs“), dann schreibe das Adjektiv in Klammern hinter den eigentlichen Lebensmittelkern. Beispiel: „trockener Wermut“ → „Wermut (trocken)“, „geräucherter Lachs“ → „Lachs (geräuchert)“. Das verändert nicht den Bedeutungsgehalt, sondern macht den Namen einheitlich. Zutat niemals inhaltlich umbenennen – nur die Wortreihenfolge anpassen.\n2. Aliasse:\n2.1 Strikte Aliasse nur für eindeutige Synonyme ohne Bedeutungswechsel; keine Unterarten, Marken oder Zubereitungszustände.\n2.2 Maximal 5 Aliasse.\n2.3 Beispiel: „Sahne“ – Aliasse: „Schlagsahne“, „Schlagrahm“, „Rahm“. Aber nicht: „Saure Sahne“.\n2.4 Englische Übersetzungen gelten nicht als Aliasse, es sei denn, sie sind eingedeutscht oder im Deutschen gängige Begriffe.\n3. Lebensmittelkategorien:\n3.1 Wähle für jede Zutat genau eine Kategorie aus der Liste der verfügbaren Kategorien.\n3.2 Wenn du unsicher bist, entscheide dich für die bestpassende oder allgemeinste Option. Als letzte Ausweichmöglichkeit verwende die Kategorie „Sonstiges 🗂“ (ID: 1df1c72a-fb63-4be7-a4e3-a0e01a41ea1a).\n3.3 Null ist nicht erlaubt: Gib immer sowohl \"categoryId\" als auch \"categoryName\" an. Verwende niemals null, leere Strings oder Bindestriche.\n3.4 Die Emojis in den Kategorienamen sind nur Dekoration und gehören trotzdem zum \"categoryName\", z. B. „Obst & Gemüse 🍎“.\n3.5 Beispiele zur Orientierung:\n   – Getrocknete Früchte wie getrocknete Pflaumen → „Obst & Gemüse 🍎“.\n   – Stärkeprodukte wie Speisestärke, Maisstärke, Kartoffelstärke → „Backzutaten 🧁“.\n   – Getränke und Alkoholika wie Reiswein → „Alkohol 🍻“ (nicht „Getränke 🧃“).\n   – Pilze aller Art (frisch oder getrocknet) wie Morcheln, Tongu-Pilze → „Obst & Gemüse 🍎“.\n   – Nüsse, Kerne und Samen wie Cashewkerne, Lotussamen → „Obst & Gemüse 🍎“.\n   – Knollen und Wassergemüse wie Wasserkastanien → „Obst & Gemüse 🍎“.\n   – Tiefgekühlte Zutaten wie TK-Erbsen → „Tiefkühlware ❄️“.\n   – Fleisch und Geflügel wie „junge Ente“ → „Fleisch 🥩“.\n   – Würzmischungen und Gewürzpulver wie Fünfgewürzpulver → „Gewürze 🌿“.\n   – Fertige Würzsaucen wie Hoisinsauce → „Würzmittel, Brühen & Soßen🧂“.\n",
         "user2": "Zutaten, die verarbeitet werden müssen: {ingredient_lines}\nVerfügbaren Kategorien (ID – Name): {category_lines}",
-        "system": "Technische Regeln:\n1. Antworte ausschließlich mit gültigem JSON ohne zusätzlichen Text oder Kommentare.\n2. Kategoriewahl: Verwende ausschließlich eine der vorgegebenen Kategorien, gib ID und Namen zurück, sonst null. Füge keine zusätzlichen Felder hinzu.\n3. Antwortformat:\n{{\n  \"ingredients\": [\n    {{\n      \"input\": \"...\",\n      \"nameSingular\": \"...\",\n      \"namePlural\": \"...\",\n      \"countable\": true,\n      \"aliasesStrict\": [\"...\", \"...\"],\n      \"categoryId\": \"...\",\n      \"categoryName\": \"...\"\n    }}\n  ]\n}}"
+        "system": "Technische Regeln:\n1. Antworte ausschließlich mit gültigem JSON ohne zusätzlichen Text oder Kommentare.\n2. Kategoriewahl:\n   - Für jede Zutat MUSST du genau eine der vorgegebenen Kategorien wählen.\n   - Verwende ausschließlich die gelieferten Kategorien (ID und Name).\n   - \"categoryId\" und \"categoryName\" dürfen niemals null, leer oder fehlen.\n   - Wenn du unsicher bist, verwende die Kategorie „Sonstiges 🗂“ mit der zugehörigen ID.\n   - \"categoryId\" muss exakt einer der angegebenen IDs entsprechen.\n   - \"categoryName\" muss exakt dem zugehörigen Kategorienamen aus der Liste entsprechen (inklusive Emoji).\n3. Antwortformat:\n{\n  \"ingredients\": [\n    {\n      \"input\": \"...\",\n      \"nameSingular\": \"...\",\n      \"namePlural\": \"...\",\n      \"countable\": true,\n      \"aliasesStrict\": [\"...\", \"...\"],\n      \"categoryId\": \"...\",\n      \"categoryName\": \"...\"\n    }\n  ]\n}"
       },
       "unitForms": {
         "user1": "Du bist ein Rezept-Assistent. Du erzeugst für die Neuanlage fehlender Zutaten-Einheiten in der Rezept-Datenbank Mealie deren Singular und Plural sowie optional Abkürzungen für Singular/Plural.\n\nFachliche Regeln:\n1. Der Name (Singular) ist Pflicht.\n2. Der Plural ist ebenfalls Pflicht. Verwende eine abweichende Form nur, wenn sie in der Praxis vorkommt. Sonst nutze den Singular.\n3. Liefere ausschließlich kochübliche Einheiten.\n4. Abkürzungen:\n4.1 Abkürzungen nur bei gebräuchlicher Kurzform. Wenn es eine Abkürzung für den Singular gibt, aber keine für den Plural, dann lasse die Abkürzung für den Plural leer.\n4.2 Abkürzungen in der kochüblichen Schreibweise zurückgeben (\"TL\", \"EL\", \"ml\").\n4.3 Setze \"Abkürzung verwenden\" nur dann auf true, wenn es sich um eine gebräuchliche Abkürzung handelt.\nBeispiele:\nSingular: \"Blatt\", Plural: \"Blätter\", Abkürzung: \"Bl\", Abkürzung Plural: null, Abkürzung verwenden: false\nSingular: \"Milliliter\", Plural: \"Milliliter\", Abkürzung: \"ml\", Abkürzung Plural: null, Abkürzung verwenden: true\n",
@@ -178,25 +178,25 @@
       "model": "gpt-4.1-mini",
       "temperature": 0.3,
       "top_p": 1,
-      "max_output_tokens": 2500
+      "max_output_tokens": 5000
     },
     "ingredients": {
       "model": "gpt-4.1-nano",
       "temperature": 0,
       "top_p": 1,
-      "max_output_tokens": 200
+      "max_output_tokens": 2500
     },
     "units": {
       "model": "gpt-4.1-nano",
       "temperature": 0,
       "top_p": 1,
-      "max_output_tokens": 150
+      "max_output_tokens": 1000
     },
     "metadata": {
       "model": "gpt-4.1-mini",
       "temperature": 0.3,
       "top_p": 1,
-      "max_output_tokens": 400
+      "max_output_tokens": 5000
     },
     "instructions": {
       "model": "gpt-4.1-mini",
@@ -208,17 +208,17 @@
       "model": "gpt-4.1-mini",
       "temperature": 0.5,
       "top_p": 1,
-      "max_output_tokens": 600
+      "max_output_tokens": 5000
     },
     "unitForms": {
       "model": "gpt-4.1-mini",
       "temperature": 0.3,
       "top_p": 1,
-      "max_output_tokens": 400
+      "max_output_tokens": 5000
     },
     "imageCrop": {
-      "model": "gpt-4o-mini",
-      "temperature": 0,
+      "model": "gpt-4.1-mini",
+      "temperature": 1,
       "top_p": 1,
       "max_output_tokens": 150
     }

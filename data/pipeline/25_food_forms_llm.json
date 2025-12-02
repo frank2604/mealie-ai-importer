@@ -1,0 +1,15 @@
+{
+  "ingredient": "Speisestärke",
+  "forms": {
+    "singular": "Speisestärke",
+    "plural": "Speisestärke",
+    "countable": false,
+    "aliases": [
+      "Stärke",
+      "Maisstärke",
+      "Kartoffelstärke"
+    ],
+    "labelId": "5c0671c9-16ee-40fb-b721-0401e9b2267f",
+    "labelName": "Backzutaten 🧁"
+  }
+}

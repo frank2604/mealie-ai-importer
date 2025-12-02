@@ -1,0 +1,15 @@
+{
+  "ingredient": "Hoisinsauce",
+  "forms": {
+    "singular": "Hoisinsauce",
+    "plural": "Hoisinsauce",
+    "countable": false,
+    "aliases": [
+      "Hoisin Sauce",
+      "Hoisin-Soße",
+      "Hoisin Soße"
+    ],
+    "labelId": "36be9b8c-4dd6-4f59-abc0-4715a742566d",
+    "labelName": "Würzmittel, Brühen & Soßen🧂"
+  }
+}

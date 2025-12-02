@@ -12,6 +12,7 @@ from ...config import LlmConfig
 from ...image_utils import prepare_image_asset, select_best_image
 from ...llm_parser import LlmParsingError, OpenAiClient, parse_with_llm
 from ...prompt_store import resolve_llm_config
+from ...llm_utils import format_llm_log
 from ...models import Recipe, RecipeAsset
 
 try:  # pragma: no cover - optional vision dependency
@@ -45,13 +46,7 @@ class AiAnalyserModule:
         extraction = context.ensure_extraction()
         logger.info("Starting the AI analysis with %s characters of recipe text", len(extraction.text))
         cfg = resolve_llm_config("analysis")
-        logger.info(
-            "LLM config (analysis): model=%s, temperature=%s, top_p=%s, max_output_tokens=%s",
-            cfg.get("model"),
-            cfg.get("temperature"),
-            cfg.get("top_p"),
-            cfg.get("max_output_tokens"),
-        )
+        logger.info("LLM config (analysis): %s", format_llm_log(cfg, self._llm_config))
 
         recipe = self._parse_recipe_with_retry(extraction, context)
         if recipe is None:
@@ -169,22 +164,8 @@ class AiAnalyserModule:
 
         image_bytes = best_image.data
         locale = self._resolve_locale(context)
-        if (
-            crop_image_with_llm is not None
-            and self._llm_config.api_key
-            and self._llm_config.vision_model
-        ):
-            cropped = crop_image_with_llm(
-                image_bytes,
-                llm_config=self._llm_config,
-                title=recipe.title or context.source_pdf.stem,
-                locale=locale,
-            )
-            if cropped:
-                image_bytes = cropped
-            else:
-                logger.debug("The vision model did not provide a crop, so we use the original image")
-        elif self._llm_config.api_key and crop_image_with_llm is None and _VISION_IMPORT_ERROR:
+        # Vision-Crop per LLM vorübergehend deaktiviert; wir verwenden das Originalbild.
+        if self._llm_config.api_key and crop_image_with_llm is None and _VISION_IMPORT_ERROR:
             logger.warning(
                 "Could not load the vision helper (%s). Using the original image.",
                 _VISION_IMPORT_ERROR,

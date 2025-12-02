@@ -19,7 +19,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
-from .cli import _create_openai_client  # pylint: disable=protected-access
+from .llm_factory import create_openai_client
 from .config import AppConfig, ConfigError, load_config
 from .exceptions import UserAbort
 from .modules import CachePaths, PipelineContext, PipelineRunner
@@ -50,6 +50,14 @@ from .prompt_store import (
 )
 
 logger = logging.getLogger(__name__)
+
+# Ensure baseline logging so INFO/DEBUG from modules reach file handlers and console during dev.
+_root_logger = logging.getLogger()
+if not _root_logger.handlers:
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(logging.Formatter("[%(levelname)s] %(message)s"))
+    _root_logger.addHandler(console_handler)
+_root_logger.setLevel(logging.INFO)
 
 UPLOAD_ROOT = Path("data/uploads")
 UPLOAD_ROOT.mkdir(parents=True, exist_ok=True)
@@ -310,6 +318,7 @@ class ReviewUpdateRequest(BaseModel):
     summary: ReviewSummaryUpdate
     ingredients: List[ReviewIngredientUpdate] = Field(default_factory=list)
     instructions: List[ReviewInstructionUpdate] = Field(default_factory=list)
+    ingredientsToDelete: List[str] = Field(default_factory=list)
 
 
 class PromptModuleConfig(BaseModel):
@@ -323,11 +332,17 @@ class PromptUpdateRequest(BaseModel):
     llmConfig: Optional[Dict[str, Dict[str, Any]]] = None
 
 
+class LlmModelInfo(BaseModel):
+    id: str
+    supportsSampling: bool = True
+
+
 class PromptResponse(BaseModel):
     prompts: Dict[str, Dict[str, PromptModuleConfig]]
     defaults: Dict[str, Dict[str, PromptModuleConfig]]
     llmConfig: Dict[str, Dict[str, Any]] = Field(default_factory=dict)
     llmDefaults: Dict[str, Dict[str, Any]] = Field(default_factory=dict)
+    llmModels: List[LlmModelInfo] = Field(default_factory=list)
 
 
 class ResetWorkspaceResponse(BaseModel):
@@ -1127,6 +1142,29 @@ def _apply_review_update(run_id: str, config: AppConfig, payload: ReviewUpdateRe
             return
         entry["note"] = value or None
 
+    # Handle ingredient deletions
+    delete_keys = set(payload.ingredientsToDelete or [])
+    if delete_keys:
+        def _should_keep(ing: Dict[str, Any], section_idx: int, idx: int) -> bool:
+            key_repr = f"{section_idx}:{idx}"
+            ing_id = str(ing.get("id") or "")
+            return key_repr not in delete_keys and ing_id not in delete_keys
+
+        for section_index, section in enumerate(recipe_data.get("ingredients", [])):
+            items = section.get("ingredients") or []
+            section["ingredients"] = [ing for idx, ing in enumerate(items) if _should_keep(ing, section_index, idx)]
+
+        foods_review["ingredients"] = [
+            entry
+            for entry in foods_entries
+            if str(entry.get("key")) not in delete_keys and str(entry.get("ingredientId") or "") not in delete_keys
+        ]
+        units_review["units"] = [
+            entry
+            for entry in units_entries
+            if str(entry.get("key")) not in delete_keys and str(entry.get("ingredientId") or "") not in delete_keys
+        ]
+
     for ingredient_update in payload.ingredients:
         key = ingredient_update.id
         notes_value = ingredient_update.notes if ingredient_update.notes is not None else ""
@@ -1203,7 +1241,8 @@ def _apply_review_update(run_id: str, config: AppConfig, payload: ReviewUpdateRe
             mapped = []
             for ing_id in instruction_update.ingredientIds:
                 mapped_id = key_to_recipe_id.get(ing_id, ing_id)
-                mapped.append(mapped_id)
+                if ing_id not in delete_keys and str(mapped_id) not in delete_keys:
+                    mapped.append(mapped_id)
             step["ingredientIds"] = mapped
 
     # Persist files
@@ -1222,7 +1261,7 @@ def _apply_review_update(run_id: str, config: AppConfig, payload: ReviewUpdateRe
 def _run_analysis(run_state: RunState, pending: PendingUpload, config: AppConfig, workspace: RunWorkspace, run_info: RunInfo) -> None:
     logger.info("Starte Analyse für Lauf %s (%s)", run_state.run_id, run_state.recipe_name)
     try:
-        llm_client = _create_openai_client(config.llm)
+        llm_client = create_openai_client(config.llm)
     except ValueError as exc:
         logger.error("LLM-Konfiguration fehlerhaft: %s", exc)
         run_info.mark_completed(status="failed")
@@ -1288,9 +1327,9 @@ def _run_analysis(run_state: RunState, pending: PendingUpload, config: AppConfig
                 image_output_dir=workspace.pipeline_dir,
             ),
             InstructionLinkingModule(llm_client=llm_client, llm_config=config.llm),
-            FoodCheckerModule(ingredient_service, llm_client=llm_client, locale=locale),
-            UnitCheckerModule(ingredient_service, llm_client=llm_client, locale=locale),
-            AssignMetadataModule(ingredient_service, llm_client=llm_client, locale=locale),
+            FoodCheckerModule(ingredient_service, llm_client=llm_client, llm_config=config.llm, locale=locale),
+            UnitCheckerModule(ingredient_service, llm_client=llm_client, llm_config=config.llm, locale=locale),
+            AssignMetadataModule(ingredient_service, llm_client=llm_client, llm_config=config.llm, locale=locale),
         ]
 
         runner = PipelineRunner(modules)
@@ -1554,7 +1593,17 @@ async def update_review_data(run_id: str, update: ReviewUpdateRequest) -> Review
 async def get_prompts() -> PromptResponse:
     prompts = load_prompts()
     defaults = get_prompt_defaults()
-    return PromptResponse(prompts=prompts, defaults=defaults, llmConfig=load_llm_config(), llmDefaults=LLM_CONFIG_DEFAULTS)
+    config = _load_app_config()
+    model_entries = [
+        {"id": entry.id, "supportsSampling": entry.supports_sampling} for entry in (config.llm.models or [])
+    ]
+    return PromptResponse(
+        prompts=prompts,
+        defaults=defaults,
+        llmConfig=load_llm_config(),
+        llmDefaults=LLM_CONFIG_DEFAULTS,
+        llmModels=model_entries,
+    )
 
 
 @app.put("/api/prompts", response_model=PromptResponse)
@@ -1571,11 +1620,16 @@ async def update_prompts(payload: PromptUpdateRequest) -> PromptResponse:
     save_prompts(existing)
     if payload.llmConfig is not None:
         save_llm_config(payload.llmConfig)
+    config = _load_app_config()
+    model_entries = [
+        {"id": entry.id, "supportsSampling": entry.supports_sampling} for entry in (config.llm.models or [])
+    ]
     return PromptResponse(
         prompts=existing,
         defaults=get_prompt_defaults(),
         llmConfig=load_llm_config(),
         llmDefaults=LLM_CONFIG_DEFAULTS,
+        llmModels=model_entries,
     )
 
 
@@ -1714,9 +1768,17 @@ async def upload_run_image(run_id: str, file: UploadFile = File(...)) -> ImageUp
     target_path.parent.mkdir(parents=True, exist_ok=True)
     target_path.write_bytes(contents)
 
+    # Remove alte RecipeImage-Dateien, damit immer nur die zuletzt hochgeladene Variante genutzt wird.
+    for existing in context.pipeline_dir.glob("*RecipeImage.*"):
+        if existing.resolve() != target_path.resolve():
+            try:
+                existing.unlink()
+            except OSError:
+                logger.debug("Konnte alte Bilddatei nicht löschen: %s", existing)
+
     _write_recipe_image_json(context.pipeline_dir, target_name, contents, IMAGE_MEDIA_TYPES[suffix])
 
-    cache_buster = int(time.time())
+    cache_buster = int(time.time() * 1000)
     return ImageUploadResponse(imageUrl=f"/api/imports/{run_id}/image?ts={cache_buster}")
 
 

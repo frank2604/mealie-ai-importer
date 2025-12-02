@@ -1,0 +1,14 @@
+{
+  "ingredient": "TK-Erbsen",
+  "forms": {
+    "singular": "TK-Erbse",
+    "plural": "TK-Erbsen",
+    "countable": true,
+    "aliases": [
+      "tiefgekühlte Erbse",
+      "TK Erbse"
+    ],
+    "labelId": "7206a457-7b61-4291-9a5a-2add225233c6",
+    "labelName": "Tiefkühlware ❄️"
+  }
+}

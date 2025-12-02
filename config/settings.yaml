@@ -4,11 +4,8 @@ mealie:
   verify_ssl: false
   ca_bundle: null
 processing:
-  watch_folder: PDFs
   output_folder: data/pipeline
-  ocr_enabled: false
   language: de
-  skip_ai_if_cached: true
 ingredients:
   fuzzy_threshold: 90
   cache_dir: data/cache
@@ -18,10 +15,19 @@ ingredients:
   use_llm_forms: true
 llm:
   provider: openai
-  model: gpt-5-mini
-  temperature: null
-  max_tokens: null
   api_key: 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
   base_url: https://api.openai.com/v1
-  vision_model: gpt-5-mini
   timeout: 240
+  model: gpt-5-mini
+  vision_model: gpt-5-mini
+  temperature: null
+  max_tokens: null
+  models:
+    - id: gpt-5-mini
+      supportsSampling: false
+    - id: gpt-5-nano
+      supportsSampling: false
+    - id: gpt-4.1-mini
+      supportsSampling: true
+    - id: gpt-4.1-nano
+      supportsSampling: true

@@ -12,7 +12,7 @@ import httpx
 
 from .models import Recipe
 from .prompt_store import resolve_prompt
-from .prompt_logging import log_prompt_messages
+from .prompt_logging import log_prompt_messages, log_prompt_response
 
 logger = logging.getLogger(__name__)
 
@@ -74,6 +74,7 @@ class OpenAiClient:
         max_tokens: Optional[int] = None,
         base_url: str = "https://api.openai.com/v1",
         timeout: float = 120.0,
+        model_capabilities: Optional[Dict[str, bool]] = None,
     ) -> None:
         self.api_key = api_key
         self.model = model
@@ -81,16 +82,22 @@ class OpenAiClient:
         self.max_tokens = max_tokens
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
+        self._model_capabilities = {k.lower(): v for k, v in (model_capabilities or {}).items()}
 
     @staticmethod
-    def _supports_sampling_params(model: Optional[str]) -> bool:
-        """Return False for models that forbid temperature/top_p (e.g. o1, gpt-4.1)."""
+    def _default_supports_sampling(model: Optional[str]) -> bool:
+        """Default-Fallback: wenn Modell unbekannt ist, Sampling zulassen."""
         if not model:
             return True
-        name = model.lower()
-        if name.startswith("o1") or name.startswith("gpt-4.1"):
-            return False
         return True
+
+    def _supports_sampling_params(self, model: Optional[str]) -> bool:
+        if not model:
+            return self._default_supports_sampling(model)
+        name = model.lower()
+        if name in self._model_capabilities:
+            return bool(self._model_capabilities[name])
+        return self._default_supports_sampling(model)
 
     def run(self, request: LlmRequest, llm_config: Optional[Dict[str, Any]] = None) -> Recipe:
         source_name = Path(request.source).name if request.source else "unbekannt"
@@ -136,18 +143,12 @@ class OpenAiClient:
 
         endpoint = f"{self.base_url}/chat/completions"
 
-        log_prompt_messages("analysis", payload["messages"])
+        stem = log_prompt_messages("analysis", payload["messages"])
 
         try:
             response = httpx.post(endpoint, headers=headers, json=payload, timeout=self.timeout)
         except httpx.HTTPError as exc:  # pragma: no cover - runtime safeguard
             raise LlmParsingError(f"HTTP-Anfrage an OpenAI fehlgeschlagen: {exc}") from exc
-
-        if response.status_code >= 400 and "temperature" in response.text and "not support" in response.text:
-            logger.info("Retrying without sampling params for model %s", model_name)
-            payload.pop("temperature", None)
-            payload.pop("top_p", None)
-            response = httpx.post(endpoint, headers=headers, json=payload, timeout=self.timeout)
 
         if response.status_code >= 400:
             raise LlmParsingError(
@@ -155,15 +156,24 @@ class OpenAiClient:
             )
 
         data = response.json()
+        log_prompt_response("analysis", data, stem=stem)
         logger.debug("LLM response JSON: %s", data)
         try:
             message = data["choices"][0]["message"]
         except (KeyError, IndexError, TypeError) as exc:  # pragma: no cover - defensive
+            logger.warning("LLM full response (truncated): %s", json.dumps(data, ensure_ascii=False)[:2000])
             raise LlmParsingError("Ungewöhnliche Antwortstruktur von OpenAI") from exc
 
         logger.debug("LLM message payload: %s", message)
 
         content = _extract_message_text(message)
+        if content is None:
+            logger.warning("LLM full response (truncated): %s", json.dumps(data, ensure_ascii=False)[:2000])
+            try:
+                raw_choice = json.dumps(data.get("choices", [])[0], ensure_ascii=False)
+            except Exception:  # pragma: no cover - defensive
+                raw_choice = str(data.get("choices", [])[0]) if data.get("choices") else ""
+            logger.warning("LLM content empty; raw choice (truncated): %s", raw_choice[:500])
         if content is None:
             parsed_payload = message.get("parsed")
             if isinstance(parsed_payload, dict):
@@ -176,7 +186,11 @@ class OpenAiClient:
                 content = parsed_payload
 
         logger.debug("LLM raw response: %s", content)
-        recipe_dict = _parse_json_response(content or "")
+        try:
+            recipe_dict = _parse_json_response(content or "")
+        except LlmParsingError:
+            logger.warning("LLM raw response (truncated): %s", (content or "")[:400])
+            raise
         self._ensure_title(recipe_dict, request)
         recipe = Recipe.parse_obj(recipe_dict)
 
@@ -216,21 +230,15 @@ class OpenAiClient:
         }
         endpoint = f"{self.base_url}/chat/completions"
 
-        log_prompt_messages("generic_text", payload["messages"])
+        stem = log_prompt_messages("generic_text", payload["messages"])
 
         response = httpx.post(endpoint, headers=headers, json=payload, timeout=self.timeout)
-
-        if response.status_code >= 400 and "temperature" in response.text and "not support" in response.text:
-            payload.pop("temperature", None)
-            payload.pop("top_p", None)
-        response = httpx.post(endpoint, headers=headers, json=payload, timeout=self.timeout)
-
-        if response.status_code >= 400 and "temperature" in response.text and "not support" in response.text:
-            payload.pop("temperature", None)
-            payload.pop("top_p", None)
-            response = httpx.post(endpoint, headers=headers, json=payload, timeout=self.timeout)
 
         response.raise_for_status()
+        try:
+            log_prompt_response("generic_text", response.json(), stem=stem)
+        except Exception:
+            logger.debug("Could not log response for generic_text")
         data = response.json()
         try:
             content = data["choices"][0]["message"]["content"]
@@ -270,11 +278,12 @@ class OpenAiClient:
         }
         endpoint = f"{self.base_url}/chat/completions"
 
-        log_prompt_messages("generic_json", payload["messages"])
+        stem = log_prompt_messages("generic_json", payload["messages"])
 
         response = httpx.post(endpoint, headers=headers, json=payload, timeout=self.timeout)
         response.raise_for_status()
         data = response.json()
+        log_prompt_response("generic_json", data, stem=stem)
         try:
             message = data["choices"][0]["message"]
         except (KeyError, IndexError, TypeError) as exc:

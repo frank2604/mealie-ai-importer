@@ -1,0 +1,188 @@
+{
+  "title": "Ente mit 8 Kostbarkeiten",
+  "description": "Dieses traditionelle chinesische Gericht kombiniert zartes Entenfleisch mit einer Auswahl an acht feinen Zutaten wie Pilzen, Lotus­samen und Wasserkastanien. Die Kombination aus herzhaften Aromen und verschiedenen Texturen macht es zu einem besonderen Festessen. Ideal für 4 Personen.",
+  "recipeServings": 4.0,
+  "ingredients": [
+    {
+      "name": "Ente mit 8 Kostbarkeiten",
+      "ingredients": [
+        {
+          "name": "getrocknete chinesische Morcheln",
+          "quantity": 6.0,
+          "unit": "Stück"
+        },
+        {
+          "name": "Tongu-Pilze",
+          "quantity": 6.0,
+          "unit": "Stück"
+        },
+        {
+          "name": "junge Ente",
+          "quantity": 1.0,
+          "unit": "Stück",
+          "note": "etwa 1,8kg"
+        },
+        {
+          "name": "Sah"
+        },
+        {
+          "name": "frischer Ingwer",
+          "quantity": 25.0,
+          "unit": "g"
+        },
+        {
+          "name": "Fünfgewürzpulver"
+        },
+        {
+          "name": "schwarzer Pfeffer aus der Mühle"
+        },
+        {
+          "name": "Hoisinsauce",
+          "quantity": 2.0,
+          "unit": "EL"
+        },
+        {
+          "name": "helle Sojasauce",
+          "quantity": 2.0,
+          "unit": "EL"
+        },
+        {
+          "name": "Lotussamen",
+          "quantity": 50.0,
+          "unit": "g",
+          "note": "Dose"
+        },
+        {
+          "name": "Wasserkastanien",
+          "quantity": 150.0,
+          "unit": "g",
+          "note": "Dose"
+        },
+        {
+          "name": "Cashewkerne",
+          "quantity": 50.0,
+          "unit": "g"
+        },
+        {
+          "name": "TK-Erbsen",
+          "quantity": 100.0,
+          "unit": "g"
+        },
+        {
+          "name": "getrocknete Lilienknospen",
+          "quantity": 50.0,
+          "unit": "g"
+        },
+        {
+          "name": "Öl",
+          "quantity": 2.0,
+          "unit": "EL"
+        },
+        {
+          "name": "getrocknete chinesische Datteln",
+          "quantity": 5.0,
+          "unit": "Stück"
+        },
+        {
+          "name": "getrocknete chinesische Pflaumen",
+          "quantity": 5.0,
+          "unit": "Stück"
+        },
+        {
+          "name": "Speisestärke",
+          "quantity": 1.0,
+          "unit": "TL"
+        },
+        {
+          "name": "Reiswein",
+          "quantity": 2.0,
+          "unit": "EL"
+        }
+      ]
+    }
+  ],
+  "instructions": [
+    {
+      "name": "Zubereitung Ente mit 8 Kostbarkeiten",
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "Die Morcheln und Tongu-Pilze in warmem Wasser einweichen.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 2,
+          "instruction": "Die Ente von Innereien, innerem Fett und dem Hals befreien, waschen und in Portionsstücke schneiden oder hacken. In einem Topf knapp mit kaltem Wasser bedecken, salzen, aufkochen und etwa 20 Minuten köcheln lassen. Die Ententeile dann herausheben, die Brühe abseihen und eventuell entfetten.",
+          "timer_minutes": 20,
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 3,
+          "instruction": "Ingwer schälen und fein hacken, mit je 1/2 Teelöffel Salz, Fünfgewürzpulver und Pfeffer, der Hoisin- und der Sojasauce verrühren, die Ententeile damit gut einreiben.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 4,
+          "instruction": "Lotussamen und Wasserkastanien abtropfen lassen, mit Cashewkernen und Erbsen mischen. Morcheln von holzigen Stellen befreien und entstielen, Tongu-Pilze entstielen. Die Pilze in breite Streifen schneiden. Die Lilienknospen entstielen, quer halbieren, aus jeder Nadel einen Knoten machen.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 5,
+          "instruction": "Mit einem Messer möglichst viel Marinade von den Ententeilen abschaben und mit 50 ml Entenbrühe verrühren.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 6,
+          "instruction": "Das Öl im heißen Wok oder einer heißen breiten Pfanne erhitzen, die Ententeile rundherum braten. Pilze und die übrigen vorbereiteten Zutaten dazugeben, alles etwa 2 Minuten garen. Die Marinade einrühren, alles zugedeckt bei milder Hitze etwa 10 Minuten schmoren.",
+          "timer_minutes": 12,
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 7,
+          "instruction": "Datteln und Pflaumen entsteinen, halbieren und in den Wok oder die Pfanne geben, alles verrühren und zugedeckt noch etwa 10 Minuten schmoren.",
+          "timer_minutes": 10,
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 8,
+          "instruction": "Die Ententeile herausheben, mit den übrigen Zutaten anrichten. Den Wok (Pfanne) wieder erhitzen, etwa 140 ml Entenbrühe angießen. Die Speisestärke mit Reiswein glatt rühren, die Sauce damit binden. Abschmecken, über die Ententeile träufeln.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        }
+      ]
+    }
+  ],
+  "notes": "Wenn Sie nicht alle Zutaten bekommen, servieren Sie Ente mit vier oder mit sechs Kostbarkeiten.",
+  "image_path": "data/pipeline/02_RecipeImage.jpg",
+  "metadata": {
+    "source": "meine familie & ich 45",
+    "categories": [
+      "Hauptgericht",
+      "Geflügel",
+      "Asiatisch",
+      "Ente"
+    ],
+    "cuisine": "Chinesisch",
+    "tags": [
+      "Ente",
+      "Pilze",
+      "Lotussamen",
+      "Wasserkastanien",
+      "Festessen"
+    ],
+    "mealie_categories": [],
+    "mealie_tags": []
+  },
+  "assets": [
+    {
+      "file_name": "02_RecipeImage.jpg"
+    }
+  ]
+}

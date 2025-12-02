@@ -226,7 +226,8 @@
         "ingredients": "Verwendete Zutaten"
       },
       "selectIngredient": "Zutat hinzufügen...",
-      "removeIngredient": "Zutat entfernen"
+      "removeIngredient": "Zutat entfernen",
+      "deleteIngredient": "Zutat löschen"
     },
     "image": {
       "caption": "Geplanter Bildausschnitt des Originals. Der finale Ausschnitt folgt mit dem PDF-Viewer.",
@@ -344,6 +345,7 @@
       "systemLabel": "TECHNISCHER RAHMEN",
       "llmSettings": "LLM-Einstellungen",
       "model": "Modell",
+      "modelPlaceholder": "Modell auswählen …",
       "temperature": "Temperatur",
       "topP": "top_p",
       "maxTokens": "max_output_tokens",

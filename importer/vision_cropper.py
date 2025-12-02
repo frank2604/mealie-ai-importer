@@ -13,6 +13,7 @@ from PIL import Image
 from .config import LlmConfig
 from .llm_parser import LlmParsingError, OpenAiClient, _parse_json_response  # reuse util
 from .prompt_store import resolve_prompt, resolve_llm_config
+from .llm_utils import format_llm_log
 from .prompt_logging import log_prompt_messages
 
 logger = logging.getLogger(__name__)
@@ -35,13 +36,7 @@ def crop_image_with_llm(
 
     prompt_cfg = resolve_prompt("imageCrop", locale, replacements={"title": title})
     llm_cfg = resolve_llm_config("imageCrop")
-    logger.info(
-        "LLM config (imageCrop): model=%s, temperature=%s, top_p=%s, max_output_tokens=%s",
-        llm_cfg.get("model"),
-        llm_cfg.get("temperature"),
-        llm_cfg.get("top_p"),
-        llm_cfg.get("max_output_tokens"),
-    )
+    logger.info("LLM config (imageCrop): %s", format_llm_log(llm_cfg, llm_config))
     system_prompt = prompt_cfg.get("system") or "Du bist ein präziser Assistent für Bildausschnitte."
     user_parts = [
         part.strip()
@@ -68,11 +63,13 @@ def crop_image_with_llm(
 
     log_prompt_messages("imageCrop", messages)
 
+    capabilities = {entry.id.lower(): entry.supports_sampling for entry in (llm_config.models or [])}
     client = OpenAiClient(
         api_key=llm_config.api_key,
         model=llm_cfg.get("model") or model,
         base_url=llm_config.base_url,
         timeout=llm_config.timeout,
+        model_capabilities=capabilities,
     )
 
     # run_json erwartet system/user als Strings; wir geben die Messages als JSON-String weiter

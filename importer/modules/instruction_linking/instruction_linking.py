@@ -13,6 +13,7 @@ from ...config import LlmConfig
 from ...llm_parser import OpenAiClient
 from ...prompt_store import resolve_prompt, resolve_llm_config
 from ...prompt_logging import log_prompt_messages
+from ...llm_utils import format_llm_log
 
 logger = logging.getLogger("Instruction Linking")
 
@@ -66,13 +67,7 @@ class InstructionLinkingModule:
         }
         prompt_cfg = resolve_prompt("instructions", locale, replacements=replacements)
         llm_cfg = resolve_llm_config("instructions")
-        logger.info(
-            "LLM config (instructions): model=%s, temperature=%s, top_p=%s, max_output_tokens=%s",
-            llm_cfg.get("model"),
-            llm_cfg.get("temperature"),
-            llm_cfg.get("top_p"),
-            llm_cfg.get("max_output_tokens"),
-        )
+        logger.info("LLM config (instructions): %s", format_llm_log(llm_cfg, self._llm_config))
         system_prompt = prompt_cfg.get("system", "").strip()
         user_parts = [
             part.strip()

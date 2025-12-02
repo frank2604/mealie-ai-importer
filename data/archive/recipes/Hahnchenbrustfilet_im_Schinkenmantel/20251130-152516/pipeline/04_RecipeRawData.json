@@ -1,0 +1,145 @@
+{
+  "title": "Hähnchenbrustfilet im Schinkenmantel",
+  "description": "Zarte Hähnchenbrustfilets werden mit Salbei und Parma-Schinken umwickelt und in einer cremigen Champignon-Wermut-Sahnesoße gegart. Ein köstliches Gericht, das mit Pellkartoffeln und grünem Salat serviert wird. Einfach zuzubereiten und voller Geschmack.",
+  "recipeServings": 4.0,
+  "totalTime": "ca. 40 Min.",
+  "performTime": "ca. 40 Min.",
+  "ingredients": [
+    {
+      "ingredients": [
+        {
+          "name": "Hähnchenbrustfilets",
+          "quantity": 4.0,
+          "unit": "Stück"
+        },
+        {
+          "name": "Parma-Schinken",
+          "quantity": 6.0,
+          "unit": "Scheiben"
+        },
+        {
+          "name": "Champignons",
+          "quantity": 500.0,
+          "unit": "g"
+        },
+        {
+          "name": "rote Zwiebeln",
+          "quantity": 3.0,
+          "unit": "Stück"
+        },
+        {
+          "name": "trockener Wermut",
+          "quantity": 100.0,
+          "unit": "ml"
+        },
+        {
+          "name": "süße Sahne",
+          "quantity": 200.0,
+          "unit": "ml"
+        },
+        {
+          "name": "Mehl",
+          "quantity": 1.0,
+          "unit": "EL"
+        },
+        {
+          "name": "heller Soßenbinder",
+          "quantity": 1.0,
+          "unit": "EL"
+        },
+        {
+          "name": "Fett zum Braten"
+        },
+        {
+          "name": "Salbeiblätter",
+          "quantity": 6.0,
+          "unit": "Stück"
+        },
+        {
+          "name": "Salz"
+        },
+        {
+          "name": "Pfeffer"
+        }
+      ]
+    }
+  ],
+  "instructions": [
+    {
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "Hähnchenbrustfilets pfeffern.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 2,
+          "instruction": "Jeweils mit einem Salbeiblatt belegen und mit Schinken umwickeln.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 3,
+          "instruction": "Fett in einer Pfanne erhitzen, die Filets mit Mehl bestäuben und anbraten.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 4,
+          "instruction": "Herausnehmen und in eine feuerfeste Form geben.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 5,
+          "instruction": "Zwiebeln schälen und kleinhacken und zusammen mit den geputzten, geviertelten Champignons anbraten.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 6,
+          "instruction": "Mit Wermut ablöschen, etwas einkochen lassen und Sahne angießen.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 7,
+          "instruction": "1 EL Soßenbinder einrühren, kurz aufkochen lassen und mit Salz und Pfeffer abschmecken.",
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "order": 8,
+          "instruction": "Die Soße über das Fleisch in der Form geben und alles etwa 20 Minuten bei 200° C garen lassen.",
+          "timer_minutes": 20,
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        }
+      ]
+    }
+  ],
+  "notes": "Dazu passen Pellkartoffeln und grüner Salat.",
+  "image_path": "data/pipeline/02_RecipeImage.jpg",
+  "metadata": {
+    "source": "data/pipeline/01_Hahnchenbrustfilet_im_Schinkenmantel.pdf",
+    "categories": [
+      "Hauptgericht",
+      "Geflügel"
+    ],
+    "cuisine": "deutsch",
+    "tags": [
+      "Hähnchen",
+      "Schinken",
+      "Champignons",
+      "Sahnesoße"
+    ],
+    "mealie_categories": [],
+    "mealie_tags": []
+  },
+  "assets": [
+    {
+      "file_name": "02_RecipeImage.jpg"
+    }
+  ]
+}

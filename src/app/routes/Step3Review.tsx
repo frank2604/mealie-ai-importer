@@ -4,7 +4,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import Cropper from "react-easy-crop";
 import type { Area } from "react-easy-crop";
 import "react-easy-crop/react-easy-crop.css";
-import { ChevronUpDownIcon, PencilSquareIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { ChevronUpDownIcon, PencilSquareIcon, XMarkIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import { PdfViewer } from "../components/PdfViewer";
 import { layoutConfig } from "../../config/layout.config";
@@ -19,8 +19,8 @@ import {
   UnitSelectionPayload,
   fetchReviewData,
   updateReviewData,
-  uploadRecipeImage
-} from "../api/review";
+    uploadRecipeImage
+  } from "../api/review";
 import { useImportFlow } from "../context/ImportFlowContext";
 import { BadgePill } from "../components/BadgePill";
 import { NewFoodModal, FoodCreateFormValues } from "../components/Modals/NewFoodModal";
@@ -505,10 +505,10 @@ const createStepIngredientMap = (instructions: ReviewInstruction[]): Record<stri
   return map;
 };
 
-const buildUpdatePayload = (data: ReviewData) => ({
-  summary: {
-    title: data.summary.title,
-    description: data.summary.description,
+  const buildUpdatePayload = (data: ReviewData, ingredientsToDelete: string[] = []) => ({
+    summary: {
+      title: data.summary.title,
+      description: data.summary.description,
     notes: data.summary.notes ?? null,
     recipeServings: data.summary.recipeServings ?? null,
     recipeYieldQuantity: data.summary.recipeYieldQuantity ?? null,
@@ -518,10 +518,11 @@ const buildUpdatePayload = (data: ReviewData) => ({
     performTime: data.summary.performTime ?? null,
     categoryId: data.summary.categoryId ?? null,
     tagIds: data.summary.tagIds ?? []
-  },
-  ingredients: data.ingredients.map((item) => ({
-    id: item.id,
-    notes: item.notes ?? "",
+    },
+    ingredientsToDelete,
+    ingredients: data.ingredients.map((item) => ({
+      id: item.id,
+      notes: item.notes ?? "",
     foodDecision: { ...item.foodDecision, notes: item.notes ?? "" },
     unitDecision: { ...item.unitDecision, notes: item.notes ?? "" },
     foodSelection: item.foodSelection ?? {
@@ -575,6 +576,7 @@ export const Step3Review: React.FC = () => {
   const [isDragActive, setIsDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
+  const [imageOverrideUrl, setImageOverrideUrl] = useState<string | null>(null);
   const [crop, setCrop] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
@@ -725,8 +727,8 @@ export const Step3Review: React.FC = () => {
   }, [stepIngredientOptions]);
   const formatStepIngredientLabel = useCallback((option: StepIngredientOption) => option.foodLabel, []);
   const imageAspectClass = layoutConfig.images?.aspectRatio ?? "aspect-video";
-  const currentImageUrl = useMemo(() => {
-    const rawUrl = reviewData?.assets?.imageUrl;
+
+  const resolveAssetUrl = useCallback((rawUrl: string | null | undefined) => {
     if (!rawUrl) {
       return null;
     }
@@ -738,7 +740,14 @@ export const Step3Review: React.FC = () => {
       return `${apiRoot}${rawUrl}`;
     }
     return rawUrl;
-  }, [reviewData?.assets?.imageUrl]);
+  }, []);
+
+  const currentImageUrl = useMemo(() => {
+    if (imageOverrideUrl) {
+      return imageOverrideUrl;
+    }
+    return resolveAssetUrl(reviewData?.assets?.imageUrl);
+  }, [imageOverrideUrl, resolveAssetUrl, reviewData?.assets?.imageUrl]);
   const currentPdfUrl = useMemo(() => {
     const rawUrl = reviewData?.assets?.pdfUrl;
     if (!rawUrl) {
@@ -785,6 +794,7 @@ export const Step3Review: React.FC = () => {
         if (!isActive) return;
         const enriched = enrichReviewData(data);
         setReviewData(enriched);
+        setImageOverrideUrl(null);
         setSummaryForm(createSummaryForm(enriched.summary));
         setPreparationSteps(createPreparationSteps(enriched.instructions));
         setStepIngredients(createStepIngredientMap(enriched.instructions));
@@ -812,27 +822,41 @@ export const Step3Review: React.FC = () => {
     }
   }, [reviewData?.summary.title, setRecipeNameValue]);
 
-  const persistChanges = useCallback(async (overrideData?: ReviewData | null) => {
-    const snapshot = overrideData ?? reviewData;
-    if (!runId || !snapshot || isReadOnly) {
-      return;
-    }
-    setIsSaving(true);
-    setSaveError(null);
-    try {
-      const payload = buildUpdatePayload(snapshot);
+  const persistChanges = useCallback(
+    async (overrideData?: ReviewData | null, ingredientsToDelete: string[] = []) => {
+      const snapshot = overrideData ?? reviewData;
+      if (!runId || !snapshot || isReadOnly) {
+        return;
+      }
+      setIsSaving(true);
+      setSaveError(null);
+      try {
+        const payload = buildUpdatePayload(snapshot, ingredientsToDelete);
       const updated = await updateReviewData(runId, payload);
       const enriched = enrichReviewData(updated);
       setReviewData(enriched);
+      setImageOverrideUrl(null);
       setSummaryForm(createSummaryForm(enriched.summary));
       setPreparationSteps(createPreparationSteps(enriched.instructions));
-      setStepIngredients(createStepIngredientMap(enriched.instructions));
-    } catch (error) {
-      setSaveError(error instanceof Error ? error.message : String(error));
-    } finally {
-      setIsSaving(false);
-    }
-  }, [runId, reviewData, isReadOnly]);
+      setStepIngredients((prev) => {
+        const next = createStepIngredientMap(enriched.instructions);
+        // avoid needless state churn if unchanged
+        const same =
+          Object.keys(prev).length === Object.keys(next).length &&
+          Object.entries(next).every(([k, v]) => {
+            const prevIds = prev[k] || [];
+            return prevIds.length === v.length && prevIds.every((id, idx) => id === v[idx]);
+          });
+        return same ? prev : next;
+      });
+      } catch (error) {
+        setSaveError(error instanceof Error ? error.message : String(error));
+      } finally {
+        setIsSaving(false);
+      }
+    },
+    [runId, reviewData, isReadOnly]
+  );
 
   const updateInstructionIngredients = useCallback(
     (instructionId: string, ingredientIds: string[]) => {
@@ -912,12 +936,10 @@ export const Step3Review: React.FC = () => {
         if (!changed) {
           return previous;
         }
-        const nextMap = Object.fromEntries(nextEntries) as Record<string, string[]>;
-        Object.entries(nextMap).forEach(([stepId, ids]) => updateInstructionIngredients(stepId, ids));
-        return nextMap;
+        return Object.fromEntries(nextEntries) as Record<string, string[]>;
       });
     }
-  }, [reviewData?.ingredients, updateInstructionIngredients]);
+  }, [reviewData?.ingredients]);
 
   useEffect(() => {
     if (stepIngredientOptions.length === 0) {
@@ -928,7 +950,6 @@ export const Step3Review: React.FC = () => {
         const cleared = Object.fromEntries(
           Object.keys(previous).map((stepId) => [stepId, [] as string[]])
         ) as Record<string, string[]>;
-        Object.keys(cleared).forEach((stepId) => updateInstructionIngredients(stepId, []));
         return cleared;
       });
       return;
@@ -949,11 +970,9 @@ export const Step3Review: React.FC = () => {
       if (!changed) {
         return previous;
       }
-      const nextMap = Object.fromEntries(nextEntries) as Record<string, string[]>;
-      Object.entries(nextMap).forEach(([stepId, ids]) => updateInstructionIngredients(stepId, ids));
-      return nextMap;
+      return Object.fromEntries(nextEntries) as Record<string, string[]>;
     });
-  }, [stepIngredientOptions, updateInstructionIngredients]);
+  }, [stepIngredientOptions]);
 
   const handleSummaryFieldChange = useCallback(
     (field: "title" | "description" | "notes", value: string) => {
@@ -1149,6 +1168,7 @@ export const Step3Review: React.FC = () => {
       setImageError(null);
       try {
         const response = await uploadRecipeImage(runId, file);
+        const resolvedUrl = resolveAssetUrl(response.imageUrl);
         setReviewData((previous) => {
           if (!previous) {
             return previous;
@@ -1161,13 +1181,14 @@ export const Step3Review: React.FC = () => {
             }
           };
         });
+        setImageOverrideUrl(resolvedUrl);
       } catch (error) {
         setImageError(error instanceof Error ? error.message : String(error));
       } finally {
         setIsImageUploading(false);
       }
     },
-    [runId]
+    [runId, resolveAssetUrl]
   );
 
   const handleCropComplete = useCallback((_croppedArea: Area, areaPixels: Area) => {
@@ -1215,6 +1236,38 @@ export const Step3Review: React.FC = () => {
       }
     },
     [handleImageUpload]
+  );
+
+  const handleDeleteIngredient = useCallback(
+    (ingredientId: string) => {
+      if (isReadOnly) return;
+      setReviewData((previous) => {
+        if (!previous) {
+          return previous;
+        }
+        const nextIngredients = previous.ingredients.filter((item) => item.id !== ingredientId);
+        const nextStepIngredients: Record<string, string[]> = {};
+        Object.entries(stepIngredients).forEach(([stepId, ids]) => {
+          const filtered = ids.filter((id) => id !== ingredientId);
+          if (filtered.length > 0) {
+            nextStepIngredients[stepId] = filtered;
+          }
+        });
+        const nextInstructions = previous.instructions.map((instruction) => ({
+          ...instruction,
+          ingredientIds: (instruction.ingredientIds || []).filter((id) => id !== ingredientId)
+        }));
+        const nextData: ReviewData = {
+          ...previous,
+          ingredients: nextIngredients,
+          instructions: nextInstructions
+        };
+        setStepIngredients(nextStepIngredients);
+        void persistChanges(nextData, [ingredientId]);
+        return nextData;
+      });
+    },
+    [isReadOnly, persistChanges, stepIngredients]
   );
 
   useEffect(() => {
@@ -1905,14 +1958,29 @@ export const Step3Review: React.FC = () => {
                                   onChange={(option) => handleFoodSelection(entry.id, option)}
                                 />
                               </div>
+                              <button
+                                type="button"
+                                disabled={isReadOnly}
+                                onClick={() => handleDeleteIngredient(entry.id)}
+                                className={clsx(
+                                  "focus-ring inline-flex h-8 w-8 items-center justify-center border border-border bg-background hover:border-error/60 hover:text-error disabled:opacity-50",
+                                  layoutConfig.borderRadius.small
+                                )}
+                                aria-label={t("review.actions.deleteIngredient")}
+                                title={t("review.actions.deleteIngredient")}
+                              >
+                                <TrashIcon className="h-4 w-4" aria-hidden="true" />
+                              </button>
                             </div>
                           </div>
                         </div>
 
                         <div>
-                          <label className="text-xs font-semibold uppercase tracking-wide text-text/60">
-                            {t("review.table.labels.note")}
-                          </label>
+                          <div className="flex items-center justify-between">
+                            <label className="text-xs font-semibold uppercase tracking-wide text-text/60">
+                              {t("review.table.labels.note")}
+                            </label>
+                          </div>
                           <textarea
                             disabled={isReadOnly}
                             value={entry.notes ?? ""}

@@ -21,6 +21,7 @@ from ..exceptions import UserAbort
 from ..llm_parser import OpenAiClient
 from ..prompt_store import resolve_prompt, resolve_llm_config
 from ..prompt_logging import log_prompt_messages
+from ..llm_utils import format_llm_log
 
 logger = logging.getLogger(__name__)
 
@@ -1228,13 +1229,13 @@ class IngredientService:
                 "category_lines": category_lines,
             }
             prompt_cfg = resolve_prompt("foodForms", self._prompt_locale, replacements=replacements)
-            logger.info(
-                "LLM config (foodForms): model=%s, temperature=%s, top_p=%s, max_output_tokens=%s",
-                resolve_llm_config("foodForms").get("model"),
-                resolve_llm_config("foodForms").get("temperature"),
-                resolve_llm_config("foodForms").get("top_p"),
-                resolve_llm_config("foodForms").get("max_output_tokens"),
+            llm_cfg = resolve_llm_config("foodForms")
+            supports_fn = (
+                (lambda model: self._llm_client._supports_sampling_params(model))  # type: ignore[attr-defined]
+                if self._llm_client
+                else None
             )
+            logger.info("LLM config (foodForms): %s", format_llm_log(llm_cfg, None, supports_fn))
             user_parts = [
                 part.strip()
                 for part in (prompt_cfg.get("user1", ""), prompt_cfg.get("user2", ""))
@@ -1340,13 +1341,13 @@ class IngredientService:
         try:
             replacements = {"unit_lines": "\n".join(batch)}
             prompt_cfg = resolve_prompt("unitForms", self._prompt_locale, replacements=replacements)
-            logger.info(
-                "LLM config (unitForms): model=%s, temperature=%s, top_p=%s, max_output_tokens=%s",
-                resolve_llm_config("unitForms").get("model"),
-                resolve_llm_config("unitForms").get("temperature"),
-                resolve_llm_config("unitForms").get("top_p"),
-                resolve_llm_config("unitForms").get("max_output_tokens"),
+            llm_cfg = resolve_llm_config("unitForms")
+            supports_fn = (
+                (lambda model: self._llm_client._supports_sampling_params(model))  # type: ignore[attr-defined]
+                if self._llm_client
+                else None
             )
+            logger.info("LLM config (unitForms): %s", format_llm_log(llm_cfg, None, supports_fn))
             user_parts = [
                 part.strip()
                 for part in (prompt_cfg.get("user1", ""), prompt_cfg.get("user2", ""))

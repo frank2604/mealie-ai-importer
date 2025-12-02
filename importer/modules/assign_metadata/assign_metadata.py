@@ -8,9 +8,11 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from ..context import PipelineContext
 from ...llm_parser import OpenAiClient
+from ...config import LlmConfig
 from ...models import OrganizerReference, Recipe
 from ...prompt_store import resolve_prompt, resolve_llm_config
 from ...prompt_logging import log_prompt_messages
+from ...llm_utils import format_llm_log
 from ...services.ingredients import IngredientService
 
 logger = logging.getLogger("Assign Metadata")
@@ -43,10 +45,12 @@ class AssignMetadataModule:
         ingredient_service: Optional[IngredientService],
         *,
         llm_client: Optional[OpenAiClient],
+        llm_config: Optional["LlmConfig"] = None,
         locale: str = "de",
     ) -> None:
         self._service = ingredient_service
         self._llm_client = llm_client
+        self._llm_config = llm_config
         self._locale = locale or "de"
 
     def run(self, context: PipelineContext) -> None:
@@ -168,13 +172,7 @@ class AssignMetadataModule:
         try:
             system_prompt, user_prompt = self._build_prompts(prompt)
             llm_cfg = resolve_llm_config("metadata")
-            logger.info(
-                "LLM config (metadata): model=%s, temperature=%s, top_p=%s, max_output_tokens=%s",
-                llm_cfg.get("model"),
-                llm_cfg.get("temperature"),
-                llm_cfg.get("top_p"),
-                llm_cfg.get("max_output_tokens"),
-            )
+            logger.info("LLM config (metadata): %s", format_llm_log(llm_cfg, self._llm_config))
             log_prompt_messages(
                 "metadata",
                 [

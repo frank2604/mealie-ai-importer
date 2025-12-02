@@ -1,0 +1,36 @@
+{
+  "id": "chatcmpl-Chf3rgd4SqknQPdXHaQnLtyf369qp",
+  "object": "chat.completion",
+  "created": 1764521979,
+  "model": "gpt-4.1-nano-2025-04-14",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\"match\": \"ce7b4e53-b248-490e-953f-c4548bfb941a\", \"reason\": \"Süße Sahne entspricht 'Sah' im Rezept, da beide Sahnearten sind.\"}",
+        "refusal": null,
+        "annotations": []
+      },
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 905,
+    "completion_tokens": 51,
+    "total_tokens": 956,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 0,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "service_tier": "default",
+  "system_fingerprint": "fp_ef015fa747"
+}

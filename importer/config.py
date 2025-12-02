@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import logging
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional, Union
 
@@ -38,6 +38,12 @@ class ProcessingConfig:
 
 
 @dataclass
+class LlmModelOption:
+    id: str
+    supports_sampling: bool = True
+
+
+@dataclass
 class LlmConfig:
     provider: str
     model: str
@@ -47,6 +53,7 @@ class LlmConfig:
     base_url: str = "https://api.openai.com/v1"
     vision_model: Optional[str] = None
     timeout: float = 120.0
+    models: list[LlmModelOption] = field(default_factory=list)
 
 
 @dataclass
@@ -106,6 +113,23 @@ def load_config(config_path: Optional[Path] = None) -> AppConfig:
         ),
     )
 
+    model_entries = llm_section.get("models") or []
+    models: list[LlmModelOption] = []
+    for entry in model_entries:
+        if not isinstance(entry, dict):
+            continue
+        model_id = entry.get("id")
+        if not model_id:
+            continue
+        models.append(LlmModelOption(id=str(model_id), supports_sampling=bool(entry.get("supportsSampling", True))))
+    if not models:
+        models = [
+            LlmModelOption(id="gpt-5-mini", supports_sampling=False),
+            LlmModelOption(id="gpt-5-nano", supports_sampling=False),
+            LlmModelOption(id="gpt-4.1-mini", supports_sampling=True),
+            LlmModelOption(id="gpt-4.1-nano", supports_sampling=True),
+        ]
+
     llm = LlmConfig(
         provider=_env_or_default("LLM_PROVIDER", llm_section.get("provider", "openai")),
         model=_env_or_default("LLM_MODEL", llm_section.get("model", "gpt-4o-mini")),
@@ -115,6 +139,7 @@ def load_config(config_path: Optional[Path] = None) -> AppConfig:
         base_url=_env_or_default("LLM_BASE_URL", llm_section.get("base_url", "https://api.openai.com/v1")),
         vision_model=_env_or_default("LLM_VISION_MODEL", llm_section.get("vision_model")),
         timeout=_maybe_float(_env_or_default("LLM_TIMEOUT", llm_section.get("timeout")), default=120.0) or 120.0,
+        models=models,
     )
 
     ingredient_section = data.get("ingredients", {})

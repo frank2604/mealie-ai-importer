@@ -227,7 +227,8 @@
         "ingredients": "Linked ingredients"
       },
       "selectIngredient": "Add ingredient…",
-      "removeIngredient": "Remove ingredient"
+      "removeIngredient": "Remove ingredient",
+      "deleteIngredient": "Delete ingredient"
     },
     "image": {
       "caption": "Planned crop from the original asset. The final crop will be shown once the PDF viewer is integrated.",
@@ -345,6 +346,7 @@
       "systemLabel": "TECHNICAL FRAME",
       "llmSettings": "LLM settings",
       "model": "Model",
+      "modelPlaceholder": "Select model…",
       "temperature": "Temperature",
       "topP": "top_p",
       "maxTokens": "max_output_tokens",

@@ -10,8 +10,10 @@ from typing import Dict, Iterable, List, Optional, Tuple
 
 from ..context import IngredientRef, PipelineContext
 from ...llm_parser import OpenAiClient
+from ...config import LlmConfig
 from ...prompt_store import resolve_prompt, resolve_llm_config
 from ...prompt_logging import log_prompt_messages
+from ...llm_utils import format_llm_log
 from ...services.ingredients import IngredientService
 
 logger = logging.getLogger("Food Checker")
@@ -61,12 +63,14 @@ class FoodCheckerModule:
         ingredient_service: Optional[IngredientService],
         *,
         llm_client: Optional[OpenAiClient] = None,
+        llm_config: Optional["LlmConfig"] = None,
         locale: str = "de",
     ) -> None:
         self._service = ingredient_service
         self._llm_client = llm_client
         self._foods: List[_FoodCandidate] = []
         self._locale = locale or "de"
+        self._llm_config = llm_config
 
     def run(self, context: PipelineContext) -> None:
         ingredient_refs = list(context.iter_ingredients())
@@ -377,13 +381,7 @@ class FoodCheckerModule:
         }
         prompt_cfg = resolve_prompt("ingredients", self._locale, replacements=replacements)
         llm_cfg = resolve_llm_config("ingredients")
-        logger.info(
-            "LLM config (ingredients): model=%s, temperature=%s, top_p=%s, max_output_tokens=%s",
-            llm_cfg.get("model"),
-            llm_cfg.get("temperature"),
-            llm_cfg.get("top_p"),
-            llm_cfg.get("max_output_tokens"),
-        )
+        logger.info("LLM config (ingredients): %s", format_llm_log(llm_cfg, self._llm_config))
         system_prompt = prompt_cfg.get("system", _SYSTEM_PROMPT).strip() or _SYSTEM_PROMPT
         user_parts = [
             part.strip()

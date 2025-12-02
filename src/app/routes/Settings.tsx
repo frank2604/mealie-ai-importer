@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState, useCallback } from "react";
 import { Disclosure } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
@@ -6,7 +6,13 @@ import { useTranslation } from "react-i18next";
 import { layoutConfig } from "../../config/layout.config";
 import { useTheme } from "../../theme/useTheme";
 import { availableLanguages } from "../../i18n/i18n";
-import { fetchPrompts, savePrompts, type PromptLocaleConfig, type LlmModuleConfig } from "../api/prompts";
+import {
+  fetchPrompts,
+  savePrompts,
+  type PromptLocaleConfig,
+  type LlmModuleConfig,
+  type LlmModelOption
+} from "../api/prompts";
 import { fetchApiKeys, saveApiKeys, type ApiKeys } from "../api/settings";
 
 export const Settings: React.FC = () => {
@@ -27,6 +33,7 @@ export const Settings: React.FC = () => {
   const [llmConfig, setLlmConfig] = useState<Record<string, LlmModuleConfig>>({});
   const [llmDefaults, setLlmDefaults] = useState<Record<string, LlmModuleConfig>>({});
   const [hasLlmChanges, setHasLlmChanges] = useState(false);
+  const [llmModels, setLlmModels] = useState<LlmModelOption[]>([]);
   const [apiKeys, setApiKeys] = useState<ApiKeys>({
     mealieToken: null,
     mealieBaseUrl: null,
@@ -62,6 +69,7 @@ export const Settings: React.FC = () => {
         setPromptDefaults(response.defaults);
         setLlmConfig(response.llmConfig || {});
         setLlmDefaults(response.llmDefaults || {});
+        setLlmModels(response.llmModels || []);
         setHasPromptChanges(false);
         setHasLlmChanges(false);
       })
@@ -123,6 +131,16 @@ export const Settings: React.FC = () => {
     });
     return combined;
   }, [llmConfig, llmDefaults, promptModules]);
+
+  const supportsSampling = useCallback(
+    (modelId: string | null | undefined): boolean => {
+      if (!modelId) return true;
+      const found = llmModels.find((entry) => entry.id === modelId);
+      if (found) return Boolean(found.supportsSampling);
+      return true;
+    },
+    [llmModels]
+  );
 
   const handleThemeChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value as "light" | "dark";
@@ -194,6 +212,7 @@ export const Settings: React.FC = () => {
       setPromptDefaults(response.defaults);
       setLlmConfig(response.llmConfig || {});
       setLlmDefaults(response.llmDefaults || {});
+      setLlmModels(response.llmModels || []);
       setHasPromptChanges(false);
       setHasLlmChanges(false);
     } catch (error) {
@@ -544,8 +563,7 @@ export const Settings: React.FC = () => {
                                 <label className="text-xs font-semibold uppercase tracking-wide text-text/60">
                                   {t("settings.prompts.model")}
                                 </label>
-                                <input
-                                  type="text"
+                                <select
                                   value={llm.model ?? ""}
                                   onChange={(event) => handleLlmConfigChange(section.id, "model", event.target.value)}
                                   disabled={promptsLoading}
@@ -554,46 +572,61 @@ export const Settings: React.FC = () => {
                                     layoutConfig.borderRadius.medium,
                                     promptsLoading && "opacity-60 cursor-not-allowed"
                                   )}
-                                />
+                                >
+                                  <option value="">{t("settings.prompts.modelPlaceholder")}</option>
+                                  {llmModels.map((option) => (
+                                    <option key={option.id} value={option.id}>
+                                      {option.id}
+                                    </option>
+                                  ))}
+                                </select>
                               </div>
-                              <div className="space-y-1">
-                                <label className="text-xs font-semibold uppercase tracking-wide text-text/60">
-                                  {t("settings.prompts.temperature")}
-                                </label>
-                                <input
-                                  type="number"
-                                  step="0.1"
-                                  value={
-                                    llm.temperature === null || llm.temperature === undefined ? "" : llm.temperature
-                                  }
-                                  onChange={(event) => handleLlmConfigChange(section.id, "temperature", event.target.value)}
-                                  disabled={promptsLoading}
-                                  className={clsx(
-                                    "focus-ring w-full border border-border bg-background px-3 py-2 text-sm text-text",
-                                    layoutConfig.borderRadius.medium,
-                                    promptsLoading && "opacity-60 cursor-not-allowed"
-                                  )}
-                                />
-                              </div>
-                              <div className="space-y-1">
-                                <label className="text-xs font-semibold uppercase tracking-wide text-text/60">
-                                  {t("settings.prompts.topP")}
-                                </label>
-                                <input
-                                  type="number"
-                                  step="0.05"
-                                  min="0"
-                                  max="1"
-                                  value={llm.top_p === null || llm.top_p === undefined ? "" : llm.top_p}
-                                  onChange={(event) => handleLlmConfigChange(section.id, "top_p", event.target.value)}
-                                  disabled={promptsLoading}
-                                  className={clsx(
-                                    "focus-ring w-full border border-border bg-background px-3 py-2 text-sm text-text",
-                                    layoutConfig.borderRadius.medium,
-                                    promptsLoading && "opacity-60 cursor-not-allowed"
-                                  )}
-                                />
-                              </div>
+                              {supportsSampling(llm.model) ? (
+                                <>
+                                  <div className="space-y-1">
+                                    <label className="text-xs font-semibold uppercase tracking-wide text-text/60">
+                                      {t("settings.prompts.temperature")}
+                                    </label>
+                                    <input
+                                      type="number"
+                                      step="0.1"
+                                      value={
+                                        llm.temperature === null || llm.temperature === undefined ? "" : llm.temperature
+                                      }
+                                      onChange={(event) =>
+                                        handleLlmConfigChange(section.id, "temperature", event.target.value)
+                                      }
+                                      disabled={promptsLoading}
+                                      className={clsx(
+                                        "focus-ring w-full border border-border bg-background px-3 py-2 text-sm text-text",
+                                        layoutConfig.borderRadius.medium,
+                                        promptsLoading && "opacity-60 cursor-not-allowed"
+                                      )}
+                                    />
+                                  </div>
+                                  <div className="space-y-1">
+                                    <label className="text-xs font-semibold uppercase tracking-wide text-text/60">
+                                      {t("settings.prompts.topP")}
+                                    </label>
+                                    <input
+                                      type="number"
+                                      step="0.05"
+                                      min="0"
+                                      max="1"
+                                      value={llm.top_p === null || llm.top_p === undefined ? "" : llm.top_p}
+                                      onChange={(event) =>
+                                        handleLlmConfigChange(section.id, "top_p", event.target.value)
+                                      }
+                                      disabled={promptsLoading}
+                                      className={clsx(
+                                        "focus-ring w-full border border-border bg-background px-3 py-2 text-sm text-text",
+                                        layoutConfig.borderRadius.medium,
+                                        promptsLoading && "opacity-60 cursor-not-allowed"
+                                      )}
+                                    />
+                                  </div>
+                                </>
+                              ) : null}
                               <div className="space-y-1">
                                 <label className="text-xs font-semibold uppercase tracking-wide text-text/60">
                                   {t("settings.prompts.maxTokens")}

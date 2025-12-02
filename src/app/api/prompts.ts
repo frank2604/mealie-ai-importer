@@ -13,6 +13,11 @@ export interface LlmModuleConfig {
   max_output_tokens: number | null;
 }
 
+export interface LlmModelOption {
+  id: string;
+  supportsSampling: boolean;
+}
+
 export type PromptLocaleConfig = Record<string, PromptModuleConfig>;
 
 export interface PromptResponse {
@@ -20,6 +25,7 @@ export interface PromptResponse {
   defaults: Record<string, PromptLocaleConfig>;
   llmConfig: Record<string, LlmModuleConfig>;
   llmDefaults: Record<string, LlmModuleConfig>;
+  llmModels: LlmModelOption[];
 }
 
 const parseError = async (response: Response): Promise<Error> => {

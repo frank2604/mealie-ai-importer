@@ -15,14 +15,6 @@ from ...prompt_store import resolve_llm_config
 from ...llm_utils import format_llm_log
 from ...models import Recipe, RecipeAsset
 
-try:  # pragma: no cover - optional vision dependency
-    from ...vision_cropper import crop_image_with_llm
-except ModuleNotFoundError as exc:  # pragma: no cover - handled gracefully
-    crop_image_with_llm = None  # type: ignore[assignment]
-    _VISION_IMPORT_ERROR = exc
-else:
-    _VISION_IMPORT_ERROR = None
-
 logger = logging.getLogger("AI Analyser")
 
 
@@ -164,12 +156,6 @@ class AiAnalyserModule:
 
         image_bytes = best_image.data
         locale = self._resolve_locale(context)
-        # Vision-Crop per LLM vorübergehend deaktiviert; wir verwenden das Originalbild.
-        if self._llm_config.api_key and crop_image_with_llm is None and _VISION_IMPORT_ERROR:
-            logger.warning(
-                "Could not load the vision helper (%s). Using the original image.",
-                _VISION_IMPORT_ERROR,
-            )
         output_dir = (
             context.pipeline_recorder.directory
             if context.pipeline_recorder

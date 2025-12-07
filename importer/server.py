@@ -364,16 +364,12 @@ class ApiKeysResponse(BaseModel):
     mealieToken: Optional[str] = None
     mealieBaseUrl: Optional[str] = None
     llmApiKey: Optional[str] = None
-    llmModel: Optional[str] = None
-    llmVisionModel: Optional[str] = None
 
 
 class ApiKeysUpdateRequest(BaseModel):
     mealieToken: Optional[str] = None
     mealieBaseUrl: Optional[str] = None
     llmApiKey: Optional[str] = None
-    llmModel: Optional[str] = None
-    llmVisionModel: Optional[str] = None
 
 
 @dataclass
@@ -1696,14 +1692,10 @@ async def get_api_keys() -> ApiKeysResponse:
     mealie_token = mealie_section.get("token")
     mealie_base_url = mealie_section.get("base_url")
     llm_api_key = llm_section.get("api_key")
-    llm_model = llm_section.get("model")
-    llm_vision_model = llm_section.get("vision_model")
     return ApiKeysResponse(
         mealieToken=mealie_token,
         mealieBaseUrl=mealie_base_url,
         llmApiKey=llm_api_key,
-        llmModel=llm_model,
-        llmVisionModel=llm_vision_model,
     )
 
 
@@ -1719,17 +1711,11 @@ async def update_api_keys(payload: ApiKeysUpdateRequest) -> ApiKeysResponse:
         mealie_section["base_url"] = payload.mealieBaseUrl
     if payload.llmApiKey is not None:
         llm_section["api_key"] = payload.llmApiKey
-    if payload.llmModel is not None:
-        llm_section["model"] = payload.llmModel
-    if payload.llmVisionModel is not None:
-        llm_section["vision_model"] = payload.llmVisionModel
     _save_settings_file(data)
     return ApiKeysResponse(
         mealieToken=mealie_section.get("token"),
         mealieBaseUrl=mealie_section.get("base_url"),
         llmApiKey=llm_section.get("api_key"),
-        llmModel=llm_section.get("model"),
-        llmVisionModel=llm_section.get("vision_model"),
     )
 
 @app.get("/api/imports/{run_id}", response_model=RunStatusResponse)

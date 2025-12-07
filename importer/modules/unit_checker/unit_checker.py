@@ -360,7 +360,7 @@ class UnitCheckerModule:
                     best_score = score
                     best_id = candidate.id
                     best_label = option
-        if best_score >= 0.75:
+        if best_score >= 0.8:
             return best_id, best_label
         return None, None
 

@@ -37,9 +37,7 @@ export const Settings: React.FC = () => {
   const [apiKeys, setApiKeys] = useState<ApiKeys>({
     mealieToken: null,
     mealieBaseUrl: null,
-    llmApiKey: null,
-    llmModel: null,
-    llmVisionModel: null
+    llmApiKey: null
   });
   const [apiKeysLoading, setApiKeysLoading] = useState(false);
   const [apiKeysError, setApiKeysError] = useState<string | null>(null);
@@ -55,7 +53,6 @@ export const Settings: React.FC = () => {
       { id: "units", labelKey: "settings.prompts.units" },
       { id: "unitForms", labelKey: "settings.prompts.unitForms" },
       { id: "metadata", labelKey: "settings.prompts.metadata" },
-      { id: "imageCrop", labelKey: "settings.prompts.imageCrop" }
     ],
     []
   );
@@ -122,11 +119,17 @@ export const Settings: React.FC = () => {
         max_output_tokens: null
       };
       const existing = llmConfig[module.id] || {};
+      const pick = <T,>(key: keyof LlmModuleConfig, fallback: T): T => {
+        if (Object.prototype.hasOwnProperty.call(existing, key)) {
+          return (existing as any)[key] as T;
+        }
+        return fallback;
+      };
       combined[module.id] = {
-        model: existing.model ?? defaults.model ?? "",
-        temperature: existing.temperature ?? defaults.temperature ?? null,
-        top_p: existing.top_p ?? defaults.top_p ?? null,
-        max_output_tokens: existing.max_output_tokens ?? defaults.max_output_tokens ?? null
+        model: pick("model", defaults.model ?? ""),
+        temperature: pick("temperature", defaults.temperature ?? null),
+        top_p: pick("top_p", defaults.top_p ?? null),
+        max_output_tokens: pick("max_output_tokens", defaults.max_output_tokens ?? null)
       };
     });
     return combined;
@@ -375,40 +378,6 @@ export const Settings: React.FC = () => {
                     disabled={apiKeysLoading || apiKeysSaving}
                   />
                 </div>
-                <div className="space-y-2">
-                  <label htmlFor="settings-llm-model" className="text-sm font-semibold text-text">
-                    {t("settings.api.llmModel")}
-                  </label>
-                  <input
-                    id="settings-llm-model"
-                    type="text"
-                    value={apiKeys.llmModel ?? ""}
-                    onChange={(event) => handleApiKeyChange("llmModel", event.target.value)}
-                    className={clsx(
-                      "focus-ring w-full border border-border bg-background px-4 py-2 text-sm font-medium text-text",
-                      layoutConfig.borderRadius.medium
-                    )}
-                    placeholder={t("settings.api.llmModelPlaceholder")}
-                    disabled={apiKeysLoading || apiKeysSaving}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="settings-llm-vision-model" className="text-sm font-semibold text-text">
-                    {t("settings.api.llmVisionModel")}
-                  </label>
-                  <input
-                    id="settings-llm-vision-model"
-                    type="text"
-                    value={apiKeys.llmVisionModel ?? ""}
-                    onChange={(event) => handleApiKeyChange("llmVisionModel", event.target.value)}
-                    className={clsx(
-                      "focus-ring w-full border border-border bg-background px-4 py-2 text-sm font-medium text-text",
-                      layoutConfig.borderRadius.medium
-                    )}
-                    placeholder={t("settings.api.llmVisionModelPlaceholder")}
-                    disabled={apiKeysLoading || apiKeysSaving}
-                  />
-                </div>
                 <div className="flex justify-end">
                   <button
                     type="button"
@@ -593,9 +562,10 @@ export const Settings: React.FC = () => {
                                       value={
                                         llm.temperature === null || llm.temperature === undefined ? "" : llm.temperature
                                       }
-                                      onChange={(event) =>
-                                        handleLlmConfigChange(section.id, "temperature", event.target.value)
-                                      }
+                                      onChange={(event) => {
+                                        const raw = event.target.value;
+                                        handleLlmConfigChange(section.id, "temperature", raw === "" ? "" : raw);
+                                      }}
                                       disabled={promptsLoading}
                                       className={clsx(
                                         "focus-ring w-full border border-border bg-background px-3 py-2 text-sm text-text",
@@ -614,9 +584,10 @@ export const Settings: React.FC = () => {
                                       min="0"
                                       max="1"
                                       value={llm.top_p === null || llm.top_p === undefined ? "" : llm.top_p}
-                                      onChange={(event) =>
-                                        handleLlmConfigChange(section.id, "top_p", event.target.value)
-                                      }
+                                      onChange={(event) => {
+                                        const raw = event.target.value;
+                                        handleLlmConfigChange(section.id, "top_p", raw === "" ? "" : raw);
+                                      }}
                                       disabled={promptsLoading}
                                       className={clsx(
                                         "focus-ring w-full border border-border bg-background px-3 py-2 text-sm text-text",
@@ -633,16 +604,20 @@ export const Settings: React.FC = () => {
                                 </label>
                                 <input
                                   type="number"
-                                  min="1"
+                                  min="0"
                                   value={llm.max_output_tokens ?? ""}
                                   onChange={(event) => {
-                                    const prev = llm.max_output_tokens;
                                     const raw = event.target.value;
+                                    if (raw === "") {
+                                      handleLlmConfigChange(section.id, "max_output_tokens", "");
+                                      return;
+                                    }
                                     const parsed = Number(raw);
                                     if (Number.isNaN(parsed)) {
                                       handleLlmConfigChange(section.id, "max_output_tokens", "");
                                       return;
                                     }
+                                    const prev = llm.max_output_tokens;
                                     if (prev !== null && prev !== undefined && Math.abs(parsed - prev) <= 1) {
                                       const direction = parsed >= prev ? 1 : -1;
                                       const snapped =

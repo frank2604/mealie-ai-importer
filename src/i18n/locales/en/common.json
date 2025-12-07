@@ -329,11 +329,7 @@
       "mealieBaseUrl": "Mealie base URL",
       "mealieBaseUrlPlaceholder": "e.g. https://mealie.local",
       "llmApiKey": "OpenAI API key",
-      "llmApiKeyPlaceholder": "e.g. sk-...",
-      "llmModel": "OpenAI model name",
-      "llmModelPlaceholder": "e.g. gpt-4o-mini",
-      "llmVisionModel": "OpenAI vision model",
-      "llmVisionModelPlaceholder": "e.g. gpt-4o-mini-vision"
+      "llmApiKeyPlaceholder": "e.g. sk-..."
     },
     "theme": {
       "title": "Theme",
@@ -364,7 +360,6 @@
       "metadataSystem": "Technical metadata instructions",
       "instructions": "Step assignments",
       "instructionsSystem": "Technical instructions for step assignments",
-      "imageCrop": "Image cropping",
       "adminToggleLabel": "Enable editing of system prompt (admin)",
       "resetModuleConfirm": "Resetting will overwrite your changes with the default prompt. Continue?",
       "analysisPlaceholder": "You are an AI chef that analyses the uploaded recipe…",

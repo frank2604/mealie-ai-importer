@@ -15,7 +15,6 @@ LLM_CONFIG_DEFAULTS: Dict[str, Dict[str, Any]] = {
     "instructions": {"model": "gpt-5-mini", "temperature": 0.0, "top_p": 1.0, "max_output_tokens": 600},
     "foodForms": {"model": "gpt-5-mini", "temperature": 0.5, "top_p": 1.0, "max_output_tokens": 600},
     "unitForms": {"model": "gpt-5-mini", "temperature": 0.3, "top_p": 1.0, "max_output_tokens": 400},
-    "imageCrop": {"model": "gpt-4o-mini", "temperature": 0.0, "top_p": 1.0, "max_output_tokens": 150},
 }
 
 FALLBACK_DEFAULTS: Dict[str, Dict[str, Dict[str, str]]] = {
@@ -110,19 +109,6 @@ FALLBACK_DEFAULTS: Dict[str, Dict[str, Dict[str, str]]] = {
                 "Keine Kommentare, keine zusätzlichen Felder."
             ),
         },
-        "imageCrop": {
-            "user1": (
-                "Rezepttitel: {title}\n"
-                "Finde ausschließlich die Bildregion, auf der das fertig angerichtete Gericht inklusive Gefäß (Teller, Schale, Glas usw.) vollständig sichtbar ist. "
-                "Vermeide Close-ups sowie Textspalten, Logos oder reine Dekoelemente. Gib ein JSON-Objekt mit dem Feld \"crop\" zurück:\n"
-                "{{\n"
-                '  "crop": {{"x": ..., "y": ..., "width": ..., "height": ...}}\n'
-                "}}\n"
-                "Alle Werte sind relative Koordinaten (0.0–1.0). Falls kein sinnvolles Gericht erkennbar ist, setze \"crop\" auf null."
-            ),
-            "user2": "",
-            "system": "Du bist ein präziser Assistent für Bildausschnitte. Antworte ausschließlich mit JSON und halte dich strikt an die Koordinatenvorgabe.",
-        },
     },
     "en": {
         "analysis": {
@@ -210,18 +196,6 @@ FALLBACK_DEFAULTS: Dict[str, Dict[str, Dict[str, str]]] = {
                 "}}\n"
                 "No extra commentary."
             ),
-        },
-        "imageCrop": {
-            "free": (
-                "Recipe title: {title}\n"
-                "Find only the region that shows the fully plated dish including its vessel (plate, bowl, glass, etc.). "
-                "Avoid close-ups, text columns, logos or pure decoration. Return JSON with a \"crop\" field:\n"
-                "{{\n"
-                '  "crop": {{"x": ..., "y": ..., "width": ..., "height": ...}}\n'
-                "}}\n"
-                "Values are relative (0.0–1.0). If no reasonable dish is visible, set \"crop\" to null."
-            ),
-            "system": "You are a precise cropping assistant. Respond with JSON only and follow the coordinate format exactly.",
         },
     },
 }

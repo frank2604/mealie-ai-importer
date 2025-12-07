@@ -69,6 +69,7 @@ export interface ReviewIngredient {
   sectionIndex: number;
   ingredientIndex: number;
   sectionName?: string | null;
+  deleted?: boolean | null;
   amount?: number | null;
   amountText?: string | null;
   unit?: string | null;
@@ -136,6 +137,15 @@ export interface ImageUploadResponse {
   imageUrl: string;
 }
 
+export interface PdfImageOption {
+  id: string;
+  label: string;
+  dataUrl: string;
+  page?: number;
+  width?: number;
+  height?: number;
+}
+
 export interface ReviewSummaryUpdatePayload {
   title: string;
   description: string;
@@ -157,6 +167,7 @@ export interface ReviewIngredientUpdatePayload {
   unitDecision: Record<string, any>;
   foodSelection?: FoodSelectionPayload;
   unitSelection?: UnitSelectionPayload;
+  deleted?: boolean | null;
 }
 
 export interface ReviewInstructionUpdatePayload {
@@ -224,4 +235,15 @@ export const uploadRecipeImage = async (runId: string, file: File): Promise<Imag
     throw await parseError(response);
   }
   return (await response.json()) as ImageUploadResponse;
+};
+
+export const fetchPdfImages = async (runId: string): Promise<PdfImageOption[]> => {
+  const response = await fetch(`${BASE_URL}/imports/${encodeURIComponent(runId)}/pdf-images`, {
+    method: "GET",
+    credentials: "same-origin"
+  });
+  if (!response.ok) {
+    throw await parseError(response);
+  }
+  return (await response.json()) as PdfImageOption[];
 };

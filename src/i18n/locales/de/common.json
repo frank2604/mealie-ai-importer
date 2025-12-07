@@ -171,7 +171,8 @@
       "newFoodOption": "{{value}} (NEU)",
       "newUnitOption": "{{value}} (NEU)",
       "editNewFood": "Neues Lebensmittel anpassen",
-      "editNewUnit": "Neue Einheit anpassen"
+      "editNewUnit": "Neue Einheit anpassen",
+      "newFoodManual": "Neue Zutat"
     },
     "badges": {
       "foundWord": "Gefunden: direkte Wort-Übereinstimmung",
@@ -236,6 +237,7 @@
       "empty": "Noch kein Bild vorhanden.",
       "uploading": "Bild wird hochgeladen …",
       "cropButton": "Zuschneiden",
+      "usePdfImage": "PDF-Bild übernehmen",
       "cropModalTitle": "Bild zuschneiden",
       "cropModalApply": "Übernehmen",
       "cropModalCancel": "Abbrechen",

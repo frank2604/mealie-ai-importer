@@ -1,6 +1,133 @@
 {
-  "updated_at": "2025-11-30T16:59:37.453966",
+  "updated_at": "2025-12-06T16:02:43.521463",
   "foods": [
+    {
+      "id": "a50730aa-a1ed-4437-8351-18b1944ff294",
+      "name": "Reiswein",
+      "pluralName": "Reiswein",
+      "aliases": []
+    },
+    {
+      "id": "60a8441e-18cb-4024-b710-390ff2aa42da",
+      "name": "Pflaume (getrocknet)",
+      "pluralName": "Pflaumen (getrocknet)",
+      "aliases": [
+        "{'name': 'getrocknete Pflaume'}",
+        "{'name': 'getrocknete Pflaumen'}",
+        "{'name': 'Backpflaume'}",
+        "{'name': 'Zwetschge (getrocknet)'}"
+      ]
+    },
+    {
+      "id": "1574dedb-92c8-4c2c-aede-eb03c7485e4e",
+      "name": "Chinesische Dattel (getrocknet)",
+      "pluralName": "Chinesische Datteln (getrocknet)",
+      "aliases": [
+        "{'name': 'getrocknete chinesische Dattel'}",
+        "{'name': 'getrocknete chinesische Datteln'}"
+      ]
+    },
+    {
+      "id": "7521240b-3163-4834-a768-71b6023cee5e",
+      "name": "Lilienknospe (getrocknet)",
+      "pluralName": "Lilienknospen (getrocknet)",
+      "aliases": [
+        "{'name': 'getrocknete Lilienknospe'}",
+        "{'name': 'getrocknete Lilienknospen'}"
+      ]
+    },
+    {
+      "id": "ea8827ce-b4a6-42b0-926d-37af64666df7",
+      "name": "TK-Erbse",
+      "pluralName": "TK-Erbsen",
+      "aliases": [
+        "{'name': 'TK Erbse'}",
+        "{'name': 'Tiefkühlerbse'}",
+        "{'name': 'Tiefkühl-Erbse'}"
+      ]
+    },
+    {
+      "id": "8f2775b8-c776-4a6f-9e78-c146e752e0c8",
+      "name": "Cashewkern",
+      "pluralName": "Cashewkerne",
+      "aliases": [
+        "{'name': 'Cashew'}",
+        "{'name': 'Cashewkerne'}"
+      ]
+    },
+    {
+      "id": "4740905c-0aff-445e-83b2-ebec7511aa8d",
+      "name": "Lotussamen",
+      "pluralName": "Lotussamen",
+      "aliases": [
+        "{'name': 'Lotussamen'}"
+      ]
+    },
+    {
+      "id": "548058d4-217a-4e5a-8d0c-15806bfc7029",
+      "name": "Hoisinsauce",
+      "pluralName": "Hoisinsauce",
+      "aliases": [
+        "{'name': 'Hoisin Sauce'}",
+        "{'name': 'Hoisin-Soße'}"
+      ]
+    },
+    {
+      "id": "f432b567-6bae-4203-8363-73b63990a5ad",
+      "name": "Fünfgewürzpulver",
+      "pluralName": "Fünfgewürzpulver",
+      "aliases": [
+        "{'name': 'Fünf-Gewürz-Pulver'}",
+        "{'name': '5-Gewürz-Pulver'}"
+      ]
+    },
+    {
+      "id": "ee9eb167-c4f5-4e03-ba64-9a070554fd76",
+      "name": "Ingwer (frisch)",
+      "pluralName": "Ingwer (frisch)",
+      "aliases": [
+        "{'name': 'frischer Ingwer'}",
+        "{'name': 'Ingwer'}"
+      ]
+    },
+    {
+      "id": "ea20a0bb-df50-4659-b223-0c81c93bcc3d",
+      "name": "Ente (jung)",
+      "pluralName": "Enten (jung)",
+      "aliases": [
+        "{'name': 'junge Ente'}",
+        "{'name': 'Ente'}"
+      ]
+    },
+    {
+      "id": "cda82d05-74e7-4365-b6a9-ead5366ddfef",
+      "name": "Tongu-Pilz",
+      "pluralName": "Tongu-Pilze",
+      "aliases": [
+        "{'name': 'Tongu Pilz'}",
+        "{'name': 'Tongu-Pilz'}"
+      ]
+    },
+    {
+      "id": "5323f2c2-57cf-4a11-902b-f3418d39a654",
+      "name": "Morchel (getrocknet)",
+      "pluralName": "Morcheln (getrocknet)",
+      "aliases": [
+        "{'name': 'Morchel'}",
+        "{'name': 'getrocknete Morchel'}",
+        "{'name': 'getrocknete Morcheln'}"
+      ]
+    },
+    {
+      "id": "2988d5ad-8a3d-4f8f-87e8-d8fa343a1b66",
+      "name": "Speisestärke",
+      "pluralName": "Speisestärke",
+      "aliases": [
+        "{'name': 'Stärke'}",
+        "{'name': 'Maisstärke'}",
+        "{'name': 'Kartoffelstärke'}"
+      ]
+    },
     {
       "id": "a34102d3-6c3a-4353-86cb-4cacbfe64ace",
       "name": "Trockener Wermut",
@@ -317,6 +444,60 @@
         "{'name': 'Onions'}",
         "{'name': 'Speisezwiebel'}",
         "{'name': 'Küchenzwiebel'}"
+      ]
+    },
+    {
+      "id": "42902676-6e6f-4222-9ad5-81596d6f2f84",
+      "name": "Morchel (getrocknet, chinesisch)",
+      "pluralName": "Morcheln (getrocknet, chinesisch)",
+      "aliases": [
+        {
+          "name": "Morchel"
+        },
+        {
+          "name": "getrocknete Morchel"
+        },
+        {
+          "name": "chinesische Morchel"
+        },
+        {
+          "name": "getrocknete chinesische Morchel"
+        }
+      ]
+    },
+    {
+      "id": "99683298-58a8-468a-8f84-c1abbe6958cc",
+      "name": "Wasserkastanie",
+      "pluralName": "Wasserkastanien",
+      "aliases": [
+        {
+          "name": "Wasserkastanie"
+        },
+        {
+          "name": "Wasserkastanien"
+        }
+      ]
+    },
+    {
+      "id": "7160f9a6-4e8a-4fc1-aace-2cea647991a2",
+      "name": "Pflaume (getrocknet, chinesisch)",
+      "pluralName": "Pflaumen (getrocknet, chinesisch)",
+      "aliases": [
+        {
+          "name": "getrocknete Pflaume"
+        },
+        {
+          "name": "chinesische Pflaume"
+        },
+        {
+          "name": "getrocknete chinesische Pflaume"
+        },
+        {
+          "name": "getrocknete Pflaumen"
+        },
+        {
+          "name": "chinesische Pflaumen"
+        }
       ]
     }
   ]

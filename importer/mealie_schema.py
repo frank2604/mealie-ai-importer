@@ -77,6 +77,8 @@ def _map_ingredients(
     reference_map: Dict[str, str] = {}
     for section in sections:
         for ingr in section.ingredients:
+            if getattr(ingr, "deleted", False):
+                continue
             entry = _ingredient_to_entry(
                 ingr,
                 section_name=section.name,
@@ -175,11 +177,13 @@ def _map_instructions(sections: Iterable[InstructionSection], reference_map: Dic
     steps: List[Dict[str, Any]] = []
     for section in sections:
         for step in section.steps:
+            # skip deleted ingredients in references
+            valid_ids = [ing_id for ing_id in step.ingredient_ids if ing_id and ing_id in reference_map]
             ingredient_refs: List[Dict[str, str]] = []
             if step.ingredient_reference_ids:
                 ingredient_refs = [{"referenceId": ref} for ref in step.ingredient_reference_ids if ref]
             elif step.ingredient_ids:
-                for ing_id in step.ingredient_ids:
+                for ing_id in valid_ids:
                     mapped = reference_map.get(ing_id, str(ing_id))
                     ingredient_refs.append({"referenceId": mapped})
             steps.append(

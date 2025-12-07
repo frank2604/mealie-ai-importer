@@ -17,10 +17,12 @@ import {
   ReviewInstruction,
   FoodSelectionPayload,
   UnitSelectionPayload,
+  PdfImageOption,
   fetchReviewData,
   updateReviewData,
-    uploadRecipeImage
-  } from "../api/review";
+  uploadRecipeImage,
+  fetchPdfImages
+} from "../api/review";
 import { useImportFlow } from "../context/ImportFlowContext";
 import { BadgePill } from "../components/BadgePill";
 import { NewFoodModal, FoodCreateFormValues } from "../components/Modals/NewFoodModal";
@@ -65,6 +67,7 @@ interface SearchableSelectProps {
   clearLabel: string;
   disabled?: boolean;
   onChange: (option: CandidateOption | null) => void;
+  extraActions?: { id: string; label: string; onSelect: () => void }[];
 }
 
 interface StepIngredientOption {
@@ -88,7 +91,8 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
   placeholder,
   clearLabel,
   disabled = false,
-  onChange
+  onChange,
+  extraActions = []
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -174,6 +178,20 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
             >
               {clearLabel}
             </button>
+            {extraActions.map((action) => (
+              <button
+                type="button"
+                key={action.id}
+                className="flex w-full items-center px-3 py-2 text-left text-xs text-primary hover:bg-background/60"
+                onClick={() => {
+                  action.onSelect();
+                  setIsOpen(false);
+                  setQuery("");
+                }}
+              >
+                {action.label}
+              </button>
+            ))}
             {filteredOptions.map((option) => (
               <button
                 type="button"
@@ -505,9 +523,9 @@ const createStepIngredientMap = (instructions: ReviewInstruction[]): Record<stri
   return map;
 };
 
-  const buildUpdatePayload = (data: ReviewData, ingredientsToDelete: string[] = []) => ({
-    summary: {
-      title: data.summary.title,
+const buildUpdatePayload = (data: ReviewData) => ({
+  summary: {
+    title: data.summary.title,
       description: data.summary.description,
     notes: data.summary.notes ?? null,
     recipeServings: data.summary.recipeServings ?? null,
@@ -519,10 +537,10 @@ const createStepIngredientMap = (instructions: ReviewInstruction[]): Record<stri
     categoryId: data.summary.categoryId ?? null,
     tagIds: data.summary.tagIds ?? []
     },
-    ingredientsToDelete,
-    ingredients: data.ingredients.map((item) => ({
-      id: item.id,
-      notes: item.notes ?? "",
+  ingredients: data.ingredients.map((item) => ({
+    id: item.id,
+    notes: item.notes ?? "",
+    ...(item.deleted ? { deleted: true } : {}),
     foodDecision: { ...item.foodDecision, notes: item.notes ?? "" },
     unitDecision: { ...item.unitDecision, notes: item.notes ?? "" },
     foodSelection: item.foodSelection ?? {
@@ -540,13 +558,16 @@ const createStepIngredientMap = (instructions: ReviewInstruction[]): Record<stri
       newId: item.unitNewId ?? null
     }
   })),
-  instructions: data.instructions.map((item) => ({
-    id: item.id,
-    order: item.order,
-    text: item.text,
-    timerMinutes: item.timerMinutes ?? null,
-    ingredientIds: item.ingredientIds ?? []
-  }))
+    instructions: data.instructions.map((item) => ({
+      id: item.id,
+      order: item.order,
+      text: item.text,
+      timerMinutes: item.timerMinutes ?? null,
+      ingredientIds: (item.ingredientIds ?? []).filter((id) => {
+        const ing = data.ingredients.find((x) => x.id === id);
+        return !ing?.deleted;
+      })
+    }))
 });
 
 export const Step3Review: React.FC = () => {
@@ -568,6 +589,7 @@ export const Step3Review: React.FC = () => {
     notesInput: ""
   });
   const [foodModalEntry, setFoodModalEntry] = useState<ReviewIngredient | null>(null);
+  const [newFoodDraft, setNewFoodDraft] = useState<ReviewIngredient | null>(null);
   const [unitModalEntry, setUnitModalEntry] = useState<ReviewIngredient | null>(null);
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
   const [activeTagCategory, setActiveTagCategory] = useState<string | null>(null);
@@ -577,6 +599,8 @@ export const Step3Review: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
   const [imageOverrideUrl, setImageOverrideUrl] = useState<string | null>(null);
+  const [pdfImages, setPdfImages] = useState<PdfImageOption[]>([]);
+  const [selectedPdfImageId, setSelectedPdfImageId] = useState<string | null>(null);
   const [crop, setCrop] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
@@ -588,6 +612,10 @@ export const Step3Review: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const isReadOnly = status === "transferring" || status === "completed";
+  const visibleIngredients = useMemo(
+    () => reviewData?.ingredients.filter((ing) => !ing.deleted) ?? [],
+    [reviewData?.ingredients]
+  );
   const sortedFoodOptions = useMemo(() => {
     if (!reviewData) {
       return [];
@@ -689,10 +717,10 @@ export const Step3Review: React.FC = () => {
     });
   }, [reviewData, sortedTagOptions]);
   const stepIngredientOptions = useMemo<StepIngredientOption[]>(() => {
-    if (!reviewData) {
+    if (!visibleIngredients.length) {
       return [];
     }
-    const options = reviewData.ingredients
+    const options = visibleIngredients
       .map((ingredient) => {
         const selectedFoodId =
           ingredient.foodSelection?.newId ??
@@ -717,7 +745,7 @@ export const Step3Review: React.FC = () => {
       .filter((option): option is StepIngredientOption => Boolean(option));
     options.sort((a, b) => a.foodLabel.localeCompare(b.foodLabel, undefined, { sensitivity: "base" }));
     return options;
-  }, [reviewData]);
+  }, [visibleIngredients]);
   const stepIngredientOptionMap = useMemo(() => {
     const map = new Map<string, StepIngredientOption>();
     stepIngredientOptions.forEach((option) => {
@@ -817,13 +845,30 @@ export const Step3Review: React.FC = () => {
   }, [runId, setRecipeNameValue]);
 
   useEffect(() => {
+    if (!runId) {
+      setPdfImages([]);
+      setSelectedPdfImageId(null);
+      return;
+    }
+    fetchPdfImages(runId)
+      .then((images) => {
+        setPdfImages(images);
+        setSelectedPdfImageId(images[0]?.id ?? null);
+      })
+      .catch(() => {
+        setPdfImages([]);
+        setSelectedPdfImageId(null);
+      });
+  }, [runId]);
+
+  useEffect(() => {
     if (reviewData?.summary.title) {
       setRecipeNameValue(reviewData.summary.title);
     }
   }, [reviewData?.summary.title, setRecipeNameValue]);
 
   const persistChanges = useCallback(
-    async (overrideData?: ReviewData | null, ingredientsToDelete: string[] = []) => {
+    async (overrideData?: ReviewData | null) => {
       const snapshot = overrideData ?? reviewData;
       if (!runId || !snapshot || isReadOnly) {
         return;
@@ -831,12 +876,12 @@ export const Step3Review: React.FC = () => {
       setIsSaving(true);
       setSaveError(null);
       try {
-        const payload = buildUpdatePayload(snapshot, ingredientsToDelete);
-      const updated = await updateReviewData(runId, payload);
-      const enriched = enrichReviewData(updated);
-      setReviewData(enriched);
-      setImageOverrideUrl(null);
-      setSummaryForm(createSummaryForm(enriched.summary));
+        const payload = buildUpdatePayload(snapshot);
+        const updated = await updateReviewData(runId, payload);
+        const enriched = enrichReviewData(updated);
+        setReviewData(enriched);
+        setImageOverrideUrl(null);
+        setSummaryForm(createSummaryForm(enriched.summary));
       setPreparationSteps(createPreparationSteps(enriched.instructions));
       setStepIngredients((prev) => {
         const next = createStepIngredientMap(enriched.instructions);
@@ -910,7 +955,7 @@ export const Step3Review: React.FC = () => {
     }
     const nextKeys: Record<string, string | null> = {};
     const removalIds: string[] = [];
-    reviewData.ingredients.forEach((ingredient) => {
+    (visibleIngredients || []).forEach((ingredient) => {
       const key = getIngredientSelectionKey(ingredient);
       nextKeys[ingredient.id] = key;
       const previous = ingredientSelectionKeyRef.current[ingredient.id];
@@ -939,7 +984,7 @@ export const Step3Review: React.FC = () => {
         return Object.fromEntries(nextEntries) as Record<string, string[]>;
       });
     }
-  }, [reviewData?.ingredients]);
+  }, [reviewData?.ingredients, visibleIngredients]);
 
   useEffect(() => {
     if (stepIngredientOptions.length === 0) {
@@ -1195,6 +1240,14 @@ export const Step3Review: React.FC = () => {
     setCroppedAreaPixels(areaPixels);
   }, []);
 
+  // Reset Cropper state when das Bild wechselt oder der Dialog neu geöffnet wird
+  useEffect(() => {
+    if (!isCropModalOpen) return;
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setCroppedAreaPixels(null);
+  }, [currentImageUrl, isCropModalOpen]);
+
   const handleCropSave = useCallback(async () => {
     if (!currentImageUrl || !croppedAreaPixels) {
       return;
@@ -1238,6 +1291,28 @@ export const Step3Review: React.FC = () => {
     [handleImageUpload]
   );
 
+  const dataUrlToFile = useCallback(async (dataUrl: string, name: string): Promise<File> => {
+    const res = await fetch(dataUrl);
+    const blob = await res.blob();
+    return new File([blob], name, { type: blob.type || "image/jpeg" });
+  }, []);
+
+  const handleApplyPdfImage = useCallback(
+    async (id?: string) => {
+      const targetId = id ?? selectedPdfImageId;
+      if (!targetId) return;
+      const candidate = pdfImages.find((img) => img.id === targetId);
+    if (!candidate) return;
+    try {
+      const file = await dataUrlToFile(candidate.dataUrl, `${candidate.id}.jpg`);
+      await handleImageUpload(file);
+      setImageOverrideUrl(candidate.dataUrl);
+    } catch (error) {
+      setImageError(error instanceof Error ? error.message : String(error));
+    }
+  },
+    [dataUrlToFile, handleImageUpload, pdfImages, selectedPdfImageId]);
+
   const handleDeleteIngredient = useCallback(
     (ingredientId: string) => {
       if (isReadOnly) return;
@@ -1245,7 +1320,9 @@ export const Step3Review: React.FC = () => {
         if (!previous) {
           return previous;
         }
-        const nextIngredients = previous.ingredients.filter((item) => item.id !== ingredientId);
+        const nextIngredients = previous.ingredients.map((item) =>
+          item.id === ingredientId ? { ...item, deleted: true } : item
+        );
         const nextStepIngredients: Record<string, string[]> = {};
         Object.entries(stepIngredients).forEach(([stepId, ids]) => {
           const filtered = ids.filter((id) => id !== ingredientId);
@@ -1263,7 +1340,7 @@ export const Step3Review: React.FC = () => {
           instructions: nextInstructions
         };
         setStepIngredients(nextStepIngredients);
-        void persistChanges(nextData, [ingredientId]);
+        void persistChanges(nextData);
         return nextData;
       });
     },
@@ -1311,6 +1388,7 @@ export const Step3Review: React.FC = () => {
           if (item.id !== ingredientId) {
             return item;
           }
+          const newId = item.foodNewId ?? item.foodSelection?.newId ?? `manual-${ingredientId}`;
           const nextCreate = {
             ...getFoodCreatePayload(item),
             ...values
@@ -1321,7 +1399,17 @@ export const Step3Review: React.FC = () => {
           };
           return {
             ...item,
-            foodDecision: nextDecision
+            foodDecision: nextDecision,
+            foodMatch: null,
+            foodStatus: "new",
+            foodNewId: newId,
+            foodSelection: {
+              mealieFoodId: null,
+              newId,
+              name: values.nameSingular || item.name,
+              badgeId: "new",
+              status: "new"
+            }
           };
         });
         const nextData = { ...previous, ingredients: updatedIngredients };
@@ -1329,6 +1417,7 @@ export const Step3Review: React.FC = () => {
         return nextData;
       });
       setFoodModalEntry(null);
+      setNewFoodDraft(null);
     },
     [persistChanges]
   );
@@ -1801,7 +1890,7 @@ export const Step3Review: React.FC = () => {
                 <h3 className="text-lg font-semibold">{t("review.sections.ingredients")}</h3>
               </header>
               <div className={layoutConfig.spacing.item.vertical}>
-                {reviewData.ingredients.map((entry) => {
+                {visibleIngredients.map((entry) => {
                   const displayAmount =
                     entry.amountText ??
                     (entry.amount != null ? String(entry.amount).replace(".", ",") : "") ??
@@ -1956,6 +2045,17 @@ export const Step3Review: React.FC = () => {
                                   clearLabel={clearSelectionLabel}
                                   disabled={isReadOnly || foodOptions.length === 0}
                                   onChange={(option) => handleFoodSelection(entry.id, option)}
+                                  extraActions={[
+                                    {
+                                      id: "new-food-manual",
+                                      label: t("review.selection.newFoodOption", { value: t("review.selection.newFoodManual") }),
+                                      onSelect: () => {
+                                        if (isReadOnly) return;
+                                        setNewFoodDraft(entry);
+                                        setFoodModalEntry(entry);
+                                      }
+                                    }
+                                  ]}
                                 />
                               </div>
                               <button
@@ -2237,6 +2337,32 @@ export const Step3Review: React.FC = () => {
                   >
                     {t("review.image.dropHint")}
                   </div>
+                  {pdfImages.length > 0 ? (
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={selectedPdfImageId ?? ""}
+                        onChange={(e) => {
+                          const nextId = e.target.value || null;
+                          setSelectedPdfImageId(nextId);
+                          if (nextId) {
+                            void handleApplyPdfImage(nextId);
+                          }
+                        }}
+                        disabled={isReadOnly}
+                        className={clsx(
+                          "h-11 w-auto max-w-xs border border-border bg-background px-3 pr-8 text-sm text-text truncate",
+                          layoutConfig.borderRadius.medium
+                        )}
+                        title={pdfImages.find((img) => img.id === selectedPdfImageId)?.label}
+                      >
+                        {pdfImages.map((img) => (
+                          <option key={img.id} value={img.id}>
+                            {img.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  ) : null}
                   {currentImageUrl ? (
                     <button
                       type="button"
@@ -2328,6 +2454,7 @@ export const Step3Review: React.FC = () => {
                     <div className="mt-4">
                       <div className="relative h-[60vh] w-full overflow-hidden">
                         <Cropper
+                          key={currentImageUrl || "cropper"}
                           image={currentImageUrl}
                           crop={crop}
                           zoom={zoom}

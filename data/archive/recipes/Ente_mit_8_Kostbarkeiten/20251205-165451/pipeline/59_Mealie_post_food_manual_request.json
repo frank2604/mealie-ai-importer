@@ -1,0 +1,21 @@
+{
+  "name": "Speisestärke",
+  "payload": {
+    "name": "Speisestärke",
+    "pluralName": "Speisestärke",
+    "extras": {},
+    "labelId": "5c0671c9-16ee-40fb-b721-0401e9b2267f",
+    "aliases": [
+      {
+        "name": "Stärke"
+      },
+      {
+        "name": "Maisstärke"
+      },
+      {
+        "name": "Kartoffelstärke"
+      }
+    ],
+    "householdsWithIngredientFood": []
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "Hoisinsauce",
+  "payload": {
+    "name": "Hoisinsauce",
+    "pluralName": "Hoisinsauce",
+    "extras": {},
+    "labelId": "36be9b8c-4dd6-4f59-abc0-4715a742566d",
+    "aliases": [
+      {
+        "name": "Hoisin-Sauce"
+      }
+    ],
+    "householdsWithIngredientFood": []
+  }
+}

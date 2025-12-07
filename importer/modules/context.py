@@ -24,6 +24,15 @@ def normalize_recipe_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
     if not isinstance(payload, dict):
         return payload
     data = deepcopy(payload)
+
+    # Assets: stelle sicher, dass file_name vorhanden ist
+    assets = data.get("assets")
+    if isinstance(assets, list):
+        for asset in assets:
+            if isinstance(asset, dict):
+                if "file_name" not in asset and asset.get("fileName"):
+                    asset["file_name"] = asset.get("fileName")
+
     sections = data.get("ingredients")
     if not isinstance(sections, list):
         return data

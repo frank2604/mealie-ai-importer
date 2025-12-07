@@ -12,6 +12,7 @@ class Ingredient(BaseModel):
     quantity: Optional[float] = None
     unit: Optional[str] = None
     note: Optional[str] = None
+    deleted: Optional[bool] = Field(default=False, alias="deleted")
     mealie_food_id: Optional[str] = Field(default=None, alias="mealieFoodId")
     mealie_unit_id: Optional[str] = Field(default=None, alias="mealieUnitId")
     food_badge_id: Optional[str] = Field(default=None, alias="foodBadgeId")

@@ -1,0 +1,18 @@
+{
+  "name": "TK-Erbse",
+  "payload": {
+    "name": "TK-Erbse",
+    "pluralName": "TK-Erbsen",
+    "extras": {},
+    "labelId": "7206a457-7b61-4291-9a5a-2add225233c6",
+    "aliases": [
+      {
+        "name": "tiefgekühlte Erbse"
+      },
+      {
+        "name": "tiefgekühlte Erbsen"
+      }
+    ],
+    "householdsWithIngredientFood": []
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "chatcmpl-CjoZcQTmfWfhA437RQ7ISy9S2ug00",
+  "object": "chat.completion",
+  "created": 1765035200,
+  "model": "gpt-4.1-nano-2025-04-14",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\"match\": \"d234d031-dc3c-49a1-a23c-6428cb06d61a\", \"reason\": \"Der Kandidat Olivenöl entspricht exakt dem Begriff 'Öl' im Rezept.\"}",
+        "refusal": null,
+        "annotations": []
+      },
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 851,
+    "completion_tokens": 50,
+    "total_tokens": 901,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 0,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "service_tier": "default",
+  "system_fingerprint": "fp_ef015fa747"
+}

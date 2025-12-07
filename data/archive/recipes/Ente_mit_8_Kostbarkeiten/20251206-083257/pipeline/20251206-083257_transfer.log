@@ -1,0 +1,67 @@
+2025-12-06 09:47:30 [INFO] Pipeline: -----------------------------------------------
+2025-12-06 09:47:30 [INFO] Pipeline: Starting module Apply User Decisions
+2025-12-06 09:47:30 [INFO] Review: Applying user decisions for foods, units, and metadata
+2025-12-06 09:47:30 [INFO] Pipeline: Finished module Apply User Decisions
+2025-12-06 09:47:30 [INFO] Pipeline: -----------------------------------------------
+2025-12-06 09:47:30 [INFO] Pipeline: Starting module Create Foods
+2025-12-06 09:47:35 [INFO] httpx: HTTP Request: POST https://mealie.local/api/foods "HTTP/1.1 201 Created"
+2025-12-06 09:47:35 [INFO] Create Foods: Created the food "Tongu-Pilze" with your details (ID: e10b6bb8-173d-43bd-a3bb-b3fdde841f30)
+2025-12-06 09:47:35 [INFO] httpx: HTTP Request: POST https://mealie.local/api/foods "HTTP/1.1 201 Created"
+2025-12-06 09:47:35 [INFO] Create Foods: Created the food "Fünfgewürzpulver" with your details (ID: 00d03eb5-65d2-4e4c-a369-1c1b810c3de3)
+2025-12-06 09:47:35 [INFO] httpx: HTTP Request: POST https://mealie.local/api/foods "HTTP/1.1 201 Created"
+2025-12-06 09:47:35 [INFO] Create Foods: Created the food "Hoisinsauce" with your details (ID: ead88ba8-78b3-4c24-874e-f7c878836fb7)
+2025-12-06 09:47:35 [INFO] httpx: HTTP Request: POST https://mealie.local/api/foods "HTTP/1.1 201 Created"
+2025-12-06 09:47:35 [INFO] Create Foods: Created the food "Lotussamen" with your details (ID: ab4a2bd3-a637-46ea-986a-b22d2146f60c)
+2025-12-06 09:47:35 [INFO] httpx: HTTP Request: POST https://mealie.local/api/foods "HTTP/1.1 201 Created"
+2025-12-06 09:47:35 [INFO] Create Foods: Created the food "Cashewkerne" with your details (ID: 8c6fa351-ec3f-4510-81d4-18466a5124ed)
+2025-12-06 09:47:35 [INFO] httpx: HTTP Request: POST https://mealie.local/api/foods "HTTP/1.1 201 Created"
+2025-12-06 09:47:35 [INFO] Create Foods: Created the food "getrocknete Lilienknospen" with your details (ID: b2b58487-6112-4af1-b696-fb63dee002cb)
+2025-12-06 09:47:35 [INFO] httpx: HTTP Request: POST https://mealie.local/api/foods "HTTP/1.1 201 Created"
+2025-12-06 09:47:35 [INFO] Create Foods: Created the food "getrocknete Pflaumen" with your details (ID: 4d142d2e-37e8-4498-8cc0-40f58c644c45)
+2025-12-06 09:47:35 [INFO] httpx: HTTP Request: POST https://mealie.local/api/foods "HTTP/1.1 201 Created"
+2025-12-06 09:47:35 [INFO] Create Foods: Created the food "Reiswein" with your details (ID: 27e5cbc6-cd49-4a48-b85c-d3ed0c13c767)
+2025-12-06 09:47:35 [INFO] Create Foods: Created 8 new foods in Mealie
+2025-12-06 09:47:35 [INFO] Pipeline: Finished module Create Foods
+2025-12-06 09:47:35 [INFO] Pipeline: -----------------------------------------------
+2025-12-06 09:47:35 [INFO] Pipeline: Starting module Add Food IDs
+2025-12-06 09:47:35 [INFO] Add Food IDs: Added Mealie food IDs to 8 ingredients
+2025-12-06 09:47:35 [INFO] Pipeline: Finished module Add Food IDs
+2025-12-06 09:47:35 [INFO] Pipeline: -----------------------------------------------
+2025-12-06 09:47:35 [INFO] Pipeline: Starting module Create Units
+2025-12-06 09:47:35 [INFO] Create Units: Every ingredient already has a matching Mealie unit
+2025-12-06 09:47:35 [INFO] Pipeline: Finished module Create Units
+2025-12-06 09:47:35 [INFO] Pipeline: -----------------------------------------------
+2025-12-06 09:47:35 [INFO] Pipeline: Starting module Add Unit IDs
+2025-12-06 09:47:35 [INFO] Add Unit IDs: All ingredients already had their unit IDs
+2025-12-06 09:47:35 [INFO] Pipeline: Finished module Add Unit IDs
+2025-12-06 09:47:35 [INFO] Pipeline: -----------------------------------------------
+2025-12-06 09:47:35 [INFO] Pipeline: Starting module Create Recipe
+2025-12-06 09:47:35 [INFO] Create Recipe: Preparing the data that will be sent to Mealie
+2025-12-06 09:47:35 [INFO] Create Recipe: Sending recipe details to Mealie (POST /api/recipes) - payload file: pipeline/38_Mealie_POST_api_recipes_request.json
+2025-12-06 09:47:40 [INFO] httpx: HTTP Request: POST https://mealie.local/api/recipes "HTTP/1.1 201 Created"
+2025-12-06 09:47:40 [INFO] Create Recipe: Mealie accepted the recipe details (POST /api/recipes) - payload file: pipeline/39_Mealie_POST_api_recipes_response.json
+2025-12-06 09:47:40 [INFO] Create Recipe: Created a placeholder recipe in Mealie (ente-mit-8-kostbarkeiten)
+2025-12-06 09:47:40 [INFO] Create Recipe: Checking if the recipe already exists in Mealie (GET /api/recipes/{slug}) - payload file: pipeline/40_Mealie_GET_api_recipes_slug_request_initial.json
+2025-12-06 09:47:45 [INFO] httpx: HTTP Request: GET https://mealie.local/api/recipes/ente-mit-8-kostbarkeiten "HTTP/1.1 200 OK"
+2025-12-06 09:47:45 [INFO] Create Recipe: Mealie responded to the initial recipe lookup (GET /api/recipes/{slug}) - payload file: pipeline/41_Mealie_GET_api_recipes_slug_response_initial.json
+2025-12-06 09:47:45 [INFO] Create Recipe: Updating the recipe in Mealie (PUT /api/recipes/{slug}) - payload file: pipeline/42_Mealie_PUT_api_recipes_slug_request.json
+2025-12-06 09:47:50 [INFO] httpx: HTTP Request: PUT https://mealie.local/api/recipes/ente-mit-8-kostbarkeiten "HTTP/1.1 200 OK"
+2025-12-06 09:47:50 [INFO] Create Recipe: Mealie confirmed the recipe update (PUT /api/recipes/{slug}) - payload file: pipeline/43_Mealie_PUT_api_recipes_slug_response.json
+2025-12-06 09:47:50 [INFO] Create Recipe: Confirming the saved recipe in Mealie (GET /api/recipes/{slug}) - payload file: pipeline/44_Mealie_GET_api_recipes_slug_request_after_put.json
+2025-12-06 09:47:55 [INFO] httpx: HTTP Request: GET https://mealie.local/api/recipes/ente-mit-8-kostbarkeiten "HTTP/1.1 200 OK"
+2025-12-06 09:47:55 [INFO] Create Recipe: Mealie returned the saved recipe details (GET /api/recipes/{slug}) - payload file: pipeline/45_Mealie_GET_api_recipes_slug_response_after_put.json
+2025-12-06 09:47:55 [INFO] Create Recipe: Sending final recipe adjustments to Mealie (PATCH /api/recipes/{slug}) - payload file: pipeline/46_Mealie_PATCH_api_recipes_slug_request.json
+2025-12-06 09:48:01 [INFO] httpx: HTTP Request: PATCH https://mealie.local/api/recipes/ente-mit-8-kostbarkeiten "HTTP/1.1 200 OK"
+2025-12-06 09:48:01 [INFO] Create Recipe: Mealie confirmed the final adjustments (PATCH /api/recipes/{slug}) - payload file: pipeline/47_Mealie_PATCH_api_recipes_slug_response.json
+2025-12-06 09:48:01 [INFO] Create Recipe: Updated the recipe details and added the preparation steps
+2025-12-06 09:48:01 [INFO] Create Recipe: Setting the feature image in Mealie (POST /api/recipes/{slug}/image) - payload file: pipeline/48_Mealie_POST_api_recipes_slug_image_request.json
+2025-12-06 09:48:08 [INFO] httpx: HTTP Request: PUT https://mealie.local/api/recipes/ente-mit-8-kostbarkeiten/image "HTTP/1.1 200 OK"
+2025-12-06 09:48:08 [INFO] Create Recipe: Mealie confirmed the feature image (POST /api/recipes/{slug}/image) - payload file: pipeline/49_Mealie_POST_api_recipes_slug_image_response.json
+2025-12-06 09:48:08 [INFO] Create Recipe: Set the feature image for the recipe
+2025-12-06 09:48:08 [INFO] Create Recipe: Uploading recipe files to Mealie (POST /api/recipes/{slug}/assets) - payload file: pipeline/50_Mealie_POST_api_recipes_slug_assets_request.json
+2025-12-06 09:48:13 [INFO] httpx: HTTP Request: POST https://mealie.local/api/recipes/ente-mit-8-kostbarkeiten/assets "HTTP/1.1 200 OK"
+2025-12-06 09:48:13 [INFO] Create Recipe: Mealie confirmed the file upload (POST /api/recipes/{slug}/assets) - payload file: pipeline/51_Mealie_POST_api_recipes_slug_assets_response.json
+2025-12-06 09:48:13 [INFO] Create Recipe: Uploaded the original PDF as an attachment
+2025-12-06 09:48:13 [INFO] Pipeline: Finished module Create Recipe
+2025-12-06 09:48:13 [INFO] Pipeline: -----------------------------------------------
+2025-12-06 09:48:13 [INFO] importer.server: Übertragung erfolgreich abgeschlossen

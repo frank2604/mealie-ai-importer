@@ -1,0 +1,18 @@
+{
+  "name": "Morchel (getrocknet, chinesisch)",
+  "payload": {
+    "name": "Morchel (getrocknet, chinesisch)",
+    "pluralName": "Morcheln (getrocknet, chinesisch)",
+    "extras": {},
+    "labelId": "d1cd4704-d9b1-4019-906f-4e3fc67e040a",
+    "aliases": [
+      {
+        "name": "getrocknete Morchel"
+      },
+      {
+        "name": "chinesische Morchel"
+      }
+    ],
+    "householdsWithIngredientFood": []
+  }
+}

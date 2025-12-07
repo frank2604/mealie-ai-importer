@@ -1,0 +1,143 @@
+2025-12-06 09:32:57 [INFO] Pipeline: -----------------------------------------------
+2025-12-06 09:32:57 [INFO] Pipeline: Starting module Refresh Mealie caches
+2025-12-06 09:32:57 [INFO] Refresh Caches: Refreshing the ingredient and unit lists from Mealie
+2025-12-06 09:33:02 [INFO] httpx: HTTP Request: GET https://mealie.local/api/units?page=1&perPage=200 "HTTP/1.1 200 OK"
+2025-12-06 09:33:03 [INFO] httpx: HTTP Request: GET https://mealie.local/api/foods?page=1&perPage=200 "HTTP/1.1 200 OK"
+2025-12-06 09:33:03 [INFO] httpx: HTTP Request: GET https://mealie.local/api/groups/labels?page=1&perPage=200 "HTTP/1.1 200 OK"
+2025-12-06 09:33:03 [INFO] httpx: HTTP Request: GET https://mealie.local/api/organizers/categories?page=1&perPage=200 "HTTP/1.1 200 OK"
+2025-12-06 09:33:03 [INFO] httpx: HTTP Request: GET https://mealie.local/api/organizers/tags?page=1&perPage=200 "HTTP/1.1 200 OK"
+2025-12-06 09:33:03 [INFO] Refresh Caches: Finished refreshing the Mealie lists
+2025-12-06 09:33:03 [INFO] Pipeline: Finished module Refresh Mealie caches
+2025-12-06 09:33:03 [INFO] Pipeline: -----------------------------------------------
+2025-12-06 09:33:03 [INFO] Pipeline: Starting module Input
+2025-12-06 09:33:03 [INFO] PDF Input: Reading the recipe PDF from data/pipeline/01_Ente_mit_8_Kostbarkeiten.pdf
+2025-12-06 09:33:03 [INFO] Pipeline: Finished module Input
+2025-12-06 09:33:03 [INFO] Pipeline: -----------------------------------------------
+2025-12-06 09:33:03 [INFO] Pipeline: Starting module AI Analyser
+2025-12-06 09:33:03 [INFO] AI Analyser: Starting the AI analysis with 14607 characters of recipe text
+2025-12-06 09:33:03 [INFO] AI Analyser: LLM config (analysis): model=gpt-4.1-mini, temperature=0.3, top_p=1, max_output_tokens=5000
+2025-12-06 09:33:27 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-06 09:33:27 [INFO] AI Analyser: Stored the selected image at data/pipeline/02_RecipeImage.jpg
+2025-12-06 09:33:27 [INFO] AI Analyser: Saved the raw recipe snapshot to data/pipeline/04_RecipeRawData.json
+2025-12-06 09:33:27 [INFO] AI Analyser: Saved RecipeData.json to data/pipeline/05_RecipeData.json
+2025-12-06 09:33:27 [INFO] Pipeline: Finished module AI Analyser
+2025-12-06 09:33:27 [INFO] Pipeline: -----------------------------------------------
+2025-12-06 09:33:27 [INFO] Pipeline: Starting module Instruction Linking
+2025-12-06 09:33:27 [INFO] Instruction Linking: LLM config (instructions): model=gpt-4.1-mini, temperature=0, top_p=1, max_output_tokens=600
+2025-12-06 09:33:32 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-06 09:33:32 [INFO] Instruction Linking: LLM Schritt-Zuordnung: 8 Schritte mit Zuordnungen
+2025-12-06 09:33:32 [INFO] Instruction Linking: LLM ingredient linking: 19 Zutaten, 8 Schritte, 8 Schritte mit Zuordnung
+2025-12-06 09:33:32 [INFO] Pipeline: Finished module Instruction Linking
+2025-12-06 09:33:32 [INFO] Pipeline: -----------------------------------------------
+2025-12-06 09:33:32 [INFO] Pipeline: Starting module Food Checker
+2025-12-06 09:33:32 [INFO] Food Checker: Trying to match 19 ingredients to existing foods in Mealie [getrocknete chinesische Morcheln, Tongu-Pilze, junge Ente, Sah, frischer Ingwer, Fünfgewürzpulver, schwarzer Pfeffer aus der Mühle, Hoisinsauce, helle Sojasauce, Lotussamen, Wasserkastanien, Cashewkerne, TK-Erbsen, getrocknete Lilienknospen, Öl, getrocknete chinesische Datteln, getrocknete Pflaumen, Speisestärke, Reiswein]
+2025-12-06 09:33:32 [INFO] Food Checker: Matched 2 ingredients exact by words: [Wasserkastanien, Speisestärke]
+2025-12-06 09:33:32 [INFO] Food Checker: Try matching rest of the ingredients [getrocknete chinesische Morcheln, Tongu-Pilze, junge Ente, Sah, frischer Ingwer, Fünfgewürzpulver, schwarzer Pfeffer aus der Mühle, Hoisinsauce, helle Sojasauce, Lotussamen, Cashewkerne, TK-Erbsen, getrocknete Lilienknospen, Öl, getrocknete chinesische Datteln, getrocknete Pflaumen, Reiswein] with AI
+2025-12-06 09:33:32 [INFO] Food Checker: Ask AI to find [getrocknete chinesische Morcheln] in existing foods in Mealie
+2025-12-06 09:33:32 [INFO] Food Checker: LLM config (ingredients): model=gpt-4.1-nano, temperature=0, top_p=1, max_output_tokens=2500
+2025-12-06 09:33:34 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-06 09:33:34 [INFO] Food Checker: AI suggests [Morchel (getrocknet, chinesisch)] from existing foods in Mealie
+2025-12-06 09:33:34 [INFO] Food Checker: Ask AI to find [Tongu-Pilze] in existing foods in Mealie
+2025-12-06 09:33:34 [INFO] Food Checker: LLM config (ingredients): model=gpt-4.1-nano, temperature=0, top_p=1, max_output_tokens=2500
+2025-12-06 09:33:35 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-06 09:33:35 [INFO] Food Checker: AI could not find a matching ingredient for [Tongu-Pilze] in existing foods in Mealie
+2025-12-06 09:33:35 [INFO] Food Checker: Ask AI to find [junge Ente] in existing foods in Mealie
+2025-12-06 09:33:35 [INFO] Food Checker: LLM config (ingredients): model=gpt-4.1-nano, temperature=0, top_p=1, max_output_tokens=2500
+2025-12-06 09:33:36 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-06 09:33:36 [INFO] Food Checker: AI suggests [Ente (jung)] from existing foods in Mealie
+2025-12-06 09:33:36 [INFO] Food Checker: Ask AI to find [Sah] in existing foods in Mealie
+2025-12-06 09:33:36 [INFO] Food Checker: LLM config (ingredients): model=gpt-4.1-nano, temperature=0, top_p=1, max_output_tokens=2500
+2025-12-06 09:33:37 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-06 09:33:37 [INFO] Food Checker: AI suggests [Süße Sahne] from existing foods in Mealie
+2025-12-06 09:33:37 [INFO] Food Checker: Ask AI to find [frischer Ingwer] in existing foods in Mealie
+2025-12-06 09:33:37 [INFO] Food Checker: LLM config (ingredients): model=gpt-4.1-nano, temperature=0, top_p=1, max_output_tokens=2500
+2025-12-06 09:33:38 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-06 09:33:38 [INFO] Food Checker: AI suggests [Ingwer (frisch)] from existing foods in Mealie
+2025-12-06 09:33:38 [INFO] Food Checker: Ask AI to find [Fünfgewürzpulver] in existing foods in Mealie
+2025-12-06 09:33:38 [INFO] Food Checker: LLM config (ingredients): model=gpt-4.1-nano, temperature=0, top_p=1, max_output_tokens=2500
+2025-12-06 09:33:40 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-06 09:33:40 [INFO] Food Checker: AI could not find a matching ingredient for [Fünfgewürzpulver] in existing foods in Mealie
+2025-12-06 09:33:40 [INFO] Food Checker: Ask AI to find [schwarzer Pfeffer aus der Mühle] in existing foods in Mealie
+2025-12-06 09:33:40 [INFO] Food Checker: LLM config (ingredients): model=gpt-4.1-nano, temperature=0, top_p=1, max_output_tokens=2500
+2025-12-06 09:33:41 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-06 09:33:41 [INFO] Food Checker: AI suggests [Pfeffer] from existing foods in Mealie
+2025-12-06 09:33:41 [INFO] Food Checker: Ask AI to find [Hoisinsauce] in existing foods in Mealie
+2025-12-06 09:33:41 [INFO] Food Checker: LLM config (ingredients): model=gpt-4.1-nano, temperature=0, top_p=1, max_output_tokens=2500
+2025-12-06 09:33:43 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-06 09:33:43 [INFO] Food Checker: AI could not find a matching ingredient for [Hoisinsauce] in existing foods in Mealie
+2025-12-06 09:33:43 [INFO] Food Checker: Ask AI to find [helle Sojasauce] in existing foods in Mealie
+2025-12-06 09:33:43 [INFO] Food Checker: LLM config (ingredients): model=gpt-4.1-nano, temperature=0, top_p=1, max_output_tokens=2500
+2025-12-06 09:33:45 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-06 09:33:45 [INFO] Food Checker: AI suggests [Heller Soßenbinder] from existing foods in Mealie
+2025-12-06 09:33:45 [INFO] Food Checker: Ask AI to find [Lotussamen] in existing foods in Mealie
+2025-12-06 09:33:45 [INFO] Food Checker: LLM config (ingredients): model=gpt-4.1-nano, temperature=0, top_p=1, max_output_tokens=2500
+2025-12-06 09:33:45 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-06 09:33:45 [INFO] Food Checker: AI could not find a matching ingredient for [Lotussamen] in existing foods in Mealie
+2025-12-06 09:33:45 [INFO] Food Checker: Ask AI to find [Cashewkerne] in existing foods in Mealie
+2025-12-06 09:33:45 [INFO] Food Checker: LLM config (ingredients): model=gpt-4.1-nano, temperature=0, top_p=1, max_output_tokens=2500
+2025-12-06 09:33:47 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-06 09:33:47 [INFO] Food Checker: AI could not find a matching ingredient for [Cashewkerne] in existing foods in Mealie
+2025-12-06 09:33:47 [INFO] Food Checker: Ask AI to find [TK-Erbsen] in existing foods in Mealie
+2025-12-06 09:33:47 [INFO] Food Checker: LLM config (ingredients): model=gpt-4.1-nano, temperature=0, top_p=1, max_output_tokens=2500
+2025-12-06 09:33:48 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-06 09:33:48 [INFO] Food Checker: AI suggests [Rote Zwiebel] from existing foods in Mealie
+2025-12-06 09:33:48 [INFO] Food Checker: Ask AI to find [getrocknete Lilienknospen] in existing foods in Mealie
+2025-12-06 09:33:48 [INFO] Food Checker: LLM config (ingredients): model=gpt-4.1-nano, temperature=0, top_p=1, max_output_tokens=2500
+2025-12-06 09:33:48 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-06 09:33:48 [INFO] Food Checker: AI could not find a matching ingredient for [getrocknete Lilienknospen] in existing foods in Mealie
+2025-12-06 09:33:48 [INFO] Food Checker: Ask AI to find [Öl] in existing foods in Mealie
+2025-12-06 09:33:48 [INFO] Food Checker: LLM config (ingredients): model=gpt-4.1-nano, temperature=0, top_p=1, max_output_tokens=2500
+2025-12-06 09:33:49 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-06 09:33:49 [INFO] Food Checker: AI suggests [Olivenöl] from existing foods in Mealie
+2025-12-06 09:33:49 [INFO] Food Checker: Ask AI to find [getrocknete chinesische Datteln] in existing foods in Mealie
+2025-12-06 09:33:49 [INFO] Food Checker: LLM config (ingredients): model=gpt-4.1-nano, temperature=0, top_p=1, max_output_tokens=2500
+2025-12-06 09:33:50 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-06 09:33:50 [INFO] Food Checker: AI suggests [Morchel (getrocknet, chinesisch)] from existing foods in Mealie
+2025-12-06 09:33:50 [INFO] Food Checker: Ask AI to find [getrocknete Pflaumen] in existing foods in Mealie
+2025-12-06 09:33:50 [INFO] Food Checker: LLM config (ingredients): model=gpt-4.1-nano, temperature=0, top_p=1, max_output_tokens=2500
+2025-12-06 09:33:51 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-06 09:33:51 [INFO] Food Checker: AI could not find a matching ingredient for [getrocknete Pflaumen] in existing foods in Mealie
+2025-12-06 09:33:51 [INFO] Food Checker: Ask AI to find [Reiswein] in existing foods in Mealie
+2025-12-06 09:33:51 [INFO] Food Checker: LLM config (ingredients): model=gpt-4.1-nano, temperature=0, top_p=1, max_output_tokens=2500
+2025-12-06 09:33:53 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-06 09:33:53 [INFO] Food Checker: AI could not find a matching ingredient for [Reiswein] in existing foods in Mealie
+2025-12-06 09:33:53 [INFO] Food Checker: Matched 11 ingredients so far; 8 still need attention
+2025-12-06 09:33:53 [INFO] Food Checker: Matched 9 ingredients with AI: [getrocknete chinesische Morcheln, junge Ente, Sah, frischer Ingwer, schwarzer Pfeffer aus der Mühle, helle Sojasauce, TK-Erbsen, Öl, getrocknete chinesische Datteln]
+2025-12-06 09:33:53 [INFO] Food Checker: 8 ingredients need to be created in Mealie: [Tongu-Pilze, Fünfgewürzpulver, Hoisinsauce, Lotussamen, Cashewkerne, getrocknete Lilienknospen, getrocknete Pflaumen, Reiswein]
+2025-12-06 09:33:53 [INFO] Food Checker: Will ask AI for naming suggestions for missing ingredients
+2025-12-06 09:33:53 [INFO] Food Checker: Ask AI for singular, plural, aliases and mapping to existing food category for [Tongu-Pilze]
+2025-12-06 09:33:53 [INFO] Food Checker: Ask AI for singular, plural, aliases and mapping to existing food category for [Fünfgewürzpulver]
+2025-12-06 09:33:53 [INFO] Food Checker: Ask AI for singular, plural, aliases and mapping to existing food category for [Hoisinsauce]
+2025-12-06 09:33:53 [INFO] Food Checker: Ask AI for singular, plural, aliases and mapping to existing food category for [Lotussamen]
+2025-12-06 09:33:53 [INFO] Food Checker: Ask AI for singular, plural, aliases and mapping to existing food category for [Cashewkerne]
+2025-12-06 09:33:53 [INFO] Food Checker: Ask AI for singular, plural, aliases and mapping to existing food category for [getrocknete Lilienknospen]
+2025-12-06 09:33:53 [INFO] Food Checker: Ask AI for singular, plural, aliases and mapping to existing food category for [getrocknete Pflaumen]
+2025-12-06 09:33:53 [INFO] Food Checker: Ask AI for singular, plural, aliases and mapping to existing food category for [Reiswein]
+2025-12-06 09:33:53 [INFO] importer.services.ingredients: LLM config (foodForms): model=gpt-4.1-mini, temperature=0.5, top_p=1, max_output_tokens=5000
+2025-12-06 09:34:03 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-06 09:34:03 [INFO] Food Checker: AI returns this suggestion for [Tongu-Pilze]: singular [Tongu-Pilz], plural [Tongu-Pilze], aliases [], category [Obst & Gemüse 🍎]
+2025-12-06 09:34:03 [INFO] Food Checker: AI returns this suggestion for [Fünfgewürzpulver]: singular [Fünfgewürzpulver], plural [Fünfgewürzpulver], aliases [], category [Gewürze 🌿]
+2025-12-06 09:34:03 [INFO] Food Checker: AI returns this suggestion for [Hoisinsauce]: singular [Hoisinsauce], plural [Hoisinsauce], aliases [], category [Würzmittel, Brühen & Soßen🧂]
+2025-12-06 09:34:03 [INFO] Food Checker: AI returns this suggestion for [Lotussamen]: singular [Lotussamen], plural [Lotussamen], aliases [], category [Obst & Gemüse 🍎]
+2025-12-06 09:34:03 [INFO] Food Checker: AI returns this suggestion for [Cashewkerne]: singular [Cashewkern], plural [Cashewkerne], aliases [], category [Obst & Gemüse 🍎]
+2025-12-06 09:34:03 [INFO] Food Checker: AI returns this suggestion for [getrocknete Lilienknospen]: singular [Lilienknospe (getrocknet)], plural [Lilienknospen (getrocknet)], aliases [], category [Obst & Gemüse 🍎]
+2025-12-06 09:34:03 [INFO] Food Checker: AI returns this suggestion for [getrocknete Pflaumen]: singular [Pflaume (getrocknet)], plural [Pflaumen (getrocknet)], aliases [Trockenpflaumen, Backpflaumen], category [Obst & Gemüse 🍎]
+2025-12-06 09:34:03 [INFO] Food Checker: AI returns this suggestion for [Reiswein]: singular [Reiswein], plural [Reiswein], aliases [Sake], category [Alkohol 🍻]
+2025-12-06 09:34:03 [INFO] Food Checker: Saved the foods review to data/pipeline/25_FoodsReview.json
+2025-12-06 09:34:03 [INFO] Pipeline: Finished module Food Checker
+2025-12-06 09:34:03 [INFO] Pipeline: -----------------------------------------------
+2025-12-06 09:34:03 [INFO] Pipeline: Starting module Unit Checker
+2025-12-06 09:34:03 [INFO] Unit Checker: Trying to match 4 unique units (from 16 ingredient entries) to existing Mealie units [Stück, g, EL, TL]
+2025-12-06 09:34:03 [INFO] Unit Checker: Matched 16 units exact by words: [EL, EL, EL, EL, g, g, g, g, g, g, Stück, Stück, Stück, Stück, Stück, TL]
+2025-12-06 09:34:03 [INFO] Unit Checker: Matched 16 units so far; 0 still need attention
+2025-12-06 09:34:03 [INFO] Unit Checker: Every unit now has a Mealie match
+2025-12-06 09:34:03 [INFO] Unit Checker: Saved the units review to data/pipeline/26_UnitsReview.json
+2025-12-06 09:34:03 [INFO] Pipeline: Finished module Unit Checker
+2025-12-06 09:34:03 [INFO] Pipeline: -----------------------------------------------
+2025-12-06 09:34:03 [INFO] Pipeline: Starting module Assign Metadata
+2025-12-06 09:34:03 [INFO] Assign Metadata: LLM config (metadata): model=gpt-4.1-mini, temperature=0.3, top_p=1, max_output_tokens=5000
+2025-12-06 09:34:07 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-06 09:34:07 [INFO] Assign Metadata: Saved the metadata review to data/pipeline/27_MetadataReview.json
+2025-12-06 09:34:28 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-06 09:34:28 [INFO] Pipeline: Finished module Assign Metadata
+2025-12-06 09:34:28 [INFO] Pipeline: -----------------------------------------------

@@ -1,102 +1,121 @@
 {
   "title": "Ente mit 8 Kostbarkeiten",
-  "description": "Dieses traditionelle chinesische Gericht kombiniert zartes Entenfleisch mit einer Auswahl an acht feinen Zutaten wie Pilzen, Lotus­samen und Wasserkastanien. Die Kombination aus herzhaften Aromen und verschiedenen Texturen macht es zu einem besonderen Festessen. Ideal für 4 Personen.",
+  "description": "Dieses Rezept kombiniert zartes Entenfleisch mit acht köstlichen Beilagen aus der chinesischen Küche. Die Kombination aus Pilzen, Lotus­samen und weiteren Zutaten sorgt für ein feines und aromatisches Essen. Ideal für ein besonderes asiatisches Gericht.",
   "recipeServings": 4.0,
   "ingredients": [
     {
-      "name": "Ente mit 8 Kostbarkeiten",
+      "name": "Ente mit 8 Kostbarkeiten Zutaten",
       "ingredients": [
         {
           "name": "getrocknete chinesische Morcheln",
           "quantity": 6.0,
-          "unit": "Stück"
+          "unit": "Stück",
+          "deleted": false
         },
         {
           "name": "Tongu-Pilze",
           "quantity": 6.0,
-          "unit": "Stück"
+          "unit": "Stück",
+          "deleted": false
         },
         {
           "name": "junge Ente",
           "quantity": 1.0,
           "unit": "Stück",
-          "note": "etwa 1,8kg"
+          "note": "etwa 1,8 kg",
+          "deleted": false
         },
         {
-          "name": "Sah"
+          "name": "Sah",
+          "deleted": false
         },
         {
           "name": "frischer Ingwer",
           "quantity": 25.0,
-          "unit": "g"
+          "unit": "g",
+          "deleted": false
         },
         {
-          "name": "Fünfgewürzpulver"
+          "name": "Fünfgewürzpulver",
+          "deleted": false
         },
         {
-          "name": "schwarzer Pfeffer aus der Mühle"
+          "name": "schwarzer Pfeffer aus der Mühle",
+          "deleted": false
         },
         {
           "name": "Hoisinsauce",
           "quantity": 2.0,
-          "unit": "EL"
+          "unit": "EL",
+          "deleted": false
         },
         {
           "name": "helle Sojasauce",
           "quantity": 2.0,
-          "unit": "EL"
+          "unit": "EL",
+          "deleted": false
         },
         {
           "name": "Lotussamen",
           "quantity": 50.0,
           "unit": "g",
-          "note": "Dose"
+          "note": "Dose",
+          "deleted": false
         },
         {
           "name": "Wasserkastanien",
           "quantity": 150.0,
           "unit": "g",
-          "note": "Dose"
+          "note": "Dose",
+          "deleted": false
         },
         {
           "name": "Cashewkerne",
           "quantity": 50.0,
-          "unit": "g"
+          "unit": "g",
+          "deleted": false
         },
         {
           "name": "TK-Erbsen",
           "quantity": 100.0,
-          "unit": "g"
+          "unit": "g",
+          "deleted": false
         },
         {
           "name": "getrocknete Lilienknospen",
           "quantity": 50.0,
-          "unit": "g"
+          "unit": "g",
+          "deleted": false
         },
         {
           "name": "Öl",
           "quantity": 2.0,
-          "unit": "EL"
+          "unit": "EL",
+          "deleted": false
         },
         {
           "name": "getrocknete chinesische Datteln",
           "quantity": 5.0,
-          "unit": "Stück"
+          "unit": "Stück",
+          "deleted": false
         },
         {
           "name": "getrocknete chinesische Pflaumen",
           "quantity": 5.0,
-          "unit": "Stück"
+          "unit": "Stück",
+          "deleted": false
         },
         {
           "name": "Speisestärke",
           "quantity": 1.0,
-          "unit": "TL"
+          "unit": "TL",
+          "deleted": false
         },
         {
           "name": "Reiswein",
           "quantity": 2.0,
-          "unit": "EL"
+          "unit": "EL",
+          "deleted": false
         }
       ]
     }
@@ -164,18 +183,17 @@
   "metadata": {
     "source": "meine familie & ich 45",
     "categories": [
-      "Hauptgericht",
-      "Geflügel",
       "Asiatisch",
-      "Ente"
+      "Ente",
+      "Hauptgericht"
     ],
     "cuisine": "Chinesisch",
     "tags": [
       "Ente",
       "Pilze",
-      "Lotussamen",
-      "Wasserkastanien",
-      "Festessen"
+      "Asiatisch",
+      "Wok",
+      "Schmorgericht"
     ],
     "mealie_categories": [],
     "mealie_tags": []

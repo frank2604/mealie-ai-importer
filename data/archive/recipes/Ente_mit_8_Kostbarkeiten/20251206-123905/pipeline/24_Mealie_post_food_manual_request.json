@@ -1,0 +1,15 @@
+{
+  "name": "Ente (jung)",
+  "payload": {
+    "name": "Ente (jung)",
+    "pluralName": "Enten (jung)",
+    "extras": {},
+    "labelId": "d544476e-8baa-434b-87d3-66cb979cea2d",
+    "aliases": [
+      {
+        "name": "junge Ente"
+      }
+    ],
+    "householdsWithIngredientFood": []
+  }
+}

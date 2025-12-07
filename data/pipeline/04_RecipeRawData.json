@@ -1,6 +1,6 @@
 {
   "title": "Westernbällchen",
-  "description": "Saftige Westernbällchen mit Frühlingszwiebeln, Chili, Knoblauch und Maiskörnern. Ein herzhaftes Gericht, das in nur 30 Minuten zubereitet ist. Perfekt für 6 bis 8 Personen als leckere Mahlzeit.",
+  "description": "Saftige Westernbällchen mit Frühlingszwiebeln, Chili, Knoblauch und Maiskörnern. Ein herzhaftes Gericht, das schnell zubereitet ist und durch seine würzige Note überzeugt.",
   "recipeServings": 7.0,
   "totalTime": "30 Minuten",
   "prepTime": "30 Minuten",
@@ -11,38 +11,42 @@
           "name": "Frühlingszwiebeln",
           "quantity": 150.0,
           "unit": "g",
+          "note": "fein gehackt",
           "deleted": false
         },
         {
           "name": "rote Chilischote",
           "quantity": 1.0,
           "unit": "Stück",
+          "note": "entkernt und fein gehackt",
           "deleted": false
         },
         {
           "name": "Maiskörner",
           "quantity": 4.0,
-          "unit": "EL",
-          "note": "Dose",
+          "unit": "Esslöffel",
+          "note": "Dose, grob gehackt",
           "deleted": false
         },
         {
           "name": "Knoblauchzehe",
           "quantity": 1.0,
           "unit": "Stück",
+          "note": "durchgepresst",
           "deleted": false
         },
         {
           "name": "Toastbrot",
           "quantity": 2.0,
           "unit": "Scheiben",
+          "note": "gewürfelt",
           "deleted": false
         },
         {
           "name": "Ei",
           "quantity": 1.0,
           "unit": "Stück",
-          "note": "Kl. M",
+          "note": "Klasse M",
           "deleted": false
         },
         {
@@ -54,7 +58,7 @@
         {
           "name": "Öl",
           "quantity": 5.0,
-          "unit": "EL",
+          "unit": "Esslöffel",
           "deleted": false
         }
       ]
@@ -115,8 +119,9 @@
   "metadata": {
     "source": "Rezept auf Seite 58",
     "categories": [
-      "Fleischbällchen",
-      "Hauptgericht"
+      "Hauptgericht",
+      "Fleisch",
+      "Braten"
     ],
     "cuisine": "Deutsch",
     "tags": [
@@ -124,7 +129,6 @@
       "Mett",
       "Frühlingszwiebeln",
       "Chili",
-      "Knoblauch",
       "Mais"
     ],
     "mealie_categories": [],

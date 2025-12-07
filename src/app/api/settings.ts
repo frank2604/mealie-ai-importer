@@ -4,8 +4,6 @@ export interface ApiKeys {
   mealieToken: string | null;
   mealieBaseUrl: string | null;
   llmApiKey: string | null;
-  llmModel: string | null;
-  llmVisionModel: string | null;
 }
 
 const parseError = async (response: Response): Promise<Error> => {

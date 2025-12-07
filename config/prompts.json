@@ -35,11 +35,6 @@
         "user1": "Du bist ein Rezept-Assistent. Du erzeugst für die Neuanlage fehlender Zutaten-Einheiten in der Rezept-Datenbank Mealie deren Singular und Plural sowie optional Abkürzungen für Singular/Plural.\n\nFachliche Regeln:\n1. Der Name (Singular) ist Pflicht.\n2. Der Plural ist ebenfalls Pflicht. Verwende eine abweichende Form nur, wenn sie in der Praxis vorkommt. Sonst nutze den Singular.\n3. Liefere ausschließlich kochübliche Einheiten.\n4. Abkürzungen:\n4.1 Abkürzungen nur bei gebräuchlicher Kurzform. Wenn es eine Abkürzung für den Singular gibt, aber keine für den Plural, dann lasse die Abkürzung für den Plural leer.\n4.2 Abkürzungen in der kochüblichen Schreibweise zurückgeben (\"TL\", \"EL\", \"ml\").\n4.3 Setze \"Abkürzung verwenden\" nur dann auf true, wenn es sich um eine gebräuchliche Abkürzung handelt.\nBeispiele:\nSingular: \"Blatt\", Plural: \"Blätter\", Abkürzung: \"Bl\", Abkürzung Plural: null, Abkürzung verwenden: false\nSingular: \"Milliliter\", Plural: \"Milliliter\", Abkürzung: \"ml\", Abkürzung Plural: null, Abkürzung verwenden: true\n",
         "user2": "Einheiten, die verarbeitet werden müssen: {unit_lines}",
         "system": "Technische Regeln:\n1. Antworte ausschließlich mit gültigem JSON ohne zusätzlichen Text oder Kommentare.\n2. Antwortformat:\n{{\n  \"units\": [\n    {{\n      \"input\": \"...\",\n      \"name\": \"...\",\n      \"pluralName\": \"...\" | null,\n      \"abbreviation\": \"...\" | null,\n      \"pluralAbbreviation\": \"...\" | null,\n      \"useAbbreviation\": true | false\n    }}\n  ]\n}}"
-      },
-      "imageCrop": {
-        "user1": "Du bist ein präziser Assistent für Bildausschnitte. Du ermittelst aus einem Rezept-Bild einen Ausschnitt, auf dem das Gericht zu sehen ist.\n\nFachliche Regeln:\n1. Finde ausschließlich die Bildregion, auf der das fertig angerichtete Gericht inklusive Gefäß (Teller, Schale, Glas usw.) vollständig sichtbar ist.\n2. Vermeide Close-ups sowie Textspalten, Logos oder reine Dekoelemente.\n3. Falls kein sinnvolles Gericht erkennbar ist, setze \"crop\" auf null.",
-        "user2": "Rezepttitel: {title}",
-        "system": "Technische Regeln:\n1. Antworte ausschließlich mit gültigem JSON ohne zusätzlichen Text oder Kommentare und halte dich strikt an die Koordinatenvorgabe.\n2. Alle Werte sind relative Koordinaten (0.0–1.0)\n3. Gib ein JSON-Objekt mit dem Feld \"crop\" zurück:\n{{\n  \"crop\": {{\"x\": ..., \"y\": ..., \"width\": ..., \"height\": ...}}\n}}"
       }
     },
     "en": {
@@ -77,12 +72,6 @@
         "user1": "You are a recipe assistant. You create singular and plural forms for new measurement units in the Mealie database and optionally add abbreviations for singular and plural.\n\nBusiness rules:\n1. The name (singular) is mandatory.\n2. The plural form is also mandatory. Use a different form only when it is common; otherwise reuse the singular.\n3. Provide only cooking-related units.\n4. Abbreviations:\n   4.1 Output only widely used abbreviations. If an abbreviation exists for the singular but not for the plural, leave the plural abbreviation empty.\n   4.2 Return abbreviations in their typical kitchen notation (“tsp”, “tbsp”, “ml”).\n   4.3 Set \"useAbbreviation\" to true only when a common abbreviation exists.\nExamples:\nSingular: “Leaf”, plural: “Leaves”, abbreviation: “Lf”, plural abbreviation: null, useAbbreviation: false.\nSingular: “Milliliter”, plural: “Milliliter”, abbreviation: “ml”, plural abbreviation: null, useAbbreviation: true.",
         "user2": "Units to be processed: {unit_lines}",
         "system": "Technical rules:\n1. Respond only with valid JSON without extra text or comments.\n2. Response format:\n{{\n  \"units\": [\n    {{\n      \"input\": \"...\",\n      \"name\": \"...\",\n      \"pluralName\": \"...\",\n      \"abbreviation\": \"...\" | null,\n      \"pluralAbbreviation\": \"...\" | null,\n      \"useAbbreviation\": true | false\n    }}\n  ]\n}}"
-      },
-      "imageCrop": {
-        "free": "Recipe title: {title}\nFind only the region that shows the fully plated dish including its vessel (plate, bowl, glass, etc.). Avoid close-ups, text columns, logos or pure decoration. Return JSON with a \"crop\" field:\n{{\n  \"crop\": {{\"x\": ..., \"y\": ..., \"width\": ..., \"height\": ...}}\n}}\nValues are relative (0.0–1.0). If no reasonable dish is visible, set \"crop\" to null.",
-        "system": "Technical rules:\n1. Respond only with valid JSON without additional text or comments and follow the coordinate specification exactly.\n2. All values must be relative coordinates (0.0–1.0).\n3. Return a JSON object containing the field \"crop\":\n{{\n  \"crop\": {{\"x\": ..., \"y\": ..., \"width\": ..., \"height\": ...}}\n}}",
-        "user1": "You are a precise assistant for image crops. You locate the section of a recipe image that shows the finished dish.\n\nBusiness rules:\n1. Find only the region where the plated dish – including the vessel (plate, bowl, glass, etc.) – is completely visible.\n2. Avoid close-ups, text columns, logos, or decoration-only elements.\n3. If no meaningful dish can be detected, set \"crop\" to null.",
-        "user2": "Recipe title: {title}"
       }
     }
   },
@@ -122,11 +111,6 @@
         "user1": "Du bist ein Rezept-Assistent. Du erzeugst für die Neuanlage fehlender Zutaten-Einheiten in der Rezept-Datenbank Mealie deren Singular und Plural sowie optional Abkürzungen für Singular/Plural.\n\nFachliche Regeln:\n1. Der Name (Singular) ist Pflicht.\n2. Der Plural ist ebenfalls Pflicht. Verwende eine abweichende Form nur, wenn sie in der Praxis vorkommt. Sonst nutze den Singular.\n3. Liefere ausschließlich kochübliche Einheiten.\n4. Abkürzungen:\n4.1 Abkürzungen nur bei gebräuchlicher Kurzform. Wenn es eine Abkürzung für den Singular gibt, aber keine für den Plural, dann lasse die Abkürzung für den Plural leer.\n4.2 Abkürzungen in der kochüblichen Schreibweise zurückgeben (\"TL\", \"EL\", \"ml\").\n4.3 Setze \"Abkürzung verwenden\" nur dann auf true, wenn es sich um eine gebräuchliche Abkürzung handelt.\nBeispiele:\nSingular: \"Blatt\", Plural: \"Blätter\", Abkürzung: \"Bl\", Abkürzung Plural: null, Abkürzung verwenden: false\nSingular: \"Milliliter\", Plural: \"Milliliter\", Abkürzung: \"ml\", Abkürzung Plural: null, Abkürzung verwenden: true\n",
         "user2": "Einheiten, die verarbeitet werden müssen: {unit_lines}",
         "system": "Technische Regeln:\n1. Antworte ausschließlich mit gültigem JSON ohne zusätzlichen Text oder Kommentare.\n2. Antwortformat:\n{{\n  \"units\": [\n    {{\n      \"input\": \"...\",\n      \"name\": \"...\",\n      \"pluralName\": \"...\" | null,\n      \"abbreviation\": \"...\" | null,\n      \"pluralAbbreviation\": \"...\" | null,\n      \"useAbbreviation\": true | false\n    }}\n  ]\n}}"
-      },
-      "imageCrop": {
-        "user1": "Du bist ein präziser Assistent für Bildausschnitte. Du ermittelst aus einem Rezept-Bild einen Ausschnitt, auf dem das Gericht zu sehen ist.\n\nFachliche Regeln:\n1. Finde ausschließlich die Bildregion, auf der das fertig angerichtete Gericht inklusive Gefäß (Teller, Schale, Glas usw.) vollständig sichtbar ist.\n2. Vermeide Close-ups sowie Textspalten, Logos oder reine Dekoelemente.\n3. Falls kein sinnvolles Gericht erkennbar ist, setze \"crop\" auf null.",
-        "user2": "Rezepttitel: {title}",
-        "system": "Technische Regeln:\n1. Antworte ausschließlich mit gültigem JSON ohne zusätzlichen Text oder Kommentare und halte dich strikt an die Koordinatenvorgabe.\n2. Alle Werte sind relative Koordinaten (0.0–1.0)\n3. Gib ein JSON-Objekt mit dem Feld \"crop\" zurück:\n{{\n  \"crop\": {{\"x\": ..., \"y\": ..., \"width\": ..., \"height\": ...}}\n}}"
       }
     },
     "en": {
@@ -164,12 +148,6 @@
         "user1": "You are a recipe assistant. You create singular and plural forms for new measurement units in the Mealie database and optionally add abbreviations for singular and plural.\n\nBusiness rules:\n1. The name (singular) is mandatory.\n2. The plural form is also mandatory. Use a different form only when it is common; otherwise reuse the singular.\n3. Provide only cooking-related units.\n4. Abbreviations:\n   4.1 Output only widely used abbreviations. If an abbreviation exists for the singular but not for the plural, leave the plural abbreviation empty.\n   4.2 Return abbreviations in their typical kitchen notation (“tsp”, “tbsp”, “ml”).\n   4.3 Set \"useAbbreviation\" to true only when a common abbreviation exists.\nExamples:\nSingular: “Leaf”, plural: “Leaves”, abbreviation: “Lf”, plural abbreviation: null, useAbbreviation: false.\nSingular: “Milliliter”, plural: “Milliliter”, abbreviation: “ml”, plural abbreviation: null, useAbbreviation: true.",
         "user2": "Units to be processed: {unit_lines}",
         "system": "Technical rules:\n1. Respond only with valid JSON without extra text or comments.\n2. Response format:\n{{\n  \"units\": [\n    {{\n      \"input\": \"...\",\n      \"name\": \"...\",\n      \"pluralName\": \"...\",\n      \"abbreviation\": \"...\" | null,\n      \"pluralAbbreviation\": \"...\" | null,\n      \"useAbbreviation\": true | false\n    }}\n  ]\n}}"
-      },
-      "imageCrop": {
-        "free": "Recipe title: {title}\nFind only the region that shows the fully plated dish including its vessel (plate, bowl, glass, etc.). Avoid close-ups, text columns, logos or pure decoration. Return JSON with a \"crop\" field:\n{{\n  \"crop\": {{\"x\": ..., \"y\": ..., \"width\": ..., \"height\": ...}}\n}}\nValues are relative (0.0–1.0). If no reasonable dish is visible, set \"crop\" to null.",
-        "system": "Technical rules:\n1. Respond only with valid JSON without additional text or comments and follow the coordinate specification exactly.\n2. All values must be relative coordinates (0.0–1.0).\n3. Return a JSON object containing the field \"crop\":\n{{\n  \"crop\": {{\"x\": ..., \"y\": ..., \"width\": ..., \"height\": ...}}\n}}",
-        "user1": "You are a precise assistant for image crops. You locate the section of a recipe image that shows the finished dish.\n\nBusiness rules:\n1. Find only the region where the plated dish – including the vessel (plate, bowl, glass, etc.) – is completely visible.\n2. Avoid close-ups, text columns, logos, or decoration-only elements.\n3. If no meaningful dish can be detected, set \"crop\" to null.",
-        "user2": "Recipe title: {title}"
       }
     }
   },
@@ -178,49 +156,43 @@
       "model": "gpt-4.1-mini",
       "temperature": 0.3,
       "top_p": 1,
-      "max_output_tokens": 5000
+      "max_output_tokens": null
     },
     "ingredients": {
       "model": "gpt-4.1-nano",
       "temperature": 0,
       "top_p": 1,
-      "max_output_tokens": 2500
+      "max_output_tokens": null
     },
     "units": {
       "model": "gpt-4.1-nano",
       "temperature": 0,
       "top_p": 1,
-      "max_output_tokens": 1000
+      "max_output_tokens": null
     },
     "metadata": {
       "model": "gpt-4.1-mini",
       "temperature": 0.3,
       "top_p": 1,
-      "max_output_tokens": 5000
+      "max_output_tokens": null
     },
     "instructions": {
       "model": "gpt-4.1-mini",
       "temperature": 0,
       "top_p": 1,
-      "max_output_tokens": 600
+      "max_output_tokens": null
     },
     "foodForms": {
       "model": "gpt-4.1-mini",
       "temperature": 0.5,
       "top_p": 1,
-      "max_output_tokens": 5000
+      "max_output_tokens": null
     },
     "unitForms": {
       "model": "gpt-4.1-mini",
       "temperature": 0.3,
       "top_p": 1,
-      "max_output_tokens": 5000
-    },
-    "imageCrop": {
-      "model": "gpt-4.1-mini",
-      "temperature": 1,
-      "top_p": 1,
-      "max_output_tokens": 150
+      "max_output_tokens": null
     }
   }
 }

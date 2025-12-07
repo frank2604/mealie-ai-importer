@@ -328,11 +328,7 @@
       "mealieBaseUrl": "Mealie Base URL",
       "mealieBaseUrlPlaceholder": "z. B. https://mealie.local",
       "llmApiKey": "OpenAI API-Key",
-      "llmApiKeyPlaceholder": "z. B. sk-...",
-      "llmModel": "OpenAI Modellname",
-      "llmModelPlaceholder": "z. B. gpt-4o-mini",
-      "llmVisionModel": "OpenAI Vision-Modell",
-      "llmVisionModelPlaceholder": "z. B. gpt-4o-mini-vision"
+      "llmApiKeyPlaceholder": "z. B. sk-..."
     },
     "theme": {
       "title": "Theme",
@@ -363,7 +359,6 @@
       "metadataSystem": "Technischer Teil für Metadaten",
       "instructions": "Schritt-Zuordnungen",
       "instructionsSystem": "Technischer Teil für Schritt-Zuordnungen",
-      "imageCrop": "Bild-Zuschnitt",
       "adminToggleLabel": "System-Prompts bearbeiten (Admin)",
       "resetModuleConfirm": "Zurücksetzen überschreibt deine Anpassungen mit dem Standard-Prompt. Fortfahren?",
       "analysisPlaceholder": "Du bist ein Rezept-Analyse-Experte und beschreibst den Ablauf …",

@@ -38,6 +38,7 @@ from .modules.create_units import CreateUnitsModule
 from .modules.add_unit_ids import AddUnitIdsModule
 from .modules.create_recipe import CreateRecipeModule
 from .modules.instruction_linking import InstructionLinkingModule
+from .pdf_extractor import extract_text_and_images
 from .services.run_workspace import PipelineRecorder, RunInfo, RunWorkspace
 from .services.ingredients import IngredientService
 from .prompt_store import (
@@ -137,6 +138,15 @@ class ImageUploadResponse(BaseModel):
     imageUrl: str
 
 
+class PdfImageModel(BaseModel):
+    id: str
+    label: str
+    dataUrl: str
+    page: Optional[int] = None
+    width: Optional[int] = None
+    height: Optional[int] = None
+
+
 class LogResponse(BaseModel):
     runId: str
     entries: List[LogEntryModel]
@@ -224,6 +234,7 @@ class ReviewIngredient(BaseModel):
     unitNewId: Optional[str] = None
     note: Optional[str] = None
     notes: Optional[str] = None
+    deleted: Optional[bool] = False
     foodStatus: str
     foodMatch: Optional[MatchInfo] = None
     foodSuggestion: Optional[FoodSuggestion] = None
@@ -304,6 +315,7 @@ class ReviewIngredientUpdate(BaseModel):
     unitDecision: Dict[str, Any] = Field(default_factory=dict)
     foodSelection: Optional[FoodSelection] = None
     unitSelection: Optional[UnitSelection] = None
+    deleted: Optional[bool] = None
 
 
 class ReviewInstructionUpdate(BaseModel):
@@ -318,7 +330,6 @@ class ReviewUpdateRequest(BaseModel):
     summary: ReviewSummaryUpdate
     ingredients: List[ReviewIngredientUpdate] = Field(default_factory=list)
     instructions: List[ReviewInstructionUpdate] = Field(default_factory=list)
-    ingredientsToDelete: List[str] = Field(default_factory=list)
 
 
 class PromptModuleConfig(BaseModel):
@@ -830,32 +841,61 @@ def _build_review_payload(run_id: str, config: AppConfig) -> ReviewDataResponse:
     recipe_sections = recipe_data.get("ingredients") or []
     recipe_ingredient_map: Dict[str, Dict[str, Any]] = {}
     recipe_id_to_key: Dict[str, str] = {}
+    recipe_key_to_id: Dict[str, str] = {}
     for section_index, section in enumerate(recipe_sections):
         items = section.get("ingredients") or []
         for ingredient_index, ingredient in enumerate(items):
-            key = f"{section_index}:{ingredient_index}"
-            recipe_ingredient_map[key] = ingredient
-            rec_id = ingredient.get("id")
-            if isinstance(rec_id, str) and rec_id:
-                recipe_id_to_key[rec_id] = key
+            rec_id = str(ingredient.get("id") or f"{section_index}:{ingredient_index}")
+            ingredient["id"] = rec_id  # persist stable id
+            recipe_ingredient_map[rec_id] = ingredient
+            recipe_id_to_key[rec_id] = rec_id
+            recipe_key_to_id[f"{section_index}:{ingredient_index}"] = rec_id
 
-    foods_map = {
-        str(item.get("key")): item for item in foods_review.get("ingredients", []) if isinstance(item, dict)
-    }
-    units_map = {
-        str(item.get("key")): item for item in units_review.get("units", []) if isinstance(item, dict)
-    }
+    # Ensure review entries know the stable ingredientId
+    for entry in foods_review.get("ingredients", []):
+        if not isinstance(entry, dict):
+            continue
+        if not entry.get("ingredientId"):
+            entry["ingredientId"] = recipe_key_to_id.get(str(entry.get("key")), entry.get("key"))
+    for entry in units_review.get("units", []):
+        if not isinstance(entry, dict):
+            continue
+        if not entry.get("ingredientId"):
+            entry["ingredientId"] = recipe_key_to_id.get(str(entry.get("key")), entry.get("key"))
+
+    # Ensure review entries carry ingredientId for stable mapping (even if not persisted yet)
+    for entry in foods_review.get("ingredients", []):
+        if isinstance(entry, dict) and not entry.get("ingredientId") and entry.get("key"):
+            entry["ingredientId"] = recipe_key_to_id.get(str(entry["key"]), entry.get("key"))
+    for entry in units_review.get("units", []):
+        if isinstance(entry, dict) and not entry.get("ingredientId") and entry.get("key"):
+            entry["ingredientId"] = recipe_key_to_id.get(str(entry["key"]), entry.get("key"))
+
+    foods_map: Dict[str, Dict[str, Any]] = {}
+    for item in foods_review.get("ingredients", []):
+        if not isinstance(item, dict):
+            continue
+        key_id = str(item.get("ingredientId") or item.get("key") or "")
+        if key_id:
+            foods_map[key_id] = item
+
+    units_map: Dict[str, Dict[str, Any]] = {}
+    for item in units_review.get("units", []):
+        if not isinstance(item, dict):
+            continue
+        key_id = str(item.get("ingredientId") or item.get("key") or "")
+        if key_id:
+            units_map[key_id] = item
 
     ingredients_payload: List[ReviewIngredient] = []
-    ingredients_sections = recipe_data.get("ingredients") or []
-
-    for section_index, section in enumerate(ingredients_sections):
+    for section_index, section in enumerate(recipe_sections):
         section_name = section.get("name")
         for ingredient_index, ingredient in enumerate(section.get("ingredients") or []):
-            key = f"{section_index}:{ingredient_index}"
-            food_entry = foods_map.get(key, {})
-            unit_entry = units_map.get(key, {})
-            recipe_entry = recipe_ingredient_map.get(key, {})
+            rec_id = str(ingredient.get("id") or f"{section_index}:{ingredient_index}")
+            recipe_entry = recipe_ingredient_map.get(rec_id, ingredient)
+            food_entry = foods_map.get(rec_id, {})
+            unit_entry = units_map.get(rec_id, {})
+            deleted_flag = bool(recipe_entry.get("deleted") or food_entry.get("deleted") or unit_entry.get("deleted"))
 
             food_status = _map_status(recipe_entry.get("foodBadgeId"))
             unit_status = _map_status(recipe_entry.get("unitBadgeId"))
@@ -911,7 +951,7 @@ def _build_review_payload(run_id: str, config: AppConfig) -> ReviewDataResponse:
                 notes_value = str(source_note) if source_note else ""
 
             ingredient_payload = ReviewIngredient(
-                id=key,
+                id=rec_id,
                 sectionIndex=section_index,
                 ingredientIndex=ingredient_index,
                 sectionName=section_name,
@@ -925,6 +965,7 @@ def _build_review_payload(run_id: str, config: AppConfig) -> ReviewDataResponse:
                 unitNewId=unit_entry.get("newId"),
                 note=ingredient.get("note"),
                 notes=notes_value or "",
+                deleted=deleted_flag,
                 foodStatus=food_status,
                 foodMatch=food_match_obj,
                 foodSuggestion=FoodSuggestion(
@@ -958,11 +999,7 @@ def _build_review_payload(run_id: str, config: AppConfig) -> ReviewDataResponse:
     instructions_sections = recipe_data.get("instructions") or []
     for section_index, section in enumerate(instructions_sections):
         for step_index, step in enumerate(section.get("steps") or []):
-            raw_ids = step.get("ingredientIds") or []
-            mapped_ids = []
-            for ing_id in raw_ids:
-                if isinstance(ing_id, str) and ing_id:
-                    mapped_ids.append(recipe_id_to_key.get(ing_id, ing_id))
+            raw_ids = [ing_id for ing_id in (step.get("ingredientIds") or []) if isinstance(ing_id, str)]
             instruction_payload = ReviewInstruction(
                 id=str(step.get("id") or f"{section_index}:{step_index}"),
                 sectionIndex=section_index,
@@ -970,7 +1007,7 @@ def _build_review_payload(run_id: str, config: AppConfig) -> ReviewDataResponse:
                 order=int(step.get("order") or step_index + 1),
                 text=str(step.get("instruction") or ""),
                 timerMinutes=step.get("timer_minutes"),
-                ingredientIds=mapped_ids,
+                ingredientIds=raw_ids,
                 ingredientReferenceIds=list(step.get("ingredientReferenceIds") or []),
             )
             instructions_payload.append(instruction_payload)
@@ -1115,26 +1152,39 @@ def _apply_review_update(run_id: str, config: AppConfig, payload: ReviewUpdateRe
     foods_map = {
         str(entry.get("key")): entry for entry in foods_entries if isinstance(entry, dict)
     }
+    # allow lookup by ingredientId as well
+    for entry in foods_entries:
+        if isinstance(entry, dict) and entry.get("ingredientId"):
+            foods_map[str(entry["ingredientId"])] = entry
+
     units_entries = units_review.setdefault("units", [])
     units_map = {
         str(entry.get("key")): entry for entry in units_entries if isinstance(entry, dict)
     }
+    for entry in units_entries:
+        if isinstance(entry, dict) and entry.get("ingredientId"):
+            units_map[str(entry["ingredientId"])] = entry
 
     def _locate_ingredient(target: Dict[str, Any], key: str) -> Optional[Dict[str, Any]]:
+        # try positional key first
         try:
             section_index_str, ingredient_index_str = key.split(":", 1)
             section_index = int(section_index_str)
             ingredient_index = int(ingredient_index_str)
+            sections = target.setdefault("ingredients", [])
+            if 0 <= section_index < len(sections):
+                section = sections[section_index]
+                items = section.setdefault("ingredients", [])
+                if 0 <= ingredient_index < len(items):
+                    return items[ingredient_index]
         except (ValueError, AttributeError):
-            return None
-        sections = target.setdefault("ingredients", [])
-        if not (0 <= section_index < len(sections)):
-            return None
-        section = sections[section_index]
-        items = section.setdefault("ingredients", [])
-        if not (0 <= ingredient_index < len(items)):
-            return None
-        return items[ingredient_index]
+            pass
+        # fallback: search by id
+        for section in target.get("ingredients", []):
+            for ing in section.get("ingredients", []):
+                if str(ing.get("id") or "") == key:
+                    return ing
+        return None
 
     def _set_ingredient_note(target: Dict[str, Any], key: str, value: Optional[str]) -> None:
         entry = _locate_ingredient(target, key)
@@ -1142,28 +1192,7 @@ def _apply_review_update(run_id: str, config: AppConfig, payload: ReviewUpdateRe
             return
         entry["note"] = value or None
 
-    # Handle ingredient deletions
-    delete_keys = set(payload.ingredientsToDelete or [])
-    if delete_keys:
-        def _should_keep(ing: Dict[str, Any], section_idx: int, idx: int) -> bool:
-            key_repr = f"{section_idx}:{idx}"
-            ing_id = str(ing.get("id") or "")
-            return key_repr not in delete_keys and ing_id not in delete_keys
-
-        for section_index, section in enumerate(recipe_data.get("ingredients", [])):
-            items = section.get("ingredients") or []
-            section["ingredients"] = [ing for idx, ing in enumerate(items) if _should_keep(ing, section_index, idx)]
-
-        foods_review["ingredients"] = [
-            entry
-            for entry in foods_entries
-            if str(entry.get("key")) not in delete_keys and str(entry.get("ingredientId") or "") not in delete_keys
-        ]
-        units_review["units"] = [
-            entry
-            for entry in units_entries
-            if str(entry.get("key")) not in delete_keys and str(entry.get("ingredientId") or "") not in delete_keys
-        ]
+    # Keep existing review entries as-is (minus deletions); ingredient IDs remain stable to avoid shifting.
 
     for ingredient_update in payload.ingredients:
         key = ingredient_update.id
@@ -1174,12 +1203,16 @@ def _apply_review_update(run_id: str, config: AppConfig, payload: ReviewUpdateRe
             if notes_value is not None:
                 decision["notes"] = notes_value
             foods_map[key]["userDecision"] = decision
+            if ingredient_update.deleted is not None:
+                foods_map[key]["deleted"] = ingredient_update.deleted
 
         if key in units_map:
             decision = dict(ingredient_update.unitDecision or {})
             if notes_value is not None:
                 decision["notes"] = notes_value
             units_map[key]["userDecision"] = decision
+            if ingredient_update.deleted is not None:
+                units_map[key]["deleted"] = ingredient_update.deleted
 
         _set_ingredient_note(recipe_data, key, notes_value)
         entry = _locate_ingredient(recipe_data, key)
@@ -1197,6 +1230,10 @@ def _apply_review_update(run_id: str, config: AppConfig, payload: ReviewUpdateRe
             if selection.name is not None:
                 entry["unit"] = selection.name
             entry["unitBadgeId"] = selection.badgeId
+        if entry and ingredient_update.deleted is not None:
+            entry["deleted"] = ingredient_update.deleted
+        if entry and ingredient_update.deleted is not None:
+            entry["deleted"] = ingredient_update.deleted
 
     # Update instructions
     instructions_sections = recipe_data.setdefault("instructions", [])
@@ -1241,11 +1278,28 @@ def _apply_review_update(run_id: str, config: AppConfig, payload: ReviewUpdateRe
             mapped = []
             for ing_id in instruction_update.ingredientIds:
                 mapped_id = key_to_recipe_id.get(ing_id, ing_id)
-                if ing_id not in delete_keys and str(mapped_id) not in delete_keys:
-                    mapped.append(mapped_id)
+                mapped.append(mapped_id)
             step["ingredientIds"] = mapped
 
     # Persist files
+    # ensure review entries carry ingredientId to avoid positional drift
+    key_to_id = {}
+    for section_index, section in enumerate(recipe_data.get("ingredients") or []):
+        for ingredient_index, ingredient in enumerate(section.get("ingredients") or []):
+            key = f"{section_index}:{ingredient_index}"
+            ing_id = str(ingredient.get("id") or key)
+            key_to_id[key] = ing_id
+    for entry in foods_review.get("ingredients", []):
+        if not isinstance(entry, dict):
+            continue
+        if not entry.get("ingredientId") and entry.get("key"):
+            entry["ingredientId"] = key_to_id.get(str(entry["key"]), entry.get("key"))
+    for entry in units_review.get("units", []):
+        if not isinstance(entry, dict):
+            continue
+        if not entry.get("ingredientId") and entry.get("key"):
+            entry["ingredientId"] = key_to_id.get(str(entry["key"]), entry.get("key"))
+
     recipe_model = Recipe.parse_obj(recipe_data)
     _write_json_file(context.recipe_path, build_recipe_data_payload(recipe_model))
     if context.foods_path:
@@ -1730,6 +1784,37 @@ async def download_run_pdf(run_id: str, request: Request) -> FileResponse:
     return _apply_cors_headers(response, request)
 
 
+@app.get("/api/imports/{run_id}/pdf-images", response_model=List[PdfImageModel])
+async def list_pdf_images(run_id: str) -> List[PdfImageModel]:
+    config = _load_app_config()
+    context = _resolve_review_context(config, run_id)
+    if not context.pdf_path or not context.pdf_path.exists():
+        raise HTTPException(status_code=404, detail="PDF-Datei für diesen Lauf wurde nicht gefunden.")
+
+    try:
+        extraction = extract_text_and_images(context.pdf_path)
+    except Exception as exc:  # pragma: no cover - defensive
+        logger.warning("Konnte Bilder nicht extrahieren: %s", exc)
+        raise HTTPException(status_code=500, detail="Bilder konnten nicht aus dem PDF gelesen werden.")
+
+    results: List[PdfImageModel] = []
+    for idx, image in enumerate(extraction.images, start=1):
+        data_url = f"data:{image.mime_type};base64,{base64.b64encode(image.data).decode('ascii')}"
+        label = f"Seite {image.page_number} – {image.name}"
+        results.append(
+            PdfImageModel(
+                id=f"pdf-image-{idx}",
+                label=label,
+                dataUrl=data_url,
+                page=image.page_number,
+                width=image.width,
+                height=image.height,
+            )
+        )
+
+    return results
+
+
 @app.get("/api/imports/{run_id}/image")
 async def download_run_image(run_id: str, request: Request) -> FileResponse:
     config = _load_app_config()
@@ -1777,6 +1862,26 @@ async def upload_run_image(run_id: str, file: UploadFile = File(...)) -> ImageUp
                 logger.debug("Konnte alte Bilddatei nicht löschen: %s", existing)
 
     _write_recipe_image_json(context.pipeline_dir, target_name, contents, IMAGE_MEDIA_TYPES[suffix])
+
+    # Persist image into RecipeData for transfer
+    try:
+        recipe_payload = _load_json_file(context.recipe_path)
+        data_url = f"data:{IMAGE_MEDIA_TYPES[suffix]};base64,{base64.b64encode(contents).decode('ascii')}"
+        assets = recipe_payload.get("assets") or []
+        assets = [asset for asset in assets if asset.get("fileName") != target_name]
+        assets.append(
+            {
+                "file_name": target_name,
+                "fileName": target_name,  # alias for legacy consumers
+                "data": data_url,
+                "title": context.run_info.recipe_name,
+                "description": "",
+            }
+        )
+        recipe_payload["assets"] = assets
+        _write_json_file(context.recipe_path, recipe_payload)
+    except Exception as exc:  # pragma: no cover - best effort
+        logger.warning("Konnte das Rezeptbild nicht in RecipeData speichern: %s", exc)
 
     cache_buster = int(time.time() * 1000)
     return ImageUploadResponse(imageUrl=f"/api/imports/{run_id}/image?ts={cache_buster}")

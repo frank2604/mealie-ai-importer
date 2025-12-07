@@ -171,7 +171,8 @@
       "newFoodOption": "{{value}} (NEW)",
       "newUnitOption": "{{value}} (NEW)",
       "editNewFood": "Edit new food",
-      "editNewUnit": "Edit new unit"
+      "editNewUnit": "Edit new unit",
+      "newFoodManual": "New ingredient"
     },
     "pdfViewer": {
       "title": "Original PDF",
@@ -237,6 +238,7 @@
       "empty": "No image available yet.",
       "uploading": "Uploading image…",
       "cropButton": "Crop",
+      "usePdfImage": "Use PDF image",
       "cropModalTitle": "Crop image",
       "cropModalApply": "Apply",
       "cropModalCancel": "Cancel",

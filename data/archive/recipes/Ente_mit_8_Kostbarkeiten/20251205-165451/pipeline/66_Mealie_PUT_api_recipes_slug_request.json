@@ -1,0 +1,279 @@
+{
+  "id": "a335dd39-0674-46e6-91be-00d7496d70a9",
+  "userId": "48ff7261-817a-43a9-89de-63ee69dd4a3e",
+  "householdId": "68c99137-3b89-4a63-b504-97c353531455",
+  "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+  "name": "Ente mit 8 Kostbarkeiten",
+  "slug": "ente-mit-8-kostbarkeiten",
+  "image": null,
+  "recipeServings": 4.0,
+  "recipeYieldQuantity": 0.0,
+  "recipeYield": null,
+  "totalTime": null,
+  "prepTime": null,
+  "cookTime": null,
+  "performTime": null,
+  "description": "Zartes Entenfleisch wird mit acht köstlichen Beilagen aus China verfeinert. Dieses Gericht kombiniert getrocknete Pilze, Lotus­samen, Wasserkastanien und weitere feine Zutaten zu einem besonderen Geschmackserlebnis. Ideal für ein festliches Essen mit Familie oder Freunden.",
+  "recipeCategory": [
+    {
+      "id": "c8b08673-ba91-4d4e-899b-77b9e9a4e733",
+      "name": "Hauptgerichte – Fleisch 🥩",
+      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+      "slug": "hauptgerichte-fleisch"
+    }
+  ],
+  "tags": [
+    {
+      "id": "df6f01c9-69a6-4f87-b6a1-799e6c70b1bc",
+      "name": "Küche | Chinesisch 🇨🇳",
+      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+      "slug": "kuche-chinesisch"
+    },
+    {
+      "id": "2504a5c6-9a98-4bb8-90a7-e07cc33c687d",
+      "name": "Technik | Wok 🍜",
+      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+      "slug": "technik-wok"
+    },
+    {
+      "id": "d5a8b13a-11cb-4d0c-893f-d2c99204eaea",
+      "name": "Schärfe | Mild 🙂",
+      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+      "slug": "scharfe-mild"
+    },
+    {
+      "id": "539f721a-a8e8-4c15-a7b4-deefcfb27f3a",
+      "name": "Tageszeit | Dinner 🌙",
+      "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+      "slug": "tageszeit-dinner"
+    }
+  ],
+  "tools": [],
+  "rating": null,
+  "orgURL": "meine familie & ich 45",
+  "dateAdded": "2025-12-06",
+  "dateUpdated": "2025-12-06T08:29:01.475870Z",
+  "createdAt": "2025-12-06T08:29:01.476716Z",
+  "updatedAt": "2025-12-06T08:29:01.476716Z",
+  "lastMade": null,
+  "recipeIngredient": [
+    {
+      "quantity": 6.0,
+      "unit": {
+        "id": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+        "name": "Stück"
+      },
+      "food": {
+        "id": "6d22999a-414d-4246-99d0-4d178500181c",
+        "name": "Morchel (getrocknet, chinesisch)"
+      }
+    },
+    {
+      "quantity": 6.0,
+      "unit": {
+        "id": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+        "name": "Stück"
+      },
+      "food": {
+        "id": "0ca864d5-76a3-4857-89e5-80e8712d10aa",
+        "name": "Tongu-Pilz"
+      }
+    },
+    {
+      "quantity": 1.0,
+      "note": "etwa 1,8 kg",
+      "unit": {
+        "id": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+        "name": "Stück"
+      },
+      "food": {
+        "id": "318b1775-0ffe-40ae-90fe-4b0bcb65ada0",
+        "name": "Ente (jung)"
+      }
+    },
+    {
+      "note": "Sah"
+    },
+    {
+      "quantity": 25.0,
+      "unit": {
+        "id": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
+        "name": "Gramm"
+      },
+      "food": {
+        "id": "f0fb1dc4-70d4-40bf-9f9f-61c8ebee3c2e",
+        "name": "Ingwer (frisch)"
+      }
+    },
+    {
+      "note": "Fünfgewürzpulver"
+    },
+    {
+      "note": "schwarzer Pfeffer aus der Mühle"
+    },
+    {
+      "quantity": 2.0,
+      "unit": {
+        "id": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+        "name": "Esslöffel"
+      },
+      "food": {
+        "id": "12caab67-7052-4a96-85ef-ea0a5b861ff2",
+        "name": "Hoisinsauce"
+      }
+    },
+    {
+      "quantity": 2.0,
+      "unit": {
+        "id": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+        "name": "Esslöffel"
+      },
+      "food": {
+        "id": "16018665-3023-4213-aeb2-c8445dd699b6",
+        "name": "Heller Soßenbinder"
+      }
+    },
+    {
+      "quantity": 50.0,
+      "note": "Dose",
+      "unit": {
+        "id": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
+        "name": "Gramm"
+      },
+      "food": {
+        "id": "5636aca6-d217-45ef-a87c-e065f9c814e4",
+        "name": "Lotussamen"
+      }
+    },
+    {
+      "quantity": 150.0,
+      "note": "Dose",
+      "unit": {
+        "id": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
+        "name": "Gramm"
+      },
+      "food": {
+        "id": "ddc0285b-70e8-4732-b47f-f907feed567b",
+        "name": "Wasserkastanie"
+      }
+    },
+    {
+      "quantity": 50.0,
+      "unit": {
+        "id": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
+        "name": "Gramm"
+      },
+      "food": {
+        "id": "3011ca74-ab96-49ef-ab2d-9d9ef7e164f8",
+        "name": "Cashewkern"
+      }
+    },
+    {
+      "quantity": 100.0,
+      "unit": {
+        "id": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
+        "name": "Gramm"
+      },
+      "food": {
+        "id": "528ea25a-c77a-45e3-b8d1-9388f4cba83a",
+        "name": "TK-Erbse"
+      }
+    },
+    {
+      "quantity": 50.0,
+      "unit": {
+        "id": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
+        "name": "Gramm"
+      },
+      "food": {
+        "id": "9905a2f3-6ec1-40ee-a5ef-4caef4805ea4",
+        "name": "Lilienknospe (getrocknet)"
+      }
+    },
+    {
+      "quantity": 2.0,
+      "unit": {
+        "id": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+        "name": "Esslöffel"
+      },
+      "food": {
+        "id": "d234d031-dc3c-49a1-a23c-6428cb06d61a",
+        "name": "Olivenöl"
+      }
+    },
+    {
+      "quantity": 5.0,
+      "unit": {
+        "id": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+        "name": "Stück"
+      },
+      "food": {
+        "id": "81966d8a-f88e-4136-9c78-0f33f0d83b13",
+        "name": "Dattel (getrocknet, chinesisch)"
+      }
+    },
+    {
+      "quantity": 5.0,
+      "unit": {
+        "id": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+        "name": "Stück"
+      },
+      "food": {
+        "id": "37403511-690e-4cd0-b05a-6a365e55bb99",
+        "name": "Getrocknete chinesische Pflaume"
+      }
+    },
+    {
+      "quantity": 1.0,
+      "unit": {
+        "id": "190e0f06-fae8-4d6f-9009-a3c7b214434e",
+        "name": "Teelöffel"
+      },
+      "food": {
+        "id": "2988d5ad-8a3d-4f8f-87e8-d8fa343a1b66",
+        "name": "Speisestärke"
+      }
+    },
+    {
+      "quantity": 2.0,
+      "unit": {
+        "id": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+        "name": "Esslöffel"
+      },
+      "food": {
+        "id": "0cb48760-7b6a-4116-89f5-eb15c38f70f0",
+        "name": "Reiswein"
+      }
+    }
+  ],
+  "recipeInstructions": [],
+  "nutrition": {
+    "calories": null,
+    "carbohydrateContent": null,
+    "cholesterolContent": null,
+    "fatContent": null,
+    "fiberContent": null,
+    "proteinContent": null,
+    "saturatedFatContent": null,
+    "sodiumContent": null,
+    "sugarContent": null,
+    "transFatContent": null,
+    "unsaturatedFatContent": null
+  },
+  "settings": {
+    "public": false,
+    "showNutrition": false,
+    "showAssets": true,
+    "landscapeView": false,
+    "disableComments": false,
+    "locked": false
+  },
+  "notes": [
+    {
+      "title": "Hinweis",
+      "text": "Wenn Sie nicht alle Zutaten bekommen, servieren Sie Ente mit vier oder mit sechs Kostbarkeiten. Dazu passt Duftreis oder anderer gekochter Reis."
+    }
+  ],
+  "extras": {},
+  "comments": []
+}

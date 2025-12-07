@@ -368,7 +368,7 @@ class UnitCheckerModule:
         if not self._llm_client or not self._units:
             return None, None
 
-        candidates = self._top_candidates(query, limit=8)
+        candidates = list(self._units)
         if not candidates:
             return None, None
 
@@ -600,32 +600,6 @@ class UnitCheckerModule:
         return f"{kind}-new-{safe_key}"
 
     # ------------------------------------------------------------------
-    # Candidate helpers
-    # ------------------------------------------------------------------
-    def _top_candidates(self, query: str, *, limit: int) -> List[_UnitCandidate]:
-        scored: List[tuple[float, _UnitCandidate]] = []
-        normalized_query = query.strip().lower()
-        for candidate in self._units:
-            best_score = 0.0
-            for option in self._candidate_names(candidate):
-                score = SequenceMatcher(None, normalized_query, option.lower()).ratio()
-                if score > best_score:
-                    best_score = score
-            if best_score > 0:
-                scored.append((best_score, candidate))
-        scored.sort(key=lambda item: item[0], reverse=True)
-
-        unique: List[_UnitCandidate] = []
-        seen_ids: set[str] = set()
-        for _, candidate in scored:
-            if candidate.id in seen_ids:
-                continue
-            unique.append(candidate)
-            seen_ids.add(candidate.id)
-            if len(unique) >= limit:
-                break
-        return unique
-
     def _candidate_names(self, candidate: _UnitCandidate) -> Iterable[str]:
         yield candidate.name
         if candidate.plural:

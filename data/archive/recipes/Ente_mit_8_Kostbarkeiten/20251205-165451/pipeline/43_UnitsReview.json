@@ -1,0 +1,309 @@
+{
+  "generatedAt": "2025-12-05T16:56:17.354299",
+  "units": [
+    {
+      "key": "0:0",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useUnitId": null,
+        "create": {
+          "name": null,
+          "pluralName": null,
+          "abbreviation": null,
+          "pluralAbbreviation": null,
+          "useAbbreviation": false
+        },
+        "notes": ""
+      },
+      "ingredientId": "ing-0-0",
+      "deleted": true
+    },
+    {
+      "key": "0:1",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useUnitId": null,
+        "create": {
+          "name": null,
+          "pluralName": null,
+          "abbreviation": null,
+          "pluralAbbreviation": null,
+          "useAbbreviation": false
+        },
+        "notes": ""
+      },
+      "ingredientId": "ing-0-1",
+      "deleted": true
+    },
+    {
+      "key": "0:2",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useUnitId": null,
+        "create": {
+          "name": null,
+          "pluralName": null,
+          "abbreviation": null,
+          "pluralAbbreviation": null,
+          "useAbbreviation": false
+        },
+        "notes": "etwa 1,8 kg"
+      },
+      "ingredientId": "ing-0-2",
+      "deleted": true
+    },
+    {
+      "key": "0:4",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useUnitId": null,
+        "create": {
+          "name": null,
+          "pluralName": null,
+          "abbreviation": null,
+          "pluralAbbreviation": null,
+          "useAbbreviation": false
+        },
+        "notes": ""
+      },
+      "ingredientId": "ing-0-4",
+      "deleted": true
+    },
+    {
+      "key": "0:7",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useUnitId": null,
+        "create": {
+          "name": null,
+          "pluralName": null,
+          "abbreviation": null,
+          "pluralAbbreviation": null,
+          "useAbbreviation": false
+        },
+        "notes": ""
+      },
+      "ingredientId": "ing-0-7",
+      "deleted": true
+    },
+    {
+      "key": "0:8",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useUnitId": null,
+        "create": {
+          "name": null,
+          "pluralName": null,
+          "abbreviation": null,
+          "pluralAbbreviation": null,
+          "useAbbreviation": false
+        },
+        "notes": ""
+      },
+      "ingredientId": "ing-0-8",
+      "deleted": true
+    },
+    {
+      "key": "0:9",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useUnitId": null,
+        "create": {
+          "name": null,
+          "pluralName": null,
+          "abbreviation": null,
+          "pluralAbbreviation": null,
+          "useAbbreviation": false
+        },
+        "notes": "Dose"
+      },
+      "ingredientId": "ing-0-9",
+      "deleted": true
+    },
+    {
+      "key": "0:10",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useUnitId": null,
+        "create": {
+          "name": null,
+          "pluralName": null,
+          "abbreviation": null,
+          "pluralAbbreviation": null,
+          "useAbbreviation": false
+        },
+        "notes": "Dose"
+      },
+      "ingredientId": "ing-0-10",
+      "deleted": false
+    },
+    {
+      "key": "0:11",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useUnitId": null,
+        "create": {
+          "name": null,
+          "pluralName": null,
+          "abbreviation": null,
+          "pluralAbbreviation": null,
+          "useAbbreviation": false
+        },
+        "notes": ""
+      },
+      "ingredientId": "ing-0-11",
+      "deleted": false
+    },
+    {
+      "key": "0:12",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useUnitId": null,
+        "create": {
+          "name": null,
+          "pluralName": null,
+          "abbreviation": null,
+          "pluralAbbreviation": null,
+          "useAbbreviation": false
+        },
+        "notes": ""
+      },
+      "ingredientId": "ing-0-12",
+      "deleted": false
+    },
+    {
+      "key": "0:13",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useUnitId": null,
+        "create": {
+          "name": null,
+          "pluralName": null,
+          "abbreviation": null,
+          "pluralAbbreviation": null,
+          "useAbbreviation": false
+        },
+        "notes": ""
+      },
+      "ingredientId": "ing-0-13",
+      "deleted": false
+    },
+    {
+      "key": "0:14",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useUnitId": null,
+        "create": {
+          "name": null,
+          "pluralName": null,
+          "abbreviation": null,
+          "pluralAbbreviation": null,
+          "useAbbreviation": false
+        },
+        "notes": ""
+      },
+      "ingredientId": "ing-0-14",
+      "deleted": false
+    },
+    {
+      "key": "0:15",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useUnitId": null,
+        "create": {
+          "name": null,
+          "pluralName": null,
+          "abbreviation": null,
+          "pluralAbbreviation": null,
+          "useAbbreviation": false
+        },
+        "notes": ""
+      },
+      "ingredientId": "ing-0-15",
+      "deleted": false
+    },
+    {
+      "key": "0:16",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useUnitId": null,
+        "create": {
+          "name": null,
+          "pluralName": null,
+          "abbreviation": null,
+          "pluralAbbreviation": null,
+          "useAbbreviation": false
+        },
+        "notes": ""
+      },
+      "ingredientId": "ing-0-16",
+      "deleted": false
+    },
+    {
+      "key": "0:17",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useUnitId": null,
+        "create": {
+          "name": null,
+          "pluralName": null,
+          "abbreviation": null,
+          "pluralAbbreviation": null,
+          "useAbbreviation": false
+        },
+        "notes": ""
+      },
+      "ingredientId": "ing-0-17",
+      "deleted": false
+    },
+    {
+      "key": "0:18",
+      "newId": null,
+      "suggestion": null,
+      "userDecision": {
+        "action": "auto",
+        "useUnitId": null,
+        "create": {
+          "name": null,
+          "pluralName": null,
+          "abbreviation": null,
+          "pluralAbbreviation": null,
+          "useAbbreviation": false
+        },
+        "notes": ""
+      },
+      "ingredientId": "ing-0-18",
+      "deleted": false
+    }
+  ]
+}

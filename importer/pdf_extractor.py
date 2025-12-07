@@ -1,10 +1,13 @@
 """Helpers for extracting raw text and images from PDF recipe files."""
 from __future__ import annotations
 
+import io
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
+from typing import List, Optional
+
+from PIL import Image, UnidentifiedImageError
 
 from pypdf import PdfReader
 
@@ -16,6 +19,9 @@ class ExtractedImage:
     name: str
     data: bytes
     mime_type: str
+    page_number: int
+    width: Optional[int] = None
+    height: Optional[int] = None
 
 
 @dataclass
@@ -67,12 +73,24 @@ def extract_text_and_images(pdf_path: Path) -> PdfExtractionResult:
                 image_bytes = image.data  # type: ignore[attr-defined]
             except AttributeError:
                 image_bytes = image.get_data()  # type: ignore[call-arg]
+
+            width: Optional[int] = None
+            height: Optional[int] = None
+            try:
+                with Image.open(io.BytesIO(image_bytes)) as pil_image:  # type: ignore[name-defined]
+                    width, height = pil_image.size
+            except (UnidentifiedImageError, Exception):  # pragma: no cover - best effort
+                pass
+
             name = image.name or f"page{page_number}_image{index}"
             images.append(
                 ExtractedImage(
                     name=name,
                     data=bytes(image_bytes),
                     mime_type=_guess_mime_type(image),
+                    page_number=page_number,
+                    width=width,
+                    height=height,
                 )
             )
 

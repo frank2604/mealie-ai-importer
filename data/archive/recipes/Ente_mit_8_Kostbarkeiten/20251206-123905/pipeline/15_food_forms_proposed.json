@@ -1,0 +1,13 @@
+{
+  "ingredient": "junge Ente",
+  "forms": {
+    "singular": "Ente (jung)",
+    "plural": "Enten (jung)",
+    "countable": true,
+    "aliases": [
+      "junge Ente"
+    ],
+    "labelId": "d544476e-8baa-434b-87d3-66cb979cea2d",
+    "labelName": "Fleisch 🥩"
+  }
+}

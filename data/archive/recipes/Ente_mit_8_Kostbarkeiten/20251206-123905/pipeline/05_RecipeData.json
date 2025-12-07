@@ -1,0 +1,529 @@
+{
+  "title": "Ente mit 8 Kostbarkeiten",
+  "description": "Zartes Entenfleisch wird mit acht köstlichen Beilagen aus China verfeinert. Das Gericht kombiniert getrocknete Pilze, Lotus­samen, Wasserkastanien und weitere feine Zutaten zu einem besonderen Geschmackserlebnis. Perfekt für ein festliches Essen mit asiatischem Flair.",
+  "recipeServings": 4.0,
+  "recipeYieldQuantity": null,
+  "recipeYield": null,
+  "totalTime": null,
+  "prepTime": null,
+  "performTime": null,
+  "ingredients": [
+    {
+      "name": "Ente mit 8 Kostbarkeiten",
+      "ingredients": [
+        {
+          "id": "ing-0-0",
+          "quantity": 6.0,
+          "note": null,
+          "deleted": false,
+          "referenceId": null,
+          "food": {
+            "name": "getrocknete chinesische Morcheln",
+            "originalName": "getrocknete chinesische Morcheln",
+            "mealieFoodId": "66d36900-38c0-4c33-9b91-88338a07f9d7",
+            "badgeId": "new",
+            "newId": "food-new-0-0"
+          },
+          "unit": {
+            "name": "Stück",
+            "originalName": "Stück",
+            "mealieUnitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "id": "ing-0-1",
+          "quantity": 6.0,
+          "note": null,
+          "deleted": false,
+          "referenceId": null,
+          "food": {
+            "name": "Tongu-Pilze",
+            "originalName": "Tongu-Pilze",
+            "mealieFoodId": "e10b6bb8-173d-43bd-a3bb-b3fdde841f30",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": "Stück",
+            "originalName": "Stück",
+            "mealieUnitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "id": "ing-0-2",
+          "quantity": 1.0,
+          "note": "etwa 1,8kg",
+          "deleted": false,
+          "referenceId": null,
+          "food": {
+            "name": "junge Ente",
+            "originalName": "junge Ente",
+            "mealieFoodId": "c6a76111-4d40-452a-ad48-8d960289772e",
+            "badgeId": "new",
+            "newId": "food-new-0-2"
+          },
+          "unit": {
+            "name": "Stück",
+            "originalName": "Stück",
+            "mealieUnitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "id": "ing-0-3",
+          "quantity": null,
+          "note": null,
+          "deleted": false,
+          "referenceId": null,
+          "food": {
+            "name": "Sah",
+            "originalName": "Sah",
+            "mealieFoodId": "ce7b4e53-b248-490e-953f-c4548bfb941a",
+            "badgeId": "found_ai"
+          },
+          "unit": {
+            "name": null,
+            "originalName": null
+          }
+        },
+        {
+          "id": "ing-0-4",
+          "quantity": 25.0,
+          "note": null,
+          "deleted": false,
+          "referenceId": null,
+          "food": {
+            "name": "frischer Ingwer",
+            "originalName": "frischer Ingwer",
+            "mealieFoodId": "c9dbcaba-2343-4d93-8806-8de5cf301c49",
+            "badgeId": "new",
+            "newId": "food-new-0-4"
+          },
+          "unit": {
+            "name": "g",
+            "originalName": "g",
+            "mealieUnitId": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "id": "ing-0-5",
+          "quantity": null,
+          "note": null,
+          "deleted": false,
+          "referenceId": null,
+          "food": {
+            "name": "Fünfgewürzpulver",
+            "originalName": "Fünfgewürzpulver",
+            "mealieFoodId": "00d03eb5-65d2-4e4c-a369-1c1b810c3de3",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": null,
+            "originalName": null
+          }
+        },
+        {
+          "id": "ing-0-6",
+          "quantity": null,
+          "note": null,
+          "deleted": false,
+          "referenceId": null,
+          "food": {
+            "name": "schwarzer Pfeffer aus der Mühle",
+            "originalName": "schwarzer Pfeffer aus der Mühle",
+            "mealieFoodId": "baec189d-c87d-4e04-b972-db79b960e84e",
+            "badgeId": "found_ai"
+          },
+          "unit": {
+            "name": null,
+            "originalName": null
+          }
+        },
+        {
+          "id": "ing-0-7",
+          "quantity": 2.0,
+          "note": null,
+          "deleted": false,
+          "referenceId": null,
+          "food": {
+            "name": "Hoisinsauce",
+            "originalName": "Hoisinsauce",
+            "mealieFoodId": "ead88ba8-78b3-4c24-874e-f7c878836fb7",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": "EL",
+            "originalName": "EL",
+            "mealieUnitId": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "id": "ing-0-8",
+          "quantity": 2.0,
+          "note": null,
+          "deleted": false,
+          "referenceId": null,
+          "food": {
+            "name": "helle Sojasauce",
+            "originalName": "helle Sojasauce",
+            "mealieFoodId": "16018665-3023-4213-aeb2-c8445dd699b6",
+            "badgeId": "found_ai"
+          },
+          "unit": {
+            "name": "EL",
+            "originalName": "EL",
+            "mealieUnitId": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "id": "ing-0-9",
+          "quantity": 50.0,
+          "note": "Dose",
+          "deleted": false,
+          "referenceId": null,
+          "food": {
+            "name": "Lotussamen",
+            "originalName": "Lotussamen",
+            "mealieFoodId": "ab4a2bd3-a637-46ea-986a-b22d2146f60c",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": "g",
+            "originalName": "g",
+            "mealieUnitId": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "id": "ing-0-10",
+          "quantity": 150.0,
+          "note": "Dose",
+          "deleted": false,
+          "referenceId": null,
+          "food": {
+            "name": "Wasserkastanien",
+            "originalName": "Wasserkastanien",
+            "mealieFoodId": "88528732-68fa-4982-b556-17f277043eb9",
+            "badgeId": "found_ai"
+          },
+          "unit": {
+            "name": "g",
+            "originalName": "g",
+            "mealieUnitId": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "id": "ing-0-11",
+          "quantity": 50.0,
+          "note": null,
+          "deleted": false,
+          "referenceId": null,
+          "food": {
+            "name": "Cashewkerne",
+            "originalName": "Cashewkerne",
+            "mealieFoodId": "8c6fa351-ec3f-4510-81d4-18466a5124ed",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": "g",
+            "originalName": "g",
+            "mealieUnitId": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "id": "ing-0-12",
+          "quantity": 100.0,
+          "note": null,
+          "deleted": false,
+          "referenceId": null,
+          "food": {
+            "name": "TK-Erbsen",
+            "originalName": "TK-Erbsen",
+            "mealieFoodId": "c17e95b1-f847-434a-bc87-65f18db062ad",
+            "badgeId": "new",
+            "newId": "food-new-0-12"
+          },
+          "unit": {
+            "name": "g",
+            "originalName": "g",
+            "mealieUnitId": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "id": "ing-0-13",
+          "quantity": 50.0,
+          "note": null,
+          "deleted": false,
+          "referenceId": null,
+          "food": {
+            "name": "getrocknete Lilienknospen",
+            "originalName": "getrocknete Lilienknospen",
+            "mealieFoodId": "b2b58487-6112-4af1-b696-fb63dee002cb",
+            "badgeId": "found_ai"
+          },
+          "unit": {
+            "name": "g",
+            "originalName": "g",
+            "mealieUnitId": "c8704bd2-96fd-47f0-8d30-31cb31c4add6",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "id": "ing-0-14",
+          "quantity": 2.0,
+          "note": null,
+          "deleted": false,
+          "referenceId": null,
+          "food": {
+            "name": "Öl",
+            "originalName": "Öl",
+            "mealieFoodId": "d234d031-dc3c-49a1-a23c-6428cb06d61a",
+            "badgeId": "found_ai"
+          },
+          "unit": {
+            "name": "EL",
+            "originalName": "EL",
+            "mealieUnitId": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "id": "ing-0-15",
+          "quantity": 5.0,
+          "note": null,
+          "deleted": false,
+          "referenceId": null,
+          "food": {
+            "name": "getrocknete chinesische Datteln",
+            "originalName": "getrocknete chinesische Datteln",
+            "mealieFoodId": "9e415419-c2d2-4ab9-860b-e84a9ab4bd97",
+            "badgeId": "new",
+            "newId": "food-new-0-15"
+          },
+          "unit": {
+            "name": "Stück",
+            "originalName": "Stück",
+            "mealieUnitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "id": "ing-0-16",
+          "quantity": 5.0,
+          "note": null,
+          "deleted": false,
+          "referenceId": null,
+          "food": {
+            "name": "getrocknete chinesische Pflaumen",
+            "originalName": "getrocknete chinesische Pflaumen",
+            "mealieFoodId": "4d142d2e-37e8-4498-8cc0-40f58c644c45",
+            "badgeId": "found_ai"
+          },
+          "unit": {
+            "name": "Stück",
+            "originalName": "Stück",
+            "mealieUnitId": "22d2318e-361e-4fe1-b1b7-a2741c87afe1",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "id": "ing-0-17",
+          "quantity": 1.0,
+          "note": null,
+          "deleted": false,
+          "referenceId": null,
+          "food": {
+            "name": "Speisestärke",
+            "originalName": "Speisestärke",
+            "mealieFoodId": "2988d5ad-8a3d-4f8f-87e8-d8fa343a1b66",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": "TL",
+            "originalName": "TL",
+            "mealieUnitId": "190e0f06-fae8-4d6f-9009-a3c7b214434e",
+            "badgeId": "found_word"
+          }
+        },
+        {
+          "id": "ing-0-18",
+          "quantity": 2.0,
+          "note": null,
+          "deleted": false,
+          "referenceId": null,
+          "food": {
+            "name": "Reiswein",
+            "originalName": "Reiswein",
+            "mealieFoodId": "27e5cbc6-cd49-4a48-b85c-d3ed0c13c767",
+            "badgeId": "found_word"
+          },
+          "unit": {
+            "name": "EL",
+            "originalName": "EL",
+            "mealieUnitId": "270d47a8-0d2e-43f1-b1e6-9e9fe4edcd0d",
+            "badgeId": "found_word"
+          }
+        }
+      ]
+    }
+  ],
+  "instructions": [
+    {
+      "name": "Zubereitung Ente mit 8 Kostbarkeiten",
+      "steps": [
+        {
+          "id": "step-0-0",
+          "order": 1,
+          "instruction": "Die Morcheln und Tongu-Pilze in warmem Wasser einweichen.",
+          "timer_minutes": null,
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "id": "step-0-1",
+          "order": 2,
+          "instruction": "Die Ente von Innereien, innerem Fett und dem Hals befreien, waschen und in Portionsstücke schneiden oder hacken. In einem Topf knapp mit kaltem Wasser bedecken, salzen, aufkochen und etwa 20 Minuten köcheln lassen. Die Ententeile dann herausheben, die Brühe abseihen und eventuell entfetten.",
+          "timer_minutes": 20,
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "id": "step-0-2",
+          "order": 3,
+          "instruction": "Ingwer schälen und fein hacken, mit je 1/2 Teelöffel Salz, Fünfgewürzpulver und Pfeffer, der Hoisin- und der Sojasauce verrühren, die Ententeile damit gut einreiben.",
+          "timer_minutes": null,
+          "ingredientIds": [
+            "ing-0-6",
+            "ing-0-8"
+          ],
+          "ingredientReferenceIds": []
+        },
+        {
+          "id": "step-0-3",
+          "order": 4,
+          "instruction": "Lotussamen und Wasserkastanien abtropfen lassen, mit Cashewkernen und Erbsen mischen. Morcheln von holzigen Stellen befreien und entstielen, Tongu-Pilze entstielen. Die Pilze in breite Streifen schneiden. Die Lilienknospen entstielen, quer halbieren, aus jeder Nadel einen Knoten machen.",
+          "timer_minutes": null,
+          "ingredientIds": [
+            "ing-0-9"
+          ],
+          "ingredientReferenceIds": []
+        },
+        {
+          "id": "step-0-4",
+          "order": 5,
+          "instruction": "Mit einem Messer möglichst viel Marinade von den Ententeilen abschaben und mit 50 ml Entenbrühe verrühren.",
+          "timer_minutes": null,
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "id": "step-0-5",
+          "order": 6,
+          "instruction": "Das Öl im heißen Wok oder einer heißen breiten Pfanne erhitzen, die Ententeile rundherum braten. Pilze und die übrigen vorbereiteten Zutaten dazugeben, alles etwa 2 Minuten garen. Die Marinade einrühren, alles zugedeckt bei milder Hitze etwa 10 Minuten schmoren.",
+          "timer_minutes": 12,
+          "ingredientIds": [
+            "ing-0-14",
+            "ing-0-9"
+          ],
+          "ingredientReferenceIds": []
+        },
+        {
+          "id": "step-0-6",
+          "order": 7,
+          "instruction": "Datteln und Pflaumen entsteinen, halbieren und in den Wok oder die Pfanne geben, alles verrühren und zugedeckt noch etwa 10 Minuten schmoren.",
+          "timer_minutes": 10,
+          "ingredientIds": [],
+          "ingredientReferenceIds": []
+        },
+        {
+          "id": "step-0-7",
+          "order": 8,
+          "instruction": "Die Ententeile herausheben, mit den übrigen Zutaten anrichten. Den Wok (Pfanne) wieder erhitzen, etwa 140 ml Entenbrühe angießen. Die Speisestärke mit Reiswein glatt rühren, die Sauce damit binden. Abschmecken, über die Ententeile träufeln.",
+          "timer_minutes": null,
+          "ingredientIds": [
+            "ing-0-17",
+            "ing-0-18"
+          ],
+          "ingredientReferenceIds": []
+        }
+      ]
+    }
+  ],
+  "notes": "Wenn Sie nicht alle Zutaten bekommen, servieren Sie Ente mit vier oder mit sechs Kostbarkeiten.",
+  "image_path": "data/pipeline/02_RecipeImage.jpg",
+  "image_url": null,
+  "metadata": {
+    "source": "meine familie & ich 44-57",
+    "categories": [
+      "Asiatisch",
+      "Ente",
+      "Hauptgericht"
+    ],
+    "cuisine": "Chinesisch",
+    "tags": [
+      "Ente",
+      "Pilze",
+      "Asiatisch",
+      "Festessen"
+    ],
+    "mealie_categories": [
+      {
+        "id": "c8b08673-ba91-4d4e-899b-77b9e9a4e733",
+        "name": "Hauptgerichte – Fleisch 🥩",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "hauptgerichte-fleisch"
+      }
+    ],
+    "mealie_tags": [
+      {
+        "id": "6b6c225a-f74e-4366-a61b-deb6afccdb3c",
+        "name": "Ernährung | High-Protein 💪",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "ernahrung-high-protein"
+      },
+      {
+        "id": "934e7b20-c521-40c9-a09c-5bc9706f9542",
+        "name": "Form | Pfannengericht 🍳",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "form-pfannengericht"
+      },
+      {
+        "id": "df6f01c9-69a6-4f87-b6a1-799e6c70b1bc",
+        "name": "Küche | Chinesisch 🇨🇳",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "kuche-chinesisch"
+      },
+      {
+        "id": "d5a8b13a-11cb-4d0c-893f-d2c99204eaea",
+        "name": "Schärfe | Mild 🙂",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "scharfe-mild"
+      },
+      {
+        "id": "539f721a-a8e8-4c15-a7b4-deefcfb27f3a",
+        "name": "Tageszeit | Dinner 🌙",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "tageszeit-dinner"
+      },
+      {
+        "id": "2504a5c6-9a98-4bb8-90a7-e07cc33c687d",
+        "name": "Technik | Wok 🍜",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "technik-wok"
+      }
+    ]
+  },
+  "assets": [
+    {
+      "file_name": "02_RecipeImage.jpg",
+      "dataPath": "03_RecipeImage.json"
+    }
+  ]
+}

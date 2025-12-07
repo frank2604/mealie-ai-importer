@@ -26,17 +26,48 @@ class ImageAssetPreparation:
 
 
 def select_best_image(images: Iterable[ExtractedImage]) -> Optional[ExtractedImage]:
-    """Return the largest image by byte size from *images*.
+    """Pick the most plausible recipe photo from embedded PDF images.
 
-    For many PDFs das größte Bild entspricht dem Food-Foto; Icons/Logos sind in der
-    Regel deutlich kleiner.
+    Heuristik:
+    - Bevorzugt frühere Seiten.
+    - Bevorzugt Bilder, die nicht wie ein kompletter A4-Scan (sehr groß, ~1.4 Seitenverhältnis) wirken.
+    - Größe zählt positiv, aber extrem große A4-Scans werden abgewertet.
+    - Fällt auf die größte Datei zurück, falls keine Bewertung möglich.
     """
 
     images = list(images)
     if not images:
         return None
 
-    return max(images, key=lambda img: len(img.data))
+    def score(img: ExtractedImage) -> float:
+        # Grundwerte
+        area = (img.width or 0) * (img.height or 0)
+        size_score = min(area / 100_000, 30)  # Wachstum abflachen
+
+        # Seitenverhältnis-Check, um A4-Scans (≈1.41) abzuwerten
+        if img.width and img.height and img.width > 0 and img.height > 0:
+            ratio = max(img.width, img.height) / max(1, min(img.width, img.height))
+        else:
+            ratio = 1.0
+        a4_penalty = abs(1.414 - ratio)  # je näher an A4, desto kleiner der Wert
+
+        # Extrem große A4-ähnliche Bilder (oft reine Text-Seiten) stärker bestrafen
+        huge_a4_penalty = 0.0
+        if area > 4_000_000 and 1.2 <= ratio <= 1.6:
+            huge_a4_penalty = 10.0
+
+        # Frühe Seiten bevorzugen; fehlt page_number -> neutral
+        page_bonus = 0.0
+        if getattr(img, "page_number", None):
+            # Seite 1: +6, Seite 2: +5, ...
+            page_bonus = max(0.0, 7.0 - float(img.page_number))
+
+        return size_score + page_bonus - (a4_penalty * 2.0) - huge_a4_penalty
+
+    try:
+        return max(images, key=score)
+    except Exception:  # pragma: no cover - defensive fallback
+        return max(images, key=lambda img: len(img.data))
 
 
 def prepare_image_asset(

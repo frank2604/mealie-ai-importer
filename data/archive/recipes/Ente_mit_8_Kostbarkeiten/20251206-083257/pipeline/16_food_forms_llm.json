@@ -1,0 +1,13 @@
+{
+  "ingredient": "Reiswein",
+  "forms": {
+    "singular": "Reiswein",
+    "plural": "Reiswein",
+    "countable": false,
+    "aliases": [
+      "Sake"
+    ],
+    "labelId": "7c260419-4a87-440b-8b4d-cec090a65078",
+    "labelName": "Alkohol 🍻"
+  }
+}

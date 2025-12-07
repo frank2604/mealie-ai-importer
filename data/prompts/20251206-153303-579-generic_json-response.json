@@ -1,0 +1,36 @@
+{
+  "id": "chatcmpl-CjoZMT5qlmUq5j2uUARhZx1079SPo",
+  "object": "chat.completion",
+  "created": 1765035184,
+  "model": "gpt-4.1-mini-2025-04-14",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\"links\":[{\"stepId\":\"step-0-0\",\"ingredientIds\":[\"ing-0-0\",\"ing-0-1\"]},{\"stepId\":\"step-0-1\",\"ingredientIds\":[\"ing-0-2\"]},{\"stepId\":\"step-0-2\",\"ingredientIds\":[\"ing-0-4\",\"ing-0-5\",\"ing-0-6\",\"ing-0-7\",\"ing-0-8\",\"ing-0-2\"]},{\"stepId\":\"step-0-3\",\"ingredientIds\":[\"ing-0-9\",\"ing-0-10\",\"ing-0-11\",\"ing-0-12\",\"ing-0-0\",\"ing-0-1\",\"ing-0-13\"]},{\"stepId\":\"step-0-4\",\"ingredientIds\":[\"ing-0-2\"]},{\"stepId\":\"step-0-5\",\"ingredientIds\":[\"ing-0-14\",\"ing-0-2\",\"ing-0-0\",\"ing-0-1\",\"ing-0-9\",\"ing-0-10\",\"ing-0-11\",\"ing-0-12\"]},{\"stepId\":\"step-0-6\",\"ingredientIds\":[\"ing-0-15\",\"ing-0-16\"]},{\"stepId\":\"step-0-7\",\"ingredientIds\":[\"ing-0-17\",\"ing-0-18\"]}]}",
+        "refusal": null,
+        "annotations": []
+      },
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 1396,
+    "completion_tokens": 283,
+    "total_tokens": 1679,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 0,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "service_tier": "default",
+  "system_fingerprint": "fp_7abc656409"
+}

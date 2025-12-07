@@ -1,0 +1,15 @@
+{
+  "name": "Toastbrot",
+  "payload": {
+    "name": "Toastbrot",
+    "pluralName": "Toastbrote",
+    "extras": {},
+    "labelId": "fa1ee8c7-ff12-435d-b213-bd9233b7a37a",
+    "aliases": [
+      {
+        "name": "Toast"
+      }
+    ],
+    "householdsWithIngredientFood": []
+  }
+}

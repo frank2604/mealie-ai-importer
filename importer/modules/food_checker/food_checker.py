@@ -39,6 +39,7 @@ _SYSTEM_PROMPT = ("""
 @dataclass
 class _FoodCandidate:
     id: str
+    internal_id: str
     name: str
     plural: str
     aliases: List[str]
@@ -47,6 +48,7 @@ class _FoodCandidate:
     def from_raw(cls, raw: Dict[str, object]) -> "_FoodCandidate":
         return cls(
             id=str(raw.get("id") or ""),
+            internal_id=str(raw.get("internalFoodId") or ""),
             name=str(raw.get("name") or ""),
             plural=str(raw.get("pluralName") or raw.get("name") or ""),
             aliases=[str(alias) for alias in (raw.get("aliases") or [])],
@@ -71,6 +73,7 @@ class FoodCheckerModule:
         self._foods: List[_FoodCandidate] = []
         self._locale = locale or "de"
         self._llm_config = llm_config
+        self._internal_map: Dict[str, str] = {}  # internalFoodId -> mealieFoodId
 
     def run(self, context: PipelineContext) -> None:
         ingredient_refs = list(context.iter_ingredients())
@@ -97,6 +100,7 @@ class FoodCheckerModule:
         fuzzy_matches: List[tuple[str, str]] = []
         ai_matches: List[str] = []
         pending_ai_refs: List[IngredientRef] = []
+        unresolved_after_exact: List[IngredientRef] = []
 
         for ref in ingredient_refs:
             ingredient = ref.ingredient
@@ -119,6 +123,7 @@ class FoodCheckerModule:
                 continue
 
             pending_ai_refs.append(ref)
+            unresolved_after_exact.append(ref)
 
         missing: List[IngredientRef] = []
         unresolved_names: List[str] = []
@@ -129,6 +134,12 @@ class FoodCheckerModule:
                 len(exact_matches),
                 "" if len(exact_matches) == 1 else "s",
                 self._format_list(exact_matches),
+            )
+        if unresolved_after_exact:
+            pending_names = [ref.ingredient.name for ref in unresolved_after_exact if ref.ingredient.name]
+            logger.info(
+                "Try matching rest of the ingredients %s with Fuzzy-Search",
+                self._format_list(pending_names),
             )
         if fuzzy_matches:
             logger.info(
@@ -145,28 +156,23 @@ class FoodCheckerModule:
                 self._format_list(pending_names),
             )
 
-        for ref in pending_ai_refs:
-            ingredient = ref.ingredient
-            logger.info(
-                "Ask AI to find [%s] in existing foods in Mealie",
-                ingredient.name,
-            )
-            candidate_id, candidate_name = self._stage_two_with_llm(ingredient.name)
-            if candidate_id:
-                matches[ref.key] = candidate_id
-                match_details[ref.key] = {"strategy": "ai"}
-                ai_matches.append(ingredient.name)
-                logger.info(
-                    "AI suggests [%s] from existing foods in Mealie",
-                    candidate_name or candidate_id,
-                )
-            else:
-                logger.info(
-                    "AI could not find a matching ingredient for [%s] in existing foods in Mealie",
-                    ingredient.name,
-                )
-                missing.append(ref)
-                unresolved_names.append(ingredient.name)
+        if pending_ai_refs:
+            ai_map = self._stage_two_batch_with_llm(pending_ai_refs)
+            for ref in pending_ai_refs:
+                ingredient = ref.ingredient
+                candidate_id = ai_map.get(ref.key)
+                if candidate_id:
+                    matches[ref.key] = candidate_id
+                    match_details[ref.key] = {"strategy": "ai"}
+                    ai_matches.append(ingredient.name)
+                    logger.info("AI suggests [%s] from existing foods in Mealie", candidate_id)
+                else:
+                    logger.info(
+                        "AI could not find a matching ingredient for [%s] in existing foods in Mealie",
+                        ingredient.name,
+                    )
+                    missing.append(ref)
+                    unresolved_names.append(ingredient.name)
 
         context.food_matches = matches
         context.missing_food_refs = missing
@@ -278,11 +284,14 @@ class FoodCheckerModule:
                 else:
                     categories = list(cached_categories.get("categories", []))
 
+        foods = self._assign_internal_ids(foods)
         self._foods = foods
+        self._internal_map = {item.internal_id: item.id for item in foods if item.internal_id}
         return {
             "foods": [
                 {
                     "id": item.id,
+                    "internalFoodId": item.internal_id,
                     "name": item.name,
                     "pluralName": item.plural,
                     "aliases": item.aliases,
@@ -291,6 +300,29 @@ class FoodCheckerModule:
             ],
             "categories": categories,
         }
+
+    def _assign_internal_ids(self, foods: List[_FoodCandidate]) -> List[_FoodCandidate]:
+        """Ensure every candidate has a stable short internalFoodId."""
+        result: List[_FoodCandidate] = []
+        # Start counter after the highest existing numeric internal_id
+        existing_numbers: List[int] = []
+        for item in foods:
+            try:
+                existing_numbers.append(int(str(item.internal_id).strip()))
+            except (TypeError, ValueError):
+                continue
+        counter = (max(existing_numbers) + 1) if existing_numbers else 1
+        seen: set[str] = set()
+        for item in foods:
+            internal = item.internal_id.strip()
+            if not internal or internal in seen:
+                internal = str(counter)
+                counter += 1
+            seen.add(internal)
+            item.internal_id = internal
+            result.append(item)
+        # Falls Cache geladen, aber neue Elemente ohne ID hinzukommen: weiterzählen
+        return result
 
     def _write_cache(self, snapshot: Dict[str, object], context: PipelineContext) -> None:
         timestamp = datetime.utcnow().isoformat()
@@ -357,22 +389,37 @@ class FoodCheckerModule:
                     best_score = score
                     best_id = candidate.id
                     best_label = option
-        if best_score >= 0.9:
+        if best_score >= 0.75:
             return best_id, best_label
         return None, None
 
-    def _stage_two_with_llm(self, query: str) -> tuple[Optional[str], Optional[str]]:
+    def _stage_two_batch_with_llm(self, refs: List[IngredientRef]) -> Dict[str, Optional[str]]:
+        """Call the LLM once for all remaining ingredients.
+
+        Returns a mapping ref.key -> mealie_food_id (or None).
+        """
+
+        result: Dict[str, Optional[str]] = {ref.key: None for ref in refs}
         if not self._llm_client or not self._foods:
-            return None, None
+            return result
 
         candidates = list(self._foods)
         if not candidates:
-            return None, None
+            return result
 
-        candidate_lines = [f"- {candidate.id}: {candidate.plural}" for candidate in candidates]
+        ingredients_block = []
+        id_map: Dict[str, str] = {}  # send_id -> ref.key
+        for ref in refs:
+            send_id = ref.ingredient.id or ref.key
+            id_map[send_id] = ref.key
+            ingredients_block.append({"ingredientId": send_id, "name": ref.ingredient.name})
+
+        candidate_lines = [f"- {candidate.internal_id}: {candidate.plural}" for candidate in candidates]
+
         replacements = {
-            "ingredient": query,
+            "ingredient": refs[0].ingredient.name if refs else "",
             "candidates": "\n".join(candidate_lines) if candidate_lines else "-",
+            "ingredients": json.dumps({"ingredients": ingredients_block, "candidates": []}, ensure_ascii=False),
         }
         prompt_cfg = resolve_prompt("ingredients", self._locale, replacements=replacements)
         llm_cfg = resolve_llm_config("ingredients")
@@ -383,7 +430,7 @@ class FoodCheckerModule:
             for part in (prompt_cfg.get("user1", ""), prompt_cfg.get("user2", ""))
             if part and part.strip()
         ]
-        user_prompt = "\n\n".join(user_parts).strip() or "\n".join(candidate_lines)
+        user_prompt = "\n\n".join(user_parts).strip() or json.dumps({"ingredients": ingredients_block}, ensure_ascii=False)
 
         try:
             log_prompt_messages(
@@ -396,26 +443,38 @@ class FoodCheckerModule:
             response = self._llm_client.run_text(system_prompt or _SYSTEM_PROMPT, user_prompt, llm_config=llm_cfg)
         except Exception as exc:  # pragma: no cover - external dependency
             logger.debug("Assistant lookup failed: %s", exc)
-            return None, None
+            return result
 
         try:
             data = json.loads(response)
         except json.JSONDecodeError:
             logger.debug("Assistant response was not valid JSON: %s", response[:120])
-            return None, None
+            return result
 
-        match_id = data.get("match")
-        if not isinstance(match_id, str):
-            logger.debug('The assistant could not find a confident match for "%s"', query)
-            return None, None
+        links = data.get("links")
+        if not isinstance(links, list):
+            logger.debug("Assistant response did not contain 'links'")
+            return result
 
-        known_ids = {candidate.id for candidate in candidates}
-        if match_id not in known_ids:
-            logger.debug("The assistant suggested an unknown food id %s", match_id)
-            return None, None
-
-        food = self._foods_dict().get(match_id)
-        return match_id, (food.name if food else None)
+        for link in links:
+            if not isinstance(link, dict):
+                continue
+            ing_id = link.get("ingredientId")
+            food_internal_id = link.get("foodId")
+            if not ing_id or not isinstance(ing_id, str):
+                continue
+            ref_key = id_map.get(ing_id)
+            if not ref_key:
+                continue
+            if food_internal_id is None:
+                result[ref_key] = None
+                continue
+            if not isinstance(food_internal_id, str):
+                continue
+            mealie_id = self._internal_map.get(food_internal_id)
+            if mealie_id:
+                result[ref_key] = mealie_id
+        return result
 
     # ------------------------------------------------------------------
     # Review and reporting
@@ -583,6 +642,9 @@ class FoodCheckerModule:
 
     def _foods_dict(self) -> Dict[str, _FoodCandidate]:
         return {item.id: item for item in self._foods}
+
+    def _foods_by_internal(self) -> Dict[str, _FoodCandidate]:
+        return {item.internal_id: item for item in self._foods if item.internal_id}
 
     @staticmethod
     def _format_list(values: Iterable[str]) -> str:

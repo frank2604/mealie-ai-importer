@@ -1,0 +1,15 @@
+{
+  "name": "Mett",
+  "payload": {
+    "name": "Mett",
+    "pluralName": "Mett",
+    "extras": {},
+    "labelId": "cf095fa9-128c-4699-946e-4da8c4d87d7b",
+    "aliases": [
+      {
+        "name": "Hackfleisch roh"
+      }
+    ],
+    "householdsWithIngredientFood": []
+  }
+}

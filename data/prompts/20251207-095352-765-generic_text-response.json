@@ -1,0 +1,35 @@
+{
+  "id": "chatcmpl-Ck5kf9tDArmq3M06EsxJyEg4Bp8d8",
+  "object": "chat.completion",
+  "created": 1765101233,
+  "model": "gpt-5-mini-2025-08-07",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\n  \"recipeCategoryId\": \"c8b08673-ba91-4d4e-899b-77b9e9a4e733\",\n  \"tags\": [\n    {\n      \"category\": \"Ernährung\",\n      \"tagId\": \"6b6c225a-f74e-4366-a61b-deb6afccdb3c\"\n    },\n    {\n      \"category\": \"Form\",\n      \"tagId\": \"934e7b20-c521-40c9-a09c-5bc9706f9542\"\n    },\n    {\n      \"category\": \"Schärfe\",\n      \"tagId\": \"20529bfe-76e9-444e-984e-9be15e7a6eda\"\n    },\n    {\n      \"category\": \"Tageszeit\",\n      \"tagId\": \"539f721a-a8e8-4c15-a7b4-deefcfb27f3a\"\n    },\n    {\n      \"category\": \"Technik\",\n      \"tagId\": \"de422906-bd1d-4fc3-852f-a5e7b105a6e2\"\n    }\n  ]\n}",
+        "refusal": null,
+        "annotations": []
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 9052,
+    "completion_tokens": 1160,
+    "total_tokens": 10212,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 896,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "service_tier": "default",
+  "system_fingerprint": null
+}

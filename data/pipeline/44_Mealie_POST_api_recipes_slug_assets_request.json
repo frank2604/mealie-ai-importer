@@ -1,0 +1,13 @@
+{
+  "slug": "westernballchen",
+  "data": {
+    "name": "01_Westernballchen",
+    "icon": "mdi-file-pdf-box",
+    "extension": "pdf"
+  },
+  "file": {
+    "fileName": "01_Westernballchen.pdf",
+    "mimeType": "application/pdf",
+    "sizeBytes": 503443
+  }
+}

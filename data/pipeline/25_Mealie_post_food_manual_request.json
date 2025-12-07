@@ -1,0 +1,18 @@
+{
+  "name": "Chilischote (rot)",
+  "payload": {
+    "name": "Chilischote (rot)",
+    "pluralName": "Chilischoten (rot)",
+    "extras": {},
+    "labelId": "c1e4c9ca-979b-4d58-982e-350f3dd5a5de",
+    "aliases": [
+      {
+        "name": "rote Chili"
+      },
+      {
+        "name": "rote Chili-Schote"
+      }
+    ],
+    "householdsWithIngredientFood": []
+  }
+}

@@ -1,0 +1,663 @@
+{
+  "generatedAt": "2025-12-07T09:53:52.764038",
+  "current": {
+    "recipeServings": 7.0,
+    "totalTime": "30 Minuten",
+    "category": null,
+    "tagIds": []
+  },
+  "proposal": {
+    "recipeServings": 7.0,
+    "totalTime": "30 Minuten",
+    "categoryId": "c8b08673-ba91-4d4e-899b-77b9e9a4e733",
+    "tagIds": [
+      "6b6c225a-f74e-4366-a61b-deb6afccdb3c",
+      "934e7b20-c521-40c9-a09c-5bc9706f9542",
+      "20529bfe-76e9-444e-984e-9be15e7a6eda",
+      "539f721a-a8e8-4c15-a7b4-deefcfb27f3a",
+      "de422906-bd1d-4fc3-852f-a5e7b105a6e2"
+    ]
+  },
+  "userDecision": {
+    "recipeServings": 7.0,
+    "totalTime": "30 Minuten",
+    "categoryId": "c8b08673-ba91-4d4e-899b-77b9e9a4e733",
+    "tagIds": [
+      "6b6c225a-f74e-4366-a61b-deb6afccdb3c",
+      "934e7b20-c521-40c9-a09c-5bc9706f9542",
+      "20529bfe-76e9-444e-984e-9be15e7a6eda",
+      "539f721a-a8e8-4c15-a7b4-deefcfb27f3a",
+      "de422906-bd1d-4fc3-852f-a5e7b105a6e2"
+    ]
+  },
+  "available": {
+    "categories": [
+      {
+        "id": "650b3013-9fe3-423f-9729-6e323bbc0c40",
+        "name": "Getränke 🥤",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "getranke"
+      },
+      {
+        "id": "27b679ff-26d7-4a60-8c97-657bcb149625",
+        "name": "Desserts & Süßes 🍰",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "desserts-susses"
+      },
+      {
+        "id": "a178c22d-ffa7-4164-ada8-bc05d0d83bb9",
+        "name": "Backen (Brot & Gebäck) 🍞",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "backen-brot-geback"
+      },
+      {
+        "id": "1cb7a631-cd2f-4127-9356-956888d7430c",
+        "name": "Saucen, Dips & Dressings 🫙",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "saucen-dips-dressings"
+      },
+      {
+        "id": "e162aef0-c9a4-4765-b8f1-0618a29e7713",
+        "name": "Beilagen 🍚",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "beilagen"
+      },
+      {
+        "id": "2c4fbbde-a292-4d93-9d12-24ed40c7256a",
+        "name": "Hauptgerichte – Vegetarisch/Vegan 🌱",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "hauptgerichte-vegetarisch-vegan"
+      },
+      {
+        "id": "a5c9bec8-b8e8-45aa-b42e-88df68790fd9",
+        "name": "Hauptgerichte – Fisch & Meer 🐟",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "hauptgerichte-fisch-meer"
+      },
+      {
+        "id": "c8b08673-ba91-4d4e-899b-77b9e9a4e733",
+        "name": "Hauptgerichte – Fleisch 🥩",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "hauptgerichte-fleisch"
+      },
+      {
+        "id": "9d7a9a24-b40d-462c-969a-79b0cd813eac",
+        "name": "Suppen & Eintöpfe 🍲",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "suppen-eintopfe"
+      },
+      {
+        "id": "49c013e3-2a37-4554-a9ef-0990636fbd2f",
+        "name": "Salate & Bowls 🥗",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "salate-bowls"
+      },
+      {
+        "id": "ba51e0ac-9bc4-4528-90cc-b30866b732f8",
+        "name": "Vorspeisen & Tapas 🥟",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "vorspeisen-tapas"
+      },
+      {
+        "id": "e4491d97-bbf6-477e-be34-7ba1e3e9b405",
+        "name": "Frühstück & Brunch 🥐",
+        "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+        "slug": "fruhstuck-brunch"
+      }
+    ],
+    "tagCategories": [
+      {
+        "category": "Ernährung",
+        "tags": [
+          {
+            "id": "8dd5e0d9-89df-4922-bddc-a4da0972eba5",
+            "name": "Ernährung | Zuckerreduziert 🧂",
+            "detail": "Zuckerreduziert 🧂",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "ernahrung-zuckerreduziert"
+          },
+          {
+            "id": "8b28de15-7211-4106-b569-36cc739e7ea2",
+            "name": "Ernährung | Paleo 🪨",
+            "detail": "Paleo 🪨",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "ernahrung-paleo"
+          },
+          {
+            "id": "6b6c225a-f74e-4366-a61b-deb6afccdb3c",
+            "name": "Ernährung | High-Protein 💪",
+            "detail": "High-Protein 💪",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "ernahrung-high-protein"
+          },
+          {
+            "id": "dd0f993c-ec19-439a-a9a1-fe10cf2df81c",
+            "name": "Ernährung | Low-Carb 📉",
+            "detail": "Low-Carb 📉",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "ernahrung-low-carb"
+          },
+          {
+            "id": "ceb54f28-21a4-4a48-a790-6fed9a562160",
+            "name": "Ernährung | Glutenfrei 🚫🌾",
+            "detail": "Glutenfrei 🚫🌾",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "ernahrung-glutenfrei"
+          },
+          {
+            "id": "6874b6c7-7e98-4fac-883f-f4250e3dad62",
+            "name": "Ernährung | Vegan 🌱",
+            "detail": "Vegan 🌱",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "ernahrung-vegan"
+          },
+          {
+            "id": "bcb3bb6e-a4b1-4a19-b9db-a7fa3429dfeb",
+            "name": "Ernährung | Vegetarisch 🌿",
+            "detail": "Vegetarisch 🌿",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "ernahrung-vegetarisch"
+          }
+        ]
+      },
+      {
+        "category": "Form",
+        "tags": [
+          {
+            "id": "e109d7e2-dbad-4bd7-88b9-e0187c06853c",
+            "name": "Form | Tapas/Mezze 🍢",
+            "detail": "Tapas/Mezze 🍢",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "form-tapas-mezze"
+          },
+          {
+            "id": "f9ec0e0e-1623-4753-9a01-2d072843aca5",
+            "name": "Form | Salat 🥗",
+            "detail": "Salat 🥗",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "form-salat"
+          },
+          {
+            "id": "0ef6a4e1-ad96-4595-bc7f-a304f9a03599",
+            "name": "Form | Suppe 🥣",
+            "detail": "Suppe 🥣",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "form-suppe"
+          },
+          {
+            "id": "d6442b73-b4d8-4c13-97d6-21da9b46fffb",
+            "name": "Form | Sandwich 🥪",
+            "detail": "Sandwich 🥪",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "form-sandwich"
+          },
+          {
+            "id": "178cfcdb-a562-4fa1-baf2-727e51b6eda6",
+            "name": "Form | Burger 🍔",
+            "detail": "Burger 🍔",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "form-burger"
+          },
+          {
+            "id": "17663b69-deb0-45f0-bf9c-e13bdc5a4a12",
+            "name": "Form | Wrap 🌯",
+            "detail": "Wrap 🌯",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "form-wrap"
+          },
+          {
+            "id": "93629e83-7868-46d5-883c-3abc317c4ff5",
+            "name": "Form | Tarte 🥧",
+            "detail": "Tarte 🥧",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "form-tarte"
+          },
+          {
+            "id": "273217f8-9f99-49bd-aa72-38f0fd953610",
+            "name": "Form | Quiche 🥧",
+            "detail": "Quiche 🥧",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "form-quiche"
+          },
+          {
+            "id": "bbec333b-08a2-467c-9f67-7e8a896c3610",
+            "name": "Form | Pizza 🍕",
+            "detail": "Pizza 🍕",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "form-pizza"
+          },
+          {
+            "id": "db041879-fefd-4b2c-8e4a-733d9b040d7f",
+            "name": "Form | Pasta-Gericht 🍝",
+            "detail": "Pasta-Gericht 🍝",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "form-pasta-gericht"
+          },
+          {
+            "id": "934e7b20-c521-40c9-a09c-5bc9706f9542",
+            "name": "Form | Pfannengericht 🍳",
+            "detail": "Pfannengericht 🍳",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "form-pfannengericht"
+          },
+          {
+            "id": "11775025-b6b7-4103-b93f-28b118364a60",
+            "name": "Form | Auflauf 🧀",
+            "detail": "Auflauf 🧀",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "form-auflauf"
+          },
+          {
+            "id": "9300a07c-1efb-4790-a7d8-6e5403c1da9d",
+            "name": "Form | Eintopf 🍲",
+            "detail": "Eintopf 🍲",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "form-eintopf"
+          },
+          {
+            "id": "f613b64b-7f1c-461a-9e14-aab10e49d7c8",
+            "name": "Form | Curry 🍛",
+            "detail": "Curry 🍛",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "form-curry"
+          },
+          {
+            "id": "2c830b67-56e5-4eeb-b4fd-ac329c8180dd",
+            "name": "Form | Bowl 🥗",
+            "detail": "Bowl 🥗",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "form-bowl"
+          }
+        ]
+      },
+      {
+        "category": "Gerät",
+        "tags": [
+          {
+            "id": "a8a4a379-7e98-4c1d-b658-0141d037fa3e",
+            "name": "Gerät | Brotbackautomat 🍞",
+            "detail": "Brotbackautomat 🍞",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "gerat-brotbackautomat"
+          },
+          {
+            "id": "b3c40a14-0739-4aa3-b083-3fe5689004db",
+            "name": "Gerät | Schnellkochtopf ⏱️",
+            "detail": "Schnellkochtopf ⏱️",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "gerat-schnellkochtopf"
+          },
+          {
+            "id": "3f247e09-ebf5-4114-8f66-dc099132a4f3",
+            "name": "Gerät | Mikrowelle 📡",
+            "detail": "Mikrowelle 📡",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "gerat-mikrowelle"
+          },
+          {
+            "id": "f5d3f88c-29a8-4885-9096-5a19e559384c",
+            "name": "Gerät | Waffeleisen 🧇",
+            "detail": "Waffeleisen 🧇",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "gerat-waffeleisen"
+          },
+          {
+            "id": "b673c7a1-12e3-43cf-a817-914b92e7a124",
+            "name": "Gerät | Grill 🔥",
+            "detail": "Grill 🔥",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "gerat-grill"
+          },
+          {
+            "id": "3b226a44-1881-4446-a585-d583ffa4d9cf",
+            "name": "Gerät | Dutch-Oven 🍲",
+            "detail": "Dutch-Oven 🍲",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "gerat-dutch-oven"
+          },
+          {
+            "id": "956c2348-efb1-4605-8222-65b3c1d551a5",
+            "name": "Gerät | Airfryer 🛩️",
+            "detail": "Airfryer 🛩️",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "gerat-airfryer"
+          },
+          {
+            "id": "e2bbf7bb-c780-422d-a020-ef59b37daabc",
+            "name": "Gerät | Reiskocher 🍚",
+            "detail": "Reiskocher 🍚",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "gerat-reiskocher"
+          },
+          {
+            "id": "b224774e-2b68-4d0d-b439-d88bad5e4669",
+            "name": "Gerät | Thermomix ⚙️",
+            "detail": "Thermomix ⚙️",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "gerat-thermomix"
+          }
+        ]
+      },
+      {
+        "category": "Küche",
+        "tags": [
+          {
+            "id": "9e9364d5-650b-4a00-83d6-e9be8dbb13fc",
+            "name": "Küche | Fusion 🧪",
+            "detail": "Fusion 🧪",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "kuche-fusion"
+          },
+          {
+            "id": "95680f09-59cd-48ee-9641-49d5c45e81e1",
+            "name": "Küche | Afrikanisch 🌍",
+            "detail": "Afrikanisch 🌍",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "kuche-afrikanisch"
+          },
+          {
+            "id": "d9d2c980-6372-4dab-8687-dc920a18d9d4",
+            "name": "Küche | Skandinavisch 🇸🇪",
+            "detail": "Skandinavisch 🇸🇪",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "kuche-skandinavisch"
+          },
+          {
+            "id": "41d4b009-125c-473b-a0c6-725b28a2cf40",
+            "name": "Küche | US-amerikanisch 🇺🇸",
+            "detail": "US-amerikanisch 🇺🇸",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "kuche-us-amerikanisch"
+          },
+          {
+            "id": "00b8da5d-5123-4a49-93ff-05fcb4128b75",
+            "name": "Küche | Mexikanisch 🇲🇽",
+            "detail": "Mexikanisch 🇲🇽",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "kuche-mexikanisch"
+          },
+          {
+            "id": "967ef948-db73-47d9-afc9-be673c76579b",
+            "name": "Küche | Vietnamesisch 🇻🇳",
+            "detail": "Vietnamesisch 🇻🇳",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "kuche-vietnamesisch"
+          },
+          {
+            "id": "386ef81c-de75-4df8-906a-6fd24ca25939",
+            "name": "Küche | Thai 🇹🇭",
+            "detail": "Thai 🇹🇭",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "kuche-thai"
+          },
+          {
+            "id": "df6f01c9-69a6-4f87-b6a1-799e6c70b1bc",
+            "name": "Küche | Chinesisch 🇨🇳",
+            "detail": "Chinesisch 🇨🇳",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "kuche-chinesisch"
+          },
+          {
+            "id": "c0ef5d5a-7e51-4171-9251-3a63b1a7b8a7",
+            "name": "Küche | Koreanisch 🇰🇷",
+            "detail": "Koreanisch 🇰🇷",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "kuche-koreanisch"
+          },
+          {
+            "id": "09de7e0f-17f5-4afb-aa41-09cb6472dc34",
+            "name": "Küche | Japanisch 🇯🇵",
+            "detail": "Japanisch 🇯🇵",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "kuche-japanisch"
+          },
+          {
+            "id": "b582387d-c6f1-48bb-8b1d-1fe0e7ecb482",
+            "name": "Küche | Pakistanisch 🇵🇰",
+            "detail": "Pakistanisch 🇵🇰",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "kuche-pakistanisch"
+          },
+          {
+            "id": "00adfec7-ba28-4604-a028-85d2c1695a79",
+            "name": "Küche | Indisch 🇮🇳",
+            "detail": "Indisch 🇮🇳",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "kuche-indisch"
+          },
+          {
+            "id": "cfb0b73b-e1a6-446a-8944-bd1837aaf417",
+            "name": "Küche | Arabisch 🕌",
+            "detail": "Arabisch 🕌",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "kuche-arabisch"
+          },
+          {
+            "id": "ec4cd617-22ac-412f-9dd9-55fecb953f03",
+            "name": "Küche | Türkisch 🇹🇷",
+            "detail": "Türkisch 🇹🇷",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "kuche-turkisch"
+          },
+          {
+            "id": "c89b6551-f2fd-496e-b7d2-f1ff829e5c4b",
+            "name": "Küche | Griechisch 🇬🇷",
+            "detail": "Griechisch 🇬🇷",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "kuche-griechisch"
+          },
+          {
+            "id": "5752fac1-8e94-4d96-b0a0-b920394396f8",
+            "name": "Küche | Französisch 🇫🇷",
+            "detail": "Französisch 🇫🇷",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "kuche-franzosisch"
+          },
+          {
+            "id": "89a32903-f169-4f75-8975-9c8fe40002a0",
+            "name": "Küche | Deutsch 🇩🇪",
+            "detail": "Deutsch 🇩🇪",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "kuche-deutsch"
+          },
+          {
+            "id": "c5a29c43-ebbe-4e68-be51-88a2aa321115",
+            "name": "Küche | Spanisch 🇪🇸",
+            "detail": "Spanisch 🇪🇸",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "kuche-spanisch"
+          },
+          {
+            "id": "9063f3bf-6806-49fc-a925-378b15dcc154",
+            "name": "Küche | Italienisch 🇮🇹",
+            "detail": "Italienisch 🇮🇹",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "kuche-italienisch"
+          }
+        ]
+      },
+      {
+        "category": "Saison",
+        "tags": [
+          {
+            "id": "f580714e-8ea4-47e6-a6be-2c7e133a52bb",
+            "name": "Saison | Herbst 🍂",
+            "detail": "Herbst 🍂",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "saison-herbst"
+          },
+          {
+            "id": "62cf1ee1-75a7-4eeb-bfd7-bf1f7de26bf0",
+            "name": "Saison | Frühling 🌸",
+            "detail": "Frühling 🌸",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "saison-fruhling"
+          }
+        ]
+      },
+      {
+        "category": "Schärfe",
+        "tags": [
+          {
+            "id": "8369fa48-8fb6-4ab4-bba0-4683af15b1db",
+            "name": "Schärfe | Extra scharf 🔥🔥",
+            "detail": "Extra scharf 🔥🔥",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "scharfe-extra-scharf"
+          },
+          {
+            "id": "20529bfe-76e9-444e-984e-9be15e7a6eda",
+            "name": "Schärfe | Scharf 🔥",
+            "detail": "Scharf 🔥",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "scharfe-scharf"
+          },
+          {
+            "id": "4f3e6bd7-bc99-45eb-8975-249c465c3d8b",
+            "name": "Schärfe | Mittel 🌶️",
+            "detail": "Mittel 🌶️",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "scharfe-mittel"
+          },
+          {
+            "id": "d5a8b13a-11cb-4d0c-893f-d2c99204eaea",
+            "name": "Schärfe | Mild 🙂",
+            "detail": "Mild 🙂",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "scharfe-mild"
+          }
+        ]
+      },
+      {
+        "category": "Tageszeit",
+        "tags": [
+          {
+            "id": "539f721a-a8e8-4c15-a7b4-deefcfb27f3a",
+            "name": "Tageszeit | Dinner 🌙",
+            "detail": "Dinner 🌙",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "tageszeit-dinner"
+          },
+          {
+            "id": "7752f977-491d-4c36-8906-e6bbc87d38ed",
+            "name": "Tageszeit | Frühstück ☀️",
+            "detail": "Frühstück ☀️",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "tageszeit-fruhstuck"
+          }
+        ]
+      },
+      {
+        "category": "Technik",
+        "tags": [
+          {
+            "id": "050ee135-c6ef-4b9d-8c53-7a315abbac53",
+            "name": "Technik | Marinieren 🧂",
+            "detail": "Marinieren 🧂",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "technik-marinieren"
+          },
+          {
+            "id": "7493ebe1-d6cf-4a75-80b8-928603698805",
+            "name": "Technik | Fermentieren 🧫",
+            "detail": "Fermentieren 🧫",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "technik-fermentieren"
+          },
+          {
+            "id": "3f8ec89d-ef02-4096-9f42-1fdf1d598c38",
+            "name": "Technik | Slowcooker 🐢",
+            "detail": "Slowcooker 🐢",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "technik-slowcooker"
+          },
+          {
+            "id": "692a3ec1-e18a-40c9-add8-1900ec6db057",
+            "name": "Technik | Airfryer 🛩️",
+            "detail": "Airfryer 🛩️",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "technik-airfryer"
+          },
+          {
+            "id": "2504a5c6-9a98-4bb8-90a7-e07cc33c687d",
+            "name": "Technik | Wok 🍜",
+            "detail": "Wok 🍜",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "technik-wok"
+          },
+          {
+            "id": "f779057f-e85d-48f4-8fe4-9091c78e0884",
+            "name": "Technik | One-Pot 🫕",
+            "detail": "One-Pot 🫕",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "technik-one-pot"
+          },
+          {
+            "id": "ac82a09b-cc45-4d48-89c1-d52bc2d00c4b",
+            "name": "Technik | Roh 🥗",
+            "detail": "Roh 🥗",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "technik-roh"
+          },
+          {
+            "id": "b17cb8bc-45a1-4fa0-bf1c-605eb31d324e",
+            "name": "Technik | Backen 🥐",
+            "detail": "Backen 🥐",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "technik-backen"
+          },
+          {
+            "id": "8fa3970b-ec6b-4b98-b4e9-173b982690e1",
+            "name": "Technik | Frittieren 🍟",
+            "detail": "Frittieren 🍟",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "technik-frittieren"
+          },
+          {
+            "id": "6c65e936-b642-4cca-9f86-d438ea5530e4",
+            "name": "Technik | Dämpfen 🧺",
+            "detail": "Dämpfen 🧺",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "technik-dampfen"
+          },
+          {
+            "id": "a4ec15de-4f99-46e6-8115-0bb16752538b",
+            "name": "Technik | Dünsten 🌫️",
+            "detail": "Dünsten 🌫️",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "technik-dunsten"
+          },
+          {
+            "id": "89f490cf-36a0-4e03-a5b2-442ef7317714",
+            "name": "Technik | Schmoren 🍲",
+            "detail": "Schmoren 🍲",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "technik-schmoren"
+          },
+          {
+            "id": "aa23235b-594b-48d0-87bc-b5d1de454196",
+            "name": "Technik | Grill 🔥",
+            "detail": "Grill 🔥",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "technik-grill"
+          },
+          {
+            "id": "de422906-bd1d-4fc3-852f-a5e7b105a6e2",
+            "name": "Technik | Pfanne 🍳",
+            "detail": "Pfanne 🍳",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "technik-pfanne"
+          },
+          {
+            "id": "6d9ea018-b689-4ed0-88c0-1e2f5b78fd58",
+            "name": "Technik | Ofen 🔥",
+            "detail": "Ofen 🔥",
+            "groupId": "5977364f-4465-4f7a-b672-b97ab1801232",
+            "slug": "technik-ofen"
+          }
+        ]
+      }
+    ]
+  },
+  "instructions": "Update 'userDecision' to change category, tags, recipeServings, or totalTime. Leave values as-is to accept the suggested data."
+}

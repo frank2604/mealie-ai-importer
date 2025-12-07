@@ -1,6 +1,38 @@
 {
-  "updated_at": "2025-12-06T16:02:43.521463",
+  "updated_at": "2025-12-07T09:59:19.119226",
   "foods": [
+    {
+      "id": "7160f9a6-4e8a-4fc1-aace-2cea647991a2",
+      "name": "Pflaume (getrocknet, chinesisch)",
+      "pluralName": "Pflaumen (getrocknet, chinesisch)",
+      "aliases": [
+        "{'name': 'getrocknete Pflaume'}",
+        "{'name': 'chinesische Pflaume'}",
+        "{'name': 'getrocknete chinesische Pflaume'}",
+        "{'name': 'getrocknete Pflaumen'}",
+        "{'name': 'chinesische Pflaumen'}"
+      ]
+    },
+    {
+      "id": "99683298-58a8-468a-8f84-c1abbe6958cc",
+      "name": "Wasserkastanie",
+      "pluralName": "Wasserkastanien",
+      "aliases": [
+        "{'name': 'Wasserkastanie'}",
+        "{'name': 'Wasserkastanien'}"
+      ]
+    },
+    {
+      "id": "42902676-6e6f-4222-9ad5-81596d6f2f84",
+      "name": "Morchel (getrocknet, chinesisch)",
+      "pluralName": "Morcheln (getrocknet, chinesisch)",
+      "aliases": [
+        "{'name': 'Morchel'}",
+        "{'name': 'getrocknete Morchel'}",
+        "{'name': 'chinesische Morchel'}",
+        "{'name': 'getrocknete chinesische Morchel'}"
+      ]
+    },
     {
       "id": "a50730aa-a1ed-4437-8351-18b1944ff294",
       "name": "Reiswein",
@@ -447,56 +479,68 @@
       ]
     },
     {
-      "id": "42902676-6e6f-4222-9ad5-81596d6f2f84",
-      "name": "Morchel (getrocknet, chinesisch)",
-      "pluralName": "Morcheln (getrocknet, chinesisch)",
+      "id": "8d502506-56a9-419e-ab38-1e42328ea6e7",
+      "name": "Chilischote (rot)",
+      "pluralName": "Chilischoten (rot)",
       "aliases": [
         {
-          "name": "Morchel"
+          "name": "rote Chili"
         },
         {
-          "name": "getrocknete Morchel"
-        },
-        {
-          "name": "chinesische Morchel"
-        },
-        {
-          "name": "getrocknete chinesische Morchel"
+          "name": "rote Chili-Schote"
         }
       ]
     },
     {
-      "id": "99683298-58a8-468a-8f84-c1abbe6958cc",
-      "name": "Wasserkastanie",
-      "pluralName": "Wasserkastanien",
+      "id": "3e8f3450-ac1f-4873-9620-52b963a2bf58",
+      "name": "Maiskorn",
+      "pluralName": "Maiskörner",
       "aliases": [
         {
-          "name": "Wasserkastanie"
-        },
-        {
-          "name": "Wasserkastanien"
+          "name": "Maiskorn"
         }
       ]
     },
     {
-      "id": "7160f9a6-4e8a-4fc1-aace-2cea647991a2",
-      "name": "Pflaume (getrocknet, chinesisch)",
-      "pluralName": "Pflaumen (getrocknet, chinesisch)",
+      "id": "74b503ea-7395-4206-8c7f-aaf602a5ed58",
+      "name": "Toastbrot",
+      "pluralName": "Toastbrote",
       "aliases": [
         {
-          "name": "getrocknete Pflaume"
+          "name": "Toast"
+        }
+      ]
+    },
+    {
+      "id": "a0e76887-2e2e-4e49-9f3f-164d543955bb",
+      "name": "Ei",
+      "pluralName": "Eier",
+      "aliases": [
+        {
+          "name": "Hühnerei"
+        }
+      ]
+    },
+    {
+      "id": "86c7a6a8-5251-46dd-a688-76e83bd2eaf5",
+      "name": "Mett",
+      "pluralName": "Mett",
+      "aliases": [
+        {
+          "name": "Hackfleisch roh"
+        }
+      ]
+    },
+    {
+      "id": "7a8beff8-4bcb-437c-b7fb-1a2b53e55aab",
+      "name": "Öl",
+      "pluralName": "Öl",
+      "aliases": [
+        {
+          "name": "Speiseöl"
         },
         {
-          "name": "chinesische Pflaume"
-        },
-        {
-          "name": "getrocknete chinesische Pflaume"
-        },
-        {
-          "name": "getrocknete Pflaumen"
-        },
-        {
-          "name": "chinesische Pflaumen"
+          "name": "Pflanzenöl"
         }
       ]
     }

@@ -1,0 +1,36 @@
+{
+  "id": "chatcmpl-Ck5kSk34iWnGNhojnYICeht794aXJ",
+  "object": "chat.completion",
+  "created": 1765101220,
+  "model": "gpt-4.1-nano-2025-04-14",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\n  \"links\": [\n    {\"ingredientId\": \"ing-0-1\", \"foodId\": \"45 | null\"},\n    {\"ingredientId\": \"ing-0-2\", \"foodId\": null},\n    {\"ingredientId\": \"ing-0-4\", \"foodId\": \"55 | null\"},\n    {\"ingredientId\": \"ing-0-5\", \"foodId\": null},\n    {\"ingredientId\": \"ing-0-6\", \"foodId\": null},\n    {\"ingredientId\": \"ing-0-7\", \"foodId\": \"58 | null\"}\n  ]\n}",
+        "refusal": null,
+        "annotations": []
+      },
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 1111,
+    "completion_tokens": 126,
+    "total_tokens": 1237,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 0,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "service_tier": "default",
+  "system_fingerprint": "fp_1a97b5aa6c"
+}

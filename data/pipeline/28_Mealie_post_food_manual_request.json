@@ -1,0 +1,15 @@
+{
+  "name": "Ei",
+  "payload": {
+    "name": "Ei",
+    "pluralName": "Eier",
+    "extras": {},
+    "labelId": "033fbe17-9b70-459f-868e-3f4f8fa34b1e",
+    "aliases": [
+      {
+        "name": "Hühnerei"
+      }
+    ],
+    "householdsWithIngredientFood": []
+  }
+}

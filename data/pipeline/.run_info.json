@@ -1,11 +1,11 @@
 {
-  "run_id": "20251206-153235",
-  "recipe_name": "Ente mit 8 Kostbarkeiten",
-  "started_at": "2025-12-06T15:32:35Z",
+  "run_id": "20251207-095317",
+  "recipe_name": "Westernbällchen",
+  "started_at": "2025-12-07T09:53:17Z",
   "status": "completed",
-  "completed_at": "2025-12-06T16:03:20Z",
-  "source_pdf": "data/uploads/a859140134134e5697a78ced844c9d66.pdf",
-  "log_file": "data/pipeline/20251206-153235_analysis.log",
-  "analysis_log_file": "data/pipeline/20251206-153235_analysis.log",
-  "transfer_log_file": "data/pipeline/20251206-153235_transfer.log"
+  "completed_at": "2025-12-07T09:59:55Z",
+  "source_pdf": "data/uploads/dc39bc46ddf24380b96bdf5edf547f0a.pdf",
+  "log_file": "data/pipeline/20251207-095317_analysis.log",
+  "analysis_log_file": "data/pipeline/20251207-095317_analysis.log",
+  "transfer_log_file": "data/pipeline/20251207-095317_transfer.log"
 }

@@ -1,6 +1,22 @@
 version: "3.9"
 
 services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - "8000:8000"
+    environment:
+      - LLM_API_KEY=${LLM_API_KEY:-}
+      - MEALIE_TOKEN=${MEALIE_TOKEN:-}
+      - MEALIE_BASE_URL=${MEALIE_BASE_URL:-}
+    volumes:
+      - ./config/prompts.json:/app/config/prompts.json
+      - ./settings.yaml:/app/settings.yaml
+      - ./data:/app/data
+    restart: unless-stopped
+
   ui:
     build:
       context: .

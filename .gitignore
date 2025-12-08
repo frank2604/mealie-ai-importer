@@ -15,4 +15,9 @@ pnpm-debug.log*
 *.swp
 .DS_Store
 
-# Environment files
+# Environment / secrets
+config/settings.yaml
+data/
+
+# Python virtualenv / caches
+.venv/

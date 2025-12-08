@@ -1,29 +1,33 @@
-# Copy this file to settings.yaml and adjust values for your environment.
 mealie:
-  base_url: "http://192.168.2.33:9925"
-  token: "REPLACE_WITH_YOUR_TOKEN"
-
+  base_url: https://mealie.local
+  token: 
+  verify_ssl: false
+  ca_bundle: null
 processing:
-  watch_folder: "PDFs"
-  output_folder: "data/pipeline"
-  ocr_enabled: false
-  language: "de"
-  skip_ai_if_cached: false
-
+  output_folder: data/pipeline
+  language: de
 ingredients:
   fuzzy_threshold: 90
-  cache_dir: "data/cache"
-  default_category: "Sonstiges"
-  default_category_color: "#959595"
+  cache_dir: data/cache
+  default_category: Sonstiges
+  default_category_color: '#959595'
   use_llm_classifier: true
   use_llm_forms: true
-
 llm:
-  provider: "openai"
-  model: "gpt-4o-mini"
-  temperature: 0.2
-  max_tokens: 4096
-  api_key: "REPLACE_WITH_OPENAI_KEY"
-  base_url: "https://api.openai.com/v1"
-  vision_model: "gpt-5-mini"
-  timeout: 120
+  provider: openai
+  api_key: 
+  base_url: https://api.openai.com/v1
+  timeout: 240
+  model: gpt-5-mini
+  vision_model: gpt-5-mini
+  temperature: null
+  max_tokens: null
+  models:
+    - id: gpt-5-mini
+      supportsSampling: false
+    - id: gpt-5-nano
+      supportsSampling: false
+    - id: gpt-4.1-mini
+      supportsSampling: true
+    - id: gpt-4.1-nano
+      supportsSampling: true

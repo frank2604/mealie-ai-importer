@@ -19,10 +19,14 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
+# Application code
 COPY importer ./importer
 COPY config ./config
-COPY settings.yaml ./settings.yaml
-COPY data ./data
+COPY config/settings.template.yaml ./config/settings.yaml
+COPY config/prompts.json ./config/prompts.json
+
+# Ensure runtime directories exist; actual content is mounted via volumes
+RUN mkdir -p /app/data/cache /app/data/uploads /app/data/archive /app/data/pipeline
 
 EXPOSE 8000
 

@@ -7,3 +7,4 @@ python-dotenv
 pypdf
 Pillow
 PyYAML
+python-multipart

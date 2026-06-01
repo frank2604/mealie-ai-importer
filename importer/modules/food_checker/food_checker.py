@@ -5,7 +5,6 @@ import json
 import logging
 from dataclasses import dataclass
 from datetime import datetime
-from difflib import SequenceMatcher
 from typing import Dict, Iterable, List, Optional, Tuple
 
 from ..context import IngredientRef, PipelineContext
@@ -15,6 +14,8 @@ from ...prompt_store import resolve_prompt, resolve_llm_config
 from ...prompt_logging import log_prompt_messages
 from ...llm_utils import format_llm_log
 from ...services.ingredients import IngredientService
+from ...services.embeddings import FoodEmbeddingIndex
+from ...services.text_norm import normalize_de
 
 logger = logging.getLogger("Food Checker")
 
@@ -23,6 +24,13 @@ STATUS_FOUND_FUZZY = "found_fuzzy"
 STATUS_FOUND_AI = "found_ai"
 STATUS_NEW = "new"
 STATUS_NONE = "none"
+
+# How many semantic candidates to hand the LLM per ingredient. A handful keeps
+# the prompt small; 8 gives the LLM enough recall headroom on harder synonyms.
+SHORTLIST_K = 8
+# When the embedding index is unavailable we fall back to sending the whole food
+# list to the LLM, but cap it to keep the prompt bounded.
+FULL_LIST_CAP = 200
 
 _SYSTEM_PROMPT = ("""
     Du vergleichst Zutaten aus einem Rezept mit den vorhandenen Lebensmitteln in Mealie.
@@ -74,6 +82,8 @@ class FoodCheckerModule:
         self._locale = locale or "de"
         self._llm_config = llm_config
         self._internal_map: Dict[str, str] = {}  # internalFoodId -> mealieFoodId
+        self._normalized_lookup: Dict[str, str] = {}  # normalized name/plural/alias -> mealieFoodId
+        self._index: Optional[FoodEmbeddingIndex] = None
 
     def run(self, context: PipelineContext) -> None:
         ingredient_refs = list(context.iter_ingredients())
@@ -93,6 +103,8 @@ class FoodCheckerModule:
         reference = self._load_reference_data(context)
         self._write_cache(reference, context)
         foods_by_id = self._foods_dict()
+        self._normalized_lookup = self._build_normalized_lookup()
+        self._index = self._build_index(context)
 
         matches: Dict[str, str] = {}
         match_details: Dict[str, Dict[str, object]] = {}
@@ -135,15 +147,9 @@ class FoodCheckerModule:
                 "" if len(exact_matches) == 1 else "s",
                 self._format_list(exact_matches),
             )
-        if unresolved_after_exact:
-            pending_names = [ref.ingredient.name for ref in unresolved_after_exact if ref.ingredient.name]
-            logger.info(
-                "Try matching rest of the ingredients %s with Fuzzy-Search",
-                self._format_list(pending_names),
-            )
         if fuzzy_matches:
             logger.info(
-                "Matched %s ingredient%s with Fuzzy-Search: %s",
+                "Auto-accepted %s ingredient%s by semantic similarity: %s",
                 len(fuzzy_matches),
                 "" if len(fuzzy_matches) == 1 else "s",
                 self._format_fuzzy_pairs(fuzzy_matches),
@@ -151,9 +157,11 @@ class FoodCheckerModule:
 
         if pending_ai_refs:
             pending_names = [ref.ingredient.name for ref in pending_ai_refs if ref.ingredient.name]
+            search_mode = "semantic shortlist + AI" if (self._index and self._index.available) else "AI"
             logger.info(
-                "Try matching rest of the ingredients %s with AI",
+                "Try matching rest of the ingredients %s with %s",
                 self._format_list(pending_names),
+                search_mode,
             )
 
         if pending_ai_refs:
@@ -347,90 +355,119 @@ class FoodCheckerModule:
     # ------------------------------------------------------------------
     # Matching helpers
     # ------------------------------------------------------------------
+    def _build_normalized_lookup(self) -> Dict[str, str]:
+        """Map every normalized food name/plural/alias to its Mealie id."""
+        lookup: Dict[str, str] = {}
+        for candidate in self._foods:
+            for label in self._candidate_names(candidate):
+                key = normalize_de(label)
+                if key and key not in lookup:
+                    lookup[key] = candidate.id
+        return lookup
+
+    def _build_index(self, context: PipelineContext) -> Optional[FoodEmbeddingIndex]:
+        use_embeddings = True
+        try:
+            use_embeddings = bool(context.config.ingredients.use_embeddings)
+        except AttributeError:  # pragma: no cover - defensive
+            pass
+        cache_path = context.cache_paths.root / "MealieFoodsEmbeddings.json"
+        index = FoodEmbeddingIndex(cache_path, enabled=use_embeddings)
+        if index.available:
+            try:
+                index.build_or_update(self._foods)
+                logger.info("Semantic food index ready (%s foods)", len(self._foods))
+            except Exception as exc:  # pragma: no cover - external dependency
+                logger.warning("Could not build the semantic food index: %s", exc)
+        else:
+            logger.info("Semantic food index disabled; matching falls back to the LLM over the food list")
+        return index
+
     def _stage_one_match(self, query: str) -> tuple[Optional[str], str, Optional[str]]:
+        """Deterministic normalized exact match (name/plural/alias)."""
         if not query:
             return None, "exact", None
-        exact_id, exact_label = self._exact_match(query)
-        if exact_id:
-            return exact_id, "exact", exact_label
-        fuzzy_id, fuzzy_label = self._fuzzy_match_offline(query)
-        if fuzzy_id:
-            return fuzzy_id, "fuzzy", fuzzy_label
+        key = normalize_de(query)
+        if not key:
+            return None, "exact", None
+        food_id = self._normalized_lookup.get(key)
+        if food_id:
+            candidate = self._foods_dict().get(food_id)
+            return food_id, "exact", (candidate.name if candidate else None)
         return None, "exact", None
 
-    def _exact_match(self, query: str) -> tuple[Optional[str], Optional[str]]:
-        normalized_query = query.strip().lower()
-        if not normalized_query:
-            return None, None
-        for candidate in self._foods:
-            if candidate.name.strip().lower() == normalized_query:
-                return candidate.id, candidate.name
-            if candidate.plural.strip().lower() == normalized_query:
-                return candidate.id, candidate.plural
-            for alias in candidate.aliases:
-                if alias.strip().lower() == normalized_query:
-                    return candidate.id, alias
-        return None, None
+    def _shortlist_candidates(self, ref: IngredientRef) -> List[_FoodCandidate]:
+        """Semantic top-K candidates, or the (capped) full list as a fallback."""
+        foods_by_id = self._foods_dict()
+        if self._index is not None and self._index.available:
+            hits = self._index.shortlist(ref.ingredient.name or "", k=SHORTLIST_K)
+            shortlisted: List[_FoodCandidate] = []
+            for food_id, _score in hits:
+                candidate = foods_by_id.get(food_id)
+                if candidate is not None:
+                    shortlisted.append(candidate)
+            return shortlisted
+        return list(self._foods)[:FULL_LIST_CAP]
 
-    def _fuzzy_match_offline(self, query: str) -> tuple[Optional[str], Optional[str]]:
-        if not self._foods:
-            return None, None
-        best_id: Optional[str] = None
-        best_label: Optional[str] = None
-        best_score = 0.0
-        normalized_query = query.strip().lower()
-        for candidate in self._foods:
-            for option in self._candidate_names(candidate):
-                normalized_option = option.lower()
-                if normalized_option == normalized_query:
-                    return candidate.id, option
-                score = SequenceMatcher(None, normalized_query, normalized_option).ratio()
-                if score > best_score:
-                    best_score = score
-                    best_id = candidate.id
-                    best_label = option
-        if best_score >= 0.8:
-            return best_id, best_label
-        return None, None
+    @staticmethod
+    def _candidate_detail_line(candidate: _FoodCandidate) -> str:
+        extras: List[str] = []
+        if candidate.plural and candidate.plural != candidate.name:
+            extras.append(f"Plural: {candidate.plural}")
+        if candidate.aliases:
+            extras.append("Aliase: " + ", ".join(candidate.aliases))
+        suffix = f" ({'; '.join(extras)})" if extras else ""
+        return f"- {candidate.internal_id}: {candidate.name}{suffix}"
 
     def _stage_two_batch_with_llm(self, refs: List[IngredientRef]) -> Dict[str, Optional[str]]:
-        """Call the LLM once for all remaining ingredients.
+        """Ask the LLM to adjudicate the remaining ingredients.
 
-        Returns a mapping ref.key -> mealie_food_id (or None).
+        Each ingredient is paired with a small semantic shortlist of candidate
+        foods (or, when embeddings are unavailable, the capped full list). The
+        LLM picks the matching candidate id or returns null. Returns a mapping
+        ref.key -> mealie_food_id (or None).
         """
-
         result: Dict[str, Optional[str]] = {ref.key: None for ref in refs}
         if not self._llm_client or not self._foods:
             return result
 
-        candidates = list(self._foods)
-        if not candidates:
-            return result
-
-        ingredients_block = []
+        per_ingredient = self._index is not None and self._index.available
+        ingredients_block: List[Dict[str, object]] = []
         id_map: Dict[str, str] = {}  # send_id -> ref.key
+        union: Dict[str, _FoodCandidate] = {}  # internal_id -> candidate
         for ref in refs:
             send_id = ref.ingredient.id or ref.key
             id_map[send_id] = ref.key
-            ingredients_block.append({"ingredientId": send_id, "name": ref.ingredient.name})
+            candidates = self._shortlist_candidates(ref)
+            for candidate in candidates:
+                union[candidate.internal_id] = candidate
+            entry: Dict[str, object] = {"ingredientId": send_id, "name": ref.ingredient.name}
+            if per_ingredient:
+                entry["candidateIds"] = [candidate.internal_id for candidate in candidates]
+            ingredients_block.append(entry)
 
-        candidate_lines = [f"- {candidate.internal_id}: {candidate.plural}" for candidate in candidates]
+        if not union:
+            return result
+
+        candidate_lines = [self._candidate_detail_line(candidate) for candidate in union.values()]
 
         replacements = {
             "ingredient": refs[0].ingredient.name if refs else "",
             "candidates": "\n".join(candidate_lines) if candidate_lines else "-",
-            "ingredients": json.dumps({"ingredients": ingredients_block, "candidates": []}, ensure_ascii=False),
+            "ingredients": json.dumps({"ingredients": ingredients_block}, ensure_ascii=False),
         }
         prompt_cfg = resolve_prompt("ingredients", self._locale, replacements=replacements)
         llm_cfg = resolve_llm_config("ingredients")
         logger.info("LLM config (ingredients): %s", format_llm_log(llm_cfg, self._llm_config))
-        system_prompt = prompt_cfg.get("system", _SYSTEM_PROMPT).strip() or _SYSTEM_PROMPT
+        system_prompt = (prompt_cfg.get("system") or _SYSTEM_PROMPT).strip() or _SYSTEM_PROMPT
         user_parts = [
             part.strip()
             for part in (prompt_cfg.get("user1", ""), prompt_cfg.get("user2", ""))
             if part and part.strip()
         ]
-        user_prompt = "\n\n".join(user_parts).strip() or json.dumps({"ingredients": ingredients_block}, ensure_ascii=False)
+        user_prompt = "\n\n".join(user_parts).strip() or json.dumps(
+            {"ingredients": ingredients_block, "candidates": candidate_lines}, ensure_ascii=False
+        )
 
         try:
             log_prompt_messages(
@@ -440,18 +477,12 @@ class FoodCheckerModule:
                     {"role": "user", "content": user_prompt},
                 ],
             )
-            response = self._llm_client.run_text(system_prompt or _SYSTEM_PROMPT, user_prompt, llm_config=llm_cfg)
+            data = self._llm_client.run_json(system_prompt or _SYSTEM_PROMPT, user_prompt, llm_config=llm_cfg)
         except Exception as exc:  # pragma: no cover - external dependency
             logger.debug("Assistant lookup failed: %s", exc)
             return result
 
-        try:
-            data = json.loads(response)
-        except json.JSONDecodeError:
-            logger.debug("Assistant response was not valid JSON: %s", response[:120])
-            return result
-
-        links = data.get("links")
+        links = data.get("links") if isinstance(data, dict) else None
         if not isinstance(links, list):
             logger.debug("Assistant response did not contain 'links'")
             return result
@@ -621,7 +652,7 @@ class FoodCheckerModule:
     def _badge_for_strategy(strategy: Optional[object]) -> str:
         if strategy == "exact" or strategy == "preassigned":
             return STATUS_FOUND_WORD
-        if strategy == "fuzzy":
+        if strategy == "embedding" or strategy == "fuzzy":
             return STATUS_FOUND_FUZZY
         if strategy == "ai":
             return STATUS_FOUND_AI

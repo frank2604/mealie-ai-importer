@@ -6,6 +6,13 @@ WORKDIR /app
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Pre-download the local embedding model into a non-mounted path so semantic
+# ingredient matching works fully offline at runtime. /opt is used instead of
+# /app/data because the data directory is bind-mounted at runtime and would
+# otherwise shadow the baked-in model weights.
+ENV FASTEMBED_CACHE_PATH=/opt/fastembed_cache
+RUN python -c "from fastembed import TextEmbedding; TextEmbedding('sentence-transformers/paraphrase-multilingual-mpnet-base-v2')"
+
 # Copy application code
 # Application code
 COPY importer ./importer
@@ -15,6 +22,9 @@ COPY config/prompts.json ./config/prompts.json
 
 # Ensure runtime directories exist; actual content is mounted via volumes
 RUN mkdir -p /app/data/cache /app/data/uploads /app/data/archive /app/data/pipeline
+
+# Never phone home for model weights at runtime; the model is already baked in.
+ENV HF_HUB_OFFLINE=1
 
 EXPOSE 8000
 

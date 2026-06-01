@@ -7,14 +7,19 @@ from typing import Any, Dict, Optional
 
 PROMPT_FILE = Path("config/prompts.json")
 
+# Per-module Claude models + parameters. analysis/metadata use the stronger
+# Sonnet model (more reasoning over the whole recipe); the high-volume,
+# structured matching/form modules use the cheaper, fast Haiku. Token budgets
+# are sized for Anthropic forced-tool JSON responses (a batch of ingredient
+# links can be sizeable, so they are more generous than the old OpenAI values).
 LLM_CONFIG_DEFAULTS: Dict[str, Dict[str, Any]] = {
-    "analysis": {"model": "gpt-5-mini", "temperature": 0.3, "top_p": 1.0, "max_output_tokens": 2500},
-    "ingredients": {"model": "gpt-5-nano", "temperature": 0.0, "top_p": 1.0, "max_output_tokens": 200},
-    "units": {"model": "gpt-5-nano", "temperature": 0.0, "top_p": 1.0, "max_output_tokens": 150},
-    "metadata": {"model": "gpt-5-mini", "temperature": 0.3, "top_p": 1.0, "max_output_tokens": 400},
-    "instructions": {"model": "gpt-5-mini", "temperature": 0.0, "top_p": 1.0, "max_output_tokens": 600},
-    "foodForms": {"model": "gpt-5-mini", "temperature": 0.5, "top_p": 1.0, "max_output_tokens": 600},
-    "unitForms": {"model": "gpt-5-mini", "temperature": 0.3, "top_p": 1.0, "max_output_tokens": 400},
+    "analysis": {"model": "claude-sonnet-4-6", "temperature": 0.3, "top_p": 1.0, "max_output_tokens": 8000},
+    "ingredients": {"model": "claude-haiku-4-5", "temperature": 0.0, "top_p": 1.0, "max_output_tokens": 2000},
+    "units": {"model": "claude-haiku-4-5", "temperature": 0.0, "top_p": 1.0, "max_output_tokens": 600},
+    "metadata": {"model": "claude-sonnet-4-6", "temperature": 0.3, "top_p": 1.0, "max_output_tokens": 1000},
+    "instructions": {"model": "claude-haiku-4-5", "temperature": 0.0, "top_p": 1.0, "max_output_tokens": 2000},
+    "foodForms": {"model": "claude-haiku-4-5", "temperature": 0.5, "top_p": 1.0, "max_output_tokens": 1500},
+    "unitForms": {"model": "claude-haiku-4-5", "temperature": 0.3, "top_p": 1.0, "max_output_tokens": 800},
 }
 
 FALLBACK_DEFAULTS: Dict[str, Dict[str, Dict[str, str]]] = {

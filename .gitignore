@@ -21,3 +21,4 @@ data/
 
 # Python virtualenv / caches
 .venv/
+.venv_dev/

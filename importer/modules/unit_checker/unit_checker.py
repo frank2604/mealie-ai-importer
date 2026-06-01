@@ -5,7 +5,6 @@ import json
 import logging
 from dataclasses import dataclass
 from datetime import datetime
-from difflib import SequenceMatcher
 from typing import Dict, Iterable, List, Optional
 
 from ..context import IngredientRef, PipelineContext
@@ -15,6 +14,8 @@ from ...prompt_store import resolve_prompt, resolve_llm_config
 from ...prompt_logging import log_prompt_messages
 from ...llm_utils import format_llm_log
 from ...services.ingredients import IngredientService
+from ...services.text_norm import normalize_de
+from ...services.unit_norm import canonical_unit
 
 logger = logging.getLogger("Unit Checker")
 
@@ -328,40 +329,34 @@ class UnitCheckerModule:
         match_id, match_label = self._exact_match(query)
         if match_id:
             return match_id, "exact", match_label
-        fuzzy_id, fuzzy_label = self._fuzzy_match_offline(query)
-        if fuzzy_id:
-            return fuzzy_id, "fuzzy", fuzzy_label
+        # Normalize spelling variants (g/gr/Gramm, EL/Esslöffel, ...) to a
+        # canonical token and match that against the Mealie units. This is a
+        # deterministic table lookup, not fuzzy similarity, so EL and TL can
+        # never be confused.
+        canonical = canonical_unit(query)
+        if canonical:
+            canonical_id, canonical_label = self._canonical_match(canonical)
+            if canonical_id:
+                return canonical_id, "exact", canonical_label
         return None, "exact", None
 
     def _exact_match(self, query: str) -> tuple[Optional[str], Optional[str]]:
-        normalized = query.strip().lower()
+        normalized = normalize_de(query)
         if not normalized:
             return None, None
         for candidate in self._units:
             for option in self._candidate_names(candidate):
-                if option.strip().lower() == normalized:
+                if normalize_de(option) == normalized:
                     return candidate.id, option
         return None, None
 
-    def _fuzzy_match_offline(self, query: str) -> tuple[Optional[str], Optional[str]]:
-        if not self._units:
-            return None, None
-        best_id: Optional[str] = None
-        best_label: Optional[str] = None
-        best_score = 0.0
-        normalized_query = query.strip().lower()
+    def _canonical_match(self, canonical: str) -> tuple[Optional[str], Optional[str]]:
+        """Find a Mealie unit whose name/abbreviation maps to *canonical*."""
+        canonical_norm = normalize_de(canonical)
         for candidate in self._units:
             for option in self._candidate_names(candidate):
-                normalized_option = option.lower()
-                if normalized_option == normalized_query:
+                if canonical_unit(option) == canonical or normalize_de(option) == canonical_norm:
                     return candidate.id, option
-                score = SequenceMatcher(None, normalized_query, normalized_option).ratio()
-                if score > best_score:
-                    best_score = score
-                    best_id = candidate.id
-                    best_label = option
-        if best_score >= 0.8:
-            return best_id, best_label
         return None, None
 
     def _stage_two_with_llm(self, query: str) -> tuple[Optional[str], Optional[str]]:
@@ -406,15 +401,13 @@ class UnitCheckerModule:
                     {"role": "user", "content": user_prompt},
                 ],
             )
-            response = self._llm_client.run_text(system_prompt or _SYSTEM_PROMPT, user_prompt, llm_config=llm_cfg)
+            data = self._llm_client.run_json(system_prompt or _SYSTEM_PROMPT, user_prompt, llm_config=llm_cfg)
         except Exception as exc:  # pragma: no cover - external dependency
             logger.debug("Assistant unit lookup failed: %s", exc)
             return None, None
 
-        try:
-            data = json.loads(response)
-        except json.JSONDecodeError:
-            logger.debug("Assistant response was not valid JSON: %s", response[:120])
+        if not isinstance(data, dict):
+            logger.debug("Assistant unit response was not a JSON object")
             return None, None
 
         match_id = data.get("match")

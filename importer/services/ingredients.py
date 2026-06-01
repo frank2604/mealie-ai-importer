@@ -19,6 +19,8 @@ except ImportError:  # pragma: no cover - fallback when rapidfuzz is unavailable
 from ..config import IngredientConfig
 from ..exceptions import UserAbort
 from ..llm_parser import OpenAiClient
+from .text_norm import normalize_de
+from .unit_norm import canonical_unit
 from ..prompt_store import resolve_prompt, resolve_llm_config
 from ..prompt_logging import log_prompt_messages
 from ..llm_utils import format_llm_log
@@ -888,14 +890,40 @@ class IngredientService:
     # Lookup helpers
     # ------------------------------------------------------------------
     def _find_unit(self, query: str) -> Optional[Dict[str, Any]]:
+        # Canonical pass first (g/gr/Gramm, EL/TL strictly separate), consistent
+        # with the unit checker, before the generic fuzzy lookup.
+        canonical = canonical_unit(query)
+        if canonical:
+            canonical_norm = normalize_de(canonical)
+            for unit in self._units:
+                for field in ("name", "pluralName", "abbreviation", "pluralAbbreviation"):
+                    value = unit.get(field)
+                    if not value:
+                        continue
+                    if canonical_unit(str(value)) == canonical or normalize_de(str(value)) == canonical_norm:
+                        return unit
         return self._match_cached(query, self._units, ["name", "pluralName", "abbreviation", "pluralAbbreviation"])
 
     def _find_food(self, query: str) -> Optional[Dict[str, Any]]:
+        # Normalized-exact pass first (qualifier/whitespace tolerant), consistent
+        # with the food checker, before any fuzzy logic.
+        normalized_query = normalize_de(query)
+        if normalized_query:
+            for food in self._foods:
+                for field in ("name", "pluralName"):
+                    value = food.get(field)
+                    if value and normalize_de(str(value)) == normalized_query:
+                        return food
+                for alias in food.get("aliases", []) or []:
+                    alias_value = alias.get("name") if isinstance(alias, Mapping) else alias
+                    if isinstance(alias_value, str) and normalize_de(alias_value) == normalized_query:
+                        return food
+
         fields = ["name", "pluralName"]
         match = self._match_cached(query, self._foods, fields)
         if match:
             return match
-        # include aliases as secondary pass
+        # include aliases as secondary fuzzy pass
         for food in self._foods:
             for alias in food.get("aliases", []) or []:
                 alias_value = alias.get("name") if isinstance(alias, Mapping) else alias

@@ -19,7 +19,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
-from .llm_factory import create_openai_client
+from .llm_factory import create_llm_client
 from .config import AppConfig, ConfigError, load_config
 from .exceptions import UserAbort
 from .modules import CachePaths, PipelineContext, PipelineRunner
@@ -1311,7 +1311,7 @@ def _apply_review_update(run_id: str, config: AppConfig, payload: ReviewUpdateRe
 def _run_analysis(run_state: RunState, pending: PendingUpload, config: AppConfig, workspace: RunWorkspace, run_info: RunInfo) -> None:
     logger.info("Starte Analyse für Lauf %s (%s)", run_state.run_id, run_state.recipe_name)
     try:
-        llm_client = create_openai_client(config.llm)
+        llm_client = create_llm_client(config.llm)
     except ValueError as exc:
         logger.error("LLM-Konfiguration fehlerhaft: %s", exc)
         run_info.mark_completed(status="failed")

@@ -153,46 +153,56 @@
   },
   "llmConfig": {
     "analysis": {
-      "model": "gpt-4.1-mini",
+      "model": "claude-sonnet-4-6",
       "temperature": 0.3,
       "top_p": 1,
-      "max_output_tokens": null
+      "max_output_tokens": 8000
     },
     "ingredients": {
-      "model": "gpt-4.1-nano",
+      "model": "claude-haiku-4-5",
       "temperature": 0,
       "top_p": 1,
-      "max_output_tokens": null
+      "max_output_tokens": 2000
     },
     "units": {
-      "model": "gpt-4.1-nano",
+      "model": "claude-haiku-4-5",
       "temperature": 0,
       "top_p": 1,
-      "max_output_tokens": null
+      "max_output_tokens": 600
     },
     "metadata": {
-      "model": "gpt-4.1-mini",
+      "model": "claude-sonnet-4-6",
       "temperature": 0.3,
       "top_p": 1,
-      "max_output_tokens": null
+      "max_output_tokens": 1000
     },
     "instructions": {
-      "model": "gpt-4.1-mini",
+      "model": "claude-haiku-4-5",
       "temperature": 0,
       "top_p": 1,
-      "max_output_tokens": null
+      "max_output_tokens": 2000
     },
     "foodForms": {
-      "model": "gpt-4.1-mini",
+      "model": "claude-haiku-4-5",
       "temperature": 0.5,
       "top_p": 1,
-      "max_output_tokens": null
+      "max_output_tokens": 1500
     },
     "unitForms": {
-      "model": "gpt-4.1-mini",
+      "model": "claude-haiku-4-5",
       "temperature": 0.3,
       "top_p": 1,
-      "max_output_tokens": null
+      "max_output_tokens": 800
     }
-  }
+  },
+  "llmModels": [
+    {
+      "id": "claude-sonnet-4-6",
+      "supportsSampling": true
+    },
+    {
+      "id": "claude-haiku-4-5",
+      "supportsSampling": true
+    }
+  ]
 }

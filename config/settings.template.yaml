@@ -1,6 +1,6 @@
 mealie:
   base_url: https://mealie.local
-  token: 
+  token:
   verify_ssl: false
   ca_bundle: null
 processing:
@@ -13,21 +13,18 @@ ingredients:
   default_category_color: '#959595'
   use_llm_classifier: true
   use_llm_forms: true
+  use_embeddings: true
 llm:
-  provider: openai
-  api_key: 
-  base_url: https://api.openai.com/v1
+  provider: anthropic
+  api_key:
+  base_url:
   timeout: 240
-  model: gpt-5-mini
-  vision_model: gpt-5-mini
+  model: claude-sonnet-4-6
+  vision_model: claude-sonnet-4-6
   temperature: null
   max_tokens: null
   models:
-    - id: gpt-5-mini
-      supportsSampling: false
-    - id: gpt-5-nano
-      supportsSampling: false
-    - id: gpt-4.1-mini
+    - id: claude-sonnet-4-6
       supportsSampling: true
-    - id: gpt-4.1-nano
+    - id: claude-haiku-4-5
       supportsSampling: true

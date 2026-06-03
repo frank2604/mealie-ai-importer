@@ -39,6 +39,11 @@ class _UnitCandidate:
     plural: str
     abbreviation: str
     plural_abbreviation: str
+    aliases: List[str] = None  # type: ignore[assignment]
+
+    def __post_init__(self) -> None:
+        if self.aliases is None:
+            self.aliases = []
 
     @classmethod
     def from_raw(cls, raw: Dict[str, object]) -> "_UnitCandidate":
@@ -48,6 +53,11 @@ class _UnitCandidate:
             plural=str(raw.get("pluralName") or raw.get("name") or ""),
             abbreviation=str(raw.get("abbreviation") or ""),
             plural_abbreviation=str(raw.get("pluralAbbreviation") or ""),
+            aliases=[
+                alias["name"] if isinstance(alias, dict) else str(alias)
+                for alias in (raw.get("aliases") or [])
+                if (alias["name"] if isinstance(alias, dict) else str(alias)).strip()
+            ],
         )
 
 
@@ -601,6 +611,9 @@ class UnitCheckerModule:
             yield candidate.abbreviation
         if candidate.plural_abbreviation:
             yield candidate.plural_abbreviation
+        for alias in (candidate.aliases or []):
+            if alias:
+                yield alias
 
     def _units_dict(self) -> Dict[str, _UnitCandidate]:
         return {item.id: item for item in self._units}

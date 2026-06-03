@@ -12,6 +12,9 @@ services:
       - MEALIE_TOKEN=${MEALIE_TOKEN:-}
       - MEALIE_BASE_URL=${MEALIE_BASE_URL:-}
     volumes:
+      # prompts.json is mounted so edits made in the UI persist across restarts.
+      # On a fresh setup, seed this file from the image's baked-in default once.
+      - ./config/prompts.json:/app/config/prompts.json
       - ./settings.yaml:/app/settings.yaml
       - ./data:/app/data
     restart: unless-stopped

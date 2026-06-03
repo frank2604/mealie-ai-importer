@@ -59,7 +59,11 @@ class _FoodCandidate:
             internal_id=str(raw.get("internalFoodId") or ""),
             name=str(raw.get("name") or ""),
             plural=str(raw.get("pluralName") or raw.get("name") or ""),
-            aliases=[str(alias) for alias in (raw.get("aliases") or [])],
+            aliases=[
+                alias["name"] if isinstance(alias, dict) else str(alias)
+                for alias in (raw.get("aliases") or [])
+                if (alias["name"] if isinstance(alias, dict) else str(alias)).strip()
+            ],
         )
 
 

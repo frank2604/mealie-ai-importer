@@ -2,9 +2,11 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 
-# Install dependencies
+# Install dependencies from the lockfile exactly (reproducible builds).
+# `npm ci` pins every package to package-lock.json, so a rebuild can never
+# silently pull a different (and possibly broken) dependency version.
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
 # Build application
 COPY . .

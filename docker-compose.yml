@@ -12,7 +12,6 @@ services:
       - MEALIE_TOKEN=${MEALIE_TOKEN:-}
       - MEALIE_BASE_URL=${MEALIE_BASE_URL:-}
     volumes:
-      - ./config/prompts.json:/app/config/prompts.json
       - ./settings.yaml:/app/settings.yaml
       - ./data:/app/data
     restart: unless-stopped

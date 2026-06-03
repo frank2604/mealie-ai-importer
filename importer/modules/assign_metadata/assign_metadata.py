@@ -180,15 +180,9 @@ class AssignMetadataModule:
                     {"role": "user", "content": user_prompt},
                 ],
             )
-            response_text = self._llm_client.run_text(system_prompt, user_prompt, llm_config=llm_cfg)
+            return self._llm_client.run_json(system_prompt, user_prompt, llm_config=llm_cfg)
         except Exception as exc:  # pragma: no cover - network errors
             logger.error("The assistant request for categories failed: %s", exc)
-            return None
-
-        try:
-            return json.loads(response_text)
-        except json.JSONDecodeError:
-            logger.warning("The assistant did not return valid JSON: %s", response_text[:200])
             return None
 
     def _build_prompts(self, payload: str) -> tuple[str, str]:
@@ -321,15 +315,9 @@ class AssignMetadataModule:
         prompt = json.dumps(payload, ensure_ascii=False, indent=2)
         try:
             system_prompt, user_prompt = self._build_prompts(prompt)
-            response_text = self._llm_client.run_text(system_prompt, user_prompt)
+            return self._llm_client.run_json(system_prompt, user_prompt)
         except Exception as exc:  # pragma: no cover - network errors
             logger.error("The assistant request for categories failed: %s", exc)
-            return None
-
-        try:
-            return json.loads(response_text)
-        except json.JSONDecodeError:
-            logger.warning("The assistant did not return valid JSON: %s", response_text[:200])
             return None
 
     def _build_llm_payload(

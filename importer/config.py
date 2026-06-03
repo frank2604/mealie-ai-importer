@@ -64,6 +64,7 @@ class IngredientConfig:
     default_category_color: str = "#959595"
     use_llm_classifier: bool = True
     use_llm_forms: bool = True
+    use_embeddings: bool = True
 
 
 @dataclass
@@ -124,19 +125,17 @@ def load_config(config_path: Optional[Path] = None) -> AppConfig:
         models.append(LlmModelOption(id=str(model_id), supports_sampling=bool(entry.get("supportsSampling", True))))
     if not models:
         models = [
-            LlmModelOption(id="gpt-5-mini", supports_sampling=False),
-            LlmModelOption(id="gpt-5-nano", supports_sampling=False),
-            LlmModelOption(id="gpt-4.1-mini", supports_sampling=True),
-            LlmModelOption(id="gpt-4.1-nano", supports_sampling=True),
+            LlmModelOption(id="claude-sonnet-4-6", supports_sampling=True),
+            LlmModelOption(id="claude-haiku-4-5", supports_sampling=True),
         ]
 
     llm = LlmConfig(
-        provider=_env_or_default("LLM_PROVIDER", llm_section.get("provider", "openai")),
-        model=_env_or_default("LLM_MODEL", llm_section.get("model", "gpt-4o-mini")),
+        provider=_env_or_default("LLM_PROVIDER", llm_section.get("provider", "anthropic")),
+        model=_env_or_default("LLM_MODEL", llm_section.get("model", "claude-sonnet-4-6")),
         temperature=_maybe_float(_env_or_default("LLM_TEMPERATURE", llm_section.get("temperature"))),
         max_tokens=_maybe_int(_env_or_default("LLM_MAX_TOKENS", llm_section.get("max_tokens")), default=4096),
         api_key=_env_or_default("LLM_API_KEY", llm_section.get("api_key")),
-        base_url=_env_or_default("LLM_BASE_URL", llm_section.get("base_url", "https://api.openai.com/v1")),
+        base_url=_env_or_default("LLM_BASE_URL", llm_section.get("base_url", "")),
         vision_model=_env_or_default("LLM_VISION_MODEL", llm_section.get("vision_model")),
         timeout=_maybe_float(_env_or_default("LLM_TIMEOUT", llm_section.get("timeout")), default=120.0) or 120.0,
         models=models,
@@ -150,6 +149,7 @@ def load_config(config_path: Optional[Path] = None) -> AppConfig:
         default_category_color=_env_or_default("INGREDIENT_DEFAULT_CATEGORY_COLOR", ingredient_section.get("default_category_color", "#959595")),
         use_llm_classifier=_env_flag("INGREDIENT_USE_LLM_CLASSIFIER", ingredient_section.get("use_llm_classifier", True)),
         use_llm_forms=_env_flag("INGREDIENT_USE_LLM_FORMS", ingredient_section.get("use_llm_forms", True)),
+        use_embeddings=_env_flag("INGREDIENT_USE_EMBEDDINGS", ingredient_section.get("use_embeddings", True)),
     )
 
     if mealie.base_url is None or mealie.token is None:

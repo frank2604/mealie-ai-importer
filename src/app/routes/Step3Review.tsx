@@ -604,6 +604,11 @@ export const Step3Review: React.FC = () => {
   const [crop, setCrop] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+  // Mount the Cropper only after the modal has opened AND laid out, so
+  // react-easy-crop measures a non-zero container size. Without this, an
+  // already-cached image (the recipe preview is shown before the dialog opens)
+  // makes react-easy-crop compute a zero size -> zoom/drag are dead.
+  const [cropperReady, setCropperReady] = useState(false);
   const [preparationSteps, setPreparationSteps] = useState<Record<string, string>>({});
   const [stepIngredients, setStepIngredients] = useState<Record<string, string[]>>({});
   const ingredientSelectionKeyRef = useRef<Record<string, string | null>>({});
@@ -1242,10 +1247,17 @@ export const Step3Review: React.FC = () => {
 
   // Reset Cropper state when das Bild wechselt oder der Dialog neu geöffnet wird
   useEffect(() => {
-    if (!isCropModalOpen) return;
+    if (!isCropModalOpen) {
+      setCropperReady(false);
+      return;
+    }
     setCrop({ x: 0, y: 0 });
     setZoom(1);
     setCroppedAreaPixels(null);
+    // Wait two frames so the dialog is open and laid out before the Cropper mounts.
+    setCropperReady(false);
+    const raf = requestAnimationFrame(() => requestAnimationFrame(() => setCropperReady(true)));
+    return () => cancelAnimationFrame(raf);
   }, [currentImageUrl, isCropModalOpen]);
 
   const handleCropSave = useCallback(async () => {
@@ -2453,16 +2465,18 @@ export const Step3Review: React.FC = () => {
                     <Dialog.Title className="text-xl font-semibold text-primary">{t("review.image.cropModalTitle")}</Dialog.Title>
                     <div className="mt-4">
                       <div className="relative h-[60vh] w-full overflow-hidden">
-                        <Cropper
-                          key={currentImageUrl || "cropper"}
-                          image={currentImageUrl}
-                          crop={crop}
-                          zoom={zoom}
-                          aspect={16 / 10}
-                          onCropChange={setCrop}
-                          onZoomChange={setZoom}
-                          onCropComplete={handleCropComplete}
-                        />
+                        {cropperReady ? (
+                          <Cropper
+                            key={currentImageUrl || "cropper"}
+                            image={currentImageUrl}
+                            crop={crop}
+                            zoom={zoom}
+                            aspect={16 / 10}
+                            onCropChange={setCrop}
+                            onZoomChange={setZoom}
+                            onCropComplete={handleCropComplete}
+                          />
+                        ) : null}
                       </div>
                       <label className="mt-4 block text-xs font-semibold uppercase tracking-wide text-text/60">
                         {t("review.image.zoomLabel")}

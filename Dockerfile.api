@@ -10,7 +10,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # data directory (/app/data/fastembed_cache) so it persists across container
 # restarts. Baking the model into the image was unreliable because HuggingFace
 # rate-limits anonymous downloads in CI.
-ENV FASTEMBED_CACHE_PATH=/app/data/fastembed_cache
+ENV FASTEMBED_CACHE_PATH=/app/data/fastembed_cache \
+    HUGGINGFACE_HUB_VERBOSITY=error
 
 # Copy application code
 COPY importer ./importer

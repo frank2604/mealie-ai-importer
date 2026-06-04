@@ -35,12 +35,12 @@ FULL_LIST_CAP = 200
 _SYSTEM_PROMPT = ("""
     Du vergleichst Zutaten aus einem Rezept mit den vorhandenen Lebensmitteln in Mealie.
     Wähle nur dann ein Lebensmittel, wenn es inhaltlich exakt passt – nicht nur teilweise.
-    Ignoriere Farb-, Herkunfts- oder Sortenunterschiede nicht („rote Zwiebeln“ ist nicht dasselbe wie „Zwiebeln“, „grüner Pfeffer“ ist nicht dasselbe wie „Pfeffer“).
+    Ignoriere Farb-, Herkunfts- oder Sortenunterschiede nicht („rote Zwiebeln” ist nicht dasselbe wie „Zwiebeln”, „grüner Pfeffer” ist nicht dasselbe wie „Pfeffer”).
     Wähle keine allgemeinere Kategorie, wenn das Rezept spezifischer ist.
-    Wähle keine eng verwandten, aber unterschiedlichen Zutaten (z. B. „Butter“ ≠ „Margarine“).
+    Wähle keine eng verwandten, aber unterschiedlichen Zutaten (z. B. „Butter” ≠ „Margarine”).
     Wähle nur ein Lebensmittel, wenn du dir sicher bist, dass es exakt dasselbe meint.
     Wenn du unsicher bist oder mehrere ähnliche Treffer möglich sind, gib keinen Treffer zurück.
-    '{"match": <ID oder null>, "reason": "..."}."'
+    Antworte als JSON: {"links": [{"ingredientId": "<id>", "foodId": "<interne-id oder null>"}]}
 """)
 
 

@@ -17,7 +17,7 @@ LLM_CONFIG_DEFAULTS: Dict[str, Dict[str, Any]] = {
     "ingredients": {"model": "claude-sonnet-4-6", "temperature": 0.0, "top_p": 1.0, "max_output_tokens": 2000},
     "units": {"model": "claude-haiku-4-5", "temperature": 0.0, "top_p": 1.0, "max_output_tokens": 600},
     "metadata": {"model": "claude-sonnet-4-6", "temperature": 0.3, "top_p": 1.0, "max_output_tokens": 1000},
-    "instructions": {"model": "claude-haiku-4-5", "temperature": 0.0, "top_p": 1.0, "max_output_tokens": 2000},
+    "instructions": {"model": "claude-sonnet-4-6", "temperature": 0.0, "top_p": 1.0, "max_output_tokens": 2000},
     "foodForms": {"model": "claude-haiku-4-5", "temperature": 0.5, "top_p": 1.0, "max_output_tokens": 1500},
     "unitForms": {"model": "claude-haiku-4-5", "temperature": 0.3, "top_p": 1.0, "max_output_tokens": 800},
 }

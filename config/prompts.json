@@ -177,7 +177,7 @@
       "max_output_tokens": 1000
     },
     "instructions": {
-      "model": "claude-haiku-4-5",
+      "model": "claude-sonnet-4-6",
       "temperature": 0,
       "top_p": 1,
       "max_output_tokens": 2000

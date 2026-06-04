@@ -14,6 +14,12 @@ logger = logging.getLogger(__name__)
 
 _DEFAULT_CONFIG_PATH = Path("config/settings.yaml")
 
+# Canonical Claude model names — single source of truth.
+# Update here and both the fallback model list and the per-module prompt
+# defaults (prompt_store.LLM_CONFIG_DEFAULTS) stay in sync automatically.
+MODEL_SONNET = "claude-sonnet-4-6"
+MODEL_HAIKU = "claude-haiku-4-5"
+
 
 @dataclass
 class MealieConfig:
@@ -125,13 +131,13 @@ def load_config(config_path: Optional[Path] = None) -> AppConfig:
         models.append(LlmModelOption(id=str(model_id), supports_sampling=bool(entry.get("supportsSampling", True))))
     if not models:
         models = [
-            LlmModelOption(id="claude-sonnet-4-6", supports_sampling=True),
-            LlmModelOption(id="claude-haiku-4-5", supports_sampling=True),
+            LlmModelOption(id=MODEL_SONNET, supports_sampling=True),
+            LlmModelOption(id=MODEL_HAIKU, supports_sampling=True),
         ]
 
     llm = LlmConfig(
         provider=_env_or_default("LLM_PROVIDER", llm_section.get("provider", "anthropic")),
-        model=_env_or_default("LLM_MODEL", llm_section.get("model", "claude-sonnet-4-6")),
+        model=_env_or_default("LLM_MODEL", llm_section.get("model", MODEL_SONNET)),
         temperature=_maybe_float(_env_or_default("LLM_TEMPERATURE", llm_section.get("temperature"))),
         max_tokens=_maybe_int(_env_or_default("LLM_MAX_TOKENS", llm_section.get("max_tokens")), default=4096),
         api_key=_env_or_default("LLM_API_KEY", llm_section.get("api_key")),

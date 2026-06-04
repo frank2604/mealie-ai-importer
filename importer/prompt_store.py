@@ -5,6 +5,8 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Any, Dict, Optional
 
+from .config import MODEL_SONNET, MODEL_HAIKU
+
 PROMPT_FILE = Path("config/prompts.json")
 
 # Per-module Claude models + parameters. analysis/metadata use the stronger
@@ -12,14 +14,15 @@ PROMPT_FILE = Path("config/prompts.json")
 # structured matching/form modules use the cheaper, fast Haiku. Token budgets
 # are sized for Anthropic forced-tool JSON responses (a batch of ingredient
 # links can be sizeable, so they are more generous than the old OpenAI values).
+# Model names reference config.MODEL_SONNET / MODEL_HAIKU — change there only.
 LLM_CONFIG_DEFAULTS: Dict[str, Dict[str, Any]] = {
-    "analysis": {"model": "claude-sonnet-4-6", "temperature": 0.3, "top_p": 1.0, "max_output_tokens": 8000},
-    "ingredients": {"model": "claude-sonnet-4-6", "temperature": 0.0, "top_p": 1.0, "max_output_tokens": 2000},
-    "units": {"model": "claude-haiku-4-5", "temperature": 0.0, "top_p": 1.0, "max_output_tokens": 600},
-    "metadata": {"model": "claude-sonnet-4-6", "temperature": 0.3, "top_p": 1.0, "max_output_tokens": 1000},
-    "instructions": {"model": "claude-sonnet-4-6", "temperature": 0.0, "top_p": 1.0, "max_output_tokens": 2000},
-    "foodForms": {"model": "claude-haiku-4-5", "temperature": 0.5, "top_p": 1.0, "max_output_tokens": 1500},
-    "unitForms": {"model": "claude-haiku-4-5", "temperature": 0.3, "top_p": 1.0, "max_output_tokens": 800},
+    "analysis":     {"model": MODEL_SONNET, "temperature": 0.3, "top_p": 1.0, "max_output_tokens": 8000},
+    "ingredients":  {"model": MODEL_SONNET, "temperature": 0.0, "top_p": 1.0, "max_output_tokens": 2000},
+    "units":        {"model": MODEL_HAIKU,  "temperature": 0.0, "top_p": 1.0, "max_output_tokens": 600},
+    "metadata":     {"model": MODEL_SONNET, "temperature": 0.3, "top_p": 1.0, "max_output_tokens": 1000},
+    "instructions": {"model": MODEL_SONNET, "temperature": 0.0, "top_p": 1.0, "max_output_tokens": 2000},
+    "foodForms":    {"model": MODEL_HAIKU,  "temperature": 0.5, "top_p": 1.0, "max_output_tokens": 1500},
+    "unitForms":    {"model": MODEL_HAIKU,  "temperature": 0.3, "top_p": 1.0, "max_output_tokens": 800},
 }
 
 FALLBACK_DEFAULTS: Dict[str, Dict[str, Dict[str, str]]] = {

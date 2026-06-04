@@ -1563,7 +1563,7 @@ async def start_analysis(upload_id: str, background_tasks: BackgroundTasks) -> S
 @app.post("/api/imports/{run_id}/transfer", response_model=TransferStartResponse)
 async def start_transfer(run_id: str, background_tasks: BackgroundTasks) -> TransferStartResponse:
     state = _read_run_state(run_id)
-    if state.status not in {"review"}:
+    if state.status not in {"review", "failed"}:
         raise HTTPException(status_code=409, detail="Die Analyse muss abgeschlossen sein, bevor die Übertragung starten kann.")
     _assert_no_running_job()
     config = _load_app_config()

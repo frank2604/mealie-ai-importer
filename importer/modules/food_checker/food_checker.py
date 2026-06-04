@@ -113,7 +113,6 @@ class FoodCheckerModule:
         matches: Dict[str, str] = {}
         match_details: Dict[str, Dict[str, object]] = {}
         exact_matches: List[str] = []
-        fuzzy_matches: List[tuple[str, str]] = []
         ai_matches: List[str] = []
         pending_ai_refs: List[IngredientRef] = []
         unresolved_after_exact: List[IngredientRef] = []
@@ -130,12 +129,7 @@ class FoodCheckerModule:
             if candidate_id:
                 matches[ref.key] = candidate_id
                 match_details[ref.key] = {"strategy": strategy}
-                if strategy == "exact":
-                    exact_matches.append(ingredient.name)
-                else:
-                    candidate = foods_by_id.get(candidate_id)
-                    display = matched_label or (candidate.name if candidate else candidate_id)
-                    fuzzy_matches.append((ingredient.name, display))
+                exact_matches.append(ingredient.name)
                 continue
 
             pending_ai_refs.append(ref)
@@ -151,14 +145,6 @@ class FoodCheckerModule:
                 "" if len(exact_matches) == 1 else "s",
                 self._format_list(exact_matches),
             )
-        if fuzzy_matches:
-            logger.info(
-                "Auto-accepted %s ingredient%s by semantic similarity: %s",
-                len(fuzzy_matches),
-                "" if len(fuzzy_matches) == 1 else "s",
-                self._format_fuzzy_pairs(fuzzy_matches),
-            )
-
         if pending_ai_refs:
             pending_names = [ref.ingredient.name for ref in pending_ai_refs if ref.ingredient.name]
             search_mode = "semantic shortlist + AI" if (self._index and self._index.available) else "AI"
@@ -199,11 +185,9 @@ class FoodCheckerModule:
         )
         self._log_stats(
             exact_matches,
-            fuzzy_matches,
             ai_matches,
             ingredient_refs,
             missing,
-            include_stage_one=False,
         )
 
         suggestions: Dict[str, Dict[str, object]] = {}
@@ -251,7 +235,6 @@ class FoodCheckerModule:
             context,
             ingredient_refs,
             matches,
-            match_details,
             missing,
             suggestions,
             new_ids,
@@ -517,31 +500,14 @@ class FoodCheckerModule:
     def _log_stats(
         self,
         exact_matches: List[str],
-        fuzzy_matches: List[tuple[str, str]],
         ai_matches: List[str],
         ingredient_refs: List[IngredientRef],
         missing: List[IngredientRef],
-        *,
-        include_stage_one: bool = False,
     ) -> None:
         total = len(ingredient_refs)
         if total == 0:
             return
 
-        if include_stage_one and exact_matches:
-            logger.info(
-                "Matched %s ingredient%s exact by words: %s",
-                len(exact_matches),
-                "" if len(exact_matches) == 1 else "s",
-                self._format_list(exact_matches),
-            )
-        if include_stage_one and fuzzy_matches:
-            logger.info(
-                "Matched %s ingredient%s with Fuzzy-Search: %s",
-                len(fuzzy_matches),
-                "" if len(fuzzy_matches) == 1 else "s",
-                self._format_fuzzy_pairs(fuzzy_matches),
-            )
         if ai_matches:
             logger.info(
                 "Matched %s ingredient%s with AI: %s",
@@ -565,7 +531,6 @@ class FoodCheckerModule:
         context: PipelineContext,
         ingredient_refs: List[IngredientRef],
         matches: Dict[str, str],
-        match_details: Dict[str, Dict[str, object]],  # noqa: ARG002 - kept for future use / debugging
         missing: List[IngredientRef],
         suggestions: Dict[str, Dict[str, object]],
         new_ids: Dict[str, str],
@@ -656,8 +621,6 @@ class FoodCheckerModule:
     def _badge_for_strategy(strategy: Optional[object]) -> str:
         if strategy == "exact" or strategy == "preassigned":
             return STATUS_FOUND_WORD
-        if strategy == "embedding" or strategy == "fuzzy":
-            return STATUS_FOUND_FUZZY
         if strategy == "ai":
             return STATUS_FOUND_AI
         return STATUS_FOUND_WORD
@@ -688,13 +651,3 @@ class FoodCheckerModule:
             return "[]"
         return "[" + ", ".join(cleaned) + "]"
 
-    @staticmethod
-    def _format_fuzzy_pairs(pairs: Iterable[tuple[str, str]]) -> str:
-        entries = [
-            f"[{source}] > [{target}]"
-            for source, target in pairs
-            if source and target
-        ]
-        if not entries:
-            return "[]"
-        return ", ".join(entries)

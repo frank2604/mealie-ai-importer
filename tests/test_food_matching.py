@@ -87,8 +87,9 @@ def test_stage_two_fallback_without_embeddings():
 
 
 def test_badge_mapping_stays_within_allowed_values():
-    allowed = {STATUS_FOUND_WORD, STATUS_FOUND_FUZZY, STATUS_FOUND_AI}
+    # exact and preassigned → found_word; ai → found_ai; unknown → found_word (safe default)
     assert FoodCheckerModule._badge_for_strategy("exact") == STATUS_FOUND_WORD
-    assert FoodCheckerModule._badge_for_strategy("embedding") == STATUS_FOUND_FUZZY
+    assert FoodCheckerModule._badge_for_strategy("preassigned") == STATUS_FOUND_WORD
     assert FoodCheckerModule._badge_for_strategy("ai") == STATUS_FOUND_AI
+    allowed = {STATUS_FOUND_WORD, STATUS_FOUND_FUZZY, STATUS_FOUND_AI}
     assert FoodCheckerModule._badge_for_strategy("anything") in allowed

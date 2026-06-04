@@ -120,7 +120,6 @@ class UnitCheckerModule:
         matches: Dict[str, str] = {}
         match_details: Dict[str, Dict[str, object]] = {}
         exact_matches: List[str] = []
-        fuzzy_matches: List[tuple[str, str]] = []
         ai_matches: List[tuple[str, str]] = []
         pending_ai_groups: List[tuple[str, List[IngredientRef]]] = []
 
@@ -151,10 +150,7 @@ class UnitCheckerModule:
                     unit_name = ref.ingredient.unit or ""
                     matches[ref.key] = candidate_id
                     match_details[ref.key] = {"strategy": strategy}
-                    if strategy == "exact":
-                        exact_matches.append(display or unit_name or "(unbekannt)")
-                    else:
-                        fuzzy_matches.append((unit_name, display))
+                    exact_matches.append(display or unit_name or "(unbekannt)")
                 continue
 
             pending_ai_groups.append((sample_unit, pending_refs))
@@ -170,14 +166,6 @@ class UnitCheckerModule:
                 "" if len(exact_matches) == 1 else "s",
                 self._format_list(sorted(exact_matches, key=lambda value: value.lower())),
             )
-        if fuzzy_matches:
-            logger.info(
-                "Matched %s unit%s with Fuzzy-Search: %s",
-                len(fuzzy_matches),
-                "" if len(fuzzy_matches) == 1 else "s",
-                self._format_fuzzy_pairs(fuzzy_matches),
-            )
-
         if pending_ai_groups:
             pending_names = [name for name, _ in pending_ai_groups]
             logger.info(
@@ -225,11 +213,9 @@ class UnitCheckerModule:
         )
         self._log_stats(
             exact_matches,
-            fuzzy_matches,
             ai_matches,
             ingredient_refs,
             missing,
-            include_stage_one=False,
         )
 
         suggestions: Dict[str, Dict[str, object]] = {}
@@ -439,31 +425,14 @@ class UnitCheckerModule:
     def _log_stats(
         self,
         exact_matches: List[str],
-        fuzzy_matches: List[tuple[str, str]],
         ai_matches: List[tuple[str, str]],
         ingredient_refs: List[IngredientRef],
         missing: List[IngredientRef],
-        *,
-        include_stage_one: bool = False,
     ) -> None:
         total = len(ingredient_refs)
         if total == 0:
             return
 
-        if include_stage_one and exact_matches:
-            logger.info(
-                "Matched %s unit%s exact by words: %s",
-                len(exact_matches),
-                "" if len(exact_matches) == 1 else "s",
-                self._format_list(sorted(exact_matches, key=lambda value: value.lower())),
-            )
-        if include_stage_one and fuzzy_matches:
-            logger.info(
-                "Matched %s unit%s with Fuzzy-Search: %s",
-                len(fuzzy_matches),
-                "" if len(fuzzy_matches) == 1 else "s",
-                self._format_fuzzy_pairs(fuzzy_matches),
-            )
         if ai_matches:
             logger.info(
                 "Matched %s unit%s with AI: %s",
@@ -628,17 +597,6 @@ class UnitCheckerModule:
     @staticmethod
     def _normalize_unit(value: str) -> str:
         return (value or "").strip().lower()
-
-    @staticmethod
-    def _format_fuzzy_pairs(pairs: Iterable[tuple[str, str]]) -> str:
-        entries = [
-            f"[{source}] > [{target}]"
-            for source, target in pairs
-            if source and target
-        ]
-        if not entries:
-            return "[]"
-        return ", ".join(entries)
 
     @staticmethod
     def _format_ai_pairs(pairs: Iterable[tuple[str, str]]) -> str:

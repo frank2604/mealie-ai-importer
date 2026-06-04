@@ -285,9 +285,11 @@ class AnthropicClient:
 def _coerce_json_strings(payload: Dict[str, Any]) -> None:
     """Repair fields that Claude occasionally returns as a JSON *string*.
 
-    Forced tool-use with a permissive schema sometimes serialises nested lists
-    (e.g. ``instructions``/``ingredients``) as a string instead of a real array.
-    We parse those back into structures so Recipe validation succeeds.
+    With the strict _RECIPE_EMIT_TOOL schema, Claude delivers instructions and
+    ingredients as real arrays. This function is a belt-and-suspenders fallback
+    for the rare case where a nested list is still stringified (e.g. steps inside
+    a section). It attempts a plain json.loads and leaves the value unchanged on
+    failure — no fragile quote-replacing that could corrupt valid content.
     """
     if not isinstance(payload, dict):
         return
@@ -296,26 +298,10 @@ def _coerce_json_strings(payload: Dict[str, Any]) -> None:
         if isinstance(value, str):
             stripped = value.strip()
             if stripped[:1] in ("[", "{"):
-                # First attempt: parse as-is.
                 try:
                     return json.loads(stripped)
                 except (json.JSONDecodeError, TypeError):
                     pass
-                # Second attempt: replace typographic quotes inside string VALUES
-                # with straight quotes. Claude occasionally writes „..." or "..." in
-                # instruction text, which makes the outer JSON unparseable.
-                cleaned = (
-                    stripped
-                    .replace("„", '\\"')   # „  -> \"
-                    .replace("“", '\\"')   # "  -> \"
-                    .replace("”", '\\"')   # "  -> \"
-                    .replace("‘", "\\'")   # '  -> \'
-                    .replace("’", "\\'")   # '  -> \'
-                )
-                try:
-                    return json.loads(cleaned)
-                except (json.JSONDecodeError, TypeError):
-                    return value
         return value
 
     # Top-level structural fields that must be lists.

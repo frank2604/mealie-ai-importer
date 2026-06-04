@@ -1854,7 +1854,12 @@ async def upload_run_image(run_id: str, file: UploadFile = File(...)) -> ImageUp
         recipe_payload = _load_json_file(context.recipe_path)
         data_url = f"data:{IMAGE_MEDIA_TYPES[suffix]};base64,{base64.b64encode(contents).decode('ascii')}"
         assets = recipe_payload.get("assets") or []
-        assets = [asset for asset in assets if asset.get("fileName") != target_name]
+        # Remove ALL existing RecipeImage assets regardless of extension so that
+        # uploading e.g. a .webp doesn't leave a stale .jpg asset in the list.
+        def _is_recipe_image(a: dict) -> bool:
+            name = a.get("fileName") or a.get("file_name") or ""
+            return "RecipeImage" in name
+        assets = [a for a in assets if not _is_recipe_image(a)]
         assets.append(
             {
                 "file_name": target_name,

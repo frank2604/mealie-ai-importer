@@ -458,9 +458,15 @@ class CreateRecipeModule:
         context.mealie_payload = final_recipe or patch_payload
         logger.info("Updated the recipe details and added the preparation steps")
 
-        # 6) Bild setzen
+        # 6) Bild setzen — nimm das erste Asset das eine gültige data:-URL hat.
         if slug and recipe.assets:
-            asset = recipe.assets[0]
+            asset = next(
+                (a for a in recipe.assets if a.data and a.data.startswith("data:")),
+                None,
+            )
+            if asset is None:
+                logger.warning("Could not process the image: kein Asset mit data:-URL gefunden")
+                return
             try:
                 file_name, mime_type, file_bytes = _data_url_to_file(asset)
             except ValueError as exc:

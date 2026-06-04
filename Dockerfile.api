@@ -11,7 +11,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 # /app/data because the data directory is bind-mounted at runtime and would
 # otherwise shadow the baked-in model weights.
 ENV FASTEMBED_CACHE_PATH=/opt/fastembed_cache
-RUN python -c "from fastembed import TextEmbedding; TextEmbedding('sentence-transformers/paraphrase-multilingual-mpnet-base-v2')"
+# Retry the model download: HuggingFace throttles anonymous pulls, so a single
+# attempt fails intermittently and breaks the whole build. Up to 5 tries.
+RUN n=0; until python -c "from fastembed import TextEmbedding; TextEmbedding('sentence-transformers/paraphrase-multilingual-mpnet-base-v2')"; do \
+        n=$((n+1)); \
+        if [ "$n" -ge 5 ]; then echo "Embedding model download failed after $n attempts" >&2; exit 1; fi; \
+        echo "Model download attempt $n failed, retrying in 20s..." >&2; sleep 20; \
+    done
 
 # Copy application code
 # Application code

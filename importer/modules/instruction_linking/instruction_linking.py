@@ -10,7 +10,7 @@ import httpx
 
 from ..context import PipelineContext, auto_link_ingredients_to_instructions, normalize_recipe_payload
 from ...config import LlmConfig
-from ...llm_parser import OpenAiClient
+from ...llm_client import LLMClient
 from ...prompt_store import resolve_prompt, resolve_llm_config
 from ...prompt_logging import log_prompt_messages
 from ...llm_utils import format_llm_log
@@ -23,7 +23,7 @@ class InstructionLinkingModule:
 
     name = "Instruction Linking"
 
-    def __init__(self, *, llm_client: Optional[OpenAiClient], llm_config: LlmConfig) -> None:
+    def __init__(self, *, llm_client: Optional[LLMClient], llm_config: LlmConfig) -> None:
         self._client = llm_client
         self._llm_config = llm_config
 

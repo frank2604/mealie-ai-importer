@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from ..context import PipelineContext
-from ...llm_parser import OpenAiClient
+from ...llm_client import LLMClient
 from ...config import LlmConfig
 from ...models import OrganizerReference, Recipe
 from ...prompt_store import resolve_prompt, resolve_llm_config
@@ -44,7 +44,7 @@ class AssignMetadataModule:
         self,
         ingredient_service: Optional[IngredientService],
         *,
-        llm_client: Optional[OpenAiClient],
+        llm_client: Optional[LLMClient],
         llm_config: Optional["LlmConfig"] = None,
         locale: str = "de",
     ) -> None:

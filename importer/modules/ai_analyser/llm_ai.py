@@ -10,7 +10,8 @@ from typing import Any, Dict, List, Optional
 from ..context import PipelineContext, build_recipe_data_payload, auto_link_ingredients_to_instructions
 from ...config import LlmConfig
 from ...image_utils import prepare_image_asset, select_best_image
-from ...llm_parser import LlmParsingError, OpenAiClient, parse_with_llm
+from ...llm_client import LLMClient
+from ...llm_parser import LlmParsingError, parse_with_llm
 from ...prompt_store import resolve_llm_config
 from ...llm_utils import format_llm_log
 from ...models import Recipe, RecipeAsset
@@ -26,7 +27,7 @@ class AiAnalyserModule:
     def __init__(
         self,
         *,
-        llm_client: OpenAiClient,
+        llm_client: LLMClient,
         llm_config: LlmConfig,
         image_output_dir: Optional[Path] = None,
     ) -> None:

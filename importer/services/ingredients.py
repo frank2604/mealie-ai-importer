@@ -18,7 +18,7 @@ except ImportError:  # pragma: no cover - fallback when rapidfuzz is unavailable
 
 from ..config import IngredientConfig
 from ..exceptions import UserAbort
-from ..llm_parser import OpenAiClient
+from ..llm_client import LLMClient
 from .text_norm import normalize_de
 from .unit_norm import canonical_unit
 from ..prompt_store import resolve_prompt, resolve_llm_config
@@ -78,7 +78,7 @@ class IngredientService:
         base_url: Optional[str],
         token: Optional[str],
         config: Optional[IngredientConfig] = None,
-        llm_client: Optional[OpenAiClient] = None,
+        llm_client: Optional[LLMClient] = None,
         verify: Union[bool, str] = True,
         auto_seed: bool = True,
         prompt_locale: Optional[str] = None,

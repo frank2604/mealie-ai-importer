@@ -8,6 +8,7 @@ reliable than parsing free text and replaces the old brittle ``json.loads``.
 """
 from __future__ import annotations
 
+import json
 import logging
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -184,6 +185,7 @@ class AnthropicClient:
         if recipe_dict is None:
             raise LlmParsingError("Claude lieferte kein strukturiertes Rezept (kein tool_use-Block)")
 
+        _coerce_json_strings(recipe_dict)
         _ensure_title(recipe_dict, request)
         recipe = Recipe.parse_obj(recipe_dict)
         if request.source and not recipe.metadata.source:
@@ -247,6 +249,45 @@ class AnthropicClient:
         if payload is None:
             raise LlmParsingError("Claude-Antwort enthielt keinen tool_use-Block")
         return payload
+
+
+def _coerce_json_strings(payload: Dict[str, Any]) -> None:
+    """Repair fields that Claude occasionally returns as a JSON *string*.
+
+    Forced tool-use with a permissive schema sometimes serialises nested lists
+    (e.g. ``instructions``/``ingredients``) as a string instead of a real array.
+    We parse those back into structures so Recipe validation succeeds.
+    """
+    if not isinstance(payload, dict):
+        return
+
+    def _maybe_parse(value: Any) -> Any:
+        if isinstance(value, str):
+            stripped = value.strip()
+            if stripped[:1] in ("[", "{"):
+                try:
+                    return json.loads(stripped)
+                except (json.JSONDecodeError, TypeError):
+                    return value
+        return value
+
+    # Top-level structural fields that must be lists.
+    for key in ("ingredients", "instructions", "assets"):
+        if key in payload:
+            payload[key] = _maybe_parse(payload[key])
+
+    # One nested level: section.ingredients / section.steps.
+    sections = payload.get("ingredients")
+    if isinstance(sections, list):
+        for section in sections:
+            if isinstance(section, dict) and "ingredients" in section:
+                section["ingredients"] = _maybe_parse(section["ingredients"])
+
+    instruction_sections = payload.get("instructions")
+    if isinstance(instruction_sections, list):
+        for section in instruction_sections:
+            if isinstance(section, dict) and "steps" in section:
+                section["steps"] = _maybe_parse(section["steps"])
 
 
 def _fallback_title(request: LlmRequest) -> str:

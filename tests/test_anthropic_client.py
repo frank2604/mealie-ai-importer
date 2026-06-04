@@ -77,3 +77,19 @@ def test_run_json_without_tool_block_raises():
     c = _client_with(cap, _Resp([_block(type="text", text="no tool here")]))
     with pytest.raises(LlmParsingError):
         c.run_json("S", "U")
+
+
+def test_run_repairs_stringified_instructions():
+    # Claude sometimes returns nested lists as a JSON string; run() must repair it.
+    from importer.llm_parser import LlmRequest
+
+    cap = {}
+    recipe = {
+        "title": "Pasta",
+        "ingredients": [{"name": None, "ingredients": [{"name": "Nudeln"}]}],
+        "instructions": '[{"name": null, "steps": [{"order": 1, "instruction": "Kochen"}]}]',
+    }
+    c = _client_with(cap, _Resp([_block(type="tool_use", name="emit", input=recipe)]))
+    rec = c.run(LlmRequest(text="x", source=None, title_hint=None, servings_hint=None, locale="de"))
+    assert rec.title == "Pasta"
+    assert rec.instructions[0].steps[0].instruction == "Kochen"

@@ -1256,8 +1256,10 @@ export const Step3Review: React.FC = () => {
     setCroppedAreaPixels(null);
     // Wait two frames so the dialog is open and laid out before the Cropper mounts.
     setCropperReady(false);
-    const raf = requestAnimationFrame(() => requestAnimationFrame(() => setCropperReady(true)));
-    return () => cancelAnimationFrame(raf);
+    // Wait for the dialog enter-transition to finish (duration-200) before
+    // mounting the Cropper so it measures a non-zero container size.
+    const timer = setTimeout(() => setCropperReady(true), 250);
+    return () => clearTimeout(timer);
   }, [currentImageUrl, isCropModalOpen]);
 
   const handleCropSave = useCallback(async () => {

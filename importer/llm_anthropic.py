@@ -29,15 +29,45 @@ logger = logging.getLogger(__name__)
 
 _DEFAULT_MAX_TOKENS = 4096
 
-# Schema-agnostic emit tool: ``additionalProperties: true`` with no required keys
-# lets every existing payload shape pass through ({"links": [...]},
-# {"match": ...}, {"ingredients": [...]}, {"units": [...]}, the full recipe).
+# Schema-agnostic emit tool for most calls (matching, metadata, …).
 _EMIT_TOOL = {
     "name": "emit",
     "description": "Gib das strukturierte Ergebnis als JSON-Objekt zurück.",
     "input_schema": {"type": "object", "additionalProperties": True},
 }
 _FORCE_EMIT = {"type": "tool", "name": "emit"}
+
+# Stricter schema for recipe analysis: instructions and ingredients must be
+# real arrays (not JSON-encoded strings). This prevents Claude from
+# accidentally stringifying nested structures which then fail Pydantic
+# validation.
+_RECIPE_EMIT_TOOL = {
+    "name": "emit",
+    "description": "Gib das strukturierte Rezept als JSON-Objekt zurück.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "title": {"type": "string"},
+            "description": {"type": ["string", "null"]},
+            "recipeServings": {"type": ["number", "null"]},
+            "totalTime": {"type": ["string", "null"]},
+            "prepTime": {"type": ["string", "null"]},
+            "performTime": {"type": ["string", "null"]},
+            "ingredients": {
+                "type": "array",
+                "items": {"type": "object", "additionalProperties": True},
+            },
+            "instructions": {
+                "type": "array",
+                "items": {"type": "object", "additionalProperties": True},
+            },
+            "notes": {"type": ["string", "null"]},
+            "metadata": {"type": ["object", "null"], "additionalProperties": True},
+        },
+        "required": ["title", "ingredients", "instructions"],
+        "additionalProperties": True,
+    },
+}
 
 
 class AnthropicClient:
@@ -171,13 +201,14 @@ class AnthropicClient:
             ],
         )
 
-        response = self._create(
+        response = self._client.messages.create(
             model=model_name,
-            system=system_prompt,
-            user_prompt=user_prompt,
             max_tokens=max_tokens,
-            temperature=temperature,
-            force_json=True,
+            system=system_prompt or "",
+            messages=[{"role": "user", "content": user_prompt}],
+            tools=[_RECIPE_EMIT_TOOL],
+            tool_choice=_FORCE_EMIT,
+            **({} if temperature is None else {"temperature": temperature}),
         )
         log_prompt_response("analysis", self._response_log(response), stem=stem)
 
@@ -265,8 +296,24 @@ def _coerce_json_strings(payload: Dict[str, Any]) -> None:
         if isinstance(value, str):
             stripped = value.strip()
             if stripped[:1] in ("[", "{"):
+                # First attempt: parse as-is.
                 try:
                     return json.loads(stripped)
+                except (json.JSONDecodeError, TypeError):
+                    pass
+                # Second attempt: replace typographic quotes inside string VALUES
+                # with straight quotes. Claude occasionally writes „..." or "..." in
+                # instruction text, which makes the outer JSON unparseable.
+                cleaned = (
+                    stripped
+                    .replace("„", '\\"')   # „  -> \"
+                    .replace("“", '\\"')   # "  -> \"
+                    .replace("”", '\\"')   # "  -> \"
+                    .replace("‘", "\\'")   # '  -> \'
+                    .replace("’", "\\'")   # '  -> \'
+                )
+                try:
+                    return json.loads(cleaned)
                 except (json.JSONDecodeError, TypeError):
                     return value
         return value

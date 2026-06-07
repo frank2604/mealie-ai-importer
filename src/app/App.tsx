@@ -54,7 +54,7 @@ const AppShell: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { reset: resetFlow, status: runStatus, runId } = useImportFlow();
+  const { reset: resetFlow, status: runStatus, runId, isOccupied } = useImportFlow();
   const nextHandlerRef = useRef<StepNextHandler | null>(null);
   const [isNextDisabled, setIsNextDisabled] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
@@ -250,6 +250,15 @@ const AppShell: React.FC = () => {
                 layoutConfig.spacing.layout.page.y
               )}
             >
+              {isOccupied && (
+                <div className="mb-4 flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-amber-800 dark:border-amber-600 dark:bg-amber-950/40 dark:text-amber-300">
+                  <span className="mt-0.5 text-lg leading-none">⚠️</span>
+                  <div>
+                    <p className="font-semibold">{t("app.occupied.title")}</p>
+                    <p className="mt-0.5 text-sm">{t("app.occupied.message")}</p>
+                  </div>
+                </div>
+              )}
               <Outlet />
             </main>
         </div>

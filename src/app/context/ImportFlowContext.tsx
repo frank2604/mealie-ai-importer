@@ -44,6 +44,10 @@ interface ImportFlowContextValue {
   setRecipeNameValue: (name: string | null) => void;
   hasExternalUpdate: boolean;
   acknowledgeExternalUpdate: () => void;
+  /** True when the app detected on load that another session is actively running
+   *  an import (analyzing / transferring). Shows a blocking banner so the user
+   *  knows they should wait. */
+  isOccupied: boolean;
 }
 
 const STORAGE_KEY = "import-flow-state";
@@ -121,6 +125,7 @@ export const ImportFlowProvider: React.FC<{ children: ReactNode }> = ({ children
   const [transferLogs, setTransferLogs] = useState<LogEntry[]>([]);
   const [transferCursor, setTransferCursor] = useState(0);
   const [hasExternalUpdate, setHasExternalUpdate] = useState(false);
+  const [isOccupied, setIsOccupied] = useState(false);
 
   const setUploadInfo = useCallback(({ uploadId: id, fileName: name, recipeName: recipe }: UploadInfo) => {
     setUploadId(id);
@@ -234,8 +239,17 @@ export const ImportFlowProvider: React.FC<{ children: ReactNode }> = ({ children
         if (!active) {
           return;
         }
-        setRunIdState(run.runId);
         const nextStatus = (run.status as ImportStatus) ?? "analyzing";
+        // Detect if another browser session is actively running an import that
+        // this session did not start. Show an "occupied" banner in that case.
+        const persisted = persistedRef.current;
+        const isForeignRun =
+          ["analyzing", "transferring", "starting"].includes(nextStatus) &&
+          persisted?.runId !== run.runId;
+        if (isForeignRun) {
+          setIsOccupied(true);
+        }
+        setRunIdState(run.runId);
         setStatusState(nextStatus);
         setRecipeName((prev) => prev ?? run.recipeName);
         persistState({
@@ -326,7 +340,8 @@ export const ImportFlowProvider: React.FC<{ children: ReactNode }> = ({ children
       reset,
       setRecipeNameValue,
       hasExternalUpdate,
-      acknowledgeExternalUpdate
+      acknowledgeExternalUpdate,
+      isOccupied
     }),
     [
       analysisCursor,
@@ -346,6 +361,7 @@ export const ImportFlowProvider: React.FC<{ children: ReactNode }> = ({ children
       setRunId,
       setStatus,
       hasExternalUpdate,
+      isOccupied,
       setUploadInfo,
       status,
       transferCursor,

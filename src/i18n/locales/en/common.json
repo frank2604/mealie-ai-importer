@@ -1,7 +1,11 @@
 {
   "app": {
     "title": "Mealie AI Importer",
-    "subtitle": "Bring your recipe PDFs into Mealie faster"
+    "subtitle": "Bring your recipe PDFs into Mealie faster",
+    "occupied": {
+      "title": "Import in progress",
+      "message": "Someone else is currently importing a recipe. Please wait until they are done."
+    }
   },
   "navigation": {
     "wizard": "Importer",

@@ -216,6 +216,24 @@ export const Step4Transfer: React.FC = () => {
           if (statusResult.status === "review") {
             transferRequestedRef.current = false;
           }
+          // Race condition: transfer may complete before the first log poll returns
+          // entries (log file just flushed). Retry log fetch up to 3× with 800 ms
+          // delay so the log panel is never empty after a fast transfer.
+          if (statusResult.status !== "review" && !logResult?.entries.length && active) {
+            for (let retry = 0; retry < 3; retry++) {
+              await new Promise((res) => window.setTimeout(res, 800));
+              if (!active) break;
+              try {
+                const retryLogs = await fetchRunLogs(runId, transferCursor, "transfer");
+                if (retryLogs?.entries.length) {
+                  appendTransferLogs(mapApiLogEntries(retryLogs.entries), retryLogs.nextCursor);
+                  break;
+                }
+              } catch {
+                break;
+              }
+            }
+          }
           setIsPolling(false);
           return;
         }

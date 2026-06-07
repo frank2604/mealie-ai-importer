@@ -20,7 +20,7 @@ Ich stand vor dem Problem, eine Rezeptsammlung von rund **1.000 PDF-Dateien** in
 
 ## Was ist der Mealie AI Importer?
 
-Ein selbst entwickeltes Tool, das Rezepte aus **PDF-Dateien vollautomatisch** nach Mealie importiert. Es nutzt **Künstliche Intelligenz** (Claude von Anthropic) und die offizielle **Mealie REST-API**, um Zutaten, Mengen, Einheiten und Zubereitungsschritte aus dem PDF zu erkennen — und befüllt dabei **sämtliche relevanten Felder**, die Mealie für eine hochwertige Rezeptdatenbank bietet.
+Ein selbst entwickeltes Tool, das Rezepte aus **PDF-Dateien vollautomatisch** nach Mealie importiert. Es nutzt **Künstliche Intelligenz** (Claude von Anthropic) und die offizielle **Mealie REST-API**, um Zutaten, Mengen, Einheiten und Zubereitungsschritte aus dem PDF zu erkennen und mit dem Bestand abzugleichen — und befüllt dabei **sämtliche relevanten Felder**, die Mealie für eine hochwertige Rezeptdatenbank bietet.
 
 ### Was macht das besonders?
 

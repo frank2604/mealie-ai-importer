@@ -884,25 +884,46 @@ export const Step3Review: React.FC = () => {
         const payload = buildUpdatePayload(snapshot);
         const updated = await updateReviewData(runId, payload);
         const enriched = enrichReviewData(updated);
-        // Preserve user-edited names for new foods/units: the server response rebuilds
-        // foodSelection.name from the original ingredient name, not from the edited
-        // foodDecision.create.nameSingular — so we restore it from the snapshot here.
+        // Preserve user edits for new foods/units. The server may return stale
+        // foodDecision.create.nameSingular on the first save (foods_map key lookup
+        // fails before ingredientId is persisted) and always rebuilds
+        // foodSelection.name from the original ingredient name. We restore both
+        // from the snapshot so the display stays consistent with what the user typed.
         const withPreservedNames: typeof enriched = {
           ...enriched,
           ingredients: enriched.ingredients.map((serverItem) => {
             const snapshotItem = snapshot.ingredients.find((x) => x.id === serverItem.id);
             if (!snapshotItem) return serverItem;
+            // Preserve foodSelection.name for new foods
             const snapshotName = snapshotItem.foodSelection?.name;
             const foodSel =
               serverItem.foodSelection?.newId && snapshotName
                 ? { ...serverItem.foodSelection, name: snapshotName }
                 : serverItem.foodSelection;
+            // Preserve unitSelection.name for new units
             const snapshotUnitName = snapshotItem.unitSelection?.name;
             const unitSel =
               serverItem.unitSelection?.newId && snapshotUnitName
                 ? { ...serverItem.unitSelection, name: snapshotUnitName }
                 : serverItem.unitSelection;
-            return { ...serverItem, foodSelection: foodSel, unitSelection: unitSel };
+            // Preserve foodDecision (especially create.nameSingular) for new foods
+            // so getFoodSuggestionBaseName shows the edited name immediately.
+            const foodDec =
+              serverItem.foodSelection?.newId && snapshotItem.foodDecision
+                ? snapshotItem.foodDecision
+                : serverItem.foodDecision;
+            // Preserve unitDecision similarly
+            const unitDec =
+              serverItem.unitSelection?.newId && snapshotItem.unitDecision
+                ? snapshotItem.unitDecision
+                : serverItem.unitDecision;
+            return {
+              ...serverItem,
+              foodSelection: foodSel,
+              unitSelection: unitSel,
+              foodDecision: foodDec,
+              unitDecision: unitDec,
+            };
           })
         };
         setReviewData(withPreservedNames);

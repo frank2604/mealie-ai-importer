@@ -56,109 +56,80 @@ Jede neu angelegte Zutat wird einer Lebensmittelkategorie zugeordnet:
 
 ## Schlagwörter
 
-Schlagwörter sind in thematische Gruppen gegliedert. Pro Gruppe wird jeweils ein passendes Tag vergeben (sofern zutreffend).
+Schlagwörter folgen dem Format **`Gruppe | Name`** — genau so, wie sie in Mealie gespeichert sind. Pro Gruppe wird jeweils ein passendes Tag vergeben (sofern zutreffend).
 
-### Tageszeit
-| Tag |
+| Schlagwort |
 |---|
-| Frühstück ☀️ |
-| Dinner 🌙 |
-
-### Form
-| Tag |
-|---|
-| Auflauf 🧀 |
-| Bowl 🥗 |
-| Burger 🍔 |
-| Curry 🍛 |
-| Eintopf 🍲 |
-| Pasta-Gericht 🍝 |
-| Pfannengericht 🍳 |
-| Pizza 🍕 |
-| Quiche 🥧 |
-| Salat 🥗 |
-| Sandwich 🥪 |
-| Suppe 🥣 |
-| Tapas/Mezze 🍢 |
-| Tarte 🥧 |
-| Wrap 🌯 |
-
-### Küche
-| Tag |
-|---|
-| Afrikanisch 🌍 |
-| Arabisch 🕌 |
-| Chinesisch 🇨🇳 |
-| Deutsch 🇩🇪 |
-| Französisch 🇫🇷 |
-| Fusion 🧪 |
-| Griechisch 🇬🇷 |
-| Indisch 🇮🇳 |
-| Italienisch 🇮🇹 |
-| Japanisch 🇯🇵 |
-| Koreanisch 🇰🇷 |
-| Mexikanisch 🇲🇽 |
-| Pakistanisch 🇵🇰 |
-| Skandinavisch 🇸🇪 |
-| Spanisch 🇪🇸 |
-| Thai 🇹🇭 |
-| Türkisch 🇹🇷 |
-| US-amerikanisch 🇺🇸 |
-| Vietnamesisch 🇻🇳 |
-
-### Technik
-| Tag |
-|---|
-| Airfryer 🛩️ |
-| Backen 🥐 |
-| Dämpfen 🧺 |
-| Dünsten 🌫️ |
-| Fermentieren 🧫 |
-| Frittieren 🍟 |
-| Grill 🔥 |
-| Marinieren 🧂 |
-| Ofen 🔥 |
-| One-Pot 🫕 |
-| Pfanne 🍳 |
-| Roh 🥗 |
-| Schmoren 🍲 |
-| Slowcooker 🐢 |
-| Wok 🍜 |
-
-### Gerät
-| Tag |
-|---|
-| Airfryer 🛩️ |
-| Brotbackautomat 🍞 |
-| Dutch-Oven 🍲 |
-| Grill 🔥 |
-| Mikrowelle 📡 |
-| Reiskocher 🍚 |
-| Schnellkochtopf ⏱️ |
-| Thermomix ⚙️ |
-| Waffeleisen 🧇 |
-
-### Ernährung
-| Tag |
-|---|
-| Glutenfrei 🚫🌾 |
-| High-Protein 💪 |
-| Low-Carb 📉 |
-| Paleo 🪨 |
-| Vegan 🌱 |
-| Vegetarisch 🌿 |
-| Zuckerreduziert 🧂 |
-
-### Schärfe
-| Tag |
-|---|
-| Mild 🙂 |
-| Mittel 🌶️ |
-| Scharf 🔥 |
-| Extra scharf 🔥🔥 |
-
-### Saison
-| Tag |
-|---|
-| Frühling 🌸 |
-| Herbst 🍂 |
+| Ernährung \| Glutenfrei 🚫🌾 |
+| Ernährung \| High-Protein 💪 |
+| Ernährung \| Low-Carb 📉 |
+| Ernährung \| Paleo 🪨 |
+| Ernährung \| Vegan 🌱 |
+| Ernährung \| Vegetarisch 🌿 |
+| Ernährung \| Zuckerreduziert 🧂 |
+| Form \| Auflauf 🧀 |
+| Form \| Bowl 🥗 |
+| Form \| Burger 🍔 |
+| Form \| Curry 🍛 |
+| Form \| Eintopf 🍲 |
+| Form \| Pasta-Gericht 🍝 |
+| Form \| Pfannengericht 🍳 |
+| Form \| Pizza 🍕 |
+| Form \| Quiche 🥧 |
+| Form \| Salat 🥗 |
+| Form \| Sandwich 🥪 |
+| Form \| Suppe 🥣 |
+| Form \| Tapas/Mezze 🍢 |
+| Form \| Tarte 🥧 |
+| Form \| Wrap 🌯 |
+| Gerät \| Airfryer 🛩️ |
+| Gerät \| Brotbackautomat 🍞 |
+| Gerät \| Dutch-Oven 🍲 |
+| Gerät \| Grill 🔥 |
+| Gerät \| Mikrowelle 📡 |
+| Gerät \| Reiskocher 🍚 |
+| Gerät \| Schnellkochtopf ⏱️ |
+| Gerät \| Thermomix ⚙️ |
+| Gerät \| Waffeleisen 🧇 |
+| Küche \| Afrikanisch 🌍 |
+| Küche \| Arabisch 🕌 |
+| Küche \| Chinesisch 🇨🇳 |
+| Küche \| Deutsch 🇩🇪 |
+| Küche \| Französisch 🇫🇷 |
+| Küche \| Fusion 🧪 |
+| Küche \| Griechisch 🇬🇷 |
+| Küche \| Indisch 🇮🇳 |
+| Küche \| Italienisch 🇮🇹 |
+| Küche \| Japanisch 🇯🇵 |
+| Küche \| Koreanisch 🇰🇷 |
+| Küche \| Mexikanisch 🇲🇽 |
+| Küche \| Pakistanisch 🇵🇰 |
+| Küche \| Skandinavisch 🇸🇪 |
+| Küche \| Spanisch 🇪🇸 |
+| Küche \| Thai 🇹🇭 |
+| Küche \| Türkisch 🇹🇷 |
+| Küche \| US-amerikanisch 🇺🇸 |
+| Küche \| Vietnamesisch 🇻🇳 |
+| Saison \| Frühling 🌸 |
+| Saison \| Herbst 🍂 |
+| Schärfe \| Extra scharf 🔥🔥 |
+| Schärfe \| Mild 🙂 |
+| Schärfe \| Mittel 🌶️ |
+| Schärfe \| Scharf 🔥 |
+| Tageszeit \| Dinner 🌙 |
+| Tageszeit \| Frühstück ☀️ |
+| Technik \| Airfryer 🛩️ |
+| Technik \| Backen 🥐 |
+| Technik \| Dämpfen 🧺 |
+| Technik \| Dünsten 🌫️ |
+| Technik \| Fermentieren 🧫 |
+| Technik \| Frittieren 🍟 |
+| Technik \| Grill 🔥 |
+| Technik \| Marinieren 🧂 |
+| Technik \| Ofen 🔥 |
+| Technik \| One-Pot 🫕 |
+| Technik \| Pfanne 🍳 |
+| Technik \| Roh 🥗 |
+| Technik \| Schmoren 🍲 |
+| Technik \| Slowcooker 🐢 |
+| Technik \| Wok 🍜 |

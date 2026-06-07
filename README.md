@@ -20,7 +20,7 @@ I faced the challenge of importing a recipe collection of around **1,000 PDF fil
 
 ## What Is the Mealie AI Importer?
 
-A self-developed tool that **automatically imports recipes from PDF files** into Mealie. It uses **artificial intelligence** (Claude by Anthropic) and the official **Mealie REST API** to recognise ingredients, quantities, units, and preparation steps from the PDF — filling in **all relevant fields** that Mealie offers for a high-quality recipe database.
+A self-developed tool that **automatically imports recipes from PDF files** into Mealie. It uses **artificial intelligence** (Claude by Anthropic) and the official **Mealie REST API** to recognise ingredients, quantities, units, and preparation steps from the PDF, match them against existing data — and fills in **all relevant fields** that Mealie offers for a high-quality recipe database.
 
 ### What Makes It Special?
 
@@ -70,10 +70,10 @@ The tool reads the **embedded text** directly from the PDF file (searchable PDF)
 
 ### 2. AI Recipe Analysis
 
-Claude analyses the extracted text and creates the complete recipe structure:
+The AI analyses the extracted text and creates the complete recipe structure:
 
 - Recipe title, description (written to be appetising), servings
-- Preparation time, cook time, total time
+- Preparation time, cook time, total time — if stated in the recipe
 - Ingredients with quantities and units, grouped into sections
 - Numbered preparation steps
 - Assignment of ingredients to their respective preparation steps
@@ -132,7 +132,7 @@ Before transferring to Mealie, an interactive interface allows you to review and
 
 ## AI Models, API & Costs
 
-The tool uses exclusively the **Anthropic Claude API** (no OpenAI, no other providers).
+The tool currently uses exclusively the **Anthropic Claude API**. It can theoretically be switched to other providers via the settings and prompts configuration.
 
 | Purpose | Model |
 |---|---|

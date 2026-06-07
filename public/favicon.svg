@@ -1,4 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="12" fill="#2563eb"/>
-  <text x="32" y="47" font-family="Arial, sans-serif" font-weight="bold" font-size="38" fill="white" text-anchor="middle">M</text>
+  <!-- Upload arrow -->
+  <path d="M32 6 L50 28 H38 V46 H26 V28 H14 Z" fill="#E8921A"/>
+  <!-- Base line -->
+  <rect x="14" y="52" width="36" height="6" rx="3" fill="#E8921A"/>
 </svg>

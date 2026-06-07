@@ -884,7 +884,28 @@ export const Step3Review: React.FC = () => {
         const payload = buildUpdatePayload(snapshot);
         const updated = await updateReviewData(runId, payload);
         const enriched = enrichReviewData(updated);
-        setReviewData(enriched);
+        // Preserve user-edited names for new foods/units: the server response rebuilds
+        // foodSelection.name from the original ingredient name, not from the edited
+        // foodDecision.create.nameSingular — so we restore it from the snapshot here.
+        const withPreservedNames: typeof enriched = {
+          ...enriched,
+          ingredients: enriched.ingredients.map((serverItem) => {
+            const snapshotItem = snapshot.ingredients.find((x) => x.id === serverItem.id);
+            if (!snapshotItem) return serverItem;
+            const snapshotName = snapshotItem.foodSelection?.name;
+            const foodSel =
+              serverItem.foodSelection?.newId && snapshotName
+                ? { ...serverItem.foodSelection, name: snapshotName }
+                : serverItem.foodSelection;
+            const snapshotUnitName = snapshotItem.unitSelection?.name;
+            const unitSel =
+              serverItem.unitSelection?.newId && snapshotUnitName
+                ? { ...serverItem.unitSelection, name: snapshotUnitName }
+                : serverItem.unitSelection;
+            return { ...serverItem, foodSelection: foodSel, unitSelection: unitSel };
+          })
+        };
+        setReviewData(withPreservedNames);
         setImageOverrideUrl(null);
         setSummaryForm(createSummaryForm(enriched.summary));
       setPreparationSteps(createPreparationSteps(enriched.instructions));

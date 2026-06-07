@@ -70,10 +70,10 @@ Das Tool liest den **eingebetteten Text** direkt aus der PDF-Datei (durchsuchbar
 
 ### 2. KI-Rezeptanalyse
 
-Claude analysiert den extrahierten Text und erstellt die vollständige Rezeptstruktur:
+Die KI analysiert den extrahierten Text und erstellt die vollständige Rezeptstruktur:
 
 - Rezepttitel, Beschreibung (appetitanregend formuliert), Portionen
-- Zubereitungszeit, Vorbereitungszeit, Gesamtzeit
+- Zubereitungszeit, Vorbereitungszeit, Gesamtzeit - sofern im Rezept benannt
 - Zutaten mit Mengen und Einheiten, gruppiert in Abschnitte
 - Nummerierte Zubereitungsschritte
 - Zuordnung von Zutaten zu den jeweiligen Zubereitungsschritten
@@ -132,7 +132,7 @@ Vor der Übertragung nach Mealie bietet eine interaktive Oberfläche die Möglic
 
 ## KI-Modelle, API & Kosten
 
-Das Tool nutzt ausschließlich die **Anthropic Claude API** (kein OpenAI, keine anderen Anbieter).
+Das Tool nutzt aktuell ausschließlich die **Anthropic Claude API**. Es kann aber theoretisch in den Settings und Prompts auf andere Anbieter umgestellt werden.
 
 | Verwendungszweck | Modell |
 |---|---|
@@ -233,7 +233,7 @@ Die Benutzeroberfläche ist standardmäßig auf **Deutsch** eingestellt und kann
 - **PDF-Format**: Das PDF muss eine eingebettete Text-Schicht enthalten (durchsuchbares PDF). Eingescannte Rezeptbücher ohne Texterkennung werden nicht unterstützt.
 - **Sprache**: Ausschließlich mit **deutschsprachigen Rezepten** getestet. Die UI kann auf Englisch umgestellt werden, der Import in Englisch wurde jedoch nie erprobt.
 - **Einzelnutzer**: Es kann immer nur **ein Import gleichzeitig** laufen.
-- **Kategorien & Tags**: Das automatische Tagging basiert auf dem in der jeweiligen Mealie-Instanz eingerichteten System.
+- **Kategorien & Tags**: Das automatische Tagging basiert auf dem in der jeweiligen Mealie-Instanz eingerichteten System. Ggf. den jeweiligen Prompt in den der UI unter den Einstellungen anpassen.
 
 ---
 

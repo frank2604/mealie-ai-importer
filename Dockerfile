@@ -8,7 +8,11 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
-# Build application
+# Build application.
+# VITE_APP_VERSION is passed in from CI (commit SHA) so the running build is
+# identifiable in the UI; defaults to "dev" for a plain local docker build.
+ARG VITE_APP_VERSION=dev
+ENV VITE_APP_VERSION=$VITE_APP_VERSION
 COPY . .
 RUN npm run build
 

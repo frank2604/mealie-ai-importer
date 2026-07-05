@@ -2,6 +2,7 @@
   "app": {
     "title": "Mealie AI-Importer",
     "subtitle": "Beschleunige die Übernahme Deiner Rezepte aus PDFs",
+    "versionLabel": "Version {{version}}",
     "occupied": {
       "title": "Import läuft gerade",
       "message": "Eine andere Person importiert gerade ein Rezept. Bitte warte, bis der Vorgang abgeschlossen ist."

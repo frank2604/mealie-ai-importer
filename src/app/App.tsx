@@ -194,8 +194,11 @@ const AppShell: React.FC = () => {
           ) : (
             <>
               <div className={clsx("flex w-full items-center justify-between gap-4 py-4", layoutConfig.spacing.layout.page.x)}>
-                <Link to="/" className="focus-ring flex items-center gap-2 text-lg font-semibold text-primary">
+                <Link to="/" className="focus-ring flex items-baseline gap-2 text-lg font-semibold text-primary">
                   <span>{t("app.title")}</span>
+                  <span className="text-xs font-normal text-text/40" title={t("app.versionLabel", { version: __APP_VERSION__ })}>
+                    v{__APP_VERSION__}
+                  </span>
                 </Link>
                 <div className="flex items-center gap-3">
                   <div className="hidden text-sm font-medium text-text/70 sm:block">{t("app.subtitle")}</div>

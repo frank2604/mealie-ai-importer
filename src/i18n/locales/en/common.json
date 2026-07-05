@@ -2,6 +2,7 @@
   "app": {
     "title": "Mealie AI Importer",
     "subtitle": "Bring your recipe PDFs into Mealie faster",
+    "versionLabel": "Version {{version}}",
     "occupied": {
       "title": "Import in progress",
       "message": "Someone else is currently importing a recipe. Please wait until they are done."

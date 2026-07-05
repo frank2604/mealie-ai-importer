@@ -1563,6 +1563,21 @@ async def start_analysis(upload_id: str, background_tasks: BackgroundTasks) -> S
 @app.post("/api/imports/{run_id}/transfer", response_model=TransferStartResponse)
 async def start_transfer(run_id: str, background_tasks: BackgroundTasks) -> TransferStartResponse:
     state = _read_run_state(run_id)
+    # Idempotenz: Ein Timing-Wettlauf in der Oberfläche (Auto-Start + parallele
+    # Statusabfrage) kann zwei Übertragungs-Anfragen kurz hintereinander senden.
+    # Die erste schaltet den Lauf auf "transferring"; die zweite würde sonst unten
+    # in den Guard laufen und die irreführende Meldung "Analyse nicht abgeschlossen"
+    # auslösen. Läuft die Übertragung bereits oder ist sie fertig, geben wir einfach
+    # den aktuellen Zustand zurück, ohne eine zweite Übertragung zu starten.
+    if state.status in {"transferring", "completed"}:
+        workspace = _build_workspace(_load_app_config())
+        run_info = workspace.load_run_info()
+        return TransferStartResponse(
+            runId=run_id,
+            status=state.status,
+            recipeName=(run_info.recipe_name if run_info else state.recipe_name),
+            startedAt=(run_info.started_at if run_info else state.started_at),
+        )
     if state.status not in {"review", "failed"}:
         raise HTTPException(status_code=409, detail="Die Analyse muss abgeschlossen sein, bevor die Übertragung starten kann.")
     _assert_no_running_job()

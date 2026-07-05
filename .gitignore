@@ -22,3 +22,6 @@ data/
 # Python virtualenv / caches
 .venv/
 .venv_dev/
+
+# TypeScript incremental build cache
+*.tsbuildinfo

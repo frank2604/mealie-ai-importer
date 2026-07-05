@@ -129,15 +129,27 @@ export const Step4Transfer: React.FC = () => {
   }, [runId]);
 
   const triggerTransfer = useCallback(async () => {
-    if (!runId) {
+    // Synchroner Wiedereintritts-Schutz: Verhindert, dass ein Timing-Wettlauf
+    // (Auto-Start + parallele Statusabfrage) die Übertragung doppelt startet.
+    if (!runId || transferRequestedRef.current) {
       return;
     }
     transferRequestedRef.current = true;
     setIsStartingTransfer(true);
     resetTransferLogs();
     try {
-      await startTransfer(runId);
-      setStatus("transferring");
+      const result = await startTransfer(runId);
+      const nextStatus = (result.status as ImportStatus) || "transferring";
+      setStatus(nextStatus);
+      // Timer sofort beim Auslösen der Übertragung starten. Sich auf eine
+      // Statusabfrage zu verlassen, die den "transferring"-Moment sieht, verpasst
+      // schnelle Übertragungen (2–3 s < 2 s-Abfrageintervall) – dann bleibt der
+      // Timer auf "–" stehen.
+      if (nextStatus === "transferring") {
+        setTransferStart(new Date().toISOString());
+        setTransferEnd(null);
+        previousStatusRef.current = "transferring";
+      }
       setError(null);
     } catch (transferError) {
       const message = transferError instanceof Error ? transferError.message : String(transferError);

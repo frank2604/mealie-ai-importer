@@ -53,6 +53,24 @@ export const Step4Transfer: React.FC = () => {
   const [nowMs, setNowMs] = useState<number>(Date.now());
   const transferRequestedRef = useRef(false);
   const previousStatusRef = useRef<ImportStatus | null>(null);
+  // Mirror the timer timestamps into refs so the polling loop (whose closure
+  // does not list them as dependencies) always reads the current value. Without
+  // this, the loop keeps seeing a stale `transferStart === null` and never sets
+  // the end time, so the timer would run forever.
+  const transferStartRef = useRef<string | null>(null);
+  const transferEndRef = useRef<string | null>(null);
+
+  const beginTransferTimer = useCallback((iso: string) => {
+    transferStartRef.current = iso;
+    transferEndRef.current = null;
+    setTransferStart(iso);
+    setTransferEnd(null);
+  }, []);
+
+  const endTransferTimer = useCallback((iso: string) => {
+    transferEndRef.current = iso;
+    setTransferEnd(iso);
+  }, []);
 
   const logEntries = useMemo(() => transferLogs, [transferLogs]);
 
@@ -122,6 +140,8 @@ export const Step4Transfer: React.FC = () => {
 
   useEffect(() => {
     transferRequestedRef.current = false;
+    transferStartRef.current = null;
+    transferEndRef.current = null;
     setTransferStart(null);
     setTransferEnd(null);
     setNowMs(Date.now());
@@ -146,8 +166,7 @@ export const Step4Transfer: React.FC = () => {
       // schnelle Übertragungen (2–3 s < 2 s-Abfrageintervall) – dann bleibt der
       // Timer auf "–" stehen.
       if (nextStatus === "transferring") {
-        setTransferStart(new Date().toISOString());
-        setTransferEnd(null);
+        beginTransferTimer(new Date().toISOString());
         previousStatusRef.current = "transferring";
       }
       setError(null);
@@ -159,7 +178,7 @@ export const Step4Transfer: React.FC = () => {
     } finally {
       setIsStartingTransfer(false);
     }
-  }, [resetTransferLogs, runId, setError, setStatus]);
+  }, [beginTransferTimer, resetTransferLogs, runId, setError, setStatus]);
 
   useEffect(() => {
     if (runId && status === "review" && !transferRequestedRef.current) {
@@ -205,11 +224,16 @@ export const Step4Transfer: React.FC = () => {
           const prev = previousStatusRef.current;
           setStatus(mapped);
           if (mapped === "transferring" && prev !== "transferring") {
-            setTransferStart(new Date().toISOString());
-            setTransferEnd(null);
+            beginTransferTimer(new Date().toISOString());
           }
-          if (["completed", "failed", "aborted"].includes(mapped) && transferStart && !transferEnd) {
-            setTransferEnd(new Date().toISOString());
+          if (["completed", "failed", "aborted"].includes(mapped) && !transferEndRef.current) {
+            // Stop the timer. If we somehow never recorded a start (very fast
+            // transfer observed straight as "completed"), anchor the start to now
+            // so the timer shows 00:00 instead of running forever.
+            if (!transferStartRef.current) {
+              beginTransferTimer(new Date().toISOString());
+            }
+            endTransferTimer(new Date().toISOString());
           }
           previousStatusRef.current = mapped;
         }
@@ -269,7 +293,7 @@ export const Step4Transfer: React.FC = () => {
       }
       setIsPolling(false);
     };
-  }, [appendTransferLogs, runId, setError, setStatus, t, transferCursor]);
+  }, [appendTransferLogs, beginTransferTimer, endTransferTimer, runId, setError, setStatus, t, transferCursor]);
 
   useEffect(() => {
     if (!transferStart || transferEnd) {

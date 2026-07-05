@@ -384,7 +384,8 @@
     "finish": "Transfer",
     "save": "Save",
     "saving": "Saving…",
-    "reset": "Reset"
+    "reset": "Reset",
+    "confirm": "Confirm"
   },
   "confirmations": {
     "cancelImport": "Do you really want to cancel the import? All collected data will be deleted."

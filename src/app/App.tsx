@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { ArrowLeftIcon, Cog6ToothIcon } from "@heroicons/react/24/outline";
 import { StepTabs } from "./components/StepTabs";
 import { StickyFooter } from "./components/StickyFooter";
+import { ConfirmModal } from "./components/Modals/ConfirmModal";
 import { getStepByPath, stepDefinitions } from "./stepConfig";
 import { layoutConfig } from "../config/layout.config";
 import { useImportFlow } from "./context/ImportFlowContext";
@@ -59,6 +60,10 @@ const AppShell: React.FC = () => {
   const [isNextDisabled, setIsNextDisabled] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
   const [nextLabelOverride, setNextLabelOverride] = useState<string | null>(null);
+  // In-app confirmation dialog state (replaces native window.confirm, which
+  // browsers suppress after repeated popups — that froze the archive/cancel
+  // actions until a reload).
+  const [confirmDialog, setConfirmDialog] = useState<{ message: string; onConfirm: () => void } | null>(null);
 
   const currentPath = location.pathname;
   const isOnSettings = currentPath.startsWith(settingsPath);
@@ -112,22 +117,21 @@ const AppShell: React.FC = () => {
           return;
         }
         if (currentStep.id === "transfer" && runStatus === "completed" && runId) {
-          const confirmed = window.confirm(
-            t("transfer.confirmArchive", {
+          setConfirmDialog({
+            message: t("transfer.confirmArchive", {
               defaultValue: "Der Lauf wird archiviert und alle Schritte werden geleert. Möchtest du fortfahren?"
-            })
-          );
-          if (!confirmed) {
-            return;
-          }
-          archiveRun(runId)
-            .catch(() => {})
-            .finally(() => {
-              resetFlow();
-              resetWorkspace().finally(() => {
-                navigate("/", { replace: true });
-              });
-            });
+            }),
+            onConfirm: () => {
+              archiveRun(runId)
+                .catch(() => {})
+                .finally(() => {
+                  resetFlow();
+                  resetWorkspace().finally(() => {
+                    navigate("/", { replace: true });
+                  });
+                });
+            }
+          });
           return;
         }
         const nextStep = stepDefinitions[currentStepIndex + 1];
@@ -141,14 +145,7 @@ const AppShell: React.FC = () => {
       });
   };
 
-  const handleCancel = async () => {
-    if (isCancelling) {
-      return;
-    }
-    const confirmed = window.confirm(t("confirmations.cancelImport"));
-    if (!confirmed) {
-      return;
-    }
+  const performCancel = async () => {
     setIsCancelling(true);
     try {
       await resetWorkspaceApi();
@@ -162,6 +159,18 @@ const AppShell: React.FC = () => {
     } finally {
       setIsCancelling(false);
     }
+  };
+
+  const handleCancel = () => {
+    if (isCancelling) {
+      return;
+    }
+    setConfirmDialog({
+      message: t("confirmations.cancelImport"),
+      onConfirm: () => {
+        void performCancel();
+      }
+    });
   };
 
   const handleSettingsBack = () => {
@@ -280,6 +289,16 @@ const AppShell: React.FC = () => {
           />
         )}
       </div>
+      <ConfirmModal
+        isOpen={confirmDialog !== null}
+        message={confirmDialog?.message ?? ""}
+        onConfirm={() => {
+          const action = confirmDialog?.onConfirm;
+          setConfirmDialog(null);
+          action?.();
+        }}
+        onCancel={() => setConfirmDialog(null)}
+      />
     </StepNavigationContext.Provider>
   );
 };

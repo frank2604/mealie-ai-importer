@@ -59,6 +59,20 @@ export const Step4Transfer: React.FC = () => {
   // the end time, so the timer would run forever.
   const transferStartRef = useRef<string | null>(null);
   const transferEndRef = useRef<string | null>(null);
+  // Keep the live cursor and the (identity-changing) append callback in refs so
+  // the polling effect can read the latest value WITHOUT listing them as
+  // dependencies. Otherwise every incoming log entry changes `transferCursor`
+  // (and `appendTransferLogs`), tearing down and restarting the poll loop —
+  // which spawns overlapping loops and can leave the UI stuck on the last seen
+  // status ("transferring") even after the server reports "completed".
+  const transferCursorRef = useRef(transferCursor);
+  const appendTransferLogsRef = useRef(appendTransferLogs);
+  useEffect(() => {
+    transferCursorRef.current = transferCursor;
+  }, [transferCursor]);
+  useEffect(() => {
+    appendTransferLogsRef.current = appendTransferLogs;
+  }, [appendTransferLogs]);
 
   const beginTransferTimer = useCallback((iso: string) => {
     transferStartRef.current = iso;
@@ -199,7 +213,7 @@ export const Step4Transfer: React.FC = () => {
       try {
         const [statusResult, logResult] = await Promise.all([
           fetchRunStatus(runId),
-          fetchRunLogs(runId, transferCursor, "transfer")
+          fetchRunLogs(runId, transferCursorRef.current, "transfer")
         ]);
         if (!active) {
           return;
@@ -246,7 +260,7 @@ export const Step4Transfer: React.FC = () => {
           setError(null);
         }
         if (logResult?.entries.length) {
-          appendTransferLogs(mapApiLogEntries(logResult.entries), logResult.nextCursor);
+          appendTransferLogsRef.current(mapApiLogEntries(logResult.entries), logResult.nextCursor);
         }
         if (["completed", "review", "failed", "aborted"].includes(statusResult.status)) {
           if (statusResult.status === "review") {
@@ -260,9 +274,9 @@ export const Step4Transfer: React.FC = () => {
               await new Promise((res) => window.setTimeout(res, 800));
               if (!active) break;
               try {
-                const retryLogs = await fetchRunLogs(runId, transferCursor, "transfer");
+                const retryLogs = await fetchRunLogs(runId, transferCursorRef.current, "transfer");
                 if (retryLogs?.entries.length) {
-                  appendTransferLogs(mapApiLogEntries(retryLogs.entries), retryLogs.nextCursor);
+                  appendTransferLogsRef.current(mapApiLogEntries(retryLogs.entries), retryLogs.nextCursor);
                   break;
                 }
               } catch {
@@ -293,7 +307,9 @@ export const Step4Transfer: React.FC = () => {
       }
       setIsPolling(false);
     };
-  }, [appendTransferLogs, beginTransferTimer, endTransferTimer, runId, setError, setStatus, t, transferCursor]);
+    // Depends only on `runId` (plus stable callbacks): the loop must NOT restart
+    // on every log entry. Cursor and append are read from refs above.
+  }, [beginTransferTimer, endTransferTimer, runId, setError, setRecipeNameValue, setStatus, t]);
 
   useEffect(() => {
     if (!transferStart || transferEnd) {

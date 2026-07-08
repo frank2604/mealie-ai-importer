@@ -262,14 +262,19 @@ export const Step4Transfer: React.FC = () => {
         if (logResult?.entries.length) {
           appendTransferLogsRef.current(mapApiLogEntries(logResult.entries), logResult.nextCursor);
         }
-        if (["completed", "review", "failed", "aborted"].includes(statusResult.status)) {
-          if (statusResult.status === "review") {
-            transferRequestedRef.current = false;
-          }
+        if (statusResult.status === "review") {
+          // NOT terminal during the transfer phase: on arrival the run is briefly
+          // "review" (analysis done, transfer about to start), and a failed
+          // transfer also reverts to "review". Reset the trigger guard so
+          // triggerTransfer can (re)fire, and KEEP POLLING so we catch the
+          // transition to "transferring" and the eventual completion. Stopping
+          // here would freeze the UI on the last seen status forever.
+          transferRequestedRef.current = false;
+        } else if (["completed", "failed", "aborted"].includes(statusResult.status)) {
           // Race condition: transfer may complete before the first log poll returns
           // entries (log file just flushed). Retry log fetch up to 3× with 800 ms
           // delay so the log panel is never empty after a fast transfer.
-          if (statusResult.status !== "review" && !logResult?.entries.length && active) {
+          if (!logResult?.entries.length && active) {
             for (let retry = 0; retry < 3; retry++) {
               await new Promise((res) => window.setTimeout(res, 800));
               if (!active) break;

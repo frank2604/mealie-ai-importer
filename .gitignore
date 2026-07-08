@@ -19,6 +19,9 @@ pnpm-debug.log*
 config/settings.yaml
 data/
 
+# Lokale, nicht-öffentliche Doku (niemals committen — Repo ist öffentlich)
+Betriebshandbuch.html
+
 # Python virtualenv / caches
 .venv/
 .venv_dev/

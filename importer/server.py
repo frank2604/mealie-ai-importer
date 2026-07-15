@@ -1145,6 +1145,26 @@ def _apply_review_update(run_id: str, config: AppConfig, payload: ReviewUpdateRe
 
     # Update ingredient decisions
     foods_entries = foods_review.setdefault("ingredients", [])
+    units_entries = units_review.setdefault("units", [])
+
+    # Reconcile each review entry's stable ingredientId from the recipe BEFORE
+    # building the lookup maps. The UI sends every ingredient's stable id (e.g.
+    # "ing-0-0"), while review entries are keyed positionally ("0:0"). On the very
+    # first save of a run the ingredientId has not been written onto the review
+    # entries yet, so without this reconciliation the `key in foods_map` check
+    # below misses and the user's edits are silently dropped — most visibly a
+    # renamed new food, which then gets created in Mealie under the original
+    # AI-suggested name. (The reconciliation further below ran only AFTER this
+    # loop, i.e. one save too late.)
+    _pos_key_to_id: Dict[str, str] = {}
+    for section_index, section in enumerate(recipe_data.get("ingredients") or []):
+        for ingredient_index, ingredient in enumerate(section.get("ingredients") or []):
+            pos_key = f"{section_index}:{ingredient_index}"
+            _pos_key_to_id[pos_key] = str(ingredient.get("id") or pos_key)
+    for entry in (*foods_entries, *units_entries):
+        if isinstance(entry, dict) and not entry.get("ingredientId") and entry.get("key"):
+            entry["ingredientId"] = _pos_key_to_id.get(str(entry["key"]), entry.get("key"))
+
     foods_map = {
         str(entry.get("key")): entry for entry in foods_entries if isinstance(entry, dict)
     }
@@ -1153,7 +1173,6 @@ def _apply_review_update(run_id: str, config: AppConfig, payload: ReviewUpdateRe
         if isinstance(entry, dict) and entry.get("ingredientId"):
             foods_map[str(entry["ingredientId"])] = entry
 
-    units_entries = units_review.setdefault("units", [])
     units_map = {
         str(entry.get("key")): entry for entry in units_entries if isinstance(entry, dict)
     }

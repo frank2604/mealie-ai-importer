@@ -5,7 +5,7 @@ import logging
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional, Union
+from typing import Dict, Optional, Union
 
 import yaml
 from dotenv import load_dotenv
@@ -27,11 +27,25 @@ class MealieConfig:
     token: Optional[str]
     verify_ssl: bool = True
     ca_bundle: Optional[Path] = None
+    # Optional per-user API tokens, keyed by the authenticated login name
+    # (as forwarded by Authelia in the ``Remote-User`` header). Lets each
+    # person import recipes under their own Mealie account so they own — and
+    # can edit — what they import. Falls back to ``token`` when a user has no
+    # dedicated token.
+    user_tokens: Dict[str, str] = field(default_factory=dict)
 
     def verify_option(self) -> Union[bool, str]:
         if self.ca_bundle:
             return str(self.ca_bundle)
         return self.verify_ssl
+
+    def token_for_user(self, user: Optional[str]) -> Optional[str]:
+        """Return the Mealie token for *user*, falling back to the default."""
+        if user:
+            specific = self.user_tokens.get(user) or self.user_tokens.get(user.lower())
+            if specific:
+                return specific
+        return self.token
 
 
 @dataclass
@@ -102,7 +116,20 @@ def load_config(config_path: Optional[Path] = None) -> AppConfig:
     ca_bundle_raw = _env_or_default("MEALIE_CA_BUNDLE", mealie_section.get("ca_bundle"))
     ca_bundle = Path(ca_bundle_raw).expanduser() if ca_bundle_raw else None
 
-    mealie = MealieConfig(base_url=base_url, token=token, verify_ssl=verify_ssl, ca_bundle=ca_bundle)
+    raw_user_tokens = mealie_section.get("user_tokens") or {}
+    user_tokens = {
+        str(name): str(value)
+        for name, value in raw_user_tokens.items()
+        if value
+    } if isinstance(raw_user_tokens, dict) else {}
+
+    mealie = MealieConfig(
+        base_url=base_url,
+        token=token,
+        verify_ssl=verify_ssl,
+        ca_bundle=ca_bundle,
+        user_tokens=user_tokens,
+    )
 
     watch_folder = Path(_env_or_default("WATCH_FOLDER", processing_section.get("watch_folder", "PDFs")))
     output_folder = Path(

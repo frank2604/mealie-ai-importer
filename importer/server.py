@@ -7,7 +7,7 @@ import yaml
 import logging
 import re
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime
 from pathlib import Path
 from threading import Lock
@@ -1327,8 +1327,40 @@ def _apply_review_update(run_id: str, config: AppConfig, payload: ReviewUpdateRe
     _update_run_state(run_id, recipe_name=context.run_info.recipe_name)
 
 
+def _authenticated_user(request: Request) -> Optional[str]:
+    """Return the login name Authelia forwarded (nginx ``Remote-User`` header).
+
+    Empty/anonymous values are treated as "no user" so we fall back to the
+    default Mealie token.
+    """
+    raw = request.headers.get("remote-user") or request.headers.get("Remote-User")
+    user = (raw or "").strip()
+    if not user or user.lower() == "anonymous":
+        return None
+    return user
+
+
+def _config_for_user(config: AppConfig, user: Optional[str]) -> AppConfig:
+    """Return a copy of *config* whose Mealie token matches *user*.
+
+    Recipes are owned by whoever the API token belongs to, so importing under
+    the acting user's own token makes that user the owner — and thus able to
+    edit — of what they import. Falls back to the default token.
+    """
+    resolved = config.mealie.token_for_user(user)
+    if resolved == config.mealie.token:
+        return config
+    return replace(config, mealie=replace(config.mealie, token=resolved))
+
+
 def _run_analysis(run_state: RunState, pending: PendingUpload, config: AppConfig, workspace: RunWorkspace, run_info: RunInfo) -> None:
-    logger.info("Starte Analyse für Lauf %s (%s)", run_state.run_id, run_state.recipe_name)
+    config = _config_for_user(config, run_info.user)
+    logger.info(
+        "Starte Analyse für Lauf %s (%s) als Benutzer '%s'",
+        run_state.run_id,
+        run_state.recipe_name,
+        run_info.user or "-",
+    )
     try:
         llm_client = create_llm_client(config.llm)
     except ValueError as exc:
@@ -1431,7 +1463,13 @@ def _run_analysis(run_state: RunState, pending: PendingUpload, config: AppConfig
 
 
 def _run_transfer(run_state: RunState, config: AppConfig, workspace: RunWorkspace, run_info: RunInfo) -> None:
-    logger.info("Starte Übertragung für Lauf %s (%s)", run_state.run_id, run_state.recipe_name)
+    config = _config_for_user(config, run_info.user)
+    logger.info(
+        "Starte Übertragung für Lauf %s (%s) als Benutzer '%s'",
+        run_state.run_id,
+        run_state.recipe_name,
+        run_info.user or "-",
+    )
     ingredient_service: Optional[IngredientService] = None
     file_handler: Optional[logging.Handler] = None
     root_logger = logging.getLogger()
@@ -1560,13 +1598,19 @@ async def upload_pdf(file: UploadFile = File(...)) -> UploadResponse:
 
 
 @app.post("/api/imports/{upload_id}/start", response_model=StartAnalysisResponse)
-async def start_analysis(upload_id: str, background_tasks: BackgroundTasks) -> StartAnalysisResponse:
+async def start_analysis(
+    upload_id: str, background_tasks: BackgroundTasks, request: Request
+) -> StartAnalysisResponse:
     pending = _pop_pending_upload(upload_id)
     _assert_no_running_job()
     config = _load_app_config()
 
     workspace = _build_workspace(config)
-    run_info = workspace.start_run(recipe_name=pending.recipe_name, source_pdf=pending.file_path)
+    run_info = workspace.start_run(
+        recipe_name=pending.recipe_name,
+        source_pdf=pending.file_path,
+        user=_authenticated_user(request),
+    )
     run_state = _register_run_state(pending, run_info, workspace.pipeline_dir)
 
     background_tasks.add_task(_run_analysis, run_state, pending, config, workspace, run_info)

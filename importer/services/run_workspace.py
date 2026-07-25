@@ -50,6 +50,10 @@ class RunInfo:
     log_file: Optional[str] = None
     analysis_log_file: Optional[str] = None
     transfer_log_file: Optional[str] = None
+    # Authenticated login name (from Authelia) that started this run. Used to
+    # pick the matching per-user Mealie token so imports are owned by the
+    # person who created them. ``None`` for runs started without a login.
+    user: Optional[str] = None
 
     def mark_completed(self, *, status: str = "completed") -> None:
         self.status = status
@@ -379,7 +383,13 @@ class RunWorkspace:
                     counter += 1
             shutil.copy2(entry, target_path)
 
-    def start_run(self, *, recipe_name: str, source_pdf: Optional[Path]) -> RunInfo:
+    def start_run(
+        self,
+        *,
+        recipe_name: str,
+        source_pdf: Optional[Path],
+        user: Optional[str] = None,
+    ) -> RunInfo:
         """Prepare directories and persist metadata for the incoming run."""
         self.archive_previous_run()
         self._clear_directory(self._pipeline_dir)
@@ -398,6 +408,7 @@ class RunWorkspace:
             log_file=str(analysis_log),
             analysis_log_file=str(analysis_log),
             transfer_log_file=str(transfer_log),
+            user=user,
         )
         self.save_run_info(info)
 

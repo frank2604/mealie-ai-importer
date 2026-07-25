@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import type { LogEntry } from "../components/LogViewer";
-import { fetchActiveRun } from "../api/imports";
+import { fetchActiveRun, fetchRunStatus } from "../api/imports";
 
 export type ImportStatus =
   | "idle"
@@ -261,12 +261,32 @@ export const ImportFlowProvider: React.FC<{ children: ReactNode }> = ({ children
         });
       })
       .catch(() => {
-        const persisted = persistedRef.current;
-        if (persisted?.runId && !runId) {
-          setRunIdState(persisted.runId);
-          setStatusState(persisted.status);
-          setRecipeName((prev) => prev ?? persisted.recipeName);
+        // The server reports no active run (GET /imports/active -> 404). A
+        // runId was already restored from localStorage by the useState
+        // initializers above, but it may be stale — e.g. an archived run from
+        // an earlier session on this browser. Validate it: if that run no
+        // longer exists, reset to a clean state so a fresh upload -> analyze
+        // can start. Leaving a dead runId in place wedges the UI into polling a
+        // 404 run and silently blocks new imports (exactly what happened for a
+        // second user whose browser still held an old runId).
+        const staleId = runId ?? persistedRef.current?.runId ?? null;
+        if (!staleId) {
+          return;
         }
+        fetchRunStatus(staleId)
+          .then((result) => {
+            if (!active) {
+              return;
+            }
+            if (!result) {
+              persistedRef.current = null;
+              reset();
+            }
+          })
+          .catch(() => {
+            // Network error while validating — leave state untouched and retry
+            // on the next load rather than wiping a possibly-live run.
+          });
       });
     return () => {
       active = false;

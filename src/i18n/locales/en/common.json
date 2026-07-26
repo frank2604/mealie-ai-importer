@@ -149,6 +149,7 @@
   "review": {
     "loading": "Loading review data…",
     "saving": "Saving changes…",
+    "amountLabel": "Amount",
     "noRunSelected": "No run selected yet.",
     "readonlyNotice": "Transfer is running or completed. Editing is disabled.",
     "noMapping": "No mapping available.",

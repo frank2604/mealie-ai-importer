@@ -48,7 +48,7 @@ def recipe_to_mealie(recipe: Recipe, ingredient_service: Optional[IngredientServ
             "locked": False,
         },
         "assets": _map_assets(recipe.assets, recipe.title),
-        "notes": _map_notes(recipe.notes),
+        "notes": _map_notes(recipe.notes, recipe.storage_note),
     }
 
     if recipe.total_time:
@@ -243,15 +243,13 @@ def _map_assets(assets: Iterable[RecipeAsset], title: str) -> List[Dict[str, Any
     return mapped
 
 
-def _map_notes(notes: Optional[str]) -> List[Dict[str, Any]]:
-    if not notes:
-        return []
-    return [
-        {
-            "title": "Hinweis",
-            "text": notes,
-        }
-    ]
+def _map_notes(notes: Optional[str], storage_note: Optional[str] = None) -> List[Dict[str, Any]]:
+    result: List[Dict[str, Any]] = []
+    if notes:
+        result.append({"title": "Hinweis", "text": notes})
+    if storage_note:
+        result.append({"title": "Aufbewahrung", "text": storage_note})
+    return result
 
 
 def _clean_nulls(value: Any) -> Any:

@@ -149,6 +149,7 @@
   "review": {
     "loading": "Lade Review-Daten …",
     "saving": "Änderungen werden gespeichert …",
+    "amountLabel": "Menge",
     "noRunSelected": "Noch kein Lauf ausgewählt.",
     "readonlyNotice": "Übertragung läuft oder abgeschlossen. Änderungen sind gesperrt.",
     "noMapping": "Keine Zuordnung vorhanden.",

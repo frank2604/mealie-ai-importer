@@ -311,6 +311,8 @@ class ReviewSummaryUpdate(BaseModel):
 class ReviewIngredientUpdate(BaseModel):
     id: str
     notes: Optional[str] = None
+    amount: Optional[float] = None
+    amountProvided: bool = False
     foodDecision: Dict[str, Any] = Field(default_factory=dict)
     unitDecision: Dict[str, Any] = Field(default_factory=dict)
     foodSelection: Optional[FoodSelection] = None
@@ -1231,6 +1233,10 @@ def _apply_review_update(run_id: str, config: AppConfig, payload: ReviewUpdateRe
 
         _set_ingredient_note(recipe_data, key, notes_value)
         entry = _locate_ingredient(recipe_data, key)
+        if entry and ingredient_update.amountProvided:
+            # User edited the quantity in the review step. Write it back to the
+            # recipe data (create_recipe reads "quantity"). None clears it.
+            entry["quantity"] = ingredient_update.amount
         if entry and ingredient_update.foodSelection:
             selection = ingredient_update.foodSelection
             entry["mealieFoodId"] = selection.mealieFoodId

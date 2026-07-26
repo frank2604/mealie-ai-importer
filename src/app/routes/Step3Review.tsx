@@ -540,6 +540,8 @@ const buildUpdatePayload = (data: ReviewData) => ({
   ingredients: data.ingredients.map((item) => ({
     id: item.id,
     notes: item.notes ?? "",
+    amount: item.amount ?? null,
+    amountProvided: true,
     ...(item.deleted ? { deleted: true } : {}),
     foodDecision: { ...item.foodDecision, notes: item.notes ?? "" },
     unitDecision: { ...item.unitDecision, notes: item.notes ?? "" },
@@ -1574,6 +1576,40 @@ export const Step3Review: React.FC = () => {
     [persistChanges]
   );
 
+  // Editing the quantity: update local state on every keystroke (no server
+  // round-trip yet), then persist once the field loses focus. Accepts a German
+  // decimal comma ("1,5") and an empty value (clears the amount).
+  const handleAmountChange = useCallback(
+    (ingredientId: string, rawValue: string) => {
+      if (isReadOnly) return;
+      setReviewData((previous) => {
+        if (!previous) {
+          return previous;
+        }
+        const normalized = rawValue.replace(",", ".").trim();
+        const parsed = normalized === "" ? null : Number(normalized);
+        const amount = parsed !== null && Number.isFinite(parsed) ? parsed : null;
+        const updatedIngredients = previous.ingredients.map((item) =>
+          item.id === ingredientId ? { ...item, amount, amountText: rawValue } : item
+        );
+        return { ...previous, ingredients: updatedIngredients };
+      });
+    },
+    [isReadOnly]
+  );
+
+  const handleAmountBlur = useCallback(() => {
+    if (isReadOnly) return;
+    // Read the latest state via the functional updater to avoid a stale closure,
+    // then persist it.
+    setReviewData((current) => {
+      if (current) {
+        void persistChanges(current);
+      }
+      return current;
+    });
+  }, [isReadOnly, persistChanges]);
+
   const handleFoodSelection = useCallback(
     (ingredientId: string, option: CandidateOption | null) => {
       if (isReadOnly) return;
@@ -2026,7 +2062,19 @@ export const Step3Review: React.FC = () => {
                         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                           <div>
                             <div className="flex items-baseline gap-2">
-                              <span className="text-lg font-semibold text-text">{displayAmount}</span>
+                              <input
+                                type="text"
+                                inputMode="decimal"
+                                value={displayAmount}
+                                disabled={isReadOnly}
+                                onChange={(event) => handleAmountChange(entry.id, event.target.value)}
+                                onBlur={() => handleAmountBlur()}
+                                aria-label={t("review.amountLabel")}
+                                className={clsx(
+                                  "w-20 border border-border bg-background px-2 py-1 text-lg font-semibold text-text focus-ring disabled:opacity-60",
+                                  layoutConfig.borderRadius.small
+                                )}
+                              />
                               <span className="text-sm text-text/80">{originalUnitLabel}</span>
                             </div>
                           </div>

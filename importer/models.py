@@ -93,6 +93,10 @@ class Recipe(BaseModel):
     ingredients: List[IngredientSection] = Field(default_factory=list)
     instructions: List[InstructionSection] = Field(default_factory=list)
     notes: Optional[str] = None
+    # Optional storage/meal-prep hint. Rendered as a separate Mealie note titled
+    # "Aufbewahrung" (e.g. how to freeze the dish well). Filled by the analysis
+    # step when the dish warrants it.
+    storage_note: Optional[str] = Field(default=None, alias="storageNote")
     image_path: Optional[str] = None
     image_url: Optional[HttpUrl] = None
     metadata: RecipeMetadata = Field(default_factory=RecipeMetadata)
